@@ -47,11 +47,9 @@ const UploadPage = () => {
       };
       setImportedSong({ meta, uri });
       navigate("/player");
-    } catch (err) {
+    } catch {
       setStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Analysis failed. Try another file.",
-      );
+      setErrorMessage("Analysis failed. Try another file.");
     }
   }
 

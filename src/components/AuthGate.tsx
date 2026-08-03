@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode, type ChangeEvent } from "reac
 import { Guitar, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ApiClientError } from "@/types/api";
+import { getSafeErrorMessage } from "@/utils/safeError";
 
 type AuthMode = "login" | "register";
 
@@ -41,11 +42,20 @@ export function AuthGate({ children }: AuthGateProps) {
         await register({ email, password, username });
       }
     } catch (err) {
-      setError(
-        err instanceof ApiClientError
-          ? err.message
-          : "Authentication failed. Check the backend is running.",
-      );
+      if (err instanceof ApiClientError) {
+        setError(
+          getSafeErrorMessage(
+            mode === "login" ? "auth" : "generic",
+            err.message,
+          ),
+        );
+      } else {
+        setError(
+          mode === "login"
+            ? "Unable to sign in. Check your credentials and try again."
+            : "Unable to create your account. Please try again later.",
+        );
+      }
     } finally {
       setSubmitting(false);
     }

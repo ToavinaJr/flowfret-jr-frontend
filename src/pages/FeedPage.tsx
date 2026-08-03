@@ -7,7 +7,6 @@ import {
   createFeedPost,
   fetchFeedPosts,
 } from "@/services/api";
-import { ApiClientError } from "@/types/api";
 import type { FeedPost } from "@/types/feed";
 
 function formatRelative(iso: string): string {
@@ -140,12 +139,9 @@ const FeedPage = () => {
     });
   }
 
-  const errorMessage =
-    postsQuery.error instanceof ApiClientError
-      ? postsQuery.error.message
-      : postsQuery.error
-        ? "Could not load feed. Is the backend running?"
-        : null;
+  const errorMessage = postsQuery.error
+    ? "Unable to load the feed. Please try again later."
+    : null;
 
   return (
     <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
@@ -196,10 +192,6 @@ const FeedPage = () => {
       {errorMessage && (
         <div className="bg-card border border-border rounded-lg p-4 text-sm text-muted-foreground mb-4">
           {errorMessage}
-          <p className="mt-2 text-xs">
-            Start <code className="font-musical">backend-guitare-app</code> on
-            port 3000, then refresh.
-          </p>
         </div>
       )}
 
