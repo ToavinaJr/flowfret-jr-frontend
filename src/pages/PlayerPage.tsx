@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Pause, Play, SkipBack } from "lucide-react";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
+import { PAGE_SHELL } from "@/constants/navigation";
 import { usePlayerAudio } from "@/hooks/usePlayerAudio";
 import audioMetaJson from "@/data/csv/audio.json";
 import type { ChordCue, SongMeta } from "@/types/song";
@@ -50,7 +51,7 @@ const PlayerPage = () => {
   const meta: SongMeta = imported?.meta ?? defaultMeta;
   const src = imported?.uri ?? "/audio/audio.mp3";
 
-  const { playState, currentTime, duration, play, pause, seek, toggle } =
+  const { playState, currentTime, duration, play, seek, toggle } =
     usePlayerAudio({ src });
 
   const cueIndex = getCueIndexAtTime(meta.cues, currentTime);
@@ -84,11 +85,13 @@ const PlayerPage = () => {
     duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   return (
-    <div className="px-4 py-6 pb-20 md:pb-6 max-w-3xl mx-auto">
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-display text-foreground">{meta.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+    <div className={PAGE_SHELL}>
+      <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="truncate text-display text-base text-foreground sm:text-lg md:text-xl">
+            {meta.title}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {uniqueChords.length} chords · {formatTime(meta.duration)}
             {imported ? " · Imported" : " · Demo track"}
           </p>
@@ -96,14 +99,14 @@ const PlayerPage = () => {
         <button
           type="button"
           onClick={() => seek(0)}
-          className="min-h-[44px] min-w-[44px] rounded-md bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground"
+          className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center self-start rounded-md bg-secondary text-muted-foreground hover:text-foreground"
           aria-label="Restart"
         >
           <SkipBack className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-6 mb-4 flex justify-center">
+      <div className="mb-4 flex justify-center overflow-x-auto rounded-lg border border-border bg-card p-4 sm:p-6">
         {position ? (
           <ChordDiagram
             chord={label}
@@ -114,65 +117,65 @@ const PlayerPage = () => {
             }}
           />
         ) : (
-          <div className="text-muted-foreground text-sm py-16">
+          <div className="py-10 text-sm text-muted-foreground sm:py-16">
             Play to sync chords
           </div>
         )}
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-4 mb-4">
-        <div className="flex items-center gap-4">
+      <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <button
             type="button"
             onClick={() => {
               void toggle();
             }}
-            className="h-12 w-12 min-h-[44px] min-w-[44px] rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:opacity-90 transition-opacity"
+            className="mx-auto flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 sm:mx-0"
             aria-label={playState === "playing" ? "Pause" : "Play"}
           >
             {playState === "playing" ? (
               <Pause className="h-5 w-5" />
             ) : (
-              <Play className="h-5 w-5 ml-0.5" />
+              <Play className="ml-0.5 h-5 w-5" />
             )}
           </button>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <input
               type="range"
               min={0}
               max={duration || meta.duration || 1}
               step={0.05}
               value={currentTime}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 seek(Number(e.target.value))
               }
               className="w-full accent-primary"
               aria-label="Seek"
             />
-            <div className="flex justify-between mt-1 text-xs font-musical text-muted-foreground">
+            <div className="mt-1 flex justify-between font-musical text-xs text-muted-foreground">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration || meta.duration)}</span>
             </div>
           </div>
         </div>
-        <div className="mt-3 h-1 bg-muted rounded-full overflow-hidden">
+        <div className="mt-3 h-1 overflow-hidden rounded-full bg-muted">
           <div
             className="h-full bg-primary transition-[width] duration-100"
             style={{ width: `${progress}%` }}
           />
         </div>
         {playState === "error" && (
-          <p className="text-xs text-destructive mt-2">
+          <p className="mt-2 text-xs text-destructive">
             Unable to play this audio source.
           </p>
         )}
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-4">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+      <div className="rounded-lg border border-border bg-card p-3 sm:p-4">
+        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
           Chord timeline
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {meta.cues
             .filter((c, i, arr) => i === 0 || c.chord !== arr[i - 1]?.chord)
             .slice(0, 48)
@@ -190,14 +193,14 @@ const PlayerPage = () => {
                     seek(cue.start);
                     void play();
                   }}
-                  className={`min-h-[56px] min-w-[64px] px-3 rounded-lg text-center transition-all ${
+                  className={`min-h-[56px] min-w-[64px] shrink-0 rounded-lg px-3 text-center transition-all ${
                     isActive
-                      ? "bg-primary/20 border border-primary"
-                      : "bg-secondary border border-transparent hover:bg-surface-hover"
+                      ? "border border-primary bg-primary/20"
+                      : "border border-transparent bg-secondary hover:bg-surface-hover"
                   }`}
                 >
                   <div className="text-chord text-sm">{key}</div>
-                  <div className="text-[10px] font-musical text-muted-foreground">
+                  <div className="font-musical text-[10px] text-muted-foreground">
                     {cue.start.toFixed(0)}s
                   </div>
                 </button>

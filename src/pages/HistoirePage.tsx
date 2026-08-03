@@ -1,7 +1,9 @@
+import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+
 const HistoirePage = () => {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-20 md:pb-6">
-      <h1 className="text-display text-foreground mb-4">History of the Guitar</h1>
+    <div className={`${PAGE_SHELL} max-w-2xl lg:max-w-2xl`}>
+      <h1 className={PAGE_TITLE}>History of the Guitar</h1>
       <div className="space-y-4 text-body text-muted-foreground">
         <p>
           The modern six-string guitar evolved from earlier plucked instruments

@@ -1,22 +1,20 @@
 import { Outlet } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
+import MobileHeader from "./MobileHeader";
 import MobileNav from "./MobileNav";
 
 const AppLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Desktop sidebar */}
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <div className="hidden md:block">
         <AppSidebar />
       </div>
 
-      {/* Main content */}
-      <main className="md:ml-[280px] min-h-screen">
-        <Outlet />
-      </main>
-
-      {/* Mobile bottom nav */}
-      <div className="md:hidden">
+      <div className="flex min-h-screen w-full flex-col md:pl-64 lg:pl-72">
+        <MobileHeader />
+        <main className="min-h-0 w-full flex-1 overflow-x-hidden">
+          <Outlet />
+        </main>
         <MobileNav />
       </div>
     </div>

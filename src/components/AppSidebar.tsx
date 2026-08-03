@@ -1,75 +1,57 @@
 import { NavLink, useLocation } from "react-router-dom";
-import {
-  Home,
-  Guitar,
-  Radio,
-  User,
-  Upload,
-  BookOpen,
-  Music2,
-  Timer,
-  Menu,
-  Play,
-} from "lucide-react";
+import { Guitar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MiniTuner from "./MiniTuner";
 import { useAuth } from "@/hooks/useAuth";
-
-const navItems = [
-  { icon: Home, label: "Feed", path: "/" },
-  { icon: Upload, label: "Upload", path: "/upload" },
-  { icon: Play, label: "Player", path: "/player" },
-  { icon: BookOpen, label: "Chords", path: "/chords" },
-  { icon: Music2, label: "Scales", path: "/scales" },
-  { icon: Timer, label: "Metronome", path: "/metronome" },
-  { icon: Radio, label: "Tuner", path: "/tuner" },
-  { icon: Menu, label: "More", path: "/menu" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 
 const AppSidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[280px] bg-sidebar border-r border-border flex flex-col z-50">
-      <div className="px-6 py-5 border-b border-border">
+    <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar lg:w-72">
+      <div className="border-b border-border px-4 py-4 lg:px-6 lg:py-5">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
             <Guitar className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-display text-foreground">FretFlow</span>
+          <span className="truncate text-base font-medium tracking-tight text-foreground lg:text-lg">
+            FretFlow
+          </span>
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
+      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4">
+        {SIDEBAR_NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <NavLink
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-md text-sm transition-colors",
+                "flex min-h-[44px] items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                 isActive
                   ? "bg-sidebar-accent text-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
               )}
             >
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
+              <item.icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{item.label}</span>
             </NavLink>
           );
         })}
       </nav>
 
-      <div className="p-3 border-t border-border space-y-3">
-        <MiniTuner />
+      <div className="space-y-3 border-t border-border p-3">
+        <div className="hidden lg:block">
+          <MiniTuner />
+        </div>
         {user && (
           <button
             type="button"
             onClick={logout}
-            className="w-full min-h-[44px] rounded-md bg-secondary text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="w-full min-h-[44px] truncate rounded-md bg-secondary px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             Log out ({user.username})
           </button>

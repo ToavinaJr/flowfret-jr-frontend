@@ -21,7 +21,7 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -62,20 +62,22 @@ export function AuthGate({ children }: AuthGateProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-card border border-border rounded-lg p-8">
-        <div className="flex items-center gap-2 mb-6 justify-center">
-          <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8 sm:px-6">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-4 sm:p-6 md:p-8">
+        <div className="mb-6 flex items-center justify-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
             <Guitar className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-display text-foreground">FretFlow</span>
+          <span className="text-display text-base text-foreground sm:text-lg">
+            FretFlow
+          </span>
         </div>
 
-        <div className="flex gap-2 mb-6">
+        <div className="mb-6 grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => setMode("login")}
-            className={`flex-1 min-h-[44px] rounded-md text-sm font-medium ${
+            className={`min-h-[44px] rounded-md text-sm font-medium ${
               mode === "login"
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground"
@@ -86,7 +88,7 @@ export function AuthGate({ children }: AuthGateProps) {
           <button
             type="button"
             onClick={() => setMode("register")}
-            className={`flex-1 min-h-[44px] rounded-md text-sm font-medium ${
+            className={`min-h-[44px] rounded-md text-sm font-medium ${
               mode === "register"
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground"
@@ -110,7 +112,7 @@ export function AuthGate({ children }: AuthGateProps) {
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setUsername(e.target.value)
                 }
-                className="mt-1 w-full min-h-[44px] px-3 rounded-md bg-secondary border border-border text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                className="mt-1 w-full min-h-[44px] rounded-md border border-border bg-secondary px-3 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           )}
@@ -127,7 +129,7 @@ export function AuthGate({ children }: AuthGateProps) {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setEmail(e.target.value)
               }
-              className="mt-1 w-full min-h-[44px] px-3 rounded-md bg-secondary border border-border text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="mt-1 w-full min-h-[44px] rounded-md border border-border bg-secondary px-3 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
           <div>
@@ -143,7 +145,7 @@ export function AuthGate({ children }: AuthGateProps) {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setPassword(e.target.value)
               }
-              className="mt-1 w-full min-h-[44px] px-3 rounded-md bg-secondary border border-border text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="mt-1 w-full min-h-[44px] rounded-md border border-border bg-secondary px-3 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
@@ -156,7 +158,7 @@ export function AuthGate({ children }: AuthGateProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full min-h-[48px] rounded-md bg-primary text-primary-foreground font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
+            className="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-md bg-primary font-medium text-primary-foreground disabled:opacity-50"
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {mode === "login" ? "Continue" : "Create account"}

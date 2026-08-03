@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ChangeEvent } from "react";
 import { Search, Play } from "lucide-react";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
+import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import {
   categorizeSuffix,
   formatChordLabel,
@@ -56,23 +57,21 @@ const ChordsPage = () => {
   }
 
   return (
-    <div className="px-4 py-6 pb-20 md:pb-6">
-      <h1 className="text-display text-foreground mb-6">Chord Explorer</h1>
+    <div className={PAGE_SHELL}>
+      <h1 className={PAGE_TITLE}>Chord Explorer</h1>
 
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="relative mb-3 sm:mb-4">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           placeholder="Search chords... (Am, Cmaj7, F#dim)"
           value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setSearch(e.target.value)
-          }
-          className="w-full min-h-[44px] pl-10 pr-4 py-2.5 rounded-lg bg-card border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+          className="w-full min-h-[44px] rounded-lg border border-border bg-card py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
 
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+      <div className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1 sm:mb-4">
         {keys.map((key) => (
           <button
             key={key}
@@ -82,7 +81,7 @@ const ChordsPage = () => {
               setSelectedSuffix(null);
               setPositionIndex(0);
             }}
-            className={`min-h-[44px] min-w-[44px] px-3 rounded-md text-xs font-medium transition-colors ${
+            className={`min-h-[44px] min-w-[44px] shrink-0 rounded-md px-3 text-xs font-medium transition-colors ${
               selectedKey === key
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -93,13 +92,13 @@ const ChordsPage = () => {
         ))}
       </div>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+      <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1 sm:mb-6">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             type="button"
             onClick={() => setCategory(cat)}
-            className={`min-h-[44px] px-3 rounded-md text-xs font-medium transition-colors ${
+            className={`min-h-[44px] shrink-0 rounded-md px-3 text-xs font-medium transition-colors ${
               category === cat
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -110,38 +109,42 @@ const ChordsPage = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[480px] overflow-y-auto pr-1">
-          {filteredSuffixes.map((suffix) => {
-            const name = formatChordLabel(selectedKey, suffix);
-            const isActive = activeSuffix === suffix;
-            return (
-              <button
-                key={suffix}
-                type="button"
-                onClick={() => {
-                  setSelectedSuffix(suffix);
-                  setPositionIndex(0);
-                }}
-                className={`min-h-[64px] py-3 rounded-lg text-center transition-all ${
-                  isActive
-                    ? "bg-primary/20 border border-primary text-foreground"
-                    : "bg-card border border-border text-foreground hover:bg-surface-elevated"
-                }`}
-              >
-                <div className="text-chord text-lg">{name}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">
-                  {categorizeSuffix(suffix)}
-                </div>
-              </button>
-            );
-          })}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+        <div className="order-2 max-h-[50vh] overflow-x-hidden overflow-y-auto pr-1 lg:order-1 lg:max-h-[480px]">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
+            {filteredSuffixes.map((suffix) => {
+              const name = formatChordLabel(selectedKey, suffix);
+              const isActive = activeSuffix === suffix;
+              return (
+                <button
+                  key={suffix}
+                  type="button"
+                  onClick={() => {
+                    setSelectedSuffix(suffix);
+                    setPositionIndex(0);
+                  }}
+                  className={`flex min-h-[64px] flex-col items-center justify-center rounded-lg px-2 py-2.5 text-center transition-all ${
+                    isActive
+                      ? "border border-primary bg-primary/20 text-foreground"
+                      : "border border-border bg-card text-foreground hover:bg-surface-elevated"
+                  }`}
+                >
+                  <span className="w-full break-words font-musical text-sm font-bold uppercase leading-snug tracking-tight [overflow-wrap:anywhere] sm:text-[0.9375rem]">
+                    {name}
+                  </span>
+                  <span className="mt-1 text-[10px] text-muted-foreground">
+                    {categorizeSuffix(suffix)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="order-1 flex flex-col items-center lg:order-2">
           {position ? (
-            <div className="sticky top-6 w-full max-w-sm">
-              <div className="bg-card rounded-lg border border-border p-6 flex flex-col items-center">
+            <div className="w-full max-w-sm lg:sticky lg:top-6">
+              <div className="flex flex-col items-center rounded-lg border border-border bg-card p-4 sm:p-6">
                 <ChordDiagram
                   chord={label}
                   position={position}
@@ -149,10 +152,10 @@ const ChordsPage = () => {
                     void handleStringPress(si, df);
                   }}
                 />
-                <div className="flex items-center gap-2 mt-4">
+                <div className="mt-4 flex items-center gap-2">
                   <button
                     type="button"
-                    className="min-h-[44px] min-w-[44px] px-3 rounded-md bg-secondary text-sm disabled:opacity-40"
+                    className="min-h-[44px] min-w-[44px] rounded-md bg-secondary px-3 text-sm disabled:opacity-40"
                     disabled={positionIndex <= 0}
                     onClick={() => setPositionIndex((i) => Math.max(0, i - 1))}
                   >
@@ -164,7 +167,7 @@ const ChordsPage = () => {
                   </span>
                   <button
                     type="button"
-                    className="min-h-[44px] min-w-[44px] px-3 rounded-md bg-secondary text-sm disabled:opacity-40"
+                    className="min-h-[44px] min-w-[44px] rounded-md bg-secondary px-3 text-sm disabled:opacity-40"
                     disabled={
                       !chord || positionIndex >= chord.positions.length - 1
                     }
@@ -184,7 +187,7 @@ const ChordsPage = () => {
                   onClick={() => {
                     void handleStrum();
                   }}
-                  className="mt-4 min-h-[44px] px-5 rounded-lg bg-primary text-primary-foreground text-sm font-medium inline-flex items-center gap-2 hover:opacity-90 transition-opacity"
+                  className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 >
                   <Play className="h-4 w-4" />
                   Strum
@@ -192,7 +195,7 @@ const ChordsPage = () => {
               </div>
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground py-12">
+            <div className="py-8 text-sm text-muted-foreground sm:py-12">
               Select a chord to preview
             </div>
           )}

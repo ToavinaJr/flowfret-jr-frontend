@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent, type DragEvent, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
+import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { analyzeAudioFile } from "@/utils/chordDetection";
 import { setImportedSong } from "@/utils/importStore";
 import type { SongMeta } from "@/types/song";
@@ -53,12 +54,12 @@ const UploadPage = () => {
     }
   }
 
-  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function onFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) void processFile(file);
   }
 
-  function onDrop(e: React.DragEvent<HTMLDivElement>) {
+  function onDrop(e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files?.[0];
@@ -67,17 +68,17 @@ const UploadPage = () => {
 
   if (status === "analyzing") {
     return (
-      <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
-        <h1 className="text-display text-foreground mb-6">Analyzing…</h1>
-        <div className="bg-card border border-border rounded-lg p-6">
-          <p className="text-sm text-muted-foreground mb-3">{progressLabel}</p>
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
+      <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
+        <h1 className={PAGE_TITLE}>Analyzing…</h1>
+        <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+          <p className="mb-3 text-sm text-muted-foreground">{progressLabel}</p>
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
               className="h-full bg-primary transition-[width] duration-150"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
-          <p className="text-xs font-musical text-muted-foreground mt-2">
+          <p className="mt-2 font-musical text-xs text-muted-foreground">
             {Math.round(progress * 100)}%
           </p>
         </div>
@@ -86,11 +87,11 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
-      <h1 className="text-display text-foreground mb-6">Upload & Analyze</h1>
+    <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
+      <h1 className={PAGE_TITLE}>Upload & Analyze</h1>
 
       <div
-        onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+        onDragOver={(e: DragEvent<HTMLDivElement>) => {
           e.preventDefault();
           setDragOver(true);
         }}
@@ -99,21 +100,21 @@ const UploadPage = () => {
         onClick={() => fileRef.current?.click()}
         role="button"
         tabIndex={0}
-        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
           if (e.key === "Enter" || e.key === " ") fileRef.current?.click();
         }}
-        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors min-h-[200px] flex flex-col items-center justify-center ${
+        className={`flex min-h-[160px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors sm:min-h-[200px] sm:p-8 md:p-12 ${
           dragOver
             ? "border-primary bg-primary/5"
             : "border-border hover:border-muted-foreground"
         }`}
       >
         <Upload
-          className={`h-10 w-10 mx-auto mb-4 ${
+          className={`mx-auto mb-3 h-8 w-8 sm:mb-4 sm:h-10 sm:w-10 ${
             dragOver ? "text-primary" : "text-muted-foreground"
           }`}
         />
-        <div className="text-sm text-foreground mb-1">
+        <div className="mb-1 text-sm text-foreground">
           Drop your audio file here
         </div>
         <div className="text-xs text-muted-foreground">MP3, WAV · Max 20MB</div>
@@ -132,8 +133,8 @@ const UploadPage = () => {
         </p>
       )}
 
-      <div className="mt-8 bg-card rounded-lg p-4 border border-border">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+      <div className="mt-6 rounded-lg border border-border bg-card p-3 sm:mt-8 sm:p-4">
+        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
           How it works
         </div>
         <div className="space-y-3">
@@ -144,8 +145,8 @@ const UploadPage = () => {
             "Preview fingerings on the fretboard",
           ].map((step, i) => (
             <div key={step} className="flex items-start gap-3">
-              <div className="h-5 w-5 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-musical text-muted-foreground">
+              <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-secondary">
+                <span className="font-musical text-xs text-muted-foreground">
                   {i + 1}
                 </span>
               </div>

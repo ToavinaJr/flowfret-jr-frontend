@@ -1,7 +1,12 @@
 import { motion } from "framer-motion";
 
+interface FretNote {
+  string: number;
+  fret: number;
+}
+
 interface FretboardProps {
-  activeNotes?: { string: number; fret: number }[];
+  activeNotes?: FretNote[];
   chordName?: string;
   numFrets?: number;
 }
@@ -17,49 +22,40 @@ const Fretboard = ({ activeNotes = [], chordName, numFrets = 5 }: FretboardProps
     activeNotes.some((n) => n.string === stringIdx && n.fret === fretIdx);
 
   return (
-    <div className="inline-block">
+    <div className="w-full max-w-md">
       {chordName && (
-        <div className="text-chord text-center text-foreground mb-3">{chordName}</div>
+        <div className="text-chord mb-3 text-center text-foreground">{chordName}</div>
       )}
-      <div className="relative bg-card rounded-lg p-4">
-        {/* Nut */}
+      <div className="relative rounded-lg bg-card p-3 sm:p-4">
         <div className="flex">
-          <div className="w-6" />
-          <div className="flex-1 h-1 bg-foreground rounded-full mb-1" />
+          <div className="w-5 shrink-0 sm:w-6" />
+          <div className="mb-1 h-1 flex-1 rounded-full bg-foreground" />
         </div>
 
-        {/* Frets */}
         {frets.map((fretIdx) => (
           <div key={fretIdx} className="flex items-stretch">
-            {/* Fret number */}
-            <div className="w-6 flex items-center justify-center text-xs font-musical text-muted-foreground">
+            <div className="flex w-5 shrink-0 items-center justify-center font-musical text-xs text-muted-foreground sm:w-6">
               {fretIdx + 1}
             </div>
 
-            {/* Strings at this fret */}
-            <div className="flex-1 flex border-b border-secondary">
+            <div className="flex flex-1 border-b border-secondary">
               {strings.map((stringIdx) => {
                 const active = isActive(stringIdx, fretIdx + 1);
                 return (
                   <div
                     key={stringIdx}
-                    className="relative flex-1 h-10 flex items-center justify-center"
-                    style={{
-                      borderRight: stringIdx < 5 ? undefined : "none",
-                    }}
+                    className="relative flex h-9 flex-1 items-center justify-center sm:h-10"
                   >
-                    {/* String line */}
                     <div
-                      className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 bg-muted-foreground/40"
+                      className="absolute bottom-0 left-1/2 top-0 -translate-x-1/2 bg-muted-foreground/40"
                       style={{ width: `${STRING_WIDTHS[stringIdx]}px` }}
                     />
 
-                    {/* Active note */}
                     {active && (
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="relative z-10 h-6 w-6 rounded-full bg-primary flex items-center justify-center"
+                        className="relative z-10 flex h-5 w-5 items-center justify-center rounded-full bg-primary sm:h-6 sm:w-6"
                         style={{ boxShadow: "0 0 10px rgba(225, 29, 72, 0.5)" }}
                       >
                         <div className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
@@ -72,12 +68,14 @@ const Fretboard = ({ activeNotes = [], chordName, numFrets = 5 }: FretboardProps
           </div>
         ))}
 
-        {/* String names */}
-        <div className="flex mt-2">
-          <div className="w-6" />
-          <div className="flex-1 flex">
+        <div className="mt-2 flex">
+          <div className="w-5 shrink-0 sm:w-6" />
+          <div className="flex flex-1">
             {STRING_NAMES.map((name, i) => (
-              <div key={i} className="flex-1 text-center text-xs font-musical text-muted-foreground">
+              <div
+                key={`${name}-${i}`}
+                className="flex-1 text-center font-musical text-xs text-muted-foreground"
+              >
                 {name}
               </div>
             ))}

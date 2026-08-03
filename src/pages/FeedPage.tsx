@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Loader2, MessageCircle, Plus } from "lucide-react";
+import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
   createFeedComment,
@@ -29,7 +30,7 @@ function FeedCard({ post, onComment }: FeedCardProps) {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!comment.trim()) return;
     setSubmitting(true);
@@ -42,22 +43,24 @@ function FeedCard({ post, onComment }: FeedCardProps) {
   }
 
   return (
-    <article className="bg-card border border-border rounded-lg p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-foreground">
+    <article className="rounded-lg border border-border bg-card p-3 sm:p-4">
+      <div className="mb-3 flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">
           {post.author.username.slice(0, 2).toUpperCase()}
         </div>
-        <div>
-          <div className="text-sm text-foreground">{post.author.username}</div>
-          <div className="text-xs font-musical text-muted-foreground">
+        <div className="min-w-0">
+          <div className="truncate text-sm text-foreground">
+            {post.author.username}
+          </div>
+          <div className="font-musical text-xs text-muted-foreground">
             {formatRelative(post.createdAt)}
           </div>
         </div>
       </div>
-      <p className="text-body text-foreground mb-3 whitespace-pre-wrap">
+      <p className="text-body mb-3 whitespace-pre-wrap break-words text-foreground">
         {post.content}
       </p>
-      <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span>{post.likeCount} likes</span>
         <span className="inline-flex items-center gap-1">
           <MessageCircle className="h-3.5 w-3.5" />
@@ -65,10 +68,10 @@ function FeedCard({ post, onComment }: FeedCardProps) {
         </span>
       </div>
       {post.comments.length > 0 && (
-        <div className="space-y-2 mb-3 border-t border-border pt-3">
+        <div className="mb-3 space-y-2 border-t border-border pt-3">
           {post.comments.slice(0, 5).map((c) => (
-            <div key={c.id} className="text-sm">
-              <span className="text-foreground font-medium">
+            <div key={c.id} className="break-words text-sm">
+              <span className="font-medium text-foreground">
                 {c.author.username}
               </span>{" "}
               <span className="text-muted-foreground">{c.content}</span>
@@ -76,20 +79,23 @@ function FeedCard({ post, onComment }: FeedCardProps) {
           ))}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-2 sm:flex-row"
+      >
         <input
           type="text"
           value={comment}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setComment(e.target.value)
           }
           placeholder="Add a comment…"
-          className="flex-1 min-h-[44px] px-3 rounded-md bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          className="min-h-[44px] w-full flex-1 rounded-md border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <button
           type="submit"
           disabled={submitting || !comment.trim()}
-          className="min-h-[44px] px-4 rounded-md bg-primary text-primary-foreground text-sm disabled:opacity-50"
+          className="min-h-[44px] shrink-0 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
         >
           Post
         </button>
@@ -130,7 +136,7 @@ const FeedPage = () => {
     await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   }
 
-  function handleCreatePost(e: React.FormEvent<HTMLFormElement>) {
+  function handleCreatePost(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!user || !draft.trim()) return;
     createPostMutation.mutate({
@@ -144,13 +150,13 @@ const FeedPage = () => {
     : null;
 
   return (
-    <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-display text-foreground">Feed</h1>
+    <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
+      <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
+        <h1 className={`${PAGE_TITLE} mb-0`}>Feed</h1>
         <button
           type="button"
           onClick={() => setComposerOpen((v) => !v)}
-          className="min-h-[44px] min-w-[44px] p-2 rounded-md bg-card border border-border text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border bg-card p-2 text-muted-foreground transition-colors hover:text-foreground"
           aria-label="New post"
         >
           <Plus className="h-4 w-4" />
@@ -160,22 +166,22 @@ const FeedPage = () => {
       {composerOpen && user && (
         <form
           onSubmit={handleCreatePost}
-          className="bg-card border border-border rounded-lg p-4 mb-4"
+          className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4"
         >
           <textarea
             value={draft}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
               setDraft(e.target.value)
             }
             placeholder="Share a progression, tip, or practice note…"
             rows={3}
-            className="w-full rounded-md bg-secondary border border-border p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+            className="w-full resize-none rounded-md border border-border bg-secondary p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           />
-          <div className="flex justify-end mt-2">
+          <div className="mt-2 flex justify-end">
             <button
               type="submit"
               disabled={createPostMutation.isPending || !draft.trim()}
-              className="min-h-[44px] px-4 rounded-md bg-primary text-primary-foreground text-sm disabled:opacity-50"
+              className="min-h-[44px] rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
             >
               {createPostMutation.isPending ? "Publishing…" : "Publish"}
             </button>
@@ -184,25 +190,25 @@ const FeedPage = () => {
       )}
 
       {postsQuery.isLoading && (
-        <div className="flex justify-center py-16 text-muted-foreground">
+        <div className="flex justify-center py-12 text-muted-foreground sm:py-16">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
       )}
 
       {errorMessage && (
-        <div className="bg-card border border-border rounded-lg p-4 text-sm text-muted-foreground mb-4">
+        <div className="mb-4 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
           {errorMessage}
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {(postsQuery.data ?? []).map((post) => (
           <FeedCard key={post.id} post={post} onComment={handleComment} />
         ))}
       </div>
 
       {postsQuery.isSuccess && (postsQuery.data?.length ?? 0) === 0 && (
-        <p className="text-center text-sm text-muted-foreground py-12">
+        <p className="py-10 text-center text-sm text-muted-foreground sm:py-12">
           No posts yet. Be the first to share something.
         </p>
       )}

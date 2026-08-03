@@ -18,9 +18,9 @@ const MiniTuner = () => {
   const cents = reading?.cents ?? 0;
 
   return (
-    <div className="rounded-lg bg-card p-3 border border-border">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="truncate text-xs uppercase tracking-wider text-muted-foreground">
           Quick Tune
         </span>
         <button
@@ -28,7 +28,7 @@ const MiniTuner = () => {
           onClick={() => {
             void toggle();
           }}
-          className={`p-1.5 min-h-[44px] min-w-[44px] rounded-md transition-colors inline-flex items-center justify-center ${
+          className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-1.5 transition-colors ${
             isListening
               ? "bg-primary/20 text-primary"
               : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -43,14 +43,18 @@ const MiniTuner = () => {
         </button>
       </div>
 
-      <div className="text-center py-2">
-        <div className="font-musical text-2xl font-bold text-foreground">{note}</div>
-        <div className="font-musical text-xs text-muted-foreground mt-0.5">
-          {frequency > 0 ? `${frequency.toFixed(1)}Hz · ${cents > 0 ? "+" : ""}${cents}¢` : "Tap mic"}
+      <div className="py-2 text-center">
+        <div className="font-musical text-xl font-bold text-foreground sm:text-2xl">
+          {note}
+        </div>
+        <div className="mt-0.5 font-musical text-xs text-muted-foreground">
+          {frequency > 0
+            ? `${frequency.toFixed(1)}Hz · ${cents > 0 ? "+" : ""}${cents}¢`
+            : "Tap mic"}
         </div>
       </div>
 
-      <div className="flex gap-1 mt-2">
+      <div className="mt-2 grid grid-cols-6 gap-1">
         {NOTES.map((item) => (
           <button
             key={item.label}
@@ -58,7 +62,7 @@ const MiniTuner = () => {
             onClick={() => {
               void playStringNote(item.stringIdx, item.fret);
             }}
-            className="flex-1 min-h-[36px] text-center py-1 rounded text-xs font-musical bg-secondary text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+            className="min-h-[36px] rounded bg-secondary py-1 text-center font-musical text-xs text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
           >
             {item.label}
           </button>

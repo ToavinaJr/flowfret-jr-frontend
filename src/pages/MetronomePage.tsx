@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Minus, Plus, Play, Square } from "lucide-react";
+import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { playClick } from "@/utils/stringSound";
 import {
   registerAudioOwner,
@@ -56,7 +57,7 @@ const MetronomePage = () => {
     setIsPlaying(true);
     beatRef.current = 0;
     tick();
-    const ms = (60_000 / bpmRef.current);
+    const ms = 60_000 / bpmRef.current;
     intervalRef.current = window.setInterval(() => {
       tick();
     }, ms);
@@ -94,27 +95,28 @@ const MetronomePage = () => {
     for (let i = 1; i < next.length; i++) {
       intervals.push(next[i] - next[i - 1]);
     }
-    const avg =
-      intervals.reduce((sum, v) => sum + v, 0) / intervals.length;
+    const avg = intervals.reduce((sum, v) => sum + v, 0) / intervals.length;
     const nextBpm = Math.round(60_000 / avg);
     setBpm(Math.min(MAX_BPM, Math.max(MIN_BPM, nextBpm)));
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 pb-20 md:pb-6">
-      <h1 className="text-display text-foreground mb-8">Metronome</h1>
+    <div className={`${PAGE_SHELL} max-w-lg lg:max-w-lg`}>
+      <h1 className={PAGE_TITLE}>Metronome</h1>
 
-      <div className="bg-card border border-border rounded-lg p-8 text-center mb-6">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+      <div className="mb-4 rounded-lg border border-border bg-card p-4 text-center sm:mb-6 sm:p-6 md:p-8">
+        <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
           BPM
         </div>
-        <div className="text-6xl font-musical text-foreground mb-6">{bpm}</div>
+        <div className="mb-4 font-musical text-4xl text-foreground sm:mb-6 sm:text-5xl md:text-6xl">
+          {bpm}
+        </div>
 
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="mb-6 flex items-center justify-center gap-2 sm:mb-8 sm:gap-4">
           <button
             type="button"
             onClick={() => adjustBpm(-1)}
-            className="h-12 w-12 min-h-[44px] min-w-[44px] rounded-full bg-secondary flex items-center justify-center hover:bg-surface-hover"
+            className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-secondary hover:bg-surface-hover sm:h-12 sm:w-12"
             aria-label="Decrease BPM"
           >
             <Minus className="h-5 w-5" />
@@ -124,23 +126,23 @@ const MetronomePage = () => {
             min={MIN_BPM}
             max={MAX_BPM}
             value={bpm}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setBpm(Number(e.target.value))
             }
-            className="flex-1 max-w-[200px] accent-primary"
+            className="w-full max-w-[8rem] accent-primary sm:max-w-[12rem] md:max-w-[14rem]"
             aria-label="BPM"
           />
           <button
             type="button"
             onClick={() => adjustBpm(1)}
-            className="h-12 w-12 min-h-[44px] min-w-[44px] rounded-full bg-secondary flex items-center justify-center hover:bg-surface-hover"
+            className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-secondary hover:bg-surface-hover sm:h-12 sm:w-12"
             aria-label="Increase BPM"
           >
             <Plus className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex justify-center gap-2 mb-8">
+        <div className="mb-6 flex justify-center gap-2 sm:mb-8">
           {Array.from({ length: beats }, (_, i) => (
             <div
               key={i}
@@ -161,24 +163,28 @@ const MetronomePage = () => {
             if (isPlaying) stop();
             else start();
           }}
-          className="h-16 w-16 min-h-[44px] min-w-[44px] rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center hover:opacity-90 transition-opacity"
+          className="inline-flex h-14 w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 sm:h-16 sm:w-16"
           aria-label={isPlaying ? "Stop" : "Start"}
         >
-          {isPlaying ? <Square className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
+          {isPlaying ? (
+            <Square className="h-6 w-6" />
+          ) : (
+            <Play className="ml-0.5 h-6 w-6" />
+          )}
         </button>
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-4 mb-4">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+      <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4">
+        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
           Time signature
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {BEATS_OPTIONS.map((option) => (
             <button
               key={option}
               type="button"
               onClick={() => setBeats(option)}
-              className={`flex-1 min-h-[44px] rounded-md text-sm font-medium transition-colors ${
+              className={`min-h-[44px] rounded-md text-sm font-medium transition-colors ${
                 beats === option
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:text-foreground"
@@ -193,7 +199,7 @@ const MetronomePage = () => {
       <button
         type="button"
         onClick={handleTapTempo}
-        className="w-full min-h-[52px] rounded-lg bg-secondary text-foreground font-medium hover:bg-surface-hover transition-colors"
+        className="w-full min-h-[52px] rounded-lg bg-secondary font-medium text-foreground transition-colors hover:bg-surface-hover"
       >
         Tap Tempo
       </button>
