@@ -1,75 +1,87 @@
-import { Upload, Music } from "lucide-react";
-import { useState, useRef } from "react";
-import Fretboard from "@/components/Fretboard";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Upload } from "lucide-react";
+import { analyzeAudioFile } from "@/utils/chordDetection";
+import { setImportedSong } from "@/utils/importStore";
+import type { SongMeta } from "@/types/song";
 
-const MOCK_CHORDS = [
-  { time: 0, chord: "Am7", notes: [{ string: 1, fret: 1 }, { string: 2, fret: 2 }] },
-  { time: 2.4, chord: "Dm9", notes: [{ string: 0, fret: 1 }, { string: 1, fret: 3 }, { string: 2, fret: 2 }] },
-  { time: 4.8, chord: "G7", notes: [{ string: 0, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }] },
-  { time: 7.2, chord: "Cmaj7", notes: [{ string: 3, fret: 2 }, { string: 4, fret: 3 }] },
-];
+type UploadStatus = "idle" | "analyzing" | "error";
 
 const UploadPage = () => {
-  const [dragOver, setDragOver] = useState(false);
-  const [uploaded, setUploaded] = useState(false);
-  const [activeChordIdx, setActiveChordIdx] = useState(0);
+  const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [status, setStatus] = useState<UploadStatus>("idle");
+  const [progress, setProgress] = useState(0);
+  const [progressLabel, setProgressLabel] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleUpload = () => {
-    setUploaded(true);
-  };
+  async function processFile(file: File) {
+    if (!file.type.startsWith("audio/") && !/\.(mp3|wav|m4a|aac|ogg)$/i.test(file.name)) {
+      setStatus("error");
+      setErrorMessage("Please select an audio file (MP3, WAV…).");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      setStatus("error");
+      setErrorMessage("File too large (max 20MB).");
+      return;
+    }
 
-  if (uploaded) {
-    const activeChord = MOCK_CHORDS[activeChordIdx];
+    setStatus("analyzing");
+    setErrorMessage(null);
+    setProgress(0);
+
+    try {
+      const result = await analyzeAudioFile(file, (ratio, label) => {
+        setProgress(ratio);
+        setProgressLabel(label);
+      });
+
+      const uri = URL.createObjectURL(file);
+      const meta: SongMeta = {
+        audioFile: file.name,
+        title: result.title,
+        duration: result.duration,
+        cues: result.cues,
+      };
+      setImportedSong({ meta, uri });
+      navigate("/player");
+    } catch (err) {
+      setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Analysis failed. Try another file.",
+      );
+    }
+  }
+
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) void processFile(file);
+  }
+
+  function onDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) void processFile(file);
+  }
+
+  if (status === "analyzing") {
     return (
-      <div className="px-4 py-6 pb-20 md:pb-6">
-        <h1 className="text-display text-foreground mb-6">Analysis</h1>
-
-        {/* Fretboard visualization */}
-        <div className="bg-card rounded-lg p-6 mb-4 flex justify-center">
-          <Fretboard
-            activeNotes={activeChord.notes}
-            chordName={activeChord.chord}
-            numFrets={5}
-          />
-        </div>
-
-        {/* Waveform placeholder */}
-        <div className="bg-card rounded-lg p-4 mb-4">
-          <div className="flex items-center gap-3 mb-3">
-            <button className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-              <Music className="h-4 w-4 text-primary-foreground" />
-            </button>
-            <div className="flex-1">
-              <div className="text-sm text-foreground">my_riff.mp3</div>
-              <div className="text-xs font-musical text-muted-foreground">Detected: 4 chords · 9.6s</div>
-            </div>
+      <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
+        <h1 className="text-display text-foreground mb-6">Analyzing…</h1>
+        <div className="bg-card border border-border rounded-lg p-6">
+          <p className="text-sm text-muted-foreground mb-3">{progressLabel}</p>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary transition-[width] duration-150"
+              style={{ width: `${Math.round(progress * 100)}%` }}
+            />
           </div>
-          <div className="h-0.5 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-primary w-1/3" />
-          </div>
-        </div>
-
-        {/* Chord timeline */}
-        <div className="bg-card rounded-lg p-4">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Chord Timeline</div>
-          <div className="grid grid-cols-4 gap-2">
-            {MOCK_CHORDS.map((c, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveChordIdx(i)}
-                className={`py-3 rounded-lg text-center transition-all ${
-                  i === activeChordIdx
-                    ? "bg-primary/20 border border-primary scale-105"
-                    : "bg-secondary border border-transparent hover:bg-surface-hover"
-                }`}
-                style={i === activeChordIdx ? { boxShadow: "0 0 20px -5px rgba(225, 29, 72, 0.3)" } : {}}
-              >
-                <div className="text-chord text-sm">{c.chord}</div>
-                <div className="text-[10px] font-musical text-muted-foreground mt-0.5">{c.time.toFixed(1)}s</div>
-              </button>
-            ))}
-          </div>
+          <p className="text-xs font-musical text-muted-foreground mt-2">
+            {Math.round(progress * 100)}%
+          </p>
         </div>
       </div>
     );
@@ -79,34 +91,65 @@ const UploadPage = () => {
     <div className="max-w-[600px] mx-auto px-4 py-6 pb-20 md:pb-6">
       <h1 className="text-display text-foreground mb-6">Upload & Analyze</h1>
 
-      {/* Drop zone */}
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => { e.preventDefault(); setDragOver(false); handleUpload(); }}
+        onDrop={onDrop}
         onClick={() => fileRef.current?.click()}
-        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-          dragOver ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter" || e.key === " ") fileRef.current?.click();
+        }}
+        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors min-h-[200px] flex flex-col items-center justify-center ${
+          dragOver
+            ? "border-primary bg-primary/5"
+            : "border-border hover:border-muted-foreground"
         }`}
       >
-        <Upload className={`h-10 w-10 mx-auto mb-4 ${dragOver ? "text-primary" : "text-muted-foreground"}`} />
-        <div className="text-sm text-foreground mb-1">Drop your audio file here</div>
+        <Upload
+          className={`h-10 w-10 mx-auto mb-4 ${
+            dragOver ? "text-primary" : "text-muted-foreground"
+          }`}
+        />
+        <div className="text-sm text-foreground mb-1">
+          Drop your audio file here
+        </div>
         <div className="text-xs text-muted-foreground">MP3, WAV · Max 20MB</div>
-        <input ref={fileRef} type="file" accept="audio/*" className="hidden" onChange={handleUpload} />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="audio/*"
+          className="hidden"
+          onChange={onFileChange}
+        />
       </div>
 
-      <div className="mt-8 bg-card rounded-lg p-4">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">How it works</div>
+      {errorMessage && (
+        <p className="mt-4 text-sm text-destructive" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      <div className="mt-8 bg-card rounded-lg p-4 border border-border">
+        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+          How it works
+        </div>
         <div className="space-y-3">
           {[
             "Upload your riff, cover, or composition",
-            "Our algorithm analyzes the audio signal",
-            "View detected chords synced with playback",
-            "See real-time fretboard visualization",
+            "Client-side Goertzel analysis detects chord roots",
+            "Open the player with synced chord cues",
+            "Preview fingerings on the fretboard",
           ].map((step, i) => (
-            <div key={i} className="flex items-start gap-3">
+            <div key={step} className="flex items-start gap-3">
               <div className="h-5 w-5 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-musical text-muted-foreground">{i + 1}</span>
+                <span className="text-xs font-musical text-muted-foreground">
+                  {i + 1}
+                </span>
               </div>
               <span className="text-body text-muted-foreground">{step}</span>
             </div>
