@@ -140,7 +140,7 @@ const UploadPage = () => {
         <div className="space-y-3">
           {[
             "Upload your riff, cover, or composition",
-            "Client-side Goertzel analysis detects chord roots",
+            "Flowfret Jr analysis detects chord roots",
             "Open the player with synced chord cues",
             "Preview fingerings on the fretboard",
           ].map((step, i) => (
