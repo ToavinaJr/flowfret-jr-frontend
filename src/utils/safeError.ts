@@ -35,6 +35,10 @@ const ALLOWED_EXACT_MESSAGES = new Set([
   "Invalid verification code.",
   "Invalid verification link.",
   "Account is already verified.",
+  "Google email is not verified.",
+  "Unable to reach Google.",
+  "Invalid Google access token.",
+  "Invalid Google profile.",
 ]);
 
 const MESSAGE_FR: Record<string, string> = {
@@ -50,7 +54,10 @@ const MESSAGE_FR: Record<string, string> = {
   "Verification code has expired.": "Le code de vérification a expiré.",
   "Invalid verification code.": "Code de vérification invalide.",
   "Invalid verification link.": "Lien de vérification invalide.",
-  "Account is already verified.": "Ce compte est déjà vérifié.",
+  "Google email is not verified.": "L’e-mail Google n’est pas vérifié.",
+  "Unable to reach Google.": "Impossible de joindre Google.",
+  "Invalid Google access token.": "Jeton Google invalide.",
+  "Invalid Google profile.": "Profil Google invalide.",
 };
 
 function looksLikeInternalOrSchemaError(message: string): boolean {

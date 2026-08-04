@@ -24,6 +24,10 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  getGoogleClientId,
+  requestGoogleAccessToken,
+} from "@/services/googleAuth";
 import { ApiClientError } from "@/types/api";
 import type { AuthMode } from "@/types/auth";
 import { cn } from "@/lib/utils";
@@ -127,8 +131,14 @@ const HIGHLIGHTS = [
 ] as const;
 
 export function AuthGate({ children }: AuthGateProps) {
-  const { status, login, register, verifyEmail, resendVerification } =
-    useAuth();
+  const {
+    status,
+    login,
+    loginWithGoogle,
+    register,
+    verifyEmail,
+    resendVerification,
+  } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
@@ -141,6 +151,7 @@ export function AuthGate({ children }: AuthGateProps) {
   const [pendingEmail, setPendingEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const googleConfigured = getGoogleClientId().length > 0;
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get("token");
@@ -181,10 +192,39 @@ export function AuthGate({ children }: AuthGateProps) {
     }
   }
 
-  function handleGoogleClick() {
-    toast.message("Connexion Google bientôt disponible.", {
-      description: "Utilisez l’e-mail et le mot de passe pour le moment.",
-    });
+  async function handleGoogleClick() {
+    if (!googleConfigured) {
+      setError(
+        "Connexion Google non configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      const accessToken = await requestGoogleAccessToken();
+      await loginWithGoogle(accessToken);
+      toast.success("Connecté avec Google");
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else if (err instanceof Error) {
+        const cancelled =
+          /popup_closed|user.*cancel|access_denied|timed.?out/i.test(
+            err.message,
+          );
+        setError(
+          cancelled
+            ? "Connexion Google annulée."
+            : "Impossible de se connecter avec Google. Réessayez.",
+        );
+      } else {
+        setError("Impossible de se connecter avec Google. Réessayez.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function handleForgotPassword() {
@@ -542,29 +582,32 @@ export function AuthGate({ children }: AuthGateProps) {
                     {mode === "login" ? "Se connecter" : "Créer mon compte"}
                   </button>
 
-                  {mode === "login" && (
-                    <>
-                      <div className="relative py-2">
-                        <div className="absolute inset-0 flex items-center">
-                          <div className="w-full border-t border-border" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                          <span className="bg-background px-3 text-muted-foreground">
-                            ou
-                          </span>
-                        </div>
-                      </div>
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                      <span className="bg-background px-3 text-muted-foreground">
+                        ou
+                      </span>
+                    </div>
+                  </div>
 
-                      <button
-                        type="button"
-                        onClick={handleGoogleClick}
-                        className="inline-flex w-full min-h-[44px] items-center justify-center gap-3 rounded-md border border-border bg-card text-sm text-foreground transition-colors hover:bg-surface-hover"
-                      >
-                        <GoogleLogo className="h-5 w-5" />
-                        Continuer avec Google
-                      </button>
-                    </>
-                  )}
+                  <button
+                    type="button"
+                    disabled={submitting}
+                    onClick={handleGoogleClick}
+                    className="inline-flex w-full min-h-[44px] items-center justify-center gap-3 rounded-md border border-border bg-card text-sm text-foreground transition-colors hover:bg-surface-hover disabled:opacity-50"
+                  >
+                    {submitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <GoogleLogo className="h-5 w-5" />
+                    )}
+                    {mode === "login"
+                      ? "Continuer avec Google"
+                      : "S’inscrire avec Google"}
+                  </button>
                 </>
               )}
             </motion.form>

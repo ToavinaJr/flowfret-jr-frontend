@@ -23,6 +23,7 @@ import {
 } from "@/services/authToken";
 import {
   loginUser,
+  loginWithGoogleUser,
   logoutUser,
   registerUser,
   resendVerificationEmail,
@@ -33,6 +34,7 @@ interface AuthContextValue {
   status: AuthStatus;
   user: AuthUser | null;
   login: (data: LoginInput) => Promise<void>;
+  loginWithGoogle: (accessToken: string) => Promise<void>;
   register: (data: RegisterInput) => Promise<RegisterPendingResult>;
   verifyEmail: (data: VerifyEmailInput) => Promise<void>;
   resendVerification: (token: string) => Promise<RegisterPendingResult>;
@@ -70,6 +72,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setStatus("authenticated");
   }, []);
 
+  const loginWithGoogle = useCallback(async (accessToken: string) => {
+    const session = await loginWithGoogleUser(accessToken);
+    setUser(session.user);
+    setStatus("authenticated");
+  }, []);
+
   const register = useCallback(async (data: RegisterInput) => {
     return registerUser(data);
   }, []);
@@ -95,12 +103,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       status,
       user,
       login,
+      loginWithGoogle,
       register,
       verifyEmail,
       resendVerification,
       logout,
     }),
-    [status, user, login, register, verifyEmail, resendVerification, logout],
+    [
+      status,
+      user,
+      login,
+      loginWithGoogle,
+      register,
+      verifyEmail,
+      resendVerification,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

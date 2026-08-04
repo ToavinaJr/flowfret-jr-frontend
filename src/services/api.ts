@@ -38,6 +38,15 @@ const VERIFY_EMAIL_MUTATION = `
   }
 `;
 
+const LOGIN_WITH_GOOGLE_MUTATION = `
+  mutation LoginWithGoogle($data: GoogleAuthInput!) {
+    loginWithGoogle(data: $data) {
+      accessToken
+      user { id username email }
+    }
+  }
+`;
+
 const RESEND_VERIFICATION_MUTATION = `
   mutation ResendVerificationEmail($token: String!) {
     resendVerificationEmail(token: $token) {
@@ -128,6 +137,19 @@ export async function verifyEmailUser(
   return persistSession({
     accessToken: result.verifyEmail.accessToken,
     user: result.verifyEmail.user,
+  });
+}
+
+export async function loginWithGoogleUser(
+  accessToken: string,
+): Promise<AuthSession> {
+  const result = await graphqlRequest<{ loginWithGoogle: AuthPayload }>({
+    query: LOGIN_WITH_GOOGLE_MUTATION,
+    variables: { data: { accessToken } },
+  });
+  return persistSession({
+    accessToken: result.loginWithGoogle.accessToken,
+    user: result.loginWithGoogle.user,
   });
 }
 
