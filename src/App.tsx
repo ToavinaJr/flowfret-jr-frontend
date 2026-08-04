@@ -42,6 +42,7 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/parametres" element={<ParametresPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/verify-email" element={<FeedPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,4 +1,10 @@
-import type { AuthSession, LoginInput, RegisterInput } from "@/types/auth";
+import type {
+  AuthSession,
+  LoginInput,
+  RegisterInput,
+  RegisterPendingResult,
+  VerifyEmailInput,
+} from "@/types/auth";
 import type { CreateCommentInput, CreatePostInput, FeedPost } from "@/types/feed";
 import { graphqlRequest } from "@/services/graphqlClient";
 import { setAuthSession, clearAuthSession } from "@/services/authToken";
@@ -15,8 +21,30 @@ const LOGIN_MUTATION = `
 const REGISTER_MUTATION = `
   mutation RegisterUser($data: RegisterInput!) {
     register(data: $data) {
+      email
+      verificationToken
+      expiresAt
+      message
+    }
+  }
+`;
+
+const VERIFY_EMAIL_MUTATION = `
+  mutation VerifyEmail($data: VerifyEmailInput!) {
+    verifyEmail(data: $data) {
       accessToken
       user { id username email }
+    }
+  }
+`;
+
+const RESEND_VERIFICATION_MUTATION = `
+  mutation ResendVerificationEmail($token: String!) {
+    resendVerificationEmail(token: $token) {
+      email
+      verificationToken
+      expiresAt
+      message
     }
   }
 `;
@@ -59,15 +87,7 @@ interface AuthPayload {
   user: { id: string; username: string; email: string };
 }
 
-export async function loginUser(data: LoginInput): Promise<AuthSession> {
-  const result = await graphqlRequest<{ login: AuthPayload }>({
-    query: LOGIN_MUTATION,
-    variables: { data },
-  });
-  const session: AuthSession = {
-    accessToken: result.login.accessToken,
-    user: result.login.user,
-  };
+function persistSession(session: AuthSession): AuthSession {
   setAuthSession({
     accessToken: session.accessToken,
     userId: session.user.id,
@@ -77,22 +97,50 @@ export async function loginUser(data: LoginInput): Promise<AuthSession> {
   return session;
 }
 
-export async function registerUser(data: RegisterInput): Promise<AuthSession> {
-  const result = await graphqlRequest<{ register: AuthPayload }>({
+export async function loginUser(data: LoginInput): Promise<AuthSession> {
+  const result = await graphqlRequest<{ login: AuthPayload }>({
+    query: LOGIN_MUTATION,
+    variables: { data },
+  });
+  return persistSession({
+    accessToken: result.login.accessToken,
+    user: result.login.user,
+  });
+}
+
+export async function registerUser(
+  data: RegisterInput,
+): Promise<RegisterPendingResult> {
+  const result = await graphqlRequest<{ register: RegisterPendingResult }>({
     query: REGISTER_MUTATION,
     variables: { data },
   });
-  const session: AuthSession = {
-    accessToken: result.register.accessToken,
-    user: result.register.user,
-  };
-  setAuthSession({
-    accessToken: session.accessToken,
-    userId: session.user.id,
-    username: session.user.username,
-    email: session.user.email,
+  return result.register;
+}
+
+export async function verifyEmailUser(
+  data: VerifyEmailInput,
+): Promise<AuthSession> {
+  const result = await graphqlRequest<{ verifyEmail: AuthPayload }>({
+    query: VERIFY_EMAIL_MUTATION,
+    variables: { data },
   });
-  return session;
+  return persistSession({
+    accessToken: result.verifyEmail.accessToken,
+    user: result.verifyEmail.user,
+  });
+}
+
+export async function resendVerificationEmail(
+  token: string,
+): Promise<RegisterPendingResult> {
+  const result = await graphqlRequest<{
+    resendVerificationEmail: RegisterPendingResult;
+  }>({
+    query: RESEND_VERIFICATION_MUTATION,
+    variables: { token },
+  });
+  return result.resendVerificationEmail;
 }
 
 export function logoutUser(): void {

@@ -7,20 +7,35 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { AuthStatus, AuthUser, LoginInput, RegisterInput } from "@/types/auth";
+import type {
+  AuthStatus,
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+  RegisterPendingResult,
+  VerifyEmailInput,
+} from "@/types/auth";
 import {
   getAccessToken,
   getCurrentUserEmail,
   getCurrentUserId,
   getCurrentUsername,
 } from "@/services/authToken";
-import { loginUser, logoutUser, registerUser } from "@/services/api";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  resendVerificationEmail,
+  verifyEmailUser,
+} from "@/services/api";
 
 interface AuthContextValue {
   status: AuthStatus;
   user: AuthUser | null;
   login: (data: LoginInput) => Promise<void>;
-  register: (data: RegisterInput) => Promise<void>;
+  register: (data: RegisterInput) => Promise<RegisterPendingResult>;
+  verifyEmail: (data: VerifyEmailInput) => Promise<void>;
+  resendVerification: (token: string) => Promise<RegisterPendingResult>;
   logout: () => void;
 }
 
@@ -56,9 +71,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const register = useCallback(async (data: RegisterInput) => {
-    const session = await registerUser(data);
+    return registerUser(data);
+  }, []);
+
+  const verifyEmail = useCallback(async (data: VerifyEmailInput) => {
+    const session = await verifyEmailUser(data);
     setUser(session.user);
     setStatus("authenticated");
+  }, []);
+
+  const resendVerification = useCallback(async (token: string) => {
+    return resendVerificationEmail(token);
   }, []);
 
   const logout = useCallback(() => {
@@ -68,8 +91,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const value = useMemo(
-    () => ({ status, user, login, register, logout }),
-    [status, user, login, register, logout],
+    () => ({
+      status,
+      user,
+      login,
+      register,
+      verifyEmail,
+      resendVerification,
+      logout,
+    }),
+    [status, user, login, register, verifyEmail, resendVerification, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

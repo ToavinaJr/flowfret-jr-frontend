@@ -20,4 +20,17 @@ export interface RegisterInput {
   password: string;
 }
 
+export interface RegisterPendingResult {
+  email: string;
+  verificationToken: string;
+  expiresAt: string;
+  message: string;
+}
+
+export interface VerifyEmailInput {
+  token: string;
+  code: string;
+}
+
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
+export type AuthMode = "login" | "register" | "verify";
