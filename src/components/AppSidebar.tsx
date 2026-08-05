@@ -1,13 +1,26 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Guitar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import MiniTuner from "./MiniTuner";
 import { useAuth } from "@/hooks/useAuth";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
+import { useTranslation } from "react-i18next";
 
 const AppSidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
+
+  const fallbackNavLabels: Record<string, string> = {
+    "/": "Feed",
+    "/upload": "Upload",
+    "/player": "Player",
+    "/chords": "Chords",
+    "/scales": "Scales",
+    "/metronome": "Metronome",
+    "/tuner": "Tuner",
+    "/menu": "More",
+    "/profile": "Profile",
+  };
 
   return (
     <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar lg:w-72">
@@ -37,23 +50,20 @@ const AppSidebar = () => {
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
+              <span className="truncate">{t(item.label, { defaultValue: fallbackNavLabels[item.path] ?? item.label })}</span>
             </NavLink>
           );
         })}
       </nav>
 
       <div className="space-y-3 border-t border-border p-3">
-        <div className="hidden lg:block">
-          <MiniTuner />
-        </div>
         {user && (
           <button
             type="button"
             onClick={logout}
             className="w-full min-h-[44px] truncate rounded-md bg-secondary px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            Log out ({user.username})
+            {t("settings.logout")} ({user.username})
           </button>
         )}
       </div>

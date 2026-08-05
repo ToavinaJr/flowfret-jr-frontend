@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "upload": "Upload",
+    "player": "Player",
+    "chords": "Chords",
+    "scales": "Scales",
+    "metronome": "Metronome",
+    "tuner": "Tuner",
+    "more": "More",
+    "profile": "Profile"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme": "Theme",
+    "description": "Choose your preferred language and theme for FretFlow.",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "english": "English",
+    "french": "Français",
+    "logout": "Log out",
+    "audioNotice": "Audio unlocks automatically on first interaction (browser autoplay policy). Chord detection runs entirely in your browser."
+  },
+  "common": {
+    "menu": "Menu"
+  }
+}

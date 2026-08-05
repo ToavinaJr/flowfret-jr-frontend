@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "feed": "Fil d'actualité",
+    "upload": "Téléverser",
+    "player": "Lecteur",
+    "chords": "Accords",
+    "scales": "Échelles",
+    "metronome": "Métronome",
+    "tuner": "Accordeur",
+    "more": "Plus",
+    "profile": "Profil"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "language": "Langue",
+    "theme": "Thème",
+    "description": "Choisissez votre langue et votre thème préférés pour FretFlow.",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "english": "English",
+    "french": "Français",
+    "logout": "Se déconnecter",
+    "audioNotice": "L'audio se débloque automatiquement à la première interaction (politique de lecture automatique du navigateur). La détection d'accords s'exécute entièrement dans votre navigateur."
+  },
+  "common": {
+    "menu": "Menu"
+  }
+}

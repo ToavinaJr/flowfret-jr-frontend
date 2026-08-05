@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Guitar, Menu } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
+import ThemeLanguageControls from "./ThemeLanguageControls";
+import MiniTuner from "./MiniTuner";
 import {
   Sheet,
   SheetContent,
@@ -13,7 +16,20 @@ import {
 
 const MobileHeader = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+
+  const fallbackNavLabels: Record<string, string> = {
+    "/": "Feed",
+    "/upload": "Upload",
+    "/player": "Player",
+    "/chords": "Chords",
+    "/scales": "Scales",
+    "/metronome": "Metronome",
+    "/tuner": "Tuner",
+    "/menu": "More",
+    "/profile": "Profile",
+  };
 
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
@@ -38,7 +54,7 @@ const MobileHeader = () => {
         </SheetTrigger>
         <SheetContent side="left" className="w-full max-w-xs p-0 sm:max-w-sm">
           <SheetHeader className="border-b border-border px-4 py-4 text-left">
-            <SheetTitle className="text-base font-medium">Menu</SheetTitle>
+            <SheetTitle className="text-base font-medium">{t("common.menu")}</SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 overflow-y-auto p-3">
             {SIDEBAR_NAV_ITEMS.map((item) => {
@@ -56,11 +72,15 @@ const MobileHeader = () => {
                   )}
                 >
                   <item.icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
+                  <span>{t(item.label, { defaultValue: fallbackNavLabels[item.path] ?? item.label })}</span>
                 </NavLink>
               );
             })}
           </nav>
+          <div className="border-t border-border p-3 space-y-3">
+            <MiniTuner />
+            <ThemeLanguageControls compact />
+          </div>
         </SheetContent>
       </Sheet>
     </header>

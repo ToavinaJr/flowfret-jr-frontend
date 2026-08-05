@@ -1,42 +1,18 @@
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
-
-type ThemePreference = "dark" | "system";
+import ThemeLanguageControls from "@/components/ThemeLanguageControls";
 
 const ParametresPage = () => {
-  const [theme, setTheme] = useState<ThemePreference>("dark");
+  const { t } = useTranslation();
 
   return (
     <div className={`${PAGE_SHELL} max-w-lg lg:max-w-lg`}>
-      <h1 className={PAGE_TITLE}>Settings</h1>
+      <h1 className={PAGE_TITLE}>{t("settings.title")}</h1>
 
-      <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4">
-        <div className="mb-1 text-sm text-foreground">Appearance</div>
-        <p className="mb-3 text-xs text-muted-foreground">
-          FretFlow uses a dark design system. System preference is reserved for
-          future light theme support.
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          {(["dark", "system"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setTheme(option)}
-              className={`min-h-[44px] rounded-md text-sm capitalize ${
-                theme === option
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground"
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
+      <ThemeLanguageControls />
 
       <div className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
-        Audio unlocks automatically on first interaction (browser autoplay
-        policy). Chord detection runs entirely in your browser.
+        {t("settings.audioNotice")}
       </div>
     </div>
   );
