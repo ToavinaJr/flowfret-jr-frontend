@@ -1,6 +1,7 @@
 {
   "nav": {
     "feed": "Fil d'actualité",
+    "music": "Musique",
     "upload": "Téléverser",
     "player": "Lecteur",
     "chords": "Accords",
@@ -26,5 +27,24 @@
   },
   "common": {
     "menu": "Menu"
+  },
+  "music": {
+    "title": "Rechercher une musique",
+    "subtitle": "Trouvez un titre via Spotify, avec lien Genius lorsque la correspondance est fiable.",
+    "searchLabel": "Titre ou artiste",
+    "searchPlaceholder": "Titre ou artiste",
+    "search": "Rechercher",
+    "searching": "Recherche en cours",
+    "queryRequired": "Saisissez un titre ou un artiste.",
+    "emptyBeforeSearch": "Lancez une recherche pour afficher des morceaux.",
+    "noResults": "Aucun résultat trouvé",
+    "errorTitle": "Erreur de recherche",
+    "errorGeneric": "Une erreur est survenue",
+    "resultsCount": "{{count}} résultat(s)",
+    "openSpotify": "Ouvrir dans Spotify",
+    "openGenius": "Voir sur Genius",
+    "preview": "Aperçu",
+    "previewUnavailable": "Aperçu indisponible",
+    "albumCoverAlt": "Pochette de {{title}}"
   }
 }

@@ -18,6 +18,7 @@ import MenuPage from "@/pages/MenuPage";
 import HistoirePage from "@/pages/HistoirePage";
 import ContactPage from "@/pages/ContactPage";
 import ParametresPage from "@/pages/ParametresPage";
+import MusicSearchPage from "@/pages/MusicSearchPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
                   <Route path="/chords" element={<ChordsPage />} />
                   <Route path="/upload" element={<UploadPage />} />
                   <Route path="/player" element={<PlayerPage />} />
+                  <Route path="/music" element={<MusicSearchPage />} />
                   <Route path="/metronome" element={<MetronomePage />} />
                   <Route path="/scales" element={<ScalesPage />} />
                   <Route path="/menu" element={<MenuPage />} />

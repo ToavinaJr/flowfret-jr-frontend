@@ -1,6 +1,7 @@
 {
   "nav": {
     "feed": "Feed",
+    "music": "Music",
     "upload": "Upload",
     "player": "Player",
     "chords": "Chords",
@@ -26,5 +27,24 @@
   },
   "common": {
     "menu": "Menu"
+  },
+  "music": {
+    "title": "Search music",
+    "subtitle": "Find a track via Spotify, with a Genius link when the match is reliable.",
+    "searchLabel": "Song title or artist",
+    "searchPlaceholder": "Song title or artist",
+    "search": "Search",
+    "searching": "Searching",
+    "queryRequired": "Enter a song title or artist.",
+    "emptyBeforeSearch": "Run a search to display tracks.",
+    "noResults": "No results found",
+    "errorTitle": "Search error",
+    "errorGeneric": "An error occurred",
+    "resultsCount": "{{count}} result(s)",
+    "openSpotify": "Open in Spotify",
+    "openGenius": "View on Genius",
+    "preview": "Preview",
+    "previewUnavailable": "Preview unavailable",
+    "albumCoverAlt": "Album cover for {{title}}"
   }
 }

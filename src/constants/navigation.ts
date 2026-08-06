@@ -1,6 +1,5 @@
 import {
   Home,
-  Guitar,
   Radio,
   User,
   Upload,
@@ -9,6 +8,7 @@ import {
   Timer,
   Menu,
   Play,
+  Search,
   type LucideIcon,
 } from "lucide-react";
 
@@ -20,6 +20,7 @@ export interface AppNavItem {
 
 export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
+  { icon: Search, label: "nav.music", path: "/music" },
   { icon: Upload, label: "Upload", path: "/upload" },
   { icon: Play, label: "Player", path: "/player" },
   { icon: BookOpen, label: "Chords", path: "/chords" },
@@ -32,7 +33,7 @@ export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
 
 export const MOBILE_TAB_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
-  { icon: BookOpen, label: "Chords", path: "/chords" },
+  { icon: Search, label: "nav.music", path: "/music" },
   { icon: Play, label: "Player", path: "/player" },
   { icon: Upload, label: "Upload", path: "/upload" },
   { icon: Menu, label: "More", path: "/menu" },

@@ -12,6 +12,7 @@ const AppSidebar = () => {
 
   const fallbackNavLabels: Record<string, string> = {
     "/": "Feed",
+    "/music": "Music",
     "/upload": "Upload",
     "/player": "Player",
     "/chords": "Chords",
