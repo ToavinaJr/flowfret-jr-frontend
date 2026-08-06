@@ -43,9 +43,9 @@ export function OtpForm({
           autoComplete="one-time-code"
           value={otp}
           onChange={(e: ChangeEvent<HTMLInputElement>) => onOtpChange(e.target.value.replace(/\D/g, ""))}
-          placeholder="123456"
+          placeholder="1234"
           className="auth-input !mt-0"
-          maxLength={6}
+          maxLength={4}
         />
       </div>
 
@@ -57,7 +57,7 @@ export function OtpForm({
             "inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70",
             loading && "cursor-wait",
           )}
-          disabled={loading || otp.length !== 6}
+          disabled={loading || otp.length !== 4}
         >
           {loading ? (
             <span className="inline-flex items-center gap-2">

@@ -171,8 +171,8 @@ export function AuthGate({ children }: AuthGateProps) {
           setError("Lien de vérification manquant.");
           return;
         }
-        if (!/^\d{6}$/.test(formState.otp)) {
-          setError("Saisissez le code OTP à 6 chiffres.");
+        if (!/^\d{4}$/.test(formState.otp)) {
+          setError("Saisissez le code OTP à 4 chiffres.");
           return;
         }
         await verifyEmail({ token: verificationToken, code: formState.otp });
@@ -265,7 +265,7 @@ export function AuthGate({ children }: AuthGateProps) {
       ? "Connectez-vous pour continuer à pratiquer et partager."
       : mode === "register"
         ? "Rejoignez FretFlow et débloquez votre workflow guitare."
-        : `Saisissez le code à 6 chiffres envoyé à ${pendingEmail || "votre e-mail"}.`;
+        : `Saisissez le code à 4 chiffres envoyé à ${pendingEmail || "votre e-mail"}.`;
 
   return (
     <div className="grid min-h-screen w-full overflow-x-hidden bg-background lg:grid-cols-2">
