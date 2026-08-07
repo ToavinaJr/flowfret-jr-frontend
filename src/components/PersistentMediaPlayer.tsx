@@ -10,6 +10,7 @@ function formatTime(seconds: number): string {
 export default function PersistentMediaPlayer() {
   const { item, playState, currentTime, duration, volume, toggle, seek, setVolume } = usePlayback();
   if (!item) return null;
+  const isSpotify = item.engine === "spotify" || item.id.startsWith("spotify:");
 
   const content = (
     <>
@@ -31,8 +32,12 @@ export default function PersistentMediaPlayer() {
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">{formatTime(currentTime)}</span>
         <input type="range" min={0} max={duration || 1} step={0.1} value={Math.min(currentTime, duration || 1)} onChange={(event) => seek(Number(event.target.value))} className="hidden min-w-24 flex-1 accent-primary sm:block" aria-label="Position de lecture" />
         <span className="hidden w-10 text-xs text-muted-foreground sm:block">{formatTime(duration)}</span>
-        <button type="button" onClick={() => setVolume(volume > 0 ? 0 : 1)} className="hidden h-10 w-10 items-center justify-center text-muted-foreground md:flex" aria-label={volume > 0 ? "Couper le son" : "Activer le son"}>{volume > 0 ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}</button>
-        <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(event) => setVolume(Number(event.target.value))} className="hidden w-24 accent-primary lg:block" aria-label="Volume" />
+        {!isSpotify ? (
+          <>
+            <button type="button" onClick={() => setVolume(volume > 0 ? 0 : 1)} className="hidden h-10 w-10 items-center justify-center text-muted-foreground md:flex" aria-label={volume > 0 ? "Couper le son" : "Activer le son"}>{volume > 0 ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}</button>
+            <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(event) => setVolume(Number(event.target.value))} className="hidden w-24 accent-primary lg:block" aria-label="Volume" />
+          </>
+        ) : null}
       </div>
       <input type="range" min={0} max={duration || 1} step={0.1} value={Math.min(currentTime, duration || 1)} onChange={(event) => seek(Number(event.target.value))} className="absolute bottom-0 left-0 h-1 w-full cursor-pointer accent-primary sm:hidden" aria-label="Position de lecture" />
     </section>
