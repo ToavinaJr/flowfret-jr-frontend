@@ -33,7 +33,7 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
             </div>
           </div>
         </div>
-        <AudiusMediaPlayer id={track.audiusId} src={track.streamUrl} durationMs={track.durationMs} />
+        <AudiusMediaPlayer track={track} />
       </CardContent>
     </Card>
   );
