@@ -2,9 +2,12 @@ import { Outlet } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import MobileHeader from "./MobileHeader";
 import MobileNav from "./MobileNav";
+import PersistentMediaPlayer from "./PersistentMediaPlayer";
+import { PlaybackProvider } from "@/contexts/PlaybackContext";
 
 const AppLayout = () => {
   return (
+    <PlaybackProvider>
     <div className="min-h-screen overflow-x-hidden bg-background">
       <div className="hidden md:block">
         <AppSidebar />
@@ -12,12 +15,14 @@ const AppLayout = () => {
 
       <div className="flex min-h-screen w-full flex-col md:pl-64 lg:pl-72">
         <MobileHeader />
-        <main className="min-h-0 w-full flex-1 overflow-x-hidden">
+        <main className="min-h-0 w-full flex-1 overflow-x-hidden pb-20 md:pb-20">
           <Outlet />
         </main>
         <MobileNav />
+        <PersistentMediaPlayer />
       </div>
     </div>
+    </PlaybackProvider>
   );
 };
 

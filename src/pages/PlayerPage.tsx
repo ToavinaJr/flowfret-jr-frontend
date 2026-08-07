@@ -52,7 +52,11 @@ const PlayerPage = () => {
   const src = imported?.uri ?? "/audio/audio.mp3";
 
   const { playState, currentTime, duration, play, seek, toggle } =
-    usePlayerAudio({ src });
+    usePlayerAudio({
+      src,
+      title: meta.title,
+      subtitle: imported ? "Morceau importé · Guitar Player" : "Démo · Guitar Player",
+    });
 
   const cueIndex = getCueIndexAtTime(meta.cues, currentTime);
   const activeCue: ChordCue | null =

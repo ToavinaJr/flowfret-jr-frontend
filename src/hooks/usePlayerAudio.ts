@@ -1,109 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { PlayState } from "@/types/song";
-import {
-  registerAudioOwner,
-  releaseAudioOwner,
-  requestAudioOwner,
-} from "@/utils/audioPriority";
+import { useMemo } from "react";
+import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
 
 interface UsePlayerAudioOptions {
   src: string | null;
+  title?: string;
+  subtitle?: string;
 }
 
-interface UsePlayerAudioResult {
-  playState: PlayState;
-  currentTime: number;
-  duration: number;
-  play: () => Promise<void>;
-  pause: () => void;
-  seek: (time: number) => void;
-  toggle: () => Promise<void>;
-}
+export function usePlayerAudio({ src, title = "Guitar Player", subtitle = "Accompagnement guitare" }: UsePlayerAudioOptions) {
+  const playback = usePlayback();
+  const item = useMemo<PlaybackItem | null>(() => src ? ({ id: `guitar:${src}`, src, title, subtitle, destination: "/player" }) : null, [src, title, subtitle]);
 
-export function usePlayerAudio({ src }: UsePlayerAudioOptions): UsePlayerAudioResult {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playState, setPlayState] = useState<PlayState>("idle");
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  useEffect(() => {
-    const audio = new Audio();
-    audio.preload = "auto";
-    audioRef.current = audio;
-
-    const onTime = () => setCurrentTime(audio.currentTime);
-    const onMeta = () => setDuration(audio.duration || 0);
-    const onEnded = () => {
-      setPlayState("paused");
-      releaseAudioOwner("player");
-    };
-    const onError = () => setPlayState("error");
-
-    audio.addEventListener("timeupdate", onTime);
-    audio.addEventListener("loadedmetadata", onMeta);
-    audio.addEventListener("ended", onEnded);
-    audio.addEventListener("error", onError);
-
-    const unregister = registerAudioOwner("player", () => {
-      audio.pause();
-      setPlayState("paused");
-    });
-
-    return () => {
-      unregister();
-      audio.pause();
-      audio.removeEventListener("timeupdate", onTime);
-      audio.removeEventListener("loadedmetadata", onMeta);
-      audio.removeEventListener("ended", onEnded);
-      audio.removeEventListener("error", onError);
-      audioRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !src) return;
-    setPlayState("loading");
-    audio.src = src;
-    audio.load();
-    setCurrentTime(0);
-    setPlayState("paused");
-  }, [src]);
-
-  const play = useCallback(async () => {
-    const audio = audioRef.current;
-    if (!audio || !src) return;
-    requestAudioOwner("player");
-    try {
-      await audio.play();
-      setPlayState("playing");
-    } catch {
-      setPlayState("error");
-    }
-  }, [src]);
-
-  const pause = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.pause();
-    setPlayState("paused");
-    releaseAudioOwner("player");
-  }, []);
-
-  const seek = useCallback((time: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
-    setCurrentTime(audio.currentTime);
-  }, []);
-
-  const toggle = useCallback(async () => {
-    if (playState === "playing") {
-      pause();
-    } else {
-      await play();
-    }
-  }, [playState, play, pause]);
-
-  return { playState, currentTime, duration, play, pause, seek, toggle };
+  const isActive = playback.item?.id === item?.id;
+  return {
+    playState: isActive ? playback.playState : "idle" as const,
+    currentTime: isActive ? playback.currentTime : 0,
+    duration: isActive ? playback.duration : 0,
+    play: () => playback.play(item || undefined),
+    pause: playback.pause,
+    seek: playback.seek,
+    toggle: () => playback.toggle(item || undefined),
+  };
 }
