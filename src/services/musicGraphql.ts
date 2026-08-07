@@ -8,8 +8,10 @@ import type {
 export const SEARCH_MUSIC_QUERY = `
   query SearchMusic($query: String!, $limit: Int!) {
     searchMusic(query: $query, limit: $limit) {
+      provider
       total
       tracks {
+        provider
         audiusId
         title
         imageUrl

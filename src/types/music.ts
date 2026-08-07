@@ -4,6 +4,7 @@ export interface MusicArtist {
 }
 
 export interface MusicTrack {
+  provider: "YOUTUBE" | "AUDIUS" | "SPOTIFY";
   audiusId: string;
   title: string;
   artists: MusicArtist[];
@@ -17,6 +18,7 @@ export interface MusicTrack {
 }
 
 export interface MusicSearchResult {
+  provider: "YOUTUBE" | "AUDIUS" | "SPOTIFY";
   tracks: MusicTrack[];
   total: number;
 }

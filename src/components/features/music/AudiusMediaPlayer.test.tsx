@@ -8,7 +8,7 @@ vi.mock("@/hooks/useTranscriptionEvents", () => ({
   useTranscriptionEvents: () => ({ transcription: null, error: null, prepare: mocks.prepare, retry: mocks.retry }),
 }));
 
-const track = { audiusId: "track", title: "Song", artists: [{ id: "artist", name: "Artist" }], imageUrl: null, audiusUrl: "https://audius.co/artist/song", streamUrl: "https://audio.audius.co/song.mp3", genre: "Rock", geniusUrl: null, geniusMatchScore: null, durationMs: 120000 };
+const track = { provider: "AUDIUS" as const, audiusId: "track", title: "Song", artists: [{ id: "artist", name: "Artist" }], imageUrl: null, audiusUrl: "https://audius.co/artist/song", streamUrl: "https://audio.audius.co/song.mp3", genre: "Rock", geniusUrl: null, geniusMatchScore: null, durationMs: 120000 };
 
 describe("AudiusMediaPlayer preparation", () => {
   beforeEach(() => {
