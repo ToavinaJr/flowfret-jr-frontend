@@ -4,14 +4,11 @@ export interface MusicArtist {
 }
 
 export interface MusicTrack {
-  spotifyId: string;
+  youtubeId: string;
   title: string;
   artists: MusicArtist[];
-  albumId: string;
-  albumName: string;
   imageUrl: string | null;
-  spotifyUrl: string;
-  previewUrl: string | null;
+  youtubeUrl: string;
   geniusUrl: string | null;
   geniusMatchScore: number | null;
   durationMs: number;

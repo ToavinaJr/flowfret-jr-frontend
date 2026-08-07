@@ -30,7 +30,7 @@
   },
   "music": {
     "title": "Search music",
-    "subtitle": "Find a track via Spotify, with a Genius link when the match is reliable.",
+    "subtitle": "Find a music video via YouTube, with a Genius link when the match is reliable.",
     "searchLabel": "Song title or artist",
     "searchPlaceholder": "Song title or artist",
     "search": "Search",
@@ -41,10 +41,11 @@
     "errorTitle": "Search error",
     "errorGeneric": "An error occurred",
     "resultsCount": "{{count}} result(s)",
-    "openSpotify": "Open in Spotify",
+    "openYoutube": "Open on YouTube",
     "openGenius": "View on Genius",
     "preview": "Preview",
     "previewUnavailable": "Preview unavailable",
-    "albumCoverAlt": "Album cover for {{title}}"
+    "albumCoverAlt": "Album cover for {{title}}",
+    "videoThumbnailAlt": "Video thumbnail for {{title}}"
   }
 }
