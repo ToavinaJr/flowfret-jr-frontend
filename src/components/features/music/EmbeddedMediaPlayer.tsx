@@ -11,14 +11,11 @@ import type { MusicTrack } from "@/types/music";
 
 function getEmbedUrl(track: MusicTrack): string {
   const id = encodeURIComponent(track.audiusId);
-
-  return track.provider === "SPOTIFY"
-    ? `https://open.spotify.com/embed/track/${id}?utm_source=generator`
-    : `https://www.youtube.com/embed/${id}?autoplay=1`;
+  return `https://www.youtube.com/embed/${id}?autoplay=1`;
 }
 
 export function EmbeddedMediaPlayer({ track }: { track: MusicTrack }) {
-  const providerName = track.provider === "SPOTIFY" ? "Spotify" : "YouTube";
+  const providerName = "YouTube";
 
   return (
     <Dialog>
@@ -45,11 +42,7 @@ export function EmbeddedMediaPlayer({ track }: { track: MusicTrack }) {
             key={track.audiusId}
             src={getEmbedUrl(track)}
             title={`${providerName} — ${track.title}`}
-            className={
-              track.provider === "SPOTIFY"
-                ? "h-[352px] w-full rounded-xl border-0"
-                : "aspect-video w-full rounded-xl border-0"
-            }
+            className="aspect-video w-full rounded-xl border-0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
             allowFullScreen

@@ -13,11 +13,57 @@ import type { PlayState } from "@/types/song";
 export interface PlaybackItem {
   id: string;
   src: string;
+  engine?: "audio" | "spotify";
   title: string;
   subtitle: string;
   imageUrl?: string | null;
   duration?: number;
   destination?: string;
+}
+
+interface SpotifyPlaybackEvent {
+  data: { isPaused: boolean; isBuffering: boolean; duration: number; position: number };
+}
+
+interface SpotifyEmbedController {
+  loadEntity: (uri: string) => void;
+  play: () => void;
+  pause: () => void;
+  seek: (seconds: number) => void;
+  destroy: () => void;
+  addListener: (event: string, listener: (event: SpotifyPlaybackEvent) => void) => void;
+}
+
+interface SpotifyIframeApi {
+  createController: (
+    element: HTMLElement,
+    options: { uri: string; width: number; height: number },
+    callback: (controller: SpotifyEmbedController) => void,
+  ) => void;
+}
+
+declare global {
+  interface Window {
+    onSpotifyIframeApiReady?: (api: SpotifyIframeApi) => void;
+  }
+}
+
+let spotifyApiPromise: Promise<SpotifyIframeApi> | null = null;
+
+function loadSpotifyIframeApi(): Promise<SpotifyIframeApi> {
+  if (spotifyApiPromise) return spotifyApiPromise;
+  spotifyApiPromise = new Promise((resolve, reject) => {
+    window.onSpotifyIframeApiReady = resolve;
+    const existing = document.querySelector<HTMLScriptElement>('script[data-spotify-iframe-api]');
+    if (existing) return;
+    const script = document.createElement("script");
+    script.src = "https://open.spotify.com/embed/iframe-api/v1";
+    script.async = true;
+    script.dataset.spotifyIframeApi = "true";
+    script.onerror = () => reject(new Error("Unable to load Spotify player"));
+    document.body.appendChild(script);
+  });
+  return spotifyApiPromise;
 }
 
 interface PlaybackContextValue {
@@ -38,6 +84,10 @@ const PlaybackContext = createContext<PlaybackContextValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const spotifyHostRef = useRef<HTMLDivElement | null>(null);
+  const spotifyControllerRef = useRef<SpotifyEmbedController | null>(null);
+  const spotifyControllerPromiseRef = useRef<Promise<SpotifyEmbedController> | null>(null);
+  const spotifyUriRef = useRef<string | null>(null);
   const itemRef = useRef<PlaybackItem | null>(null);
   const [item, setItem] = useState<PlaybackItem | null>(null);
   const [playState, setPlayState] = useState<PlayState>("idle");
@@ -76,15 +126,53 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const getSpotifyController = useCallback(async (uri: string) => {
+    if (spotifyControllerRef.current) {
+      if (spotifyUriRef.current !== uri) {
+        spotifyControllerRef.current.loadEntity(uri);
+        spotifyUriRef.current = uri;
+      }
+      return spotifyControllerRef.current;
+    }
+    if (spotifyControllerPromiseRef.current) return spotifyControllerPromiseRef.current;
+
+    spotifyControllerPromiseRef.current = (async () => {
+      const api = await loadSpotifyIframeApi();
+      const host = spotifyHostRef.current;
+      if (!host) throw new Error("Spotify player host is unavailable");
+      return new Promise<SpotifyEmbedController>((resolve) => {
+        api.createController(host, { uri, width: 300, height: 80 }, (controller) => {
+          spotifyControllerRef.current = controller;
+          spotifyUriRef.current = uri;
+          controller.addListener("playback_started", () => setPlayState("playing"));
+          controller.addListener("playback_update", (event) => {
+            setCurrentTime(event.data.position / 1000);
+            setDuration(event.data.duration / 1000);
+            setPlayState(event.data.isBuffering ? "loading" : event.data.isPaused ? "paused" : "playing");
+          });
+          resolve(controller);
+        });
+      });
+    })().catch((error) => {
+      spotifyControllerPromiseRef.current = null;
+      throw error;
+    });
+    return spotifyControllerPromiseRef.current;
+  }, []);
+
+  useEffect(() => () => spotifyControllerRef.current?.destroy(), []);
+
   const select = useCallback((next: PlaybackItem) => {
     if (itemRef.current?.id === next.id && itemRef.current.src === next.src) return;
     const audio = audioRef.current;
+    if (itemRef.current?.engine === "spotify") spotifyControllerRef.current?.pause();
+    else audio?.pause();
     itemRef.current = next;
     setItem(next);
     setCurrentTime(0);
     setDuration(next.duration || 0);
     setPlayState("loading");
-    if (audio) {
+    if ((next.engine ?? "audio") === "audio" && audio) {
       audio.src = next.src;
       audio.load();
     }
@@ -94,27 +182,40 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const play = useCallback(async (next?: PlaybackItem) => {
     if (next) select(next);
     const audio = audioRef.current;
-    if (!audio || (!next && !itemRef.current)) return;
+    const activeItem = next ?? itemRef.current;
+    if (!activeItem) return;
     try {
+      if (activeItem.engine === "spotify") {
+        const controller = await getSpotifyController(activeItem.src);
+        controller.play();
+        return;
+      }
+      if (!audio) return;
       await audio.play();
       setPlayState("playing");
     } catch {
       setPlayState("error");
     }
-  }, [select]);
+  }, [getSpotifyController, select]);
 
   const pause = useCallback(() => {
-    audioRef.current?.pause();
+    if (itemRef.current?.engine === "spotify") spotifyControllerRef.current?.pause();
+    else audioRef.current?.pause();
     setPlayState("paused");
   }, []);
 
   const toggle = useCallback(async (next?: PlaybackItem) => {
     const isSame = !next || (itemRef.current?.id === next.id && itemRef.current.src === next.src);
-    if (isSame && !audioRef.current?.paused) pause();
+    if (isSame && playState === "playing") pause();
     else await play(next);
-  }, [pause, play]);
+  }, [pause, play, playState]);
 
   const seek = useCallback((time: number) => {
+    if (itemRef.current?.engine === "spotify") {
+      spotifyControllerRef.current?.seek(time);
+      setCurrentTime(time);
+      return;
+    }
     const audio = audioRef.current;
     if (!audio) return;
     audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
@@ -128,7 +229,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(() => ({ item, playState, currentTime, duration, volume: volumeState, select, play, pause, toggle, seek, setVolume }), [item, playState, currentTime, duration, volumeState, select, play, pause, toggle, seek, setVolume]);
-  return <PlaybackContext.Provider value={value}>{children}</PlaybackContext.Provider>;
+  return (
+    <PlaybackContext.Provider value={value}>
+      {children}
+      <div ref={spotifyHostRef} className="pointer-events-none fixed -bottom-24 left-0 h-20 w-[300px] opacity-0" aria-hidden="true" />
+    </PlaybackContext.Provider>
+  );
 }
 
 export function usePlayback(): PlaybackContextValue {

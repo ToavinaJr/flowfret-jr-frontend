@@ -9,6 +9,7 @@ export function AudiusMediaPlayer({ track }: { track: MusicTrack }) {
   const playbackItem: PlaybackItem = {
     id: `audius:${track.audiusId}`,
     src: track.streamUrl,
+    engine: "audio",
     title: track.title,
     subtitle: track.artists.map((artist) => artist.name).join(", "),
     imageUrl: track.imageUrl,
