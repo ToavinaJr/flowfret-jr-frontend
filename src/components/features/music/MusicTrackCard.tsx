@@ -3,7 +3,7 @@ import { Clock3, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MusicTrack } from "@/types/music";
-import { AudiusMediaPlayer } from "./AudiusMediaPlayer";
+import { MusicMediaPlayer } from "./MusicMediaPlayer";
 
 interface MusicTrackCardProps { track: MusicTrack; }
 
@@ -43,7 +43,7 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
           </div>
         </div>
 
-        <AudiusMediaPlayer track={track} />
+        <MusicMediaPlayer track={track} />
       </CardContent>
     </Card>
   );
