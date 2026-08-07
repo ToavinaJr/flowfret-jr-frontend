@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Loader2, MessageCircle, Plus } from "lucide-react";
+import { Heart, Loader2, MessageCircle, Plus } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
   createFeedComment,
+  createFeedLike,
   createFeedPost,
+  deleteFeedLike,
   fetchFeedPosts,
 } from "@/services/api";
 import type { FeedPost } from "@/types/feed";
@@ -24,11 +26,15 @@ function formatRelative(iso: string): string {
 interface FeedCardProps {
   post: FeedPost;
   onComment: (postId: string, content: string) => Promise<void>;
+  currentUserId: string;
+  onToggleLike: (post: FeedPost) => Promise<void>;
 }
 
-function FeedCard({ post, onComment }: FeedCardProps) {
+function FeedCard({ post, onComment, currentUserId, onToggleLike }: FeedCardProps) {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [liking, setLiking] = useState(false);
+  const isLiked = post.likes.some((like) => like.userId === currentUserId);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,7 +67,24 @@ function FeedCard({ post, onComment }: FeedCardProps) {
         {post.content}
       </p>
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span>{post.likeCount} likes</span>
+        <button
+          type="button"
+          disabled={liking}
+          onClick={async () => {
+            setLiking(true);
+            try {
+              await onToggleLike(post);
+            } finally {
+              setLiking(false);
+            }
+          }}
+          className={`inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors disabled:opacity-50 ${isLiked ? "text-primary" : "hover:bg-secondary hover:text-foreground"}`}
+          aria-pressed={isLiked}
+          aria-label={isLiked ? "Retirer la réaction" : "Réagir à la publication"}
+        >
+          <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
+          <span>{post.likeCount} {post.likeCount <= 1 ? "like" : "likes"}</span>
+        </button>
         <span className="inline-flex items-center gap-1">
           <MessageCircle className="h-3.5 w-3.5" />
           {post.commentCount}
@@ -136,6 +159,14 @@ const FeedPage = () => {
     await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   }
 
+  async function handleToggleLike(post: FeedPost) {
+    if (!user) return;
+    const existingLike = post.likes.find((like) => like.userId === user.id);
+    if (existingLike) await deleteFeedLike(existingLike.id);
+    else await createFeedLike(post.id, user.id);
+    await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+  }
+
   function handleCreatePost(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!user || !draft.trim()) return;
@@ -203,7 +234,7 @@ const FeedPage = () => {
 
       <div className="space-y-3 sm:space-y-4">
         {(postsQuery.data ?? []).map((post) => (
-          <FeedCard key={post.id} post={post} onComment={handleComment} />
+          <FeedCard key={post.id} post={post} onComment={handleComment} currentUserId={user?.id ?? ""} onToggleLike={handleToggleLike} />
         ))}
       </div>
 

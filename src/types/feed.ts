@@ -18,6 +18,7 @@ export interface FeedPost {
   createdAt: string;
   author: FeedAuthor;
   comments: FeedComment[];
+  likes: Array<{ id: string; userId: string }>;
 }
 
 export interface CreatePostInput {

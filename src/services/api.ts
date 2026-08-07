@@ -67,6 +67,7 @@ const FEED_QUERY = `
         id content createdAt
         author { id username }
       }
+      likes { id userId }
     }
   }
 `;
@@ -174,6 +175,20 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
     query: FEED_QUERY,
   });
   return result.posts;
+}
+
+export async function createFeedLike(postId: string, userId: string): Promise<void> {
+  await graphqlRequest({
+    query: `mutation LikePost($data: CreatePostLikeInput!) { createPostLike(data: $data) { id } }`,
+    variables: { data: { postId, userId } },
+  });
+}
+
+export async function deleteFeedLike(id: string): Promise<void> {
+  await graphqlRequest({
+    query: `mutation UnlikePost($id: String!) { deletePostLike(id: $id) { id } }`,
+    variables: { id },
+  });
 }
 
 export async function createFeedPost(data: CreatePostInput): Promise<FeedPost> {

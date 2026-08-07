@@ -54,8 +54,9 @@ const ProfilePage = () => {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
-        Practice tools live under Chords, Scales, Player, Metronome, and Upload.
-        Your feed posts sync with the NestJS GraphQL backend when it is online.
+        Retrouvez tous vos outils pour progresser : accords, gammes, lecteur,
+        métronome et import de morceaux. Partagez aussi vos progrès et vos
+        découvertes avec la communauté FretFlow.
       </div>
     </div>
   );
