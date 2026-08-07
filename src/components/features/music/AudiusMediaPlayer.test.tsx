@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AudiusMediaPlayer } from "./AudiusMediaPlayer";
 
@@ -11,11 +11,12 @@ const track = { audiusId: "track", title: "Song", artists: [{ id: "artist", name
 
 describe("AudiusMediaPlayer preparation", () => {
   beforeEach(() => { mocks.prepare.mockReset(); Object.defineProperty(HTMLMediaElement.prototype, "play", { configurable: true, value: vi.fn().mockResolvedValue(undefined) }); });
-  it("does not start audio while synchronized lyrics are unavailable", () => {
+  it("starts audio while synchronized lyrics are being prepared", async () => {
     mocks.prepare.mockReturnValue(new Promise(() => undefined));
     render(<AudiusMediaPlayer track={track} />);
     fireEvent.click(screen.getByRole("button", { name: "Lecture" }));
-    expect(screen.getByText("Préparation des paroles synchronisées…")).toBeInTheDocument();
-    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
+    );
   });
 });

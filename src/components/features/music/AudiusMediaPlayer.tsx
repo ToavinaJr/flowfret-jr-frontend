@@ -81,24 +81,30 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
     if (playerState === "PLAYING") { wantsPlaybackRef.current = false; audio.pause(); setPlayerState("PAUSED"); return; }
     if (!transcription) {
       console.info("[FretFlow:player] preparing", { trackId: track.audiusId, playerState });
-      wantsPlaybackRef.current = true; setPlayerState("CHECKING_CACHE");
+      wantsPlaybackRef.current = true;
       try {
-        const result = await prepare();
-        if (result.readyToPlay) await playFromStart(); else setPlayerState("PREPARING_LYRICS");
-      } catch (prepareError) {
-        console.error("[FretFlow:player] preparation_failed", { trackId: track.audiusId, error: prepareError });
-        setPlayerState("FAILED");
+        window.dispatchEvent(new CustomEvent(PLAY_EVENT, { detail: track.audiusId }));
+        await audio.play();
+        setPlayerState("PLAYING");
+        setAutoplayBlocked(false);
+      } catch (playError) {
+        console.error("[FretFlow:player] playback_start_failed", { trackId: track.audiusId, error: playError });
+        setAutoplayBlocked(true);
+        setPlayerState("READY");
       }
+      void prepare().catch((prepareError) =>
+        console.error("[FretFlow:player] preparation_failed", {
+          trackId: track.audiusId,
+          error: prepareError,
+        }),
+      );
       return;
     }
-    if (transcription.readyToPlay) {
-      wantsPlaybackRef.current = true;
-      try { await audio.play(); setPlayerState("PLAYING"); setAutoplayBlocked(false); } catch { setAutoplayBlocked(true); setPlayerState("READY"); }
-    }
+    wantsPlaybackRef.current = true;
+    try { await audio.play(); setPlayerState("PLAYING"); setAutoplayBlocked(false); } catch { setAutoplayBlocked(true); setPlayerState("READY"); }
   }
 
   async function handleRetry(): Promise<void> {
-    setPlayerState("CHECKING_CACHE");
     try {
       if (transcription) {
         await retry();
@@ -106,19 +112,16 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
         const result = await prepare();
         if (result.readyToPlay) await playFromStart();
       }
-      setPlayerState("PREPARING_LYRICS");
     } catch (retryError) {
       console.error("[FretFlow:player] retry_failed", {
         trackId: track.audiusId,
         error: retryError,
       });
-      setPlayerState("FAILED");
     }
   }
 
   useEffect(() => {
     if (transcription?.readyToPlay && wantsPlaybackRef.current && (playerState === "PREPARING_LYRICS" || playerState === "CHECKING_CACHE")) void playFromStart();
-    if (transcription?.status === "FAILED") setPlayerState("FAILED");
   }, [playFromStart, playerState, transcription?.readyToPlay, transcription?.status]);
 
   useEffect(() => {
@@ -130,10 +133,11 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
       setActiveIndex((current) => current === next ? current : next);
       const complete = transcription?.status === "COMPLETED";
       const ahead = (transcription?.bufferedUntil ?? 0) - audio.currentTime;
-      if (!complete && ahead <= 0.25) {
+      const lyricsBufferActive = Boolean(transcription?.readyToPlay);
+      if (lyricsBufferActive && !complete && ahead <= 0.25) {
         pausedForBufferRef.current = true; audio.pause(); setPlayerState("BUFFERING_LYRICS"); return;
       }
-      if (!complete && ahead < MIN_AHEAD) setPlayerState("BUFFERING_LYRICS");
+      if (lyricsBufferActive && !complete && ahead < MIN_AHEAD) setPlayerState("BUFFERING_LYRICS");
       else setPlayerState("PLAYING");
       animationRef.current = requestAnimationFrame(tick);
     };
@@ -157,7 +161,7 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
   }, [track.audiusId]);
 
   function seek(seconds: number) { if (!audioRef.current) return; audioRef.current.currentTime = seconds; setCurrentTime(seconds); setActiveIndex(findActiveSegment(transcription?.segments ?? [], seconds + SYNC_OFFSET_SECONDS)); }
-  const preparing = playerState === "CHECKING_CACHE" || playerState === "PREPARING_LYRICS";
+  const preparing = Boolean(transcription && !transcription.readyToPlay && transcription.status !== "FAILED");
 
   return (
     <div className="space-y-3 rounded-lg border border-border bg-secondary/40 p-3">
@@ -166,7 +170,7 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
       {playerState === "BUFFERING_LYRICS" ? <p className="text-xs text-muted-foreground">Préparation de la suite des paroles…</p> : null}
       {autoplayBlocked ? <p className="text-sm text-primary">Les paroles sont prêtes. Appuyez sur « Démarrer la lecture ».</p> : null}
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" size="icon" className="h-10 w-10 rounded-full" onClick={() => void toggle()} disabled={preparing} aria-label={playerState === "PLAYING" ? "Pause" : "Lecture"}>{playerState === "PLAYING" ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}</Button>
+        <Button type="button" size="icon" className="h-10 w-10 rounded-full" onClick={() => void toggle()} aria-label={playerState === "PLAYING" ? "Pause" : "Lecture"}>{playerState === "PLAYING" ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}</Button>
         <span className="w-9 text-right text-xs text-muted-foreground">{formatTime(currentTime)}</span>
         <input type="range" min={0} max={duration || 1} step={0.1} value={Math.min(currentTime, duration || 1)} onChange={(event) => seek(Number(event.target.value))} className="min-w-32 flex-1 accent-primary" aria-label="Position de lecture" />
         <span className="w-9 text-xs text-muted-foreground">{formatTime(duration)}</span>

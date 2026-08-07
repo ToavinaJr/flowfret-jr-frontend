@@ -16,7 +16,7 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
     <Card className="overflow-hidden">
       <CardContent className="space-y-3 p-3 sm:p-4">
         <div className="flex gap-3">
-          <img src={track.imageUrl ?? "/placeholder.svg"} alt={t("music.albumCoverAlt", { title: track.title })} width={64} height={64} className="h-16 w-16 shrink-0 rounded-md bg-secondary object-cover" />
+          <img src={track.imageUrl ?? "/placeholder.svg"} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/placeholder.svg"; }} alt={t("music.albumCoverAlt", { title: track.title })} width={64} height={64} className="h-16 w-16 shrink-0 rounded-md bg-secondary object-cover" />
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-sm font-semibold text-foreground">{track.title}</h3>
             <p className="truncate text-sm text-muted-foreground">{artistNames}</p>
