@@ -43,6 +43,16 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
   }, [track.audiusId, track.streamUrl]);
 
   function handleAudioError(): void {
+    const mediaError = audioRef.current?.error;
+    console.error("[FretFlow:player] audio_error", {
+      trackId: track.audiusId,
+      retry: streamRetryRef.current,
+      mediaErrorCode: mediaError?.code,
+      mediaErrorMessage: mediaError?.message,
+      networkState: audioRef.current?.networkState,
+      readyState: audioRef.current?.readyState,
+      streamHost: new URL(streamUrl).hostname,
+    });
     if (streamRetryRef.current < 2) {
       streamRetryRef.current += 1;
       const separator = track.streamUrl.includes("?") ? "&" : "?";
@@ -70,11 +80,15 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
     if (!audio) return;
     if (playerState === "PLAYING") { wantsPlaybackRef.current = false; audio.pause(); setPlayerState("PAUSED"); return; }
     if (!transcription) {
+      console.info("[FretFlow:player] preparing", { trackId: track.audiusId, playerState });
       wantsPlaybackRef.current = true; setPlayerState("CHECKING_CACHE");
       try {
         const result = await prepare();
         if (result.readyToPlay) await playFromStart(); else setPlayerState("PREPARING_LYRICS");
-      } catch { setPlayerState("FAILED"); }
+      } catch (prepareError) {
+        console.error("[FretFlow:player] preparation_failed", { trackId: track.audiusId, error: prepareError });
+        setPlayerState("FAILED");
+      }
       return;
     }
     if (transcription.readyToPlay) {
