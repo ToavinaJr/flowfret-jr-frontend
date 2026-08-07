@@ -22,9 +22,6 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
             <p className="truncate text-sm text-muted-foreground">{artistNames}</p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {track.genre ? <Badge variant="outline">{track.genre}</Badge> : null}
-              <Button asChild size="sm" variant="secondary">
-                <a href={track.audiusUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-3.5 w-3.5" />{t("music.openAudius")}</a>
-              </Button>
               {track.geniusUrl ? (
                 <Button asChild size="sm" variant="outline">
                   <a href={track.geniusUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-1 h-3.5 w-3.5" />{t("music.openGenius")}</a>

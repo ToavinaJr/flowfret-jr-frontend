@@ -25,6 +25,7 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
   const animationRef = useRef<number | null>(null);
   const wantsPlaybackRef = useRef(false);
   const pausedForBufferRef = useRef(false);
+  const streamRetryRef = useRef(0);
   const [playerState, setPlayerState] = useState<PlayerPreparationState>("IDLE");
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(track.durationMs / 1000);
@@ -33,7 +34,23 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
   const [muted, setMuted] = useState(false);
   const [rate, setRate] = useState(1);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+  const [streamUrl, setStreamUrl] = useState(track.streamUrl);
   const { transcription, error, prepare, retry } = useTranscriptionEvents(track);
+
+  useEffect(() => {
+    streamRetryRef.current = 0;
+    setStreamUrl(track.streamUrl);
+  }, [track.audiusId, track.streamUrl]);
+
+  function handleAudioError(): void {
+    if (streamRetryRef.current < 2) {
+      streamRetryRef.current += 1;
+      const separator = track.streamUrl.includes("?") ? "&" : "?";
+      setStreamUrl(`${track.streamUrl}${separator}retry=${Date.now()}`);
+      return;
+    }
+    setPlayerState("FAILED");
+  }
 
   const playFromStart = useCallback(async () => {
     const audio = audioRef.current;
@@ -111,7 +128,7 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
 
   return (
     <div className="space-y-3 rounded-lg border border-border bg-secondary/40 p-3">
-      <audio ref={audioRef} src={track.streamUrl} preload="metadata" muted={muted} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || duration)} onEnded={() => setPlayerState("COMPLETED")} onError={() => setPlayerState("FAILED")} />
+      <audio ref={audioRef} src={streamUrl} preload="metadata" muted={muted} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onLoadedMetadata={(event) => { streamRetryRef.current = 0; setDuration(event.currentTarget.duration || duration); }} onEnded={() => setPlayerState("COMPLETED")} onError={handleAudioError} />
       {preparing ? <div className="space-y-2"><p className="text-sm font-medium">Préparation des paroles synchronisées…</p><Progress value={transcription?.progress ?? 0} /><p className="text-xs text-muted-foreground">{(transcription?.bufferedUntil ?? 0).toFixed(1)} secondes préparées</p></div> : null}
       {playerState === "BUFFERING_LYRICS" ? <p className="text-xs text-muted-foreground">Préparation de la suite des paroles…</p> : null}
       {autoplayBlocked ? <p className="text-sm text-primary">Les paroles sont prêtes. Appuyez sur « Démarrer la lecture ».</p> : null}
