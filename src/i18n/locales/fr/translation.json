@@ -30,7 +30,7 @@
   },
   "music": {
     "title": "Rechercher une musique",
-    "subtitle": "Trouvez un clip via YouTube, avec un lien Genius lorsque la correspondance est fiable.",
+    "subtitle": "Trouvez et écoutez des morceaux Audius, avec un lien Genius lorsque la correspondance est fiable.",
     "searchLabel": "Titre ou artiste",
     "searchPlaceholder": "Titre ou artiste",
     "search": "Rechercher",
@@ -42,6 +42,7 @@
     "errorGeneric": "Une erreur est survenue",
     "resultsCount": "{{count}} résultat(s)",
     "openYoutube": "Ouvrir sur YouTube",
+    "openAudius": "Ouvrir sur Audius",
     "openGenius": "Voir sur Genius",
     "preview": "Aperçu",
     "previewUnavailable": "Aperçu indisponible",

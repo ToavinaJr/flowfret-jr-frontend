@@ -4,11 +4,13 @@ export interface MusicArtist {
 }
 
 export interface MusicTrack {
-  youtubeId: string;
+  audiusId: string;
   title: string;
   artists: MusicArtist[];
   imageUrl: string | null;
-  youtubeUrl: string;
+  audiusUrl: string;
+  streamUrl: string;
+  genre: string | null;
   geniusUrl: string | null;
   geniusMatchScore: number | null;
   durationMs: number;

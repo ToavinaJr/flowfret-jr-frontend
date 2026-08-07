@@ -45,7 +45,7 @@ export function MusicSearchResults({
       </p>
       <ul className="space-y-3">
         {tracks.map((track) => (
-          <li key={track.youtubeId}>
+          <li key={track.audiusId}>
             <MusicTrackCard track={track} />
           </li>
         ))}

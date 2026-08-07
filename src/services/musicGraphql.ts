@@ -10,10 +10,12 @@ export const SEARCH_MUSIC_QUERY = `
     searchMusic(query: $query, limit: $limit) {
       total
       tracks {
-        youtubeId
+        audiusId
         title
         imageUrl
-        youtubeUrl
+        audiusUrl
+        streamUrl
+        genre
         geniusUrl
         geniusMatchScore
         durationMs

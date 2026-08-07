@@ -30,7 +30,7 @@
   },
   "music": {
     "title": "Search music",
-    "subtitle": "Find a music video via YouTube, with a Genius link when the match is reliable.",
+    "subtitle": "Find and play music from Audius, with a Genius link when the match is reliable.",
     "searchLabel": "Song title or artist",
     "searchPlaceholder": "Song title or artist",
     "search": "Search",
@@ -42,6 +42,7 @@
     "errorGeneric": "An error occurred",
     "resultsCount": "{{count}} result(s)",
     "openYoutube": "Open on YouTube",
+    "openAudius": "Open on Audius",
     "openGenius": "View on Genius",
     "preview": "Preview",
     "previewUnavailable": "Preview unavailable",
