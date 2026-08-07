@@ -97,6 +97,25 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
     }
   }
 
+  async function handleRetry(): Promise<void> {
+    setPlayerState("CHECKING_CACHE");
+    try {
+      if (transcription) {
+        await retry();
+      } else {
+        const result = await prepare();
+        if (result.readyToPlay) await playFromStart();
+      }
+      setPlayerState("PREPARING_LYRICS");
+    } catch (retryError) {
+      console.error("[FretFlow:player] retry_failed", {
+        trackId: track.audiusId,
+        error: retryError,
+      });
+      setPlayerState("FAILED");
+    }
+  }
+
   useEffect(() => {
     if (transcription?.readyToPlay && wantsPlaybackRef.current && (playerState === "PREPARING_LYRICS" || playerState === "CHECKING_CACHE")) void playFromStart();
     if (transcription?.status === "FAILED") setPlayerState("FAILED");
@@ -157,7 +176,7 @@ export function AudiusMediaPlayer({ track }: AudiusMediaPlayerProps) {
         {transcription?.lrcAvailable ? <Button type="button" size="sm" variant="outline" onClick={() => void downloadTranscriptionLrc(transcription.transcriptionId)}><Download className="mr-1 h-4 w-4" />LRC</Button> : null}
       </div>
       <SynchronizedLyrics segments={transcription?.segments ?? []} activeIndex={activeIndex} onSeek={seek} />
-      {(playerState === "FAILED" || error) ? <div className="flex items-center justify-between gap-2 text-sm text-destructive"><span>{transcription?.error?.message ?? error ?? "La transcription a échoué."}</span><Button type="button" size="sm" variant="outline" onClick={() => void retry()}><RotateCcw className="mr-1 h-4 w-4" />Réessayer</Button></div> : null}
+      {(playerState === "FAILED" || error) ? <div className="flex items-center justify-between gap-2 text-sm text-destructive"><span>{transcription?.error?.message ?? error ?? "La transcription a échoué."}</span><Button type="button" size="sm" variant="outline" onClick={() => void handleRetry()}><RotateCcw className="mr-1 h-4 w-4" />Réessayer</Button></div> : null}
     </div>
   );
 }

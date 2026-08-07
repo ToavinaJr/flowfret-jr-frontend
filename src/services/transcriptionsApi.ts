@@ -16,11 +16,28 @@ function headers(json = false): HeadersInit {
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const startedAt = performance.now();
+  const controller = new AbortController();
+  const timeoutMs = Number(import.meta.env.VITE_TRANSCRIPTION_HTTP_TIMEOUT_MS ?? 20_000);
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
   debug("http.request", {
     method: init?.method ?? "GET",
     path: new URL(url).pathname,
   });
-  const response = await fetch(url, init);
+  let response: Response;
+  try {
+    response = await fetch(url, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      debug("http.timeout", {
+        path: new URL(url).pathname,
+        timeoutMs,
+      });
+      throw new Error(`Le backend de transcription ne répond pas après ${timeoutMs / 1000} secondes`);
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
   debug("http.response", {
     method: init?.method ?? "GET",
     path: new URL(url).pathname,

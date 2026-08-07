@@ -57,6 +57,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
       return response;
     } catch (prepareError) {
       console.error("[FretFlow:transcription] prepare_failed", { trackId: track.audiusId, error: prepareError });
+      setError(prepareError instanceof Error ? prepareError.message : "La préparation de la transcription a échoué");
       void getTranscriptionQueueDiagnostics()
         .then((diagnostics) => console.info("[FretFlow:transcription] queue_diagnostics", diagnostics))
         .catch((diagnosticError) => console.error("[FretFlow:transcription] queue_diagnostics_failed", diagnosticError));
