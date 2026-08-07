@@ -11,7 +11,6 @@ const MusicSearchPage = () => {
   return (
     <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("music.title")}</h1>
-      <p className="mb-6 text-sm text-muted-foreground">{t("music.subtitle")}</p>
 
       <div className="space-y-6">
         <MusicSearchForm loading={loading} onSearch={search} />
