@@ -20,6 +20,7 @@ import ContactPage from "@/pages/ContactPage";
 import ParametresPage from "@/pages/ParametresPage";
 import MusicSearchPage from "@/pages/MusicSearchPage";
 import NotFound from "@/pages/NotFound";
+import HelpPage from "@/pages/HelpPage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/parametres" element={<ParametresPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/help" element={<HelpPage />} />
                   <Route path="/verify-email" element={<FeedPage />} />
                   <Route path="/reset-password" element={<FeedPage />} />
                 </Route>

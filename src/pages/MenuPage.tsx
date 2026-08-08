@@ -9,11 +9,13 @@ import {
   Settings,
   Timer,
   Upload,
+  CircleHelp,
 } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 
 const links = [
+  { to: "/help", label: "help.menuLabel", icon: CircleHelp, desc: "help.menuDescription", translated: true },
   { to: "/music", label: "Music", icon: Search, desc: "Spotify + Genius search" },
   { to: "/scales", label: "Scales", icon: Music2, desc: "Modes on the fretboard" },
   { to: "/metronome", label: "Metronome", icon: Timer, desc: "BPM & tap tempo" },
@@ -44,8 +46,8 @@ const MenuPage = () => {
               <item.icon className="h-4 w-4 text-foreground" />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-medium text-foreground">{item.label}</div>
-              <div className="mt-0.5 text-xs text-muted-foreground">{item.desc}</div>
+              <div className="text-sm font-medium text-foreground">{"translated" in item ? t(item.label) : item.label}</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">{"translated" in item ? t(item.desc) : item.desc}</div>
             </div>
           </Link>
         ))}
