@@ -247,7 +247,7 @@ export async function createFeedComment(data: CreateCommentInput): Promise<{
 
 export async function fetchPostComments(postId: string, skip = 0, take = 20) {
   const result = await graphqlRequest<{ commentsByPost: import('@/types/feed').FeedComment[] }>({
-    query: `query PostComments($postId: String!, $skip: Int!, $take: Int!) { commentsByPost(postId: $postId, skip: $skip, take: $take) { id content createdAt author { id username } } }`,
+    query: `query PostComments($postId: String!, $skip: Int!, $take: Int!) { commentsByPost(postId: $postId, skip: $skip, take: $take) { id content createdAt author { id username profile { avatarUrl } } } }`,
     variables: { postId, skip, take },
   });
   return result.commentsByPost;
@@ -279,7 +279,7 @@ export async function saveProfileImage(userId: string, username: string, avatarU
 }
 
 export async function updateFeedPost(id: string, content: string): Promise<void> {
-  if (!id || !content.trim()) throw new Error("Publication invalide.");
+  if (!id || content.length > 10000) throw new Error("Publication invalide.");
   await graphqlRequest({ query: `mutation UpdateFeedPost($id: String!, $data: UpdatePostInput!) { updatePost(id: $id, data: $data) { id } }`, variables: { id, data: { content: content.trim() } } });
 }
 

@@ -47,7 +47,12 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
   const [dialogComments, setDialogComments] = useState<FeedComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editContent, setEditContent] = useState(post.content ?? "");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const isLiked = post.likes.some((like) => like.userId === currentUserId);
+  const hasImages = post.attachments.length > 0;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,8 +66,32 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
     }
   }
 
+  async function handleEdit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const content = editContent.trim();
+    if (!content && !hasImages) {
+      setEditError("Une publication doit contenir du texte ou une image.");
+      return;
+    }
+    if (content === (post.content ?? "").trim()) {
+      setEditOpen(false);
+      return;
+    }
+    setEditSaving(true);
+    setEditError(null);
+    try {
+      await updateFeedPost(post.id, content);
+      await onChanged();
+      setEditOpen(false);
+    } catch {
+      setEditError("La modification n’a pas pu être enregistrée.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
   return (
-    <article className="flex h-[32rem] flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4">
+    <article className={`flex flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}>
       <div className="mb-3 flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">
           {post.author.username.slice(0, 2).toUpperCase()}
@@ -77,17 +106,39 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
         </div>
         {post.author.id === currentUserId && (
           <div className="ml-auto flex gap-1">
-            <button type="button" aria-label="Modifier la publication" onClick={async () => { const content = window.prompt("Modifier la publication", post.content); if (content?.trim() && content.trim() !== post.content) { await updateFeedPost(post.id, content); await onChanged(); } }} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-foreground"><Pencil className="h-4 w-4" /></button>
+            <button type="button" aria-label="Modifier la publication" onClick={() => { setEditContent(post.content ?? ""); setEditError(null); setEditOpen(true); }} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"><Pencil className="h-4 w-4" /></button>
             <button type="button" aria-label="Supprimer la publication" onClick={async () => { if (window.confirm("Supprimer cette publication ?")) { await deleteFeedPost(post.id); await onChanged(); } }} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
           </div>
         )}
       </div>
-      {post.content && <p className="text-body mb-3 line-clamp-4 whitespace-pre-wrap break-words text-foreground">{post.content}</p>}
+      {post.content && <p className={`text-body mb-3 whitespace-pre-wrap break-words text-foreground ${hasImages ? "line-clamp-4" : "line-clamp-8"}`}>{post.content}</p>}
       {post.attachments.length > 0 && (
         <div className="mb-3 grid h-64 shrink-0 grid-cols-2 gap-1 overflow-hidden rounded-lg bg-secondary">
           {post.attachments.slice(0, 4).map((attachment, index) => <div key={attachment.id} className={`relative overflow-hidden ${post.attachments.length === 1 ? 'col-span-2' : ''}`}><img src={attachment.upload.storagePath} alt={`Image ${index + 1} de la publication`} className="h-full w-full object-cover" loading="lazy" />{index === 3 && post.attachments.length > 4 && <span className="absolute inset-0 grid place-items-center bg-black/60 text-xl font-semibold text-white">+{post.attachments.length - 4}</span>}</div>)}
         </div>
       )}
+      <Dialog open={editOpen} onOpenChange={(open) => { if (!editSaving) setEditOpen(open); }}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-xl rounded-xl p-0">
+          <DialogHeader className="border-b border-border px-5 py-4 text-left">
+            <DialogTitle>Modifier la publication</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEdit} className="space-y-4 px-5 pb-5">
+            <div>
+              <label htmlFor={`edit-post-${post.id}`} className="mb-2 block text-sm font-medium text-foreground">Votre texte</label>
+              <textarea id={`edit-post-${post.id}`} value={editContent} onChange={(event) => { setEditContent(event.target.value); setEditError(null); }} maxLength={10000} rows={6} autoFocus className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-primary" placeholder={hasImages ? "Ajoutez une légende…" : "Écrivez quelque chose…"} />
+              <div className="mt-1 flex justify-between gap-3 text-xs">
+                <span className="text-destructive">{editError}</span>
+                <span className="ml-auto text-muted-foreground">{editContent.length}/10 000</span>
+              </div>
+            </div>
+            {hasImages && <div className="flex gap-2 overflow-x-auto rounded-lg bg-secondary p-2">{post.attachments.map((attachment) => <img key={attachment.id} src={attachment.upload.storagePath} alt="" className="h-16 w-16 shrink-0 rounded-md object-cover" />)}</div>}
+            <div className="flex justify-end gap-2 border-t border-border pt-4">
+              <button type="button" disabled={editSaving} onClick={() => setEditOpen(false)} className="min-h-11 rounded-md px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary disabled:opacity-50">Annuler</button>
+              <button type="submit" disabled={editSaving || (!editContent.trim() && !hasImages)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50">{editSaving && <Loader2 className="h-4 w-4 animate-spin" />}Enregistrer</button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <button
           type="button"
@@ -115,18 +166,24 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
       <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}><DialogContent className="max-h-[85vh]"><DialogHeader><DialogTitle>Commentaires</DialogTitle></DialogHeader>
         <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-2" onScroll={async (event: UIEvent<HTMLDivElement>) => { const el = event.currentTarget; if (!commentsLoading && hasMoreComments && el.scrollHeight - el.scrollTop - el.clientHeight < 80) { setCommentsLoading(true); try { const rows = await fetchPostComments(post.id, dialogComments.length); setDialogComments((current) => [...current, ...rows]); setHasMoreComments(rows.length === 20); } finally { setCommentsLoading(false); } } }}>
           {dialogComments.map((c) => (
-            <div key={c.id} className="break-words text-sm">
-              <span className="font-medium text-foreground">
-                {c.author.username}
-              </span>{" "}
-              <span className="text-muted-foreground">{c.content}</span>
-              {c.author.id === currentUserId && (
-                <span className="ml-2 inline-flex gap-1">
-                  <button type="button" aria-label="Modifier le commentaire" onClick={async () => { const content = window.prompt("Modifier le commentaire", c.content); if (content?.trim() && content.trim() !== c.content) { await updateFeedComment(c.id, content); await onChanged(); } }} className="text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
-                  <button type="button" aria-label="Supprimer le commentaire" onClick={async () => { if (window.confirm("Supprimer ce commentaire ?")) { await deleteFeedComment(c.id); await onChanged(); } }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
-                </span>
-              )}
-            </div>
+            <article key={c.id} className="rounded-lg border border-border bg-card p-3 text-sm">
+              <header className="mb-2 flex items-center gap-2">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-xs font-semibold text-foreground">
+                  {c.author.profile?.avatarUrl ? <img src={c.author.profile.avatarUrl} alt={`Avatar de ${c.author.username}`} className="h-full w-full object-cover" loading="lazy" /> : c.author.username.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-medium text-foreground">{c.author.username}</div>
+                  <div className="text-xs text-muted-foreground">{formatRelative(c.createdAt)}</div>
+                </div>
+                {c.author.id === currentUserId && (
+                  <div className="flex shrink-0 gap-1">
+                    <button type="button" aria-label="Modifier le commentaire" onClick={async () => { const content = window.prompt("Modifier le commentaire", c.content); if (content?.trim() && content.trim() !== c.content) { await updateFeedComment(c.id, content); await onChanged(); } }} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button type="button" aria-label="Supprimer le commentaire" onClick={async () => { if (window.confirm("Supprimer ce commentaire ?")) { await deleteFeedComment(c.id); await onChanged(); } }} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                  </div>
+                )}
+              </header>
+              <p className="whitespace-pre-wrap break-words pl-11 text-foreground/90">{c.content}</p>
+            </article>
           ))}
           {!commentsLoading && dialogComments.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">Aucun commentaire.</p>}
           {commentsLoading && <Loader2 className="mx-auto h-5 w-5 animate-spin" />}

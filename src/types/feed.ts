@@ -1,6 +1,7 @@
 export interface FeedAuthor {
   id: string;
   username: string;
+  profile?: { avatarUrl: string | null } | null;
 }
 
 export interface FeedComment {

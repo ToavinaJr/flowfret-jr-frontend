@@ -36,7 +36,7 @@ const MenuPage = () => {
           <Link
             key={item.to}
             to={item.to}
-            className="flex min-h-[72px] items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-surface-elevated sm:p-4"
+            className={`${item.to === "/metronome" ? "hidden md:flex" : "flex"} min-h-[72px] items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-surface-elevated sm:p-4`}
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-secondary">
               <item.icon className="h-4 w-4 text-foreground" />

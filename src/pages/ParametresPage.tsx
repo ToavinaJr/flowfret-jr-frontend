@@ -11,7 +11,7 @@ const ParametresPage = () => {
 
       <ThemeLanguageControls />
 
-      <div className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
+      <div className="mt-2 rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
         {t("settings.audioNotice")}
       </div>
     </div>

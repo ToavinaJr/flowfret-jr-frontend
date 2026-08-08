@@ -58,7 +58,7 @@ const MobileHeader = () => {
             <SheetTitle className="text-base font-medium">{t("common.menu")}</SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 overflow-y-auto p-3">
-            {SIDEBAR_NAV_ITEMS.map((item) => {
+            {SIDEBAR_NAV_ITEMS.filter((item) => item.path !== "/metronome").map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <NavLink
