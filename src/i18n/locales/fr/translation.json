@@ -64,5 +64,13 @@
     "previewUnavailable": "Aperçu indisponible",
     "albumCoverAlt": "Pochette de {{title}}",
     "videoThumbnailAlt": "Miniature de la vidéo {{title}}"
+  },
+  "circleHarmony": {
+    "major": "Accords majeurs",
+    "minor": "Accords mineurs",
+    "diminished": "Accord diminué",
+    "selectedKey": "Tonalité sélectionnée",
+    "selectKey": "Sélectionner la tonalité de {{key}} majeur",
+    "harmony": "Accords diatoniques de {{key}} majeur"
   }
 }

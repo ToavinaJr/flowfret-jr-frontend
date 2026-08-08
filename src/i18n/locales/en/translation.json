@@ -64,5 +64,13 @@
     "previewUnavailable": "Preview unavailable",
     "albumCoverAlt": "Album cover for {{title}}",
     "videoThumbnailAlt": "Video thumbnail for {{title}}"
+  },
+  "circleHarmony": {
+    "major": "Major chords",
+    "minor": "Minor chords",
+    "diminished": "Diminished chord",
+    "selectedKey": "Selected key",
+    "selectKey": "Select the key of {{key}} major",
+    "harmony": "Diatonic chords in {{key}} major"
   }
 }
