@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { usePitchDetection } from "@/hooks/usePitchDetection";
 import { playStringNote } from "@/utils/stringSound";
+import { useTranslation } from "react-i18next";
 
 const STRINGS = [
   { note: "E4", freq: 329.63, stringIdx: 5, fret: 0 },
@@ -17,6 +18,7 @@ const STRINGS = [
 type TunerMode = "auto" | "manual";
 
 const TunerPage = () => {
+  const { t } = useTranslation();
   const { isListening, reading, error, toggle } = usePitchDetection();
   const [selectedString, setSelectedString] = useState<number | null>(null);
   const [mode, setMode] = useState<TunerMode>("auto");
@@ -50,7 +52,7 @@ const TunerPage = () => {
 
   return (
     <div className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Guitar Tuner</h1>
+      <h1 className={PAGE_TITLE}>{t("tuner.title")}</h1>
 
       <div className="mb-4 flex flex-wrap gap-2 sm:mb-6 md:mb-8">
         <button
@@ -62,7 +64,7 @@ const TunerPage = () => {
               : "bg-secondary text-muted-foreground"
           }`}
         >
-          Automatic
+          {t("tuner.automatic")}
         </button>
         <button
           type="button"
@@ -73,7 +75,7 @@ const TunerPage = () => {
               : "bg-secondary text-muted-foreground"
           }`}
         >
-          Manual
+          {t("tuner.manual")}
         </button>
       </div>
 
@@ -129,7 +131,7 @@ const TunerPage = () => {
             {cents}¢
           </div>
           {isInTune && (
-            <div className="mt-2 text-xs font-medium text-accent">In Tune ✓</div>
+            <div className="mt-2 text-xs font-medium text-accent">{t("tuner.inTune")}</div>
           )}
         </div>
       </div>
@@ -145,7 +147,7 @@ const TunerPage = () => {
               ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px] shadow-primary"
               : "border border-border bg-card text-muted-foreground hover:text-foreground"
           }`}
-          aria-label={isListening ? "Stop microphone" : "Start microphone"}
+          aria-label={t(isListening ? "tuner.stopMicrophone" : "tuner.startMicrophone")}
         >
           {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
         </button>
@@ -159,7 +161,7 @@ const TunerPage = () => {
 
       <div className="rounded-lg border border-border bg-card p-3 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          {mode === "manual" ? "Select String" : "Reference strings"}
+          {t(mode === "manual" ? "tuner.selectString" : "tuner.referenceStrings")}
         </div>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {STRINGS.map((s, i) => (

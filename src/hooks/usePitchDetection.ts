@@ -111,7 +111,7 @@ export function usePitchDetection(): UsePitchDetectionResult {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const rafRef = useRef<number | null>(null);
-  const bufferRef = useRef<Float32Array | null>(null);
+  const bufferRef = useRef<Float32Array<ArrayBuffer> | null>(null);
 
   const stop = useCallback(() => {
     if (rafRef.current !== null) {

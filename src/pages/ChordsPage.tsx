@@ -11,12 +11,14 @@ import {
   getSuffixesByKey,
 } from "@/utils/chords";
 import { playStringNote, strumChord } from "@/utils/stringSound";
+import { useTranslation } from "react-i18next";
 
 type CategoryFilter = "All" | "Major" | "Minor" | "7th" | "Other";
 
 const CATEGORIES: CategoryFilter[] = ["All", "Major", "Minor", "7th", "Other"];
 
 const ChordsPage = () => {
+  const { t } = useTranslation();
   const keys = useMemo(() => getKeys(), []);
   const [selectedKey, setSelectedKey] = useState(keys[0] ?? "C");
   const [search, setSearch] = useState("");
@@ -58,13 +60,13 @@ const ChordsPage = () => {
 
   return (
     <div className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Chord Explorer</h1>
+      <h1 className={PAGE_TITLE}>{t("chords.title")}</h1>
 
       <div className="relative mb-3 sm:mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Search chords... (Am, Cmaj7, F#dim)"
+          placeholder={t("chords.searchPlaceholder")}
           value={search}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
           className="w-full min-h-[44px] rounded-lg border border-border bg-card py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
@@ -162,7 +164,7 @@ const ChordsPage = () => {
                     ←
                   </button>
                   <span className="text-xs font-musical text-muted-foreground">
-                    Voicing {positionIndex + 1}/
+                    {t("chords.voicing")} {positionIndex + 1}/
                     {chord?.positions.length ?? 1}
                   </span>
                   <button
@@ -190,13 +192,13 @@ const ChordsPage = () => {
                   className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 >
                   <Play className="h-4 w-4" />
-                  Strum
+                  {t("chords.strum")}
                 </button>
               </div>
             </div>
           ) : (
             <div className="py-8 text-sm text-muted-foreground sm:py-12">
-              Select a chord to preview
+              {t("chords.selectPrompt")}
             </div>
           )}
         </div>

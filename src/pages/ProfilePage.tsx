@@ -4,9 +4,11 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchMyProfile, saveProfileImage, uploadImages } from "@/services/api";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const initial = (user?.username?.[0] ?? "U").toUpperCase();
   const [profileId, setProfileId] = useState<string>();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -55,7 +57,7 @@ const ProfilePage = () => {
           to="/menu"
           className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
         >
-          Open menu
+          {t("profile.openMenu")}
         </Link>
         <button
           type="button"
@@ -63,14 +65,12 @@ const ProfilePage = () => {
           className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-md bg-secondary py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover"
         >
           <LogOut className="h-4 w-4" />
-          Log out
+          {t("profile.logout")}
         </button>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
-        Retrouvez tous vos outils pour progresser : accords, gammes, lecteur,
-        métronome et import de morceaux. Partagez aussi vos progrès et vos
-        découvertes avec la communauté FretFlow.
+      <div className="mt-2 rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
+        {t("profile.description")}
       </div>
     </div>
   );

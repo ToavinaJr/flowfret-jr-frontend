@@ -5,11 +5,13 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { analyzeAudioFile } from "@/utils/chordDetection";
 import { setImportedSong } from "@/utils/importStore";
 import type { SongMeta } from "@/types/song";
+import { useTranslation } from "react-i18next";
 
 type UploadStatus = "idle" | "analyzing" | "error";
 
 const UploadPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [status, setStatus] = useState<UploadStatus>("idle");
@@ -20,12 +22,12 @@ const UploadPage = () => {
   async function processFile(file: File) {
     if (!file.type.startsWith("audio/") && !/\.(mp3|wav|m4a|aac|ogg)$/i.test(file.name)) {
       setStatus("error");
-      setErrorMessage("Please select an audio file (MP3, WAV…).");
+      setErrorMessage(t("upload.invalidFile"));
       return;
     }
     if (file.size > 20 * 1024 * 1024) {
       setStatus("error");
-      setErrorMessage("File too large (max 20MB).");
+      setErrorMessage(t("upload.tooLarge"));
       return;
     }
 
@@ -50,7 +52,7 @@ const UploadPage = () => {
       navigate("/player");
     } catch {
       setStatus("error");
-      setErrorMessage("Analysis failed. Try another file.");
+      setErrorMessage(t("upload.analysisFailed"));
     }
   }
 
@@ -69,7 +71,7 @@ const UploadPage = () => {
   if (status === "analyzing") {
     return (
       <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
-        <h1 className={PAGE_TITLE}>Analyzing…</h1>
+        <h1 className={PAGE_TITLE}>{t("upload.analyzing")}</h1>
         <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
           <p className="mb-3 text-sm text-muted-foreground">{progressLabel}</p>
           <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -88,7 +90,7 @@ const UploadPage = () => {
 
   return (
     <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
-      <h1 className={PAGE_TITLE}>Upload & Analyze</h1>
+      <h1 className={PAGE_TITLE}>{t("upload.title")}</h1>
 
       <div
         onDragOver={(e: DragEvent<HTMLDivElement>) => {
@@ -115,9 +117,9 @@ const UploadPage = () => {
           }`}
         />
         <div className="mb-1 text-sm text-foreground">
-          Drop your audio file here
+          {t("upload.dropHere")}
         </div>
-        <div className="text-xs text-muted-foreground">MP3, WAV · Max 20MB</div>
+        <div className="text-xs text-muted-foreground">{t("upload.formats")}</div>
         <input
           ref={fileRef}
           type="file"
@@ -135,7 +137,7 @@ const UploadPage = () => {
 
       <div className="mt-6 rounded-lg border border-border bg-card p-3 sm:mt-8 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          How it works
+          {t("upload.howItWorks")}
         </div>
         <div className="space-y-3">
           {[

@@ -17,6 +17,7 @@ import {
 } from "@/services/googleAuth";
 import { ApiClientError } from "@/types/api";
 import type { AuthMode } from "@/types/auth";
+import { useTranslation } from "react-i18next";
 
 interface AuthGateProps {
   children: ReactNode;
@@ -51,6 +52,7 @@ function GoogleLogo({ className }: { className?: string }) {
 }
 
 export function AuthGate({ children }: AuthGateProps) {
+  const { t } = useTranslation();
   const {
     status,
     login,
@@ -293,27 +295,9 @@ export function AuthGate({ children }: AuthGateProps) {
     }
   }
 
-  const title =
-    mode === "login"
-      ? "Bon retour"
-      : mode === "register"
-        ? "Créer un compte"
-        : mode === "verify"
-          ? "Vérifier votre e-mail"
-          : mode === "forgot"
-            ? "Mot de passe oublié"
-            : "Nouveau mot de passe";
+  const title = t(`auth.title.${mode}`);
 
-  const subtitle =
-    mode === "login"
-      ? "Connectez-vous pour continuer à pratiquer et partager."
-      : mode === "register"
-        ? "Rejoignez FretFlow et débloquez votre workflow guitare."
-        : mode === "verify"
-          ? `Saisissez le code à 4 chiffres envoyé à ${pendingEmail || "votre e-mail"}.`
-          : mode === "forgot"
-            ? "Saisissez votre adresse e-mail pour recevoir un lien sécurisé."
-            : "Choisissez un nouveau mot de passe d’au moins 8 caractères.";
+  const subtitle = t(`auth.subtitle.${mode}`, { email: pendingEmail || t("auth.yourEmail") });
 
   return (
     <div className="grid min-h-screen w-full overflow-x-hidden bg-background lg:grid-cols-2">

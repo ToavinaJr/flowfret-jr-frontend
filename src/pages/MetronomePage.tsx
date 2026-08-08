@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Minus, Plus, Play, Square } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { useTranslation } from "react-i18next";
 import { playClick } from "@/utils/stringSound";
 import {
   registerAudioOwner,
@@ -14,6 +15,7 @@ const BEATS_OPTIONS = [2, 3, 4, 6] as const;
 type BeatsPerMeasure = (typeof BEATS_OPTIONS)[number];
 
 const MetronomePage = () => {
+  const { t } = useTranslation();
   const [bpm, setBpm] = useState(100);
   const [beats, setBeats] = useState<BeatsPerMeasure>(4);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -102,7 +104,7 @@ const MetronomePage = () => {
 
   return (
     <div className={`${PAGE_SHELL} max-w-lg lg:max-w-lg`}>
-      <h1 className={PAGE_TITLE}>Metronome</h1>
+      <h1 className={PAGE_TITLE}>{t("metronome.title")}</h1>
 
       <div className="mb-4 rounded-lg border border-border bg-card p-4 text-center sm:mb-6 sm:p-6 md:p-8">
         <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -117,7 +119,7 @@ const MetronomePage = () => {
             type="button"
             onClick={() => adjustBpm(-1)}
             className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-secondary hover:bg-surface-hover sm:h-12 sm:w-12"
-            aria-label="Decrease BPM"
+            aria-label={t("metronome.decrease")}
           >
             <Minus className="h-5 w-5" />
           </button>
@@ -136,7 +138,7 @@ const MetronomePage = () => {
             type="button"
             onClick={() => adjustBpm(1)}
             className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-secondary hover:bg-surface-hover sm:h-12 sm:w-12"
-            aria-label="Increase BPM"
+            aria-label={t("metronome.increase")}
           >
             <Plus className="h-5 w-5" />
           </button>
@@ -164,7 +166,7 @@ const MetronomePage = () => {
             else start();
           }}
           className="inline-flex h-14 w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 sm:h-16 sm:w-16"
-          aria-label={isPlaying ? "Stop" : "Start"}
+          aria-label={t(isPlaying ? "metronome.stop" : "metronome.start")}
         >
           {isPlaying ? (
             <Square className="h-6 w-6" />
@@ -176,7 +178,7 @@ const MetronomePage = () => {
 
       <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          Time signature
+          {t("metronome.timeSignature")}
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {BEATS_OPTIONS.map((option) => (
@@ -201,7 +203,7 @@ const MetronomePage = () => {
         onClick={handleTapTempo}
         className="w-full min-h-[52px] rounded-lg bg-secondary font-medium text-foreground transition-colors hover:bg-surface-hover"
       >
-        Tap Tempo
+        {t("metronome.tapTempo")}
       </button>
     </div>
   );

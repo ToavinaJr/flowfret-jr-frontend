@@ -3,8 +3,10 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { ScaleFretboard } from "@/components/features/scales/ScaleFretboard";
 import { useScaleNotes } from "@/hooks/useScaleNotes";
 import { useScaleSelection } from "@/hooks/useScaleSelection";
+import { useTranslation } from "react-i18next";
 
 const ScalesPage = () => {
+  const { t } = useTranslation();
   const {
     selectedKey,
     selectedScale,
@@ -17,14 +19,14 @@ const ScalesPage = () => {
 
   return (
     <div className={PAGE_SHELL}>
-      <h1 className={`${PAGE_TITLE} mb-2`}>Scales</h1>
+      <h1 className={`${PAGE_TITLE} mb-2`}>{t("scales.title")}</h1>
       <p className="mb-4 text-sm text-muted-foreground sm:mb-6">
-        Explore modes on the fretboard — tap notes to hear them.
+        {t("scales.description")}
       </p>
 
       <div className="mb-3 rounded-lg border border-border bg-card p-3 sm:mb-4 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          Root
+          {t("scales.root")}
         </div>
         <div className="flex flex-wrap gap-2">
           {availableKeys.map((key) => (
@@ -46,7 +48,7 @@ const ScalesPage = () => {
 
       <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:mb-6 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          Scale
+          {t("scales.scale")}
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {availableScales.map((id) => (

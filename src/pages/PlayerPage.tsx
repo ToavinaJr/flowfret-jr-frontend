@@ -20,6 +20,7 @@ import {
   getImportVersion,
 } from "@/utils/importStore";
 import { playStringNote } from "@/utils/stringSound";
+import { useTranslation } from "react-i18next";
 
 function loadDefaultMeta(): SongMeta {
   if (!isSongMeta(audioMetaJson)) {
@@ -36,6 +37,7 @@ function formatTime(seconds: number): string {
 }
 
 const PlayerPage = () => {
+  const { t } = useTranslation();
   const defaultMeta = useMemo(() => loadDefaultMeta(), []);
   const [importVersion, setImportVersion] = useState(getImportVersion());
   const imported = getImportedSong();
@@ -55,7 +57,7 @@ const PlayerPage = () => {
     usePlayerAudio({
       src,
       title: meta.title,
-      subtitle: imported ? "Morceau importé · Guitar Player" : "Démo · Guitar Player",
+      subtitle: t(imported ? "player.importedSubtitle" : "player.demoSubtitle"),
     });
 
   const cueIndex = getCueIndexAtTime(meta.cues, currentTime);
@@ -96,15 +98,15 @@ const PlayerPage = () => {
             {meta.title}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {uniqueChords.length} chords · {formatTime(meta.duration)}
-            {imported ? " · Imported" : " · Demo track"}
+            {t("player.chordCount", { count: uniqueChords.length })} · {formatTime(meta.duration)}
+            {t(imported ? "player.importedSuffix" : "player.demoSuffix")}
           </p>
         </div>
         <button
           type="button"
           onClick={() => seek(0)}
           className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center self-start rounded-md bg-secondary text-muted-foreground hover:text-foreground"
-          aria-label="Restart"
+          aria-label={t("player.restart")}
         >
           <SkipBack className="h-4 w-4" />
         </button>
@@ -122,7 +124,7 @@ const PlayerPage = () => {
           />
         ) : (
           <div className="py-10 text-sm text-muted-foreground sm:py-16">
-            Play to sync chords
+            {t("player.syncPrompt")}
           </div>
         )}
       </div>
@@ -135,7 +137,7 @@ const PlayerPage = () => {
               void toggle();
             }}
             className="mx-auto flex h-12 w-12 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 sm:mx-0"
-            aria-label={playState === "playing" ? "Pause" : "Play"}
+            aria-label={t(playState === "playing" ? "player.pause" : "player.play")}
           >
             {playState === "playing" ? (
               <Pause className="h-5 w-5" />
@@ -154,7 +156,7 @@ const PlayerPage = () => {
                 seek(Number(e.target.value))
               }
               className="w-full accent-primary"
-              aria-label="Seek"
+              aria-label={t("player.seek")}
             />
             <div className="mt-1 flex justify-between font-musical text-xs text-muted-foreground">
               <span>{formatTime(currentTime)}</span>
@@ -170,14 +172,14 @@ const PlayerPage = () => {
         </div>
         {playState === "error" && (
           <p className="mt-2 text-xs text-destructive">
-            Unable to play this audio source.
+            {t("player.audioError")}
           </p>
         )}
       </div>
 
       <div className="rounded-lg border border-border bg-card p-3 sm:p-4">
         <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-          Chord timeline
+          {t("player.timeline")}
         </div>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           {meta.cues
