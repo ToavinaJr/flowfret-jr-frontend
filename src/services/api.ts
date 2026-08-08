@@ -254,7 +254,7 @@ export async function fetchPostComments(postId: string, skip = 0, take = 20) {
 }
 
 export async function uploadImages(files: File[]): Promise<Array<{ id: string; storagePath: string }>> {
-  if (!files.length || files.length > 6) throw new Error('Sélectionnez entre 1 et 6 images.');
+  if (!files.length || files.length > 12) throw new Error('Sélectionnez entre 1 et 12 images.');
   const allowed = new Set(['image/jpeg', 'image/png', 'image/webp']);
   if (files.some((file) => !allowed.has(file.type) || file.size > 8 * 1024 * 1024)) throw new Error('Images JPEG, PNG ou WebP uniquement, 8 Mo maximum.');
   const form = new FormData();

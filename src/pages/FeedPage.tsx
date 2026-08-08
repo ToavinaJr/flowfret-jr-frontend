@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
 import { PostComposer } from "@/components/feed/PostComposer";
 import { DeleteConfirmationDialog } from "@/components/feed/DeleteConfirmationDialog";
+import { DetailsPost } from "@/components/feed/DetailsPost";
 
 function formatRelative(iso: string): string {
   const then = new Date(iso).getTime();
@@ -56,6 +57,7 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [commentEditSaving, setCommentEditSaving] = useState(false);
   const [commentEditError, setCommentEditError] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editContent, setEditContent] = useState(post.content ?? "");
   const [editSaving, setEditSaving] = useState(false);
@@ -120,7 +122,7 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
   }
 
   return (
-    <article className={`flex flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}>
+    <article onClick={(event) => { if (!(event.target as HTMLElement).closest("button, input, textarea, a, [role='dialog']")) setDetailsOpen(true); }} className={`flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}>
       <div className="mb-3 flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">
           {post.author.username.slice(0, 2).toUpperCase()}
@@ -143,9 +145,10 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
       {post.content && <p className={`text-body mb-3 whitespace-pre-wrap break-words text-foreground ${hasImages ? "line-clamp-4" : "line-clamp-8"}`}>{post.content}</p>}
       {post.attachments.length > 0 && (
         <div className="mb-3 grid h-64 shrink-0 grid-cols-2 gap-1 overflow-hidden rounded-lg bg-secondary">
-          {post.attachments.slice(0, 4).map((attachment, index) => <div key={attachment.id} className={`relative overflow-hidden ${post.attachments.length === 1 ? 'col-span-2' : ''}`}><img src={attachment.upload.storagePath} alt={`Image ${index + 1} de la publication`} className="h-full w-full object-cover" loading="lazy" />{index === 3 && post.attachments.length > 4 && <span className="absolute inset-0 grid place-items-center bg-black/60 text-xl font-semibold text-white">+{post.attachments.length - 4}</span>}</div>)}
+          {post.attachments.slice(0, 4).map((attachment, index) => <div key={attachment.id} className={`relative overflow-hidden ${post.attachments.length === 1 ? 'col-span-2' : ''}`}><img src={attachment.upload.storagePath} alt={t("postDetails.previewAlt", { number: index + 1 })} className="h-full w-full object-cover" loading="lazy" />{index === 3 && post.attachments.length > 4 && <span className="absolute inset-0 grid place-items-center bg-black/60 px-2 text-center text-lg font-semibold text-white">{t("postDetails.morePhotos", { count: post.attachments.length - 4 })}</span>}</div>)}
         </div>
       )}
+      <DetailsPost post={post} open={detailsOpen} onOpenChange={setDetailsOpen} />
       <Dialog open={editOpen} onOpenChange={(open) => { if (!editSaving) setEditOpen(open); }}>
         <DialogContent className="w-[calc(100%-2rem)] max-w-xl rounded-xl p-0">
           <DialogHeader className="border-b border-border px-5 py-4 text-left">
