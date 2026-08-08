@@ -39,7 +39,7 @@ export function CircleOfFifths() {
   };
 
   return <div>
-    <svg viewBox="0 0 500 500" className="mx-auto aspect-square w-full max-w-2xl drop-shadow-lg" aria-label={t("help.circle.title")}>
+    <svg viewBox="0 0 500 500" className="mx-auto aspect-square w-full max-w-xl drop-shadow-lg" aria-label={t("help.circle.title")}>
       <circle cx={CENTER} cy={CENTER} r="234" fill="hsl(205 78% 18%)" />
       {major.map((note, index) => {
         const start = index * 30 - 15;
