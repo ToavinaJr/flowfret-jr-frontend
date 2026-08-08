@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
 import { PostComposer } from "@/components/feed/PostComposer";
+import { DeleteConfirmationDialog } from "@/components/feed/DeleteConfirmationDialog";
 
 function formatRelative(iso: string): string {
   const then = new Date(iso).getTime();
@@ -43,6 +44,7 @@ interface FeedCardProps {
 }
 
 function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: FeedCardProps) {
+  const { t } = useTranslation();
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [liking, setLiking] = useState(false);
@@ -134,7 +136,7 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
         {post.author.id === currentUserId && (
           <div className="ml-auto flex gap-1">
             <button type="button" aria-label="Modifier la publication" onClick={() => { setEditContent(post.content ?? ""); setEditError(null); setEditOpen(true); }} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"><Pencil className="h-4 w-4" /></button>
-            <button type="button" aria-label="Supprimer la publication" onClick={async () => { if (window.confirm("Supprimer cette publication ?")) { await deleteFeedPost(post.id); await onChanged(); } }} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+            <DeleteConfirmationDialog entity="post" onConfirm={async () => { await deleteFeedPost(post.id); await onChanged(); }} trigger={<button type="button" aria-label={t("deleteDialog.post.trigger")} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>} />
           </div>
         )}
       </div>
@@ -205,7 +207,7 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
                 {c.author.id === currentUserId && (
                   <div className="flex shrink-0 gap-1">
                     <button type="button" aria-label="Modifier le commentaire" disabled={commentEditSaving} onClick={() => { setEditingCommentId(c.id); setEditingCommentContent(c.content); setCommentEditError(null); }} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"><Pencil className="h-3.5 w-3.5" /></button>
-                    <button type="button" aria-label="Supprimer le commentaire" onClick={async () => { if (window.confirm("Supprimer ce commentaire ?")) { await deleteFeedComment(c.id); await onChanged(); } }} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                    <DeleteConfirmationDialog entity="comment" onConfirm={async () => { await deleteFeedComment(c.id); setDialogComments((current) => current.filter((item) => item.id !== c.id)); await onChanged(); }} trigger={<button type="button" aria-label={t("deleteDialog.comment.trigger")} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>} />
                   </div>
                 )}
               </header>
