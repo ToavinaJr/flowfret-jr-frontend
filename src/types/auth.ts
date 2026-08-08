@@ -33,4 +33,4 @@ export interface VerifyEmailInput {
 }
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
-export type AuthMode = "login" | "register" | "verify";
+export type AuthMode = "login" | "register" | "verify" | "forgot" | "reset";

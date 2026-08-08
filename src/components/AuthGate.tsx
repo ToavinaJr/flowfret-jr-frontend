@@ -8,6 +8,7 @@ import { AuthFormFields } from "@/components/auth/AuthFormFields";
 import { AuthHighlights } from "@/components/auth/AuthHighlights";
 import { AuthModeSwitcher } from "@/components/auth/AuthModeSwitcher";
 import { OtpForm } from "@/components/auth/OtpForm";
+import { PasswordResetForm } from "@/components/auth/PasswordResetForm";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import {
@@ -57,6 +58,8 @@ export function AuthGate({ children }: AuthGateProps) {
     register,
     verifyEmail,
     resendVerification,
+    requestPasswordReset,
+    resetPassword,
   } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
@@ -70,12 +73,19 @@ export function AuthGate({ children }: AuthGateProps) {
   } = useAuthForm();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [verificationToken, setVerificationToken] = useState("");
+  const [passwordResetToken, setPasswordResetToken] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const googleConfigured = getGoogleClientId().length > 0;
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get("token");
+    const isResetPath = window.location.pathname === "/reset-password";
+    if (tokenFromUrl && isResetPath) {
+      setPasswordResetToken(tokenFromUrl);
+      setMode("reset");
+      return;
+    }
     const isVerifyPath = window.location.pathname === "/verify-email";
     if (tokenFromUrl && (isVerifyPath || searchParams.has("token"))) {
       setVerificationToken(tokenFromUrl);
@@ -109,6 +119,7 @@ export function AuthGate({ children }: AuthGateProps) {
         setSearchParams(nextParams, { replace: true });
       }
     }
+    if (next !== "reset") setPasswordResetToken("");
   }
 
   async function handleGoogleClick() {
@@ -146,9 +157,7 @@ export function AuthGate({ children }: AuthGateProps) {
   }
 
   function handleForgotPassword() {
-    toast.message("Réinitialisation bientôt disponible.", {
-      description: "Contactez le support si vous avez besoin de récupérer l’accès.",
-    });
+    switchMode("forgot");
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -161,6 +170,37 @@ export function AuthGate({ children }: AuthGateProps) {
     setError(null);
 
     try {
+      if (mode === "forgot") {
+        await requestPasswordReset(formState.email);
+        toast.success("Demande envoyée", {
+          description:
+            "Si un compte correspond à cette adresse, un lien vient d’être envoyé.",
+        });
+        switchMode("login");
+        return;
+      }
+
+      if (mode === "reset") {
+        if (!passwordResetToken) {
+          setError("Lien de réinitialisation manquant.");
+          return;
+        }
+        if (formState.password.length < 8) {
+          setError("Le mot de passe doit contenir au moins 8 caractères.");
+          return;
+        }
+        if (formState.password !== formState.confirmPassword) {
+          setError("Les mots de passe ne correspondent pas.");
+          return;
+        }
+        await resetPassword(passwordResetToken, formState.password);
+        toast.success("Mot de passe modifié", {
+          description: "Vous pouvez maintenant vous connecter.",
+        });
+        switchMode("login");
+        return;
+      }
+
       if (mode === "login") {
         await login({ email: formState.email, password: formState.password });
         return;
@@ -258,14 +298,22 @@ export function AuthGate({ children }: AuthGateProps) {
       ? "Bon retour"
       : mode === "register"
         ? "Créer un compte"
-        : "Vérifier votre e-mail";
+        : mode === "verify"
+          ? "Vérifier votre e-mail"
+          : mode === "forgot"
+            ? "Mot de passe oublié"
+            : "Nouveau mot de passe";
 
   const subtitle =
     mode === "login"
       ? "Connectez-vous pour continuer à pratiquer et partager."
       : mode === "register"
         ? "Rejoignez FretFlow et débloquez votre workflow guitare."
-        : `Saisissez le code à 4 chiffres envoyé à ${pendingEmail || "votre e-mail"}.`;
+        : mode === "verify"
+          ? `Saisissez le code à 4 chiffres envoyé à ${pendingEmail || "votre e-mail"}.`
+          : mode === "forgot"
+            ? "Saisissez votre adresse e-mail pour recevoir un lien sécurisé."
+            : "Choisissez un nouveau mot de passe d’au moins 8 caractères.";
 
   return (
     <div className="grid min-h-screen w-full overflow-x-hidden bg-background lg:grid-cols-2">
@@ -273,7 +321,7 @@ export function AuthGate({ children }: AuthGateProps) {
         <div className="w-full max-w-md">
           <AuthHeader title={title} subtitle={subtitle} />
 
-          {mode !== "verify" && (
+          {mode !== "verify" && mode !== "forgot" && mode !== "reset" && (
             <AuthModeSwitcher mode={mode} onSwitchMode={switchMode} />
           )}
 
@@ -311,6 +359,33 @@ export function AuthGate({ children }: AuthGateProps) {
                     type="button"
                     onClick={() => switchMode("login")}
                     className="w-full min-h-[44px] text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Retour à la connexion
+                  </button>
+                </>
+              ) : mode === "forgot" || mode === "reset" ? (
+                <>
+                  <PasswordResetForm
+                    mode={mode}
+                    email={formState.email}
+                    password={formState.password}
+                    confirmPassword={formState.confirmPassword}
+                    pending={pendingAction === "submit"}
+                    onEmailChange={(value) => setField("email", value)}
+                    onPasswordChange={(value) => setField("password", value)}
+                    onConfirmPasswordChange={(value) =>
+                      setField("confirmPassword", value)
+                    }
+                  />
+                  {error && (
+                    <p className="text-sm text-destructive" role="alert">
+                      {error}
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => switchMode("login")}
+                    className="min-h-[44px] w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Retour à la connexion
                   </button>

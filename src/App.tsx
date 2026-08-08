@@ -47,6 +47,7 @@ const App = () => (
                   <Route path="/parametres" element={<ParametresPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/verify-email" element={<FeedPage />} />
+                  <Route path="/reset-password" element={<FeedPage />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>

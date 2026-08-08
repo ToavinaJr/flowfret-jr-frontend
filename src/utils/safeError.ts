@@ -39,6 +39,7 @@ const ALLOWED_EXACT_MESSAGES = new Set([
   "Unable to reach Google.",
   "Invalid Google access token.",
   "Invalid Google profile.",
+  "Invalid or expired password reset link.",
 ]);
 
 const MESSAGE_FR: Record<string, string> = {
@@ -58,6 +59,8 @@ const MESSAGE_FR: Record<string, string> = {
   "Unable to reach Google.": "Impossible de joindre Google.",
   "Invalid Google access token.": "Jeton Google invalide.",
   "Invalid Google profile.": "Profil Google invalide.",
+  "Invalid or expired password reset link.":
+    "Lien de réinitialisation invalide ou expiré.",
 };
 
 function looksLikeInternalOrSchemaError(message: string): boolean {

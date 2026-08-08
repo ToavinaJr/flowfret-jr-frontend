@@ -58,6 +58,18 @@ const RESEND_VERIFICATION_MUTATION = `
   }
 `;
 
+const REQUEST_PASSWORD_RESET_MUTATION = `
+  mutation RequestPasswordReset($data: RequestPasswordResetInput!) {
+    requestPasswordReset(data: $data)
+  }
+`;
+
+const RESET_PASSWORD_MUTATION = `
+  mutation ResetPassword($data: ResetPasswordInput!) {
+    resetPassword(data: $data)
+  }
+`;
+
 const FEED_QUERY = `
   query GetFeedPosts {
     posts {
@@ -175,6 +187,20 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
     query: FEED_QUERY,
   });
   return result.posts;
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  await graphqlRequest({
+    query: REQUEST_PASSWORD_RESET_MUTATION,
+    variables: { data: { email } },
+  });
+}
+
+export async function resetPassword(token: string, password: string): Promise<void> {
+  await graphqlRequest({
+    query: RESET_PASSWORD_MUTATION,
+    variables: { data: { token, password } },
+  });
 }
 
 export async function createFeedLike(postId: string, userId: string): Promise<void> {
