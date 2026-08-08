@@ -28,6 +28,7 @@ interface SpotifyPlaybackEvent {
 interface SpotifyEmbedController {
   loadEntity: (uri: string) => void;
   play: () => void;
+  resume: () => void;
   pause: () => void;
   seek: (seconds: number) => void;
   destroy: () => void;
@@ -180,6 +181,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const play = useCallback(async (next?: PlaybackItem) => {
+    const isSameItem = !next || (
+      itemRef.current?.id === next.id && itemRef.current.src === next.src
+    );
     if (next) select(next);
     const audio = audioRef.current;
     const activeItem = next ?? itemRef.current;
@@ -187,7 +191,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     try {
       if (activeItem.engine === "spotify") {
         const controller = await getSpotifyController(activeItem.src);
-        controller.play();
+        if (isSameItem && spotifyUriRef.current === activeItem.src) {
+          controller.resume();
+        } else {
+          controller.play();
+        }
         return;
       }
       if (!audio) return;
