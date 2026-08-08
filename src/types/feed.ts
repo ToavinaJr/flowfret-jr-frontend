@@ -18,14 +18,16 @@ export interface FeedPost {
   commentCount: number;
   createdAt: string;
   author: FeedAuthor;
-  comments: FeedComment[];
+  comments?: FeedComment[];
   likes: Array<{ id: string; userId: string }>;
+  attachments: Array<{ id: string; upload: { id: string; storagePath: string } }>;
   isDeleted?: boolean;
 }
 
 export interface CreatePostInput {
-  content: string;
+  content?: string;
   authorId: string;
+  imageUploadIds?: string[];
 }
 
 export interface CreateCommentInput {

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent, type UIEvent } from "react";
 import { Heart, Loader2, MessageCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,10 +11,14 @@ import {
   deleteFeedComment,
   deleteFeedPost,
   fetchFeedPosts,
+  fetchPostComments,
+  uploadImages,
   updateFeedComment,
   updateFeedPost,
 } from "@/services/api";
 import type { FeedPost } from "@/types/feed";
+import type { FeedComment } from "@/types/feed";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function formatRelative(iso: string): string {
   const then = new Date(iso).getTime();
@@ -39,6 +43,10 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [liking, setLiking] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [dialogComments, setDialogComments] = useState<FeedComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
   const isLiked = post.likes.some((like) => like.userId === currentUserId);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -54,7 +62,7 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
   }
 
   return (
-    <article className="rounded-lg border border-border bg-card p-3 sm:p-4">
+    <article className="flex h-[32rem] flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4">
       <div className="mb-3 flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">
           {post.author.username.slice(0, 2).toUpperCase()}
@@ -74,9 +82,12 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
           </div>
         )}
       </div>
-      <p className="text-body mb-3 whitespace-pre-wrap break-words text-foreground">
-        {post.content}
-      </p>
+      {post.content && <p className="text-body mb-3 line-clamp-4 whitespace-pre-wrap break-words text-foreground">{post.content}</p>}
+      {post.attachments.length > 0 && (
+        <div className="mb-3 grid h-64 shrink-0 grid-cols-2 gap-1 overflow-hidden rounded-lg bg-secondary">
+          {post.attachments.slice(0, 4).map((attachment, index) => <div key={attachment.id} className={`relative overflow-hidden ${post.attachments.length === 1 ? 'col-span-2' : ''}`}><img src={attachment.upload.storagePath} alt={`Image ${index + 1} de la publication`} className="h-full w-full object-cover" loading="lazy" />{index === 3 && post.attachments.length > 4 && <span className="absolute inset-0 grid place-items-center bg-black/60 text-xl font-semibold text-white">+{post.attachments.length - 4}</span>}</div>)}
+        </div>
+      )}
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <button
           type="button"
@@ -96,14 +107,14 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
           <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
           <span>{post.likeCount} {post.likeCount <= 1 ? "like" : "likes"}</span>
         </button>
-        <span className="inline-flex items-center gap-1">
+        <button type="button" onClick={async () => { setCommentsOpen(true); setCommentsLoading(true); try { const rows = await fetchPostComments(post.id); setDialogComments(rows); setHasMoreComments(rows.length === 20); } finally { setCommentsLoading(false); } }} className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 hover:bg-secondary" aria-label="Afficher les commentaires">
           <MessageCircle className="h-3.5 w-3.5" />
           {post.commentCount}
-        </span>
+        </button>
       </div>
-      {post.comments.length > 0 && (
-        <div className="mb-3 space-y-2 border-t border-border pt-3">
-          {post.comments.slice(0, 5).map((c) => (
+      <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}><DialogContent className="max-h-[85vh]"><DialogHeader><DialogTitle>Commentaires</DialogTitle></DialogHeader>
+        <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-2" onScroll={async (event: UIEvent<HTMLDivElement>) => { const el = event.currentTarget; if (!commentsLoading && hasMoreComments && el.scrollHeight - el.scrollTop - el.clientHeight < 80) { setCommentsLoading(true); try { const rows = await fetchPostComments(post.id, dialogComments.length); setDialogComments((current) => [...current, ...rows]); setHasMoreComments(rows.length === 20); } finally { setCommentsLoading(false); } } }}>
+          {dialogComments.map((c) => (
             <div key={c.id} className="break-words text-sm">
               <span className="font-medium text-foreground">
                 {c.author.username}
@@ -117,11 +128,13 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
               )}
             </div>
           ))}
+          {!commentsLoading && dialogComments.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">Aucun commentaire.</p>}
+          {commentsLoading && <Loader2 className="mx-auto h-5 w-5 animate-spin" />}
         </div>
-      )}
+      </DialogContent></Dialog>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-2 sm:flex-row"
+        className="mt-auto flex flex-col gap-2 border-t border-border pt-3 sm:flex-row"
       >
         <input
           type="text"
@@ -149,6 +162,7 @@ const FeedPage = () => {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
 
   const postsQuery = useQuery({
     queryKey: ["feed-posts"],
@@ -163,6 +177,7 @@ const FeedPage = () => {
       void queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
       setDraft("");
       setComposerOpen(false);
+      setImages([]);
     },
   });
 
@@ -188,12 +203,14 @@ const FeedPage = () => {
     await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   }
 
-  function handleCreatePost(e: FormEvent<HTMLFormElement>) {
+  async function handleCreatePost(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!user || !draft.trim()) return;
+    if (!user || (!draft.trim() && images.length === 0) || images.length > 6) return;
+    const uploaded = images.length ? await uploadImages(images) : [];
     createPostMutation.mutate({
-      content: draft.trim(),
+      ...(draft.trim() ? { content: draft.trim() } : {}),
       authorId: user.id,
+      imageUploadIds: uploaded.map((item) => item.id),
     });
   }
 
@@ -230,9 +247,10 @@ const FeedPage = () => {
             className="w-full resize-none rounded-md border border-border bg-secondary p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           />
           <div className="mt-2 flex justify-end">
+            <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => setImages(Array.from(event.target.files ?? []).slice(0, 6))} className="mr-auto max-w-[65%] text-xs text-muted-foreground" />
             <button
               type="submit"
-              disabled={createPostMutation.isPending || !draft.trim()}
+              disabled={createPostMutation.isPending || (!draft.trim() && images.length === 0)}
               className="min-h-[44px] rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
             >
               {createPostMutation.isPending ? "Publishing…" : "Publish"}

@@ -7,7 +7,8 @@ import type {
 } from "@/types/auth";
 import type { CreateCommentInput, CreatePostInput, FeedPost } from "@/types/feed";
 import { graphqlRequest } from "@/services/graphqlClient";
-import { setAuthSession, clearAuthSession } from "@/services/authToken";
+import { setAuthSession, clearAuthSession, getAccessToken } from "@/services/authToken";
+import { GRAPHQL_URL } from "@/services/backend";
 
 const LOGIN_MUTATION = `
   mutation LoginUser($data: LoginInput!) {
@@ -75,11 +76,8 @@ const FEED_QUERY = `
     posts {
       id content likeCount commentCount createdAt
       author { id username }
-      comments {
-        id content createdAt
-        author { id username }
-      }
       likes { id userId }
+      attachments { id upload { id storagePath } }
     }
   }
 `;
@@ -245,6 +243,39 @@ export async function createFeedComment(data: CreateCommentInput): Promise<{
     variables: { data },
   });
   return result.createComment;
+}
+
+export async function fetchPostComments(postId: string, skip = 0, take = 20) {
+  const result = await graphqlRequest<{ commentsByPost: import('@/types/feed').FeedComment[] }>({
+    query: `query PostComments($postId: String!, $skip: Int!, $take: Int!) { commentsByPost(postId: $postId, skip: $skip, take: $take) { id content createdAt author { id username } } }`,
+    variables: { postId, skip, take },
+  });
+  return result.commentsByPost;
+}
+
+export async function uploadImages(files: File[]): Promise<Array<{ id: string; storagePath: string }>> {
+  if (!files.length || files.length > 6) throw new Error('Sélectionnez entre 1 et 6 images.');
+  const allowed = new Set(['image/jpeg', 'image/png', 'image/webp']);
+  if (files.some((file) => !allowed.has(file.type) || file.size > 8 * 1024 * 1024)) throw new Error('Images JPEG, PNG ou WebP uniquement, 8 Mo maximum.');
+  const form = new FormData();
+  files.forEach((file) => form.append('images', file));
+  const token = getAccessToken();
+  const response = await fetch(GRAPHQL_URL.replace(/\/graphql\/?$/, '/uploads/images'), { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: form });
+  if (!response.ok) throw new Error('Échec de l’upload des images.');
+  return response.json() as Promise<Array<{ id: string; storagePath: string }>>;
+}
+
+export async function fetchMyProfile(userId: string): Promise<{ id: string; avatarUrl: string | null } | null> {
+  const result = await graphqlRequest<{ profileByUserId: { id: string; avatarUrl: string | null } | null }>({ query: `query MyProfile($userId: String!) { profileByUserId(userId: $userId) { id avatarUrl } }`, variables: { userId } });
+  return result.profileByUserId;
+}
+
+export async function saveProfileImage(userId: string, username: string, avatarUrl: string, profileId?: string): Promise<void> {
+  if (!avatarUrl.startsWith('https://')) throw new Error('URL d’image invalide.');
+  await graphqlRequest({
+    query: profileId ? `mutation SetAvatar($id: String!, $data: UpdateProfileInput!) { updateProfile(id: $id, data: $data) { id } }` : `mutation CreateProfile($data: CreateProfileInput!) { createProfile(data: $data) { id } }`,
+    variables: profileId ? { id: profileId, data: { avatarUrl } } : { data: { userId, displayName: username, avatarUrl } },
+  });
 }
 
 export async function updateFeedPost(id: string, content: string): Promise<void> {
