@@ -8,6 +8,7 @@ export interface FeedComment {
   content: string;
   createdAt: string;
   author: FeedAuthor;
+  isDeleted?: boolean;
 }
 
 export interface FeedPost {
@@ -19,6 +20,7 @@ export interface FeedPost {
   author: FeedAuthor;
   comments: FeedComment[];
   likes: Array<{ id: string; userId: string }>;
+  isDeleted?: boolean;
 }
 
 export interface CreatePostInput {

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Heart, Loader2, MessageCircle, Plus } from "lucide-react";
+import { Heart, Loader2, MessageCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -8,7 +8,11 @@ import {
   createFeedLike,
   createFeedPost,
   deleteFeedLike,
+  deleteFeedComment,
+  deleteFeedPost,
   fetchFeedPosts,
+  updateFeedComment,
+  updateFeedPost,
 } from "@/services/api";
 import type { FeedPost } from "@/types/feed";
 
@@ -28,9 +32,10 @@ interface FeedCardProps {
   onComment: (postId: string, content: string) => Promise<void>;
   currentUserId: string;
   onToggleLike: (post: FeedPost) => Promise<void>;
+  onChanged: () => Promise<void>;
 }
 
-function FeedCard({ post, onComment, currentUserId, onToggleLike }: FeedCardProps) {
+function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: FeedCardProps) {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [liking, setLiking] = useState(false);
@@ -62,6 +67,12 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike }: FeedCardProp
             {formatRelative(post.createdAt)}
           </div>
         </div>
+        {post.author.id === currentUserId && (
+          <div className="ml-auto flex gap-1">
+            <button type="button" aria-label="Modifier la publication" onClick={async () => { const content = window.prompt("Modifier la publication", post.content); if (content?.trim() && content.trim() !== post.content) { await updateFeedPost(post.id, content); await onChanged(); } }} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-foreground"><Pencil className="h-4 w-4" /></button>
+            <button type="button" aria-label="Supprimer la publication" onClick={async () => { if (window.confirm("Supprimer cette publication ?")) { await deleteFeedPost(post.id); await onChanged(); } }} className="min-h-11 min-w-11 rounded-md p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+          </div>
+        )}
       </div>
       <p className="text-body mb-3 whitespace-pre-wrap break-words text-foreground">
         {post.content}
@@ -98,6 +109,12 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike }: FeedCardProp
                 {c.author.username}
               </span>{" "}
               <span className="text-muted-foreground">{c.content}</span>
+              {c.author.id === currentUserId && (
+                <span className="ml-2 inline-flex gap-1">
+                  <button type="button" aria-label="Modifier le commentaire" onClick={async () => { const content = window.prompt("Modifier le commentaire", c.content); if (content?.trim() && content.trim() !== c.content) { await updateFeedComment(c.id, content); await onChanged(); } }} className="text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
+                  <button type="button" aria-label="Supprimer le commentaire" onClick={async () => { if (window.confirm("Supprimer ce commentaire ?")) { await deleteFeedComment(c.id); await onChanged(); } }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -164,6 +181,10 @@ const FeedPage = () => {
     const existingLike = post.likes.find((like) => like.userId === user.id);
     if (existingLike) await deleteFeedLike(existingLike.id);
     else await createFeedLike(post.id, user.id);
+    await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+  }
+
+  async function refreshFeed() {
     await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   }
 
@@ -234,7 +255,7 @@ const FeedPage = () => {
 
       <div className="space-y-3 sm:space-y-4">
         {(postsQuery.data ?? []).map((post) => (
-          <FeedCard key={post.id} post={post} onComment={handleComment} currentUserId={user?.id ?? ""} onToggleLike={handleToggleLike} />
+          <FeedCard key={post.id} post={post} onComment={handleComment} currentUserId={user?.id ?? ""} onToggleLike={handleToggleLike} onChanged={refreshFeed} />
         ))}
       </div>
 

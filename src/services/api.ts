@@ -246,3 +246,23 @@ export async function createFeedComment(data: CreateCommentInput): Promise<{
   });
   return result.createComment;
 }
+
+export async function updateFeedPost(id: string, content: string): Promise<void> {
+  if (!id || !content.trim()) throw new Error("Publication invalide.");
+  await graphqlRequest({ query: `mutation UpdateFeedPost($id: String!, $data: UpdatePostInput!) { updatePost(id: $id, data: $data) { id } }`, variables: { id, data: { content: content.trim() } } });
+}
+
+export async function deleteFeedPost(id: string): Promise<void> {
+  if (!id) throw new Error("Publication invalide.");
+  await graphqlRequest({ query: `mutation DeleteFeedPost($id: String!) { deletePost(id: $id) { id } }`, variables: { id } });
+}
+
+export async function updateFeedComment(id: string, content: string): Promise<void> {
+  if (!id || !content.trim()) throw new Error("Commentaire invalide.");
+  await graphqlRequest({ query: `mutation UpdateFeedComment($id: String!, $data: UpdateCommentInput!) { updateComment(id: $id, data: $data) { id } }`, variables: { id, data: { content: content.trim() } } });
+}
+
+export async function deleteFeedComment(id: string): Promise<void> {
+  if (!id) throw new Error("Commentaire invalide.");
+  await graphqlRequest({ query: `mutation DeleteFeedComment($id: String!) { deleteComment(id: $id) { id } }`, variables: { id } });
+}
