@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import ThemeLanguageControls from "./ThemeLanguageControls";
-import MiniTuner from "./MiniTuner";
 import {
   Sheet,
   SheetContent,
@@ -58,7 +57,7 @@ const MobileHeader = () => {
             <SheetTitle className="text-base font-medium">{t("common.menu")}</SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 overflow-y-auto p-3">
-            {SIDEBAR_NAV_ITEMS.filter((item) => item.path !== "/metronome").map((item) => {
+            {SIDEBAR_NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <NavLink
@@ -78,9 +77,8 @@ const MobileHeader = () => {
               );
             })}
           </nav>
-          <div className="border-t border-border p-3 space-y-3">
-            <MiniTuner />
-            <ThemeLanguageControls compact />
+          <div className="border-t border-border p-3">
+            <ThemeLanguageControls compact showTheme={false} />
           </div>
         </SheetContent>
       </Sheet>

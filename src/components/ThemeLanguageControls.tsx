@@ -16,9 +16,10 @@ const themeIcons: Record<ThemeMode, typeof Sun> = {
 
 interface ThemeLanguageControlsProps {
   compact?: boolean;
+  showTheme?: boolean;
 }
 
-const ThemeLanguageControls = ({ compact = false }: ThemeLanguageControlsProps) => {
+const ThemeLanguageControls = ({ compact = false, showTheme = true }: ThemeLanguageControlsProps) => {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [language, setLanguage] = useState<LanguageOption>("en");
@@ -52,7 +53,7 @@ const ThemeLanguageControls = ({ compact = false }: ThemeLanguageControlsProps) 
         </div>
       )}
 
-      <div className="space-y-2">
+      {showTheme && <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Globe2 className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-foreground">{t("settings.language")}</span>
@@ -70,7 +71,7 @@ const ThemeLanguageControls = ({ compact = false }: ThemeLanguageControlsProps) 
             </SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </div>}
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
