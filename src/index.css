@@ -162,11 +162,11 @@
   input.auth-input:-webkit-autofill:hover,
   input.auth-input:-webkit-autofill:focus,
   input.auth-input:-webkit-autofill:active {
-    -webkit-text-fill-color: hsl(0 0% 95%) !important;
-    caret-color: hsl(0 0% 95%);
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground));
     transition: background-color 99999s ease-in-out 0s;
-    box-shadow: 0 0 0 1000px hsl(240 5% 15%) inset !important;
-    -webkit-box-shadow: 0 0 0 1000px hsl(240 5% 15%) inset !important;
+    box-shadow: 0 0 0 1000px hsl(var(--secondary)) inset !important;
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--secondary)) inset !important;
   }
 }
 

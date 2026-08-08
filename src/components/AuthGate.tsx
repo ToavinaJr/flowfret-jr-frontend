@@ -440,19 +440,19 @@ export function AuthGate({ children }: AuthGateProps) {
         </div>
       </section>
 
-      <aside className="relative hidden overflow-hidden border-l border-border lg:flex lg:flex-col lg:justify-between">
+      <aside className="relative hidden overflow-hidden border-l border-border bg-card lg:flex lg:flex-col lg:justify-between">
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 60% at 70% 20%, hsla(346, 77%, 49%, 0.28), transparent 55%), radial-gradient(ellipse 70% 50% at 20% 80%, hsla(173, 58%, 39%, 0.16), transparent 50%), hsl(240 10% 6%)",
+              "radial-gradient(ellipse 80% 60% at 70% 20%, hsl(var(--primary) / 0.22), transparent 55%), radial-gradient(ellipse 70% 50% at 20% 80%, hsl(var(--accent) / 0.14), transparent 50%), hsl(var(--card))",
           }}
         />
         <div
           className="absolute inset-0 opacity-[0.12]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, hsl(0 0% 100% / 0.08) 1px, transparent 1px), linear-gradient(to bottom, hsl(0 0% 100% / 0.08) 1px, transparent 1px)",
+              "linear-gradient(to right, hsl(var(--foreground) / 0.08) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--foreground) / 0.08) 1px, transparent 1px)",
             backgroundSize: "48px 28px",
           }}
         />
