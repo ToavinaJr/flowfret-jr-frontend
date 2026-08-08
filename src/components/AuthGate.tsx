@@ -469,10 +469,6 @@ export function AuthGate({ children }: AuthGateProps) {
           </p>
           <AuthHighlights />
         </div>
-
-        <div className="relative z-10 px-10 pb-10 text-xs text-muted-foreground xl:px-16">
-          FretFlow — Analyser. Pratiquer. Partager.
-        </div>
       </aside>
     </div>
   );
