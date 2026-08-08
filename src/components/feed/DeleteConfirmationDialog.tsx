@@ -1,6 +1,7 @@
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
@@ -23,11 +24,15 @@ export function DeleteConfirmationDialog({ entity, trigger, onConfirm }: DeleteC
     event.preventDefault();
     setPending(true);
     setError(null);
+    const toastId = toast.loading(t("deleteDialog.deleting"));
     try {
       await onConfirm();
+      toast.success(t(`deleteDialog.${entity}.success`), { id: toastId });
       setOpen(false);
     } catch {
-      setError(t("deleteDialog.error"));
+      const message = t("deleteDialog.error");
+      setError(message);
+      toast.error(message, { id: toastId });
     } finally {
       setPending(false);
     }

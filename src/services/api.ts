@@ -260,9 +260,18 @@ export async function uploadImages(files: File[]): Promise<Array<{ id: string; s
   const form = new FormData();
   files.forEach((file) => form.append('images', file));
   const token = getAccessToken();
-  const response = await fetch(GRAPHQL_URL.replace(/\/graphql\/?$/, '/uploads/images'), { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: form });
-  if (!response.ok) throw new Error('Échec de l’upload des images.');
-  return response.json() as Promise<Array<{ id: string; storagePath: string }>>;
+  if (!token) throw new Error('Authentication required.');
+  const uploadUrl = GRAPHQL_URL.replace(/\/graphql\/?$/, '/uploads/images');
+  if (uploadUrl === GRAPHQL_URL) throw new Error('Invalid backend upload URL.');
+  const response = await fetch(uploadUrl, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { message?: string | string[] } | null;
+    const message = Array.isArray(payload?.message) ? payload.message.join(' ') : payload?.message;
+    throw new Error(message || `Image upload failed (${response.status}).`);
+  }
+  const payload = await response.json() as Array<{ id: string; storagePath: string }>;
+  if (!Array.isArray(payload) || payload.length !== files.length) throw new Error('The backend returned an invalid upload response.');
+  return payload;
 }
 
 export async function fetchMyProfile(userId: string): Promise<{ id: string; avatarUrl: string | null } | null> {
