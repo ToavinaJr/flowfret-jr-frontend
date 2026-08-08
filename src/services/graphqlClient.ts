@@ -5,6 +5,7 @@ import {
   classifyGraphQLError,
   getSafeErrorMessage,
 } from "@/utils/safeError";
+import { debugError, debugLog } from "@/utils/debug";
 
 interface GraphQLRequestOptions {
   query: string;
@@ -28,6 +29,14 @@ export async function graphqlRequest<TData>(
   options: GraphQLRequestOptions,
 ): Promise<TData> {
   const token = getAccessToken();
+  const operation =
+    options.query.match(/(?:query|mutation)\s+(\w+)/)?.[1] ?? "anonymous";
+  const startedAt = performance.now();
+  debugLog("graphql.request", {
+    operation,
+    url: GRAPHQL_URL,
+    authenticated: Boolean(token),
+  });
 
   let response: Response;
   try {
@@ -42,16 +51,29 @@ export async function graphqlRequest<TData>(
         variables: options.variables ?? {},
       }),
     });
-  } catch {
+  } catch (error) {
+    debugError("graphql.network_error", { operation, error });
     throw toSafeApiError("network failure", 0);
   }
 
   let body: GraphQLResponse<TData>;
   try {
     body = (await response.json()) as GraphQLResponse<TData>;
-  } catch {
+  } catch (error) {
+    debugError("graphql.invalid_response", {
+      operation,
+      status: response.status,
+      error,
+    });
     throw toSafeApiError("invalid response", response.status);
   }
+
+  debugLog("graphql.response", {
+    operation,
+    status: response.status,
+    durationMs: Math.round(performance.now() - startedAt),
+    errors: body.errors,
+  });
 
   if (!response.ok) {
     const raw = body.errors?.[0]?.message ?? "request failed";
