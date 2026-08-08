@@ -28,6 +28,9 @@
   "common": {
     "menu": "Menu"
   },
+  "feed": { "title": "Feed", "newPost": "New post", "composerPlaceholder": "Share a progression, tip, or practice note…", "publish": "Publish", "publishing": "Publishing…", "loadError": "Unable to load the feed. Please try again later.", "empty": "No posts yet. Be the first to share something." },
+  "morePage": { "title": "Menu", "subtitle": "Tools and pages beyond the main navigation." },
+  "history": { "title": "History of the Guitar", "origins": "The modern six-string guitar evolved from earlier plucked instruments across Europe and the Middle East. By the 19th century, Spanish makers refined it into the classical form we recognize today.", "modern": "Steel-string acoustics and electric pickups in the 20th century opened blues, jazz, rock, and countless hybrids — while the fretboard remained a map of the chromatic scale.", "fretflow": "FretFlow continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing." },
   "music": {
     "title": "Search music",
     "subtitle": "Discover your next favorite track and start listening now.",

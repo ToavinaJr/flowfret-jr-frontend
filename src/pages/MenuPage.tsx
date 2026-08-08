@@ -11,6 +11,7 @@ import {
   Upload,
 } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { useTranslation } from "react-i18next";
 
 const links = [
   { to: "/music", label: "Music", icon: Search, desc: "Spotify + Genius search" },
@@ -25,11 +26,12 @@ const links = [
 ];
 
 const MenuPage = () => {
+  const { t } = useTranslation();
   return (
     <div className={`${PAGE_SHELL} max-w-2xl lg:max-w-2xl`}>
-      <h1 className={`${PAGE_TITLE} mb-2`}>Menu</h1>
+      <h1 className={`${PAGE_TITLE} mb-2`}>{t("morePage.title")}</h1>
       <p className="mb-4 text-sm text-muted-foreground sm:mb-6">
-        Tools and pages beyond the main navigation.
+        {t("morePage.subtitle")}
       </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {links.map((item) => (
