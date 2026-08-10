@@ -16,18 +16,13 @@ import type {
   VerifyEmailInput,
 } from "@/types/auth";
 import {
-  getAccessToken,
-  getCurrentUserEmail,
-  getCurrentUserId,
-  getCurrentUsername,
-} from "@/services/authToken";
-import {
   loginUser,
   loginWithGoogleUser,
   logoutUser,
   registerUser,
   requestPasswordReset,
   resetPassword,
+  restoreSession,
   resendVerificationEmail,
   verifyEmailUser,
 } from "@/services/api";
@@ -42,19 +37,10 @@ interface AuthContextValue {
   resendVerification: (token: string) => Promise<RegisterPendingResult>;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function readStoredUser(): AuthUser | null {
-  const id = getCurrentUserId();
-  const username = getCurrentUsername();
-  const email = getCurrentUserEmail();
-  const token = getAccessToken();
-  if (!id || !username || !email || !token) return null;
-  return { id, username, email };
-}
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -65,9 +51,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    const stored = readStoredUser();
-    setUser(stored);
-    setStatus(stored ? "authenticated" : "unauthenticated");
+    let active = true;
+    void restoreSession()
+      .then((session) => {
+        if (!active) return;
+        setUser(session.user);
+        setStatus("authenticated");
+      })
+      .catch(() => {
+        if (!active) return;
+        setUser(null);
+        setStatus("unauthenticated");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const login = useCallback(async (data: LoginInput) => {
@@ -104,8 +102,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await resetPassword(token, password);
   }, []);
 
-  const logout = useCallback(() => {
-    logoutUser();
+  const logout = useCallback(async () => {
+    await logoutUser();
     setUser(null);
     setStatus("unauthenticated");
   }, []);

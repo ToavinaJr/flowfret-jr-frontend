@@ -176,8 +176,21 @@ export async function resendVerificationEmail(
   return result.resendVerificationEmail;
 }
 
-export function logoutUser(): void {
+export async function logoutUser(): Promise<void> {
+  await graphqlRequest({ query: `mutation Logout { logout }` }).catch(
+    () => undefined,
+  );
   clearAuthSession();
+}
+
+export async function restoreSession(): Promise<AuthSession> {
+  const result = await graphqlRequest<{ refreshSession: AuthPayload }>({
+    query: `mutation RestoreSession { refreshSession { accessToken user { id username email } } }`,
+  });
+  return persistSession({
+    accessToken: result.refreshSession.accessToken,
+    user: result.refreshSession.user,
+  });
 }
 
 export async function fetchFeedPosts(): Promise<FeedPost[]> {
