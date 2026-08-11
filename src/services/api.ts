@@ -292,8 +292,10 @@ export interface Friendship { id: string; requesterId: string; receiverId: strin
 export interface UserProfile { id: string; userId: string; displayName: string; avatarUrl: string | null; bio: string | null; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; user: { id: string; username: string; authoredPosts: FeedPost[] } }
 
 export async function fetchMyProfile(userId: string): Promise<UserProfile | null> {
-  const result = await graphqlRequest<{ profileByUserId: UserProfile | null }>({ query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { id username authoredPosts { id content likeCount commentCount createdAt author { id username } likes { id userId } attachments { id upload { id storagePath } } } } } }`, variables: { userId } });
-  return result.profileByUserId;
+  const fields = `id username authoredPosts { id content likeCount commentCount createdAt author { id username } likes { id userId } attachments { id upload { id storagePath } } }`;
+  const result = await graphqlRequest<{ profileByUserId: UserProfile | null; user: UserProfile['user'] | null }>({ query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { ${fields} } } user(id: $userId) { ${fields} } }`, variables: { userId } });
+  if (result.profileByUserId) return result.profileByUserId;
+  return result.user ? { id: '', userId, displayName: result.user.username, avatarUrl: null, bio: null, visibility: 'PUBLIC', user: result.user } : null;
 }
 
 export async function saveProfile(userId: string, data: { displayName: string; bio: string; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; avatarUrl?: string }, profileId?: string) {
