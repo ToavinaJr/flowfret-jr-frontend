@@ -287,10 +287,27 @@ export async function uploadImages(files: File[]): Promise<Array<{ id: string; s
   return payload;
 }
 
-export async function fetchMyProfile(userId: string): Promise<{ id: string; avatarUrl: string | null } | null> {
-  const result = await graphqlRequest<{ profileByUserId: { id: string; avatarUrl: string | null } | null }>({ query: `query MyProfile($userId: String!) { profileByUserId(userId: $userId) { id avatarUrl } }`, variables: { userId } });
+export interface SocialUser { id: string; username: string; profile?: { id: string; displayName: string; avatarUrl: string | null; bio: string | null } | null }
+export interface Friendship { id: string; requesterId: string; receiverId: string; status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELED' | 'BLOCKED'; requester: SocialUser; receiver: SocialUser }
+export interface UserProfile { id: string; userId: string; displayName: string; avatarUrl: string | null; bio: string | null; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; user: { id: string; username: string; authoredPosts: FeedPost[] } }
+
+export async function fetchMyProfile(userId: string): Promise<UserProfile | null> {
+  const result = await graphqlRequest<{ profileByUserId: UserProfile | null }>({ query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { id username authoredPosts { id content likeCount commentCount createdAt author { id username } likes { id userId } attachments { id upload { id storagePath } } } } } }`, variables: { userId } });
   return result.profileByUserId;
 }
+
+export async function saveProfile(userId: string, data: { displayName: string; bio: string; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; avatarUrl?: string }, profileId?: string) {
+  const payload = { displayName: data.displayName.trim(), bio: data.bio.trim() || null, visibility: data.visibility, ...(data.avatarUrl ? { avatarUrl: data.avatarUrl } : {}) };
+  if (!payload.displayName || payload.displayName.length > 120 || data.bio.length > 1000) throw new Error('Profil invalide.');
+  await graphqlRequest({ query: profileId ? `mutation UpdateProfile($id: String!, $data: UpdateProfileInput!) { updateProfile(id: $id, data: $data) { id } }` : `mutation CreateProfile($data: CreateProfileInput!) { createProfile(data: $data) { id } }`, variables: profileId ? { id: profileId, data: payload } : { data: { ...payload, userId } } });
+}
+
+export async function searchUsers(query: string) { const result = await graphqlRequest<{ searchUsers: SocialUser[] }>({ query: `query FindUsers($query: String!) { searchUsers(query: $query) { id username profile { id displayName avatarUrl bio } } }`, variables: { query } }); return result.searchUsers; }
+export async function fetchFriendships() { const result = await graphqlRequest<{ myFriendships: Friendship[] }>({ query: `query Friends { myFriendships { id requesterId receiverId status requester { id username profile { id displayName avatarUrl bio } } receiver { id username profile { id displayName avatarUrl bio } } } }` }); return result.myFriendships; }
+export async function sendFriendRequest(receiverId: string) { await graphqlRequest({ query: `mutation AddFriend($receiverId: String!) { sendFriendRequest(receiverId: $receiverId) { id } }`, variables: { receiverId } }); }
+export async function respondFriendRequest(id: string, accept: boolean) { await graphqlRequest({ query: `mutation RespondFriend($id: String!, $accept: Boolean!) { respondFriendRequest(id: $id, accept: $accept) { id } }`, variables: { id, accept } }); }
+export async function removeFriend(id: string) { await graphqlRequest({ query: `mutation RemoveFriend($id: String!) { removeFriend(id: $id) { id } }`, variables: { id } }); }
+export async function recordTrackListen(trackId: string) { if (!trackId || trackId.length > 255) return; await graphqlRequest({ query: `mutation TrackListened($action: String!, $entityType: String!, $entityId: String) { recordActivity(action: $action, entityType: $entityType, entityId: $entityId) { id } }`, variables: { action: 'TRACK_LISTENED', entityType: 'track', entityId: trackId } }); }
 
 export async function saveProfileImage(userId: string, username: string, avatarUrl: string, profileId?: string): Promise<void> {
   if (!avatarUrl.startsWith('https://')) throw new Error('URL d’image invalide.');

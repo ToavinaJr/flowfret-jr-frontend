@@ -21,6 +21,7 @@ import ParametresPage from "@/pages/ParametresPage";
 import MusicSearchPage from "@/pages/MusicSearchPage";
 import NotFound from "@/pages/NotFound";
 import HelpPage from "@/pages/HelpPage";
+import FriendsPage from "@/pages/FriendsPage";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,8 @@ const App = () => (
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/parametres" element={<ParametresPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/profile/:userId" element={<ProfilePage />} />
+                  <Route path="/friends" element={<FriendsPage />} />
                   <Route path="/help" element={<HelpPage />} />
                   <Route path="/verify-email" element={<FeedPage />} />
                   <Route path="/reset-password" element={<FeedPage />} />

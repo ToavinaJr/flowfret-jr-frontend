@@ -2,6 +2,7 @@ import {
   Home,
   Radio,
   User,
+  Users,
   Upload,
   BookOpen,
   Music2,
@@ -28,6 +29,7 @@ export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Radio, label: "Tuner", path: "/tuner" },
   { icon: Timer, label: "Metronome", path: "/metronome" },
   { icon: User, label: "Profile", path: "/profile" },
+  { icon: Users, label: "Amis", path: "/friends" },
   { icon: Menu, label: "More", path: "/menu" },
 ];
 

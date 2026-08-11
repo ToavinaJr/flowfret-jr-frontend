@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
 import { PostComposer } from "@/components/feed/PostComposer";
 import { DeleteConfirmationDialog } from "@/components/feed/DeleteConfirmationDialog";
+import { toast } from "sonner";
 import { DetailsPost } from "@/components/feed/DetailsPost";
 
 function formatRelative(iso: string): string {
@@ -114,8 +115,10 @@ function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: F
       setDialogComments((current) => current.map((item) => item.id === commentId ? { ...item, content } : item));
       setEditingCommentId(null);
       await onChanged();
+      toast.success("Commentaire modifié.");
     } catch {
       setCommentEditError("La modification n’a pas pu être enregistrée.");
+      toast.error("La modification du commentaire a échoué.");
     } finally {
       setCommentEditSaving(false);
     }

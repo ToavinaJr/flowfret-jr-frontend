@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { PlayState } from "@/types/song";
+import { recordTrackListen } from "@/services/api";
 
 export interface PlaybackItem {
   id: string;
@@ -90,6 +91,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const spotifyControllerPromiseRef = useRef<Promise<SpotifyEmbedController> | null>(null);
   const spotifyUriRef = useRef<string | null>(null);
   const itemRef = useRef<PlaybackItem | null>(null);
+  const loggedItemRef = useRef<string | null>(null);
   const [item, setItem] = useState<PlaybackItem | null>(null);
   const [playState, setPlayState] = useState<PlayState>("idle");
   const [currentTime, setCurrentTime] = useState(0);
@@ -188,6 +190,10 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
     const activeItem = next ?? itemRef.current;
     if (!activeItem) return;
+    if (loggedItemRef.current !== activeItem.id) {
+      loggedItemRef.current = activeItem.id;
+      void recordTrackListen(activeItem.id).catch(() => { loggedItemRef.current = null; });
+    }
     try {
       if (activeItem.engine === "spotify") {
         const controller = await getSpotifyController(activeItem.src);
