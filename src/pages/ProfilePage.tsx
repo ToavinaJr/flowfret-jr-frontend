@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Camera, Save, Settings, Trash2, Users } from 'lucide-react';
+import { Camera, Loader2, Save, Settings, Trash2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { PAGE_SHELL, PAGE_TITLE } from '@/constants/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,8 +18,25 @@ export default function ProfilePage() {
   const [displayName, setDisplayName] = useState(''); const [bio, setBio] = useState('');
   const [visibility, setVisibility] = useState<'PUBLIC' | 'FRIENDS' | 'PRIVATE'>('PUBLIC');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const load = async () => { if (!viewedId) return; const value = await fetchMyProfile(viewedId); setProfile(value); setDisplayName(value?.displayName ?? (own ? user?.username ?? '' : '')); setBio(value?.bio ?? ''); setVisibility(value?.visibility ?? 'PUBLIC'); };
-  useEffect(() => { void load(); }, [viewedId]);
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setProfile(null);
+    if (!viewedId) { setLoading(false); return () => { active = false; }; }
+    void fetchMyProfile(viewedId)
+      .then(value => {
+        if (!active) return;
+        setProfile(value);
+        setDisplayName(value?.displayName ?? (own ? user?.username ?? '' : ''));
+        setBio(value?.bio ?? '');
+        setVisibility(value?.visibility ?? 'PUBLIC');
+      })
+      .catch(() => { if (active) setProfile(null); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [viewedId, own, user?.username]);
   async function changeAvatar(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file || !user || !own) return; setSaving(true); try { const [image] = await uploadImages([file]); await saveProfile(user.id, { displayName: displayName || user.username, bio, visibility, avatarUrl: image.storagePath }, profile?.id); await load(); toast.success('Photo de profil mise à jour.'); } catch (error) { toast.error(error instanceof Error ? error.message : 'Échec de l’envoi.'); } finally { setSaving(false); event.target.value = ''; } }
   async function removeAvatar() { if (!user || !profile?.id || !own) return; await saveProfile(user.id, { displayName: displayName || user.username, bio, visibility, avatarUrl: null }, profile.id); await load(); }
   async function submit() { if (!user || !own) return; setSaving(true); try { await saveProfile(user.id, { displayName, bio, visibility }, profile?.id); await load(); toast.success('Profil mis à jour.'); } catch (error) { toast.error(error instanceof Error ? error.message : 'Échec de la modification.'); } finally { setSaving(false); } }
@@ -36,6 +53,7 @@ export default function ProfilePage() {
     await load();
   }
   if (!viewedId) return null;
+  if (loading) return <main className={PAGE_SHELL}><div className="flex min-h-48 items-center justify-center text-muted-foreground" role="status" aria-label="Chargement du profil"><Loader2 className="h-6 w-6 animate-spin"/></div></main>;
   if (!profile && !own) return <main className={PAGE_SHELL}><p>Ce profil est privé ou introuvable.</p></main>;
   const avatar = profile?.avatarUrl;
   return <main className={PAGE_SHELL}>
