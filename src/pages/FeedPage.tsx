@@ -25,6 +25,7 @@ import { PostComposer } from "@/components/feed/PostComposer";
 import { DeleteConfirmationDialog } from "@/components/feed/DeleteConfirmationDialog";
 import { toast } from "sonner";
 import { DetailsPost } from "@/components/feed/DetailsPost";
+import { Link } from "react-router-dom";
 
 function formatRelative(iso: string): string {
   const then = new Date(iso).getTime();
@@ -127,17 +128,10 @@ export function FeedCard({ post, onComment, currentUserId, onToggleLike, onChang
   return (
     <article onClick={(event) => { if (!(event.target as HTMLElement).closest("button, input, textarea, a, [role='dialog']")) setDetailsOpen(true); }} className={`flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}>
       <div className="mb-3 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">
-          {post.author.username.slice(0, 2).toUpperCase()}
-        </div>
-        <div className="min-w-0">
-          <div className="truncate text-sm text-foreground">
-            {post.author.username}
-          </div>
-          <div className="font-musical text-xs text-muted-foreground">
-            {formatRelative(post.createdAt)}
-          </div>
-        </div>
+        <Link to={`/profile/${post.author.id}`} className="flex min-w-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">{post.author.username.slice(0, 2).toUpperCase()}</div>
+          <div className="min-w-0"><div className="truncate text-sm text-foreground hover:underline">{post.author.username}</div><div className="font-musical text-xs text-muted-foreground">{formatRelative(post.createdAt)}</div></div>
+        </Link>
         {post.author.id === currentUserId && (
           <div className="ml-auto flex gap-1">
             <button type="button" aria-label="Modifier la publication" onClick={() => { setEditContent(post.content ?? ""); setEditError(null); setEditOpen(true); }} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"><Pencil className="h-4 w-4" /></button>
@@ -203,13 +197,15 @@ export function FeedCard({ post, onComment, currentUserId, onToggleLike, onChang
           {dialogComments.map((c) => (
             <article key={c.id} className="rounded-lg border border-border bg-card p-3 text-sm">
               <header className="mb-2 flex items-center gap-2">
+                <Link to={`/profile/${c.author.id}`} className="flex min-w-0 flex-1 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-xs font-semibold text-foreground">
                   {c.author.profile?.avatarUrl ? <img src={c.author.profile.avatarUrl} alt={`Avatar de ${c.author.username}`} className="h-full w-full object-cover" loading="lazy" /> : c.author.username.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate font-medium text-foreground">{c.author.username}</div>
+                  <div className="truncate font-medium text-foreground hover:underline">{c.author.username}</div>
                   <div className="text-xs text-muted-foreground">{formatRelative(c.createdAt)}</div>
                 </div>
+                </Link>
                 {c.author.id === currentUserId && (
                   <div className="flex shrink-0 gap-1">
                     <button type="button" aria-label="Modifier le commentaire" disabled={commentEditSaving} onClick={() => { setEditingCommentId(c.id); setEditingCommentContent(c.content); setCommentEditError(null); }} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"><Pencil className="h-3.5 w-3.5" /></button>

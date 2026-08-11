@@ -11,7 +11,6 @@ import TunerPage from "@/pages/TunerPage";
 import ChordsPage from "@/pages/ChordsPage";
 import UploadPage from "@/pages/UploadPage";
 import ProfilePage from "@/pages/ProfilePage";
-import PlayerPage from "@/pages/PlayerPage";
 import MetronomePage from "@/pages/MetronomePage";
 import ScalesPage from "@/pages/ScalesPage";
 import MenuPage from "@/pages/MenuPage";
@@ -39,7 +38,6 @@ const App = () => (
                   <Route path="/tuner" element={<TunerPage />} />
                   <Route path="/chords" element={<ChordsPage />} />
                   <Route path="/upload" element={<UploadPage />} />
-                  <Route path="/player" element={<PlayerPage />} />
                   <Route path="/music" element={<MusicSearchPage />} />
                   <Route path="/metronome" element={<MetronomePage />} />
                   <Route path="/scales" element={<ScalesPage />} />

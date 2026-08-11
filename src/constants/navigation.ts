@@ -8,7 +8,6 @@ import {
   Music2,
   Timer,
   Menu,
-  Play,
   Search,
   type LucideIcon,
 } from "lucide-react";
@@ -22,22 +21,21 @@ export interface AppNavItem {
 export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
   { icon: Search, label: "Music", path: "/music" },
-  { icon: Play, label: "Player", path: "/player" },
   { icon: Upload, label: "Upload", path: "/upload" },
+  { icon: Users, label: "Amis", path: "/friends" },
   { icon: BookOpen, label: "Chords", path: "/chords" },
   { icon: Music2, label: "Scales", path: "/scales" },
   { icon: Radio, label: "Tuner", path: "/tuner" },
   { icon: Timer, label: "Metronome", path: "/metronome" },
   { icon: User, label: "Profile", path: "/profile" },
-  { icon: Users, label: "Amis", path: "/friends" },
   { icon: Menu, label: "More", path: "/menu" },
 ];
 
 export const MOBILE_TAB_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
   { icon: Search, label: "Music", path: "/music" },
-  { icon: Play, label: "Player", path: "/player" },
   { icon: Upload, label: "Upload", path: "/upload" },
+  { icon: Users, label: "Amis", path: "/friends" },
   { icon: Menu, label: "More", path: "/menu" },
 ];
 

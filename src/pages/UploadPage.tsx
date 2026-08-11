@@ -1,16 +1,15 @@
 import { useRef, useState, type ChangeEvent, type DragEvent, type KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { analyzeAudioFile } from "@/utils/chordDetection";
 import { setImportedSong } from "@/utils/importStore";
 import type { SongMeta } from "@/types/song";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 type UploadStatus = "idle" | "analyzing" | "error";
 
 const UploadPage = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -49,7 +48,8 @@ const UploadPage = () => {
         cues: result.cues,
       };
       setImportedSong({ meta, uri });
-      navigate("/player");
+      setStatus("idle");
+      toast.success("Analyse terminée.");
     } catch {
       setStatus("error");
       setErrorMessage(t("upload.analysisFailed"));
@@ -143,7 +143,7 @@ const UploadPage = () => {
           {[
             "Upload your riff, cover, or composition",
             "Flowfret Jr analysis detects chord roots",
-            "Open the player with synced chord cues",
+            "Review the detected chord cues",
             "Preview fingerings on the fretboard",
           ].map((step, i) => (
             <div key={step} className="flex items-start gap-3">

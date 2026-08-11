@@ -14,7 +14,7 @@ const AppSidebar = () => {
     "/": "Feed",
     "/music": "Music",
     "/upload": "Upload",
-    "/player": "Player",
+    "/friends": "Amis",
     "/chords": "Chords",
     "/scales": "Scales",
     "/metronome": "Metronome",

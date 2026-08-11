@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  BookOpen,
   History,
   Mail,
   Music2,
@@ -19,7 +18,6 @@ const links = [
   { to: "/music", label: "Music", icon: Search, desc: "Spotify + Genius search" },
   { to: "/scales", label: "Scales", icon: Music2, desc: "Modes on the fretboard" },
   { to: "/metronome", label: "Metronome", icon: Timer, desc: "BPM & tap tempo" },
-  { to: "/player", label: "Player", icon: BookOpen, desc: "Song + chord sync" },
   { to: "/upload", label: "Import", icon: Upload, desc: "Analyze audio files" },
   { to: "/histoire", label: "History", icon: History, desc: "Story of the guitar" },
   { to: "/parametres", label: "Settings", icon: Settings, desc: "Preferences" },

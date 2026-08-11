@@ -48,8 +48,8 @@ export function DeleteConfirmationDialog({ entity, trigger, onConfirm }: DeleteC
       </AlertDialogHeader>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <AlertDialogFooter>
-        <AlertDialogCancel disabled={pending}>{t("deleteDialog.cancel")}</AlertDialogCancel>
-        <AlertDialogAction onClick={confirm} disabled={pending} className="gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90">
+        <AlertDialogCancel disabled={pending} className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground">{t("deleteDialog.cancel")}</AlertDialogCancel>
+        <AlertDialogAction onClick={confirm} disabled={pending} className="gap-2 border border-border bg-secondary text-secondary-foreground hover:bg-muted hover:text-foreground">
           {pending && <Loader2 className="h-4 w-4 animate-spin" />}{t(pending ? "deleteDialog.deleting" : "deleteDialog.confirm")}
         </AlertDialogAction>
       </AlertDialogFooter>

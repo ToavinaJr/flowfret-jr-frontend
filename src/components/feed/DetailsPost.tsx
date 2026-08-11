@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { FeedPost } from "@/types/feed";
+import { Link } from "react-router-dom";
 
 interface DetailsPostProps { post: FeedPost; open: boolean; onOpenChange: (open: boolean) => void }
 
@@ -16,7 +17,7 @@ export function DetailsPost({ post, open, onOpenChange }: DetailsPostProps) {
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="flex max-h-[92vh] w-[calc(100%-1rem)] max-w-4xl flex-col overflow-hidden p-0 sm:w-[calc(100%-2rem)]">
       <DialogHeader className="border-b border-border px-5 py-4 text-left">
-        <DialogTitle>{t("postDetails.title", { username: post.author.username })}</DialogTitle>
+        <DialogTitle><Link to={`/profile/${post.author.id}`} className="hover:underline">{t("postDetails.title", { username: post.author.username })}</Link></DialogTitle>
         <DialogDescription>{t("postDetails.imageCount", { count: images.length })}</DialogDescription>
       </DialogHeader>
       <div className="min-h-0 overflow-y-auto">

@@ -70,7 +70,7 @@ export function CircleOfFifths() {
     </svg>
     <div className="mt-5 flex flex-wrap justify-center gap-5 text-sm">
       <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-blue-500" />{t("circleHarmony.major")}</span>
-      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-green-500" />{t("circleHarmony.minor")}</span>
+      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-violet-500" />{t("circleHarmony.minor")}</span>
       <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-orange-500" />{t("circleHarmony.diminished")}</span>
     </div>
     <div className="mt-5 rounded-lg bg-secondary p-4 text-center text-sm">
