@@ -59,6 +59,12 @@ const RESEND_VERIFICATION_MUTATION = `
   }
 `;
 
+const REGISTER_WITH_GOOGLE_MUTATION = `
+  mutation RegisterWithGoogle($data: GoogleAuthInput!) {
+    registerWithGoogle(data: $data) { accessToken user { id username email } }
+  }
+`;
+
 const REQUEST_PASSWORD_RESET_MUTATION = `
   mutation RequestPasswordReset($data: RequestPasswordResetInput!) {
     requestPasswordReset(data: $data)
@@ -75,7 +81,7 @@ const FEED_QUERY = `
   query GetFeedPosts {
     posts {
       id content likeCount commentCount createdAt
-      author { id username }
+      author { id username profile { avatarUrl } }
       likes { id userId }
       attachments { id upload { id storagePath } }
     }
@@ -86,7 +92,7 @@ const CREATE_POST_MUTATION = `
   mutation CreateFeedPost($data: CreatePostInput!) {
     createPost(data: $data) {
       id content likeCount commentCount createdAt
-      author { id username }
+      author { id username profile { avatarUrl } }
       comments { id content createdAt author { id username } }
     }
   }
@@ -181,6 +187,11 @@ export async function logoutUser(): Promise<void> {
     () => undefined,
   );
   clearAuthSession();
+}
+
+export async function registerWithGoogleUser(accessToken: string): Promise<AuthSession> {
+  const result = await graphqlRequest<{ registerWithGoogle: AuthPayload }>({ query: REGISTER_WITH_GOOGLE_MUTATION, variables: { data: { accessToken } } });
+  return persistSession({ accessToken: result.registerWithGoogle.accessToken, user: result.registerWithGoogle.user });
 }
 
 export async function restoreSession(): Promise<AuthSession> {
@@ -292,14 +303,14 @@ export interface Friendship { id: string; requesterId: string; receiverId: strin
 export interface UserProfile { id: string; userId: string; displayName: string; avatarUrl: string | null; bio: string | null; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; user: { id: string; username: string; authoredPosts: FeedPost[] } }
 
 export async function fetchMyProfile(userId: string): Promise<UserProfile | null> {
-  const fields = `id username authoredPosts { id content likeCount commentCount createdAt author { id username } likes { id userId } attachments { id upload { id storagePath } } }`;
+  const fields = `id username authoredPosts { id content likeCount commentCount createdAt author { id username profile { avatarUrl } } likes { id userId } attachments { id upload { id storagePath } } }`;
   const result = await graphqlRequest<{ profileByUserId: UserProfile | null; user: UserProfile['user'] | null }>({ query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { ${fields} } } user(id: $userId) { ${fields} } }`, variables: { userId } });
   if (result.profileByUserId) return result.profileByUserId;
   return result.user ? { id: '', userId, displayName: result.user.username, avatarUrl: null, bio: null, visibility: 'PUBLIC', user: result.user } : null;
 }
 
-export async function saveProfile(userId: string, data: { displayName: string; bio: string; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; avatarUrl?: string }, profileId?: string) {
-  const payload = { displayName: data.displayName.trim(), bio: data.bio.trim() || null, visibility: data.visibility, ...(data.avatarUrl ? { avatarUrl: data.avatarUrl } : {}) };
+export async function saveProfile(userId: string, data: { displayName: string; bio: string; visibility: 'PUBLIC' | 'FRIENDS' | 'PRIVATE'; avatarUrl?: string | null }, profileId?: string) {
+  const payload = { displayName: data.displayName.trim(), bio: data.bio.trim() || null, visibility: data.visibility, ...(data.avatarUrl !== undefined ? { avatarUrl: data.avatarUrl } : {}) };
   if (!payload.displayName || payload.displayName.length > 120 || data.bio.length > 1000) throw new Error('Profil invalide.');
   await graphqlRequest({ query: profileId ? `mutation UpdateProfile($id: String!, $data: UpdateProfileInput!) { updateProfile(id: $id, data: $data) { id } }` : `mutation CreateProfile($data: CreateProfileInput!) { createProfile(data: $data) { id } }`, variables: profileId ? { id: profileId, data: payload } : { data: { ...payload, userId } } });
 }

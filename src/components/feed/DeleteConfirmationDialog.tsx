@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface DeleteConfirmationDialogProps {
-  entity: "post" | "comment";
+  entity: "post" | "comment" | "avatar";
   trigger: ReactNode;
   onConfirm: () => Promise<void>;
 }

@@ -129,7 +129,7 @@ export function FeedCard({ post, onComment, currentUserId, onToggleLike, onChang
     <article onClick={(event) => { if (!(event.target as HTMLElement).closest("button, input, textarea, a, [role='dialog']")) setDetailsOpen(true); }} className={`flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}>
       <div className="mb-3 flex items-center gap-3">
         <Link to={`/profile/${post.author.id}`} className="flex min-w-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium text-foreground">{post.author.username.slice(0, 2).toUpperCase()}</div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-medium text-foreground">{post.author.profile?.avatarUrl ? <img src={post.author.profile.avatarUrl} alt={`Avatar de ${post.author.username}`} className="h-full w-full object-cover" loading="lazy"/> : post.author.username.slice(0, 2).toUpperCase()}</div>
           <div className="min-w-0"><div className="truncate text-sm text-foreground hover:underline">{post.author.username}</div><div className="font-musical text-xs text-muted-foreground">{formatRelative(post.createdAt)}</div></div>
         </Link>
         {post.author.id === currentUserId && (

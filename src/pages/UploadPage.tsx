@@ -141,18 +141,18 @@ const UploadPage = () => {
         </div>
         <div className="space-y-3">
           {[
-            "Upload your riff, cover, or composition",
-            "Flowfret Jr analysis detects chord roots",
-            "Review the detected chord cues",
-            "Preview fingerings on the fretboard",
-          ].map((step, i) => (
-            <div key={step} className="flex items-start gap-3">
+            "select",
+            "analyze",
+            "review",
+            "preview",
+          ].map((stepKey, i) => (
+            <div key={stepKey} className="flex items-start gap-3">
               <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-secondary">
                 <span className="font-musical text-xs text-muted-foreground">
                   {i + 1}
                 </span>
               </div>
-              <span className="text-body text-muted-foreground">{step}</span>
+              <span className="text-body text-muted-foreground">{t(`upload.steps.${stepKey}`)}</span>
             </div>
           ))}
         </div>

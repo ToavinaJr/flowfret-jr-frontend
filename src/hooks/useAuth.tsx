@@ -18,6 +18,7 @@ import type {
 import {
   loginUser,
   loginWithGoogleUser,
+  registerWithGoogleUser,
   logoutUser,
   registerUser,
   requestPasswordReset,
@@ -32,6 +33,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   login: (data: LoginInput) => Promise<void>;
   loginWithGoogle: (accessToken: string) => Promise<void>;
+  registerWithGoogle: (accessToken: string) => Promise<void>;
   register: (data: RegisterInput) => Promise<RegisterPendingResult>;
   verifyEmail: (data: VerifyEmailInput) => Promise<void>;
   resendVerification: (token: string) => Promise<RegisterPendingResult>;
@@ -94,6 +96,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return resendVerificationEmail(token);
   }, []);
 
+  const registerWithGoogle = useCallback(async (accessToken: string) => {
+    const session = await registerWithGoogleUser(accessToken);
+    setUser(session.user);
+    setStatus("authenticated");
+  }, []);
+
   const requestReset = useCallback(async (email: string) => {
     await requestPasswordReset(email);
   }, []);
@@ -114,6 +122,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       login,
       loginWithGoogle,
+      registerWithGoogle,
       register,
       verifyEmail,
       resendVerification,
@@ -126,6 +135,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       login,
       loginWithGoogle,
+      registerWithGoogle,
       register,
       verifyEmail,
       resendVerification,
