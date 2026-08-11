@@ -121,7 +121,7 @@ export function ScaleFretboard({ rootIndex, scaleIntervals }: ScaleFretboardProp
                   cx={cx}
                   cy={cy}
                   r={DOT_R}
-                  className={isRoot ? "fill-primary" : "fill-accent"}
+                  className={isRoot ? "fill-primary" : "fill-slate-500 dark:fill-slate-400"}
                 />
                 <text
                   x={cx}

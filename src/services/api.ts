@@ -322,6 +322,14 @@ export async function respondFriendRequest(id: string, accept: boolean) { await 
 export async function removeFriend(id: string) { await graphqlRequest({ query: `mutation RemoveFriend($id: String!) { removeFriend(id: $id) { id } }`, variables: { id } }); }
 export async function recordTrackListen(trackId: string) { if (!trackId || trackId.length > 255) return; await graphqlRequest({ query: `mutation TrackListened($action: String!, $entityType: String!, $entityId: String) { recordActivity(action: $action, entityType: $entityType, entityId: $entityId) { id } }`, variables: { action: 'TRACK_LISTENED', entityType: 'track', entityId: trackId } }); }
 
+export type NotificationKind = 'FRIEND_POST' | 'POST_COMMENT' | 'FOLLOWED_POST_ACTIVITY';
+export interface AppNotification { id: string; type: NotificationKind; payload: { actorId?: string; actorUsername?: string; postId?: string; action?: string }; readAt: string | null; createdAt: string }
+export interface NotificationPreference { id: string; type: NotificationKind; enabled: boolean }
+export async function fetchNotifications() { const result = await graphqlRequest<{ myNotifications: AppNotification[] }>({ query: `query Notifications { myNotifications { id type payload readAt createdAt } }` }); return result.myNotifications; }
+export async function fetchNotificationPreferences() { const result = await graphqlRequest<{ myNotificationPreferences: NotificationPreference[] }>({ query: `query NotificationPreferences { myNotificationPreferences { id type enabled } }` }); return result.myNotificationPreferences; }
+export async function markNotificationRead(id: string) { await graphqlRequest({ query: `mutation ReadNotification($id: String!) { markNotificationRead(id: $id) { id readAt } }`, variables: { id } }); }
+export async function setNotificationPreference(type: NotificationKind, enabled: boolean) { await graphqlRequest({ query: `mutation NotificationPreference($type: NotificationType!, $enabled: Boolean!) { setNotificationPreference(type: $type, enabled: $enabled) { id type enabled } }`, variables: { type, enabled } }); }
+
 export async function saveProfileImage(userId: string, username: string, avatarUrl: string, profileId?: string): Promise<void> {
   if (!avatarUrl.startsWith('https://')) throw new Error('URL d’image invalide.');
   await graphqlRequest({

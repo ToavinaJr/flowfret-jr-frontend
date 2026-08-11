@@ -58,7 +58,7 @@ const ScalesPage = () => {
               onClick={() => changeScale(id)}
               className={`min-h-[44px] rounded-md px-3 text-left text-sm transition-colors ${
                 selectedScale === id
-                  ? "border border-border bg-muted text-foreground shadow-sm"
+                  ? "border border-primary/20 bg-primary/10 text-foreground shadow-sm"
                   : "bg-secondary text-muted-foreground hover:text-foreground"
               }`}
             >
