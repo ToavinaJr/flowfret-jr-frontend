@@ -22,6 +22,7 @@ import NotFound from "@/pages/NotFound";
 import HelpPage from "@/pages/HelpPage";
 import FriendsPage from "@/pages/FriendsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
+import PostPage from "@/pages/PostPage";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                   <Route path="/profile/:userId" element={<ProfilePage />} />
                   <Route path="/friends" element={<FriendsPage />} />
                   <Route path="/notifications" element={<NotificationsPage />} />
+                  <Route path="/post/:postId" element={<PostPage />} />
                   <Route path="/help" element={<HelpPage />} />
                   <Route path="/verify-email" element={<FeedPage />} />
                   <Route path="/reset-password" element={<FeedPage />} />

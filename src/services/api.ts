@@ -211,6 +211,11 @@ export async function fetchFeedPosts(): Promise<FeedPost[]> {
   return result.posts;
 }
 
+export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
+  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount createdAt author { id username profile { avatarUrl } } likes { id userId } attachments { id upload { id storagePath } } } }`, variables: { id } });
+  return result.post;
+}
+
 export async function requestPasswordReset(email: string): Promise<void> {
   await graphqlRequest({
     query: REQUEST_PASSWORD_RESET_MUTATION,
@@ -322,8 +327,8 @@ export async function respondFriendRequest(id: string, accept: boolean) { await 
 export async function removeFriend(id: string) { await graphqlRequest({ query: `mutation RemoveFriend($id: String!) { removeFriend(id: $id) { id } }`, variables: { id } }); }
 export async function recordTrackListen(trackId: string) { if (!trackId || trackId.length > 255) return; await graphqlRequest({ query: `mutation TrackListened($action: String!, $entityType: String!, $entityId: String) { recordActivity(action: $action, entityType: $entityType, entityId: $entityId) { id } }`, variables: { action: 'TRACK_LISTENED', entityType: 'track', entityId: trackId } }); }
 
-export type NotificationKind = 'FRIEND_POST' | 'POST_COMMENT' | 'FOLLOWED_POST_ACTIVITY';
-export interface AppNotification { id: string; type: NotificationKind; payload: { actorId?: string; actorUsername?: string; postId?: string; action?: string }; readAt: string | null; createdAt: string }
+export type NotificationKind = 'FRIEND_POST' | 'POST_COMMENT' | 'FOLLOWED_POST_ACTIVITY' | 'FRIEND_ACCEPTED';
+export interface AppNotification { id: string; type: NotificationKind; payload: { actorId?: string; actorUsername?: string; actorAvatarUrl?: string | null; postId?: string; postAuthorUsername?: string | null; action?: string }; readAt: string | null; createdAt: string }
 export interface NotificationPreference { id: string; type: NotificationKind; enabled: boolean }
 export async function fetchNotifications() { const result = await graphqlRequest<{ myNotifications: AppNotification[] }>({ query: `query Notifications { myNotifications { id type payload readAt createdAt } }` }); return result.myNotifications; }
 export async function fetchNotificationPreferences() { const result = await graphqlRequest<{ myNotificationPreferences: NotificationPreference[] }>({ query: `query NotificationPreferences { myNotificationPreferences { id type enabled } }` }); return result.myNotificationPreferences; }
