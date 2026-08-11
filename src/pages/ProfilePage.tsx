@@ -4,7 +4,9 @@ import { Camera, Save, Settings, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { PAGE_SHELL, PAGE_TITLE } from '@/constants/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { fetchMyProfile, saveProfile, uploadImages } from '@/services/api';
+import { createFeedComment, createFeedLike, deleteFeedLike, fetchMyProfile, saveProfile, uploadImages } from '@/services/api';
+import { FeedCard } from '@/pages/FeedPage';
+import type { FeedPost } from '@/types/feed';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -19,6 +21,18 @@ export default function ProfilePage() {
   useEffect(() => { void load(); }, [viewedId]);
   async function changeAvatar(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file || !user || !own) return; setSaving(true); try { const [image] = await uploadImages([file]); await saveProfile(user.id, { displayName: displayName || user.username, bio, visibility, avatarUrl: image.storagePath }, profile?.id); await load(); toast.success('Photo de profil mise à jour.'); } catch (error) { toast.error(error instanceof Error ? error.message : 'Échec de l’envoi.'); } finally { setSaving(false); event.target.value = ''; } }
   async function submit() { if (!user || !own) return; setSaving(true); try { await saveProfile(user.id, { displayName, bio, visibility }, profile?.id); await load(); toast.success('Profil mis à jour.'); } catch (error) { toast.error(error instanceof Error ? error.message : 'Échec de la modification.'); } finally { setSaving(false); } }
+  async function comment(postId: string, content: string) {
+    if (!user) return;
+    await createFeedComment({ postId, content, authorId: user.id });
+    await load();
+  }
+  async function toggleLike(post: FeedPost) {
+    if (!user) return;
+    const like = post.likes.find(item => item.userId === user.id);
+    if (like) await deleteFeedLike(like.id);
+    else await createFeedLike(post.id, user.id);
+    await load();
+  }
   if (!viewedId) return null;
   if (!profile && !own) return <main className={PAGE_SHELL}><p>Ce profil est privé ou introuvable.</p></main>;
   const avatar = profile?.avatarUrl;
@@ -29,6 +43,7 @@ export default function ProfilePage() {
       {own ? <div className="space-y-3"><label className="block text-sm">Nom affiché<input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={120} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3"/></label><label className="block text-sm">Bio<textarea value={bio} onChange={e => setBio(e.target.value)} maxLength={1000} rows={4} className="mt-1 w-full rounded-md border bg-background p-3"/></label><label className="block text-sm">Visibilité<select value={visibility} onChange={e => setVisibility(e.target.value as typeof visibility)} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3"><option value="PUBLIC">Public</option><option value="FRIENDS">Amis</option><option value="PRIVATE">Privé</option></select></label><button disabled={saving || !displayName.trim()} onClick={() => void submit()} className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 text-primary-foreground disabled:opacity-50"><Save className="h-4 w-4"/>Enregistrer</button></div> : <p className="whitespace-pre-wrap text-muted-foreground">{profile?.bio || 'Aucune bio.'}</p>}
     </section>
     <h2 className="mb-3 text-lg font-semibold">Publications</h2>
-    <div className="space-y-3">{(profile?.user.authoredPosts ?? []).map(post => <article key={post.id} className="rounded-lg border bg-card p-4"><p className="whitespace-pre-wrap break-words">{post.content}</p>{post.attachments[0] && <img src={post.attachments[0].upload.storagePath} alt="" className="mt-3 max-h-80 w-full rounded-md object-cover"/>}<div className="mt-3 text-xs text-muted-foreground">{post.likeCount} j’aime · {post.commentCount} commentaires</div></article>)}</div>
+    <div className="space-y-3 sm:space-y-4">{(profile?.user.authoredPosts ?? []).map(post => <FeedCard key={post.id} post={post} onComment={comment} currentUserId={user?.id ?? ''} onToggleLike={toggleLike} onChanged={load}/>)}</div>
+    {profile && profile.user.authoredPosts.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">Aucune publication pour le moment.</p>}
   </main>;
 }

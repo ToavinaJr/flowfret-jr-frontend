@@ -37,7 +37,7 @@ function formatRelative(iso: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-interface FeedCardProps {
+export interface FeedCardProps {
   post: FeedPost;
   onComment: (postId: string, content: string) => Promise<void>;
   currentUserId: string;
@@ -45,7 +45,7 @@ interface FeedCardProps {
   onChanged: () => Promise<void>;
 }
 
-function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: FeedCardProps) {
+export function FeedCard({ post, onComment, currentUserId, onToggleLike, onChanged }: FeedCardProps) {
   const { t } = useTranslation();
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
