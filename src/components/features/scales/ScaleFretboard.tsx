@@ -128,7 +128,11 @@ export function ScaleFretboard({ rootIndex, scaleIntervals }: ScaleFretboardProp
                   y={cy + 3.5}
                   fontSize={9}
                   textAnchor="middle"
-                  className={isRoot ? "fill-primary-foreground" : "fill-accent-foreground"}
+                  className={
+                    isRoot
+                      ? "fill-primary-foreground"
+                      : "fill-white dark:fill-slate-950"
+                  }
                 >
                   {NOTE_DISPLAY[noteIdx]}
                 </text>

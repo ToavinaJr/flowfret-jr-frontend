@@ -18,6 +18,7 @@ import {
 import { ApiClientError } from "@/types/api";
 import type { AuthMode } from "@/types/auth";
 import { useTranslation } from "react-i18next";
+import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
 
 interface AuthGateProps {
   children: ReactNode;
@@ -97,11 +98,7 @@ export function AuthGate({ children }: AuthGateProps) {
   }, [searchParams, setMode]);
 
   if (status === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <AppShellSkeleton />;
   }
 
   if (status === "authenticated") {
@@ -131,12 +128,16 @@ export function AuthGate({ children }: AuthGateProps) {
     }
 
     if (mode === "register" && !acceptedTerms) {
-      setError("Vous devez accepter les conditions d’utilisation avant de vous inscrire.");
+      setError(
+        "Vous devez accepter les conditions d’utilisation avant de vous inscrire.",
+      );
       return;
     }
 
     if (!googleConfigured) {
-      setError("Connexion Google non configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.");
+      setError(
+        "Connexion Google non configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
+      );
       return;
     }
 
@@ -155,7 +156,10 @@ export function AuthGate({ children }: AuthGateProps) {
       if (err instanceof ApiClientError) {
         setError(err.message);
       } else if (err instanceof Error) {
-        const cancelled = /popup_closed|user.*cancel|access_denied|timed.?out/i.test(err.message);
+        const cancelled =
+          /popup_closed|user.*cancel|access_denied|timed.?out/i.test(
+            err.message,
+          );
         setError(
           cancelled
             ? "Connexion Google annulée."
@@ -308,7 +312,9 @@ export function AuthGate({ children }: AuthGateProps) {
 
   const title = t(`auth.title.${mode}`);
 
-  const subtitle = t(`auth.subtitle.${mode}`, { email: pendingEmail || t("auth.yourEmail") });
+  const subtitle = t(`auth.subtitle.${mode}`, {
+    email: pendingEmail || t("auth.yourEmail"),
+  });
 
   return (
     <div className="grid min-h-screen w-full overflow-x-hidden bg-background lg:grid-cols-2">
@@ -396,13 +402,16 @@ export function AuthGate({ children }: AuthGateProps) {
                     acceptedTerms={acceptedTerms}
                     onEmailChange={(value) => setField("email", value)}
                     onPasswordChange={(value) => setField("password", value)}
-                    onConfirmPasswordChange={(value) => setField("confirmPassword", value)}
+                    onConfirmPasswordChange={(value) =>
+                      setField("confirmPassword", value)
+                    }
                     onUsernameChange={(value) => setField("username", value)}
                     onTermsChange={setAcceptedTerms}
                     onForgotPassword={handleForgotPassword}
                     onOpenTerms={() =>
                       toast.message("Conditions d’utilisation", {
-                        description: "Les conditions complètes seront bientôt disponibles.",
+                        description:
+                          "Les conditions complètes seront bientôt disponibles.",
                       })
                     }
                   />
@@ -418,7 +427,9 @@ export function AuthGate({ children }: AuthGateProps) {
                     disabled={pendingAction !== null}
                     className="inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-md bg-primary font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    {pendingAction === "submit" && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {pendingAction === "submit" && (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    )}
                     {mode === "login" ? "Se connecter" : "Créer mon compte"}
                   </button>
 
@@ -427,7 +438,9 @@ export function AuthGate({ children }: AuthGateProps) {
                       <div className="w-full border-t border-border" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                      <span className="bg-background px-3 text-muted-foreground">ou</span>
+                      <span className="bg-background px-3 text-muted-foreground">
+                        ou
+                      </span>
                     </div>
                   </div>
 
@@ -442,7 +455,9 @@ export function AuthGate({ children }: AuthGateProps) {
                     ) : (
                       <GoogleLogo className="h-5 w-5" />
                     )}
-                    {mode === "login" ? "Continuer avec Google" : "S’inscrire avec Google"}
+                    {mode === "login"
+                      ? "Continuer avec Google"
+                      : "S’inscrire avec Google"}
                   </button>
                 </>
               )}
@@ -476,7 +491,8 @@ export function AuthGate({ children }: AuthGateProps) {
             Libérez le potentiel de votre guitare
           </h2>
           <p className="mt-4 max-w-md text-base text-muted-foreground">
-            Analysez, pratiquez et partagez — un workbench pensé pour les guitaristes.
+            Analysez, pratiquez et partagez — un workbench pensé pour les
+            guitaristes.
           </p>
           <AuthHighlights />
         </div>

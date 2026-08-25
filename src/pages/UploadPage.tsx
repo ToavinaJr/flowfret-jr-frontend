@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { ImportedSong } from "@/types/song";
 import { ImportedSongPlayer } from "@/components/features/music/ImportedSongPlayer";
+import { ChordAnalysisSkeleton } from "@/components/skeletons/AppSkeletons";
 
 type UploadStatus = "idle" | "analyzing" | "error";
 
@@ -99,20 +100,12 @@ const UploadPage = () => {
 
   if (status === "analyzing") {
     return (
-      <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
+      <div className={`${PAGE_SHELL} max-w-5xl lg:max-w-5xl`}>
         <h1 className={PAGE_TITLE}>{t("upload.analyzing")}</h1>
-        <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
-          <p className="mb-3 text-sm text-muted-foreground">{progressLabel}</p>
-          <div className="h-2 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full bg-primary transition-[width] duration-150"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </div>
-          <p className="mt-2 font-musical text-xs text-muted-foreground">
-            {Math.round(progress * 100)}%
-          </p>
-        </div>
+        <p className="mb-3 text-sm text-muted-foreground">
+          {progressLabel} · {Math.round(progress * 100)}%
+        </p>
+        <ChordAnalysisSkeleton />
       </div>
     );
   }

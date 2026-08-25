@@ -13,12 +13,25 @@ function formatTime(seconds: number): string {
 }
 
 function chordShape(label?: string) {
-  const match = /^([A-G](?:#|b)?)(m)?$/.exec(label ?? "");
+  const match = /^([A-G](?:#|b)?)(maj7|m7|sus2|sus4|dim|aug|7|m)?$/.exec(
+    label ?? "",
+  );
   if (!match) return { label: label ?? "—", position: undefined };
   const key = normaliseKey(match[1]);
+  const suffixByLabel: Record<string, string> = {
+    "": "major",
+    m: "minor",
+    maj7: "maj7",
+    m7: "m7",
+    sus2: "sus2",
+    sus4: "sus4",
+    dim: "dim",
+    aug: "aug",
+    "7": "7",
+  };
   return {
     label: `${key}${match[2] ?? ""}`,
-    position: getChordPosition(key, match[2] ? "minor" : "major"),
+    position: getChordPosition(key, suffixByLabel[match[2] ?? ""]),
   };
 }
 
