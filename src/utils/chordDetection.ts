@@ -4,7 +4,20 @@
 
 import type { ChordCue } from "@/types/song";
 
-const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"] as const;
+const NOTES = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+] as const;
 const C4 = 261.63;
 
 export type ProgressCallback = (ratio: number, label: string) => void;
@@ -41,11 +54,27 @@ function detectChordForSegment(segment: Float32Array, sr: number): string {
     chroma[n] = energy;
   }
 
-  let maxIdx = 0;
-  for (let i = 1; i < 12; i++) {
-    if (chroma[i] > chroma[maxIdx]) maxIdx = i;
+  const totalEnergy = chroma.reduce((sum, value) => sum + value, 0);
+  if (totalEnergy <= Number.EPSILON) return "—";
+
+  let bestRoot = 0;
+  let bestMinor = false;
+  let bestScore = Number.NEGATIVE_INFINITY;
+  for (let root = 0; root < 12; root++) {
+    for (const minor of [false, true]) {
+      const third = (root + (minor ? 3 : 4)) % 12;
+      const fifth = (root + 7) % 12;
+      const chordEnergy =
+        chroma[root] + chroma[third] * 0.9 + chroma[fifth] * 0.8;
+      const score = chordEnergy - (totalEnergy - chordEnergy) * 0.15;
+      if (score > bestScore) {
+        bestScore = score;
+        bestRoot = root;
+        bestMinor = minor;
+      }
+    }
   }
-  return NOTES[maxIdx];
+  return `${NOTES[bestRoot]}${bestMinor ? "m" : ""}`;
 }
 
 export async function analyzeAudioFile(
@@ -66,7 +95,7 @@ export async function analyzeAudioFile(
   const pcm = audioBuffer.getChannelData(0);
   const sr = audioBuffer.sampleRate;
   const duration = audioBuffer.duration;
-  const totalSeg = Math.floor(duration);
+  const totalSeg = Math.ceil(duration);
 
   onProgress(0, `Analyse de ${totalSeg} secondes…`);
 
@@ -81,7 +110,7 @@ export async function analyzeAudioFile(
       end - start,
     );
     const chord = detectChordForSegment(segment, sr);
-    cues.push({ start: i, end: i + 1, chord });
+    cues.push({ start: i, end: Math.min(i + 1, duration), chord });
 
     if (i % 4 === 3) {
       onProgress(

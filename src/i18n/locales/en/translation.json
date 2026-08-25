@@ -28,22 +28,230 @@
   "common": {
     "menu": "Menu"
   },
-  "feed": { "title": "Feed", "newPost": "New post", "composerPlaceholder": "Share a progression, tip, or practice note…", "publish": "Publish", "publishing": "Publishing…", "addImages": "Add photos", "selectedImages": "{{count}}/{{max}} photos", "imagePreviewAlt": "Preview of photo {{number}}", "removeImage": "Remove photo {{number}}", "imageValidation": "Only JPEG, PNG, or WebP images up to 8 MB are accepted.", "imageLimit": "You can add up to {{count}} photos.", "uploadingPost": "Uploading images and publishing…", "postCreated": "Post published successfully.", "postCreateError": "Unable to publish the post.", "commentPublishing": "Publishing comment…", "commentCreated": "Comment published successfully.", "commentCreateError": "Unable to publish the comment.", "loadError": "Unable to load the feed. Please try again later.", "empty": "No posts yet. Be the first to share something." },
-  "morePage": { "title": "Menu", "subtitle": "Tools and pages beyond the main navigation." },
-  "history": { "title": "History of the Guitar", "origins": "The modern six-string guitar evolved from earlier plucked instruments across Europe and the Middle East. By the 19th century, Spanish makers refined it into the classical form we recognize today.", "modern": "Steel-string acoustics and electric pickups in the 20th century opened blues, jazz, rock, and countless hybrids — while the fretboard remained a map of the chromatic scale.", "fretflow": "FretFlow continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing." },
-  "profile": { "title": "Profile", "settings": "Settings", "avatarAlt": "Profile picture", "guest": "Guest", "openMenu": "Open menu", "logout": "Log out", "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FretFlow community." },
-  "notFound": { "message": "Oops! Page not found", "backHome": "Return to Home" },
-  "contact": { "title": "Contact", "description": "Questions, feedback, or collaboration ideas — we’d love to hear from you.", "email": "Email {{email}}" },
-  "chords": { "title": "Chord Explorer", "searchPlaceholder": "Search chords… (Am, Cmaj7, F#dim)", "voicing": "Voicing", "strum": "Strum", "selectPrompt": "Select a chord to preview" },
-  "metronome": { "title": "Metronome", "decrease": "Decrease BPM", "increase": "Increase BPM", "start": "Start", "stop": "Stop", "timeSignature": "Time signature", "tapTempo": "Tap Tempo" },
-  "tuner": { "title": "Guitar Tuner", "automatic": "Automatic", "manual": "Manual", "inTune": "In Tune ✓", "startMicrophone": "Start microphone", "stopMicrophone": "Stop microphone", "selectString": "Select String", "referenceStrings": "Reference strings" },
-  "player": { "importedSubtitle": "Imported track · Guitar Player", "demoSubtitle": "Demo · Guitar Player", "chordCount": "{{count}} chords", "importedSuffix": " · Imported", "demoSuffix": " · Demo track", "restart": "Restart", "syncPrompt": "Play to sync chords", "play": "Play", "pause": "Pause", "seek": "Seek", "audioError": "Unable to play this audio source.", "timeline": "Chord timeline" },
-  "upload": { "title": "Upload & Analyze", "analyzing": "Analyzing…", "invalidFile": "Please select an audio file (MP3, WAV…).", "tooLarge": "File too large (max 20MB).", "analysisFailed": "Analysis failed. Try another file.", "dropHere": "Drop your audio file here", "formats": "MP3, WAV · Max 20MB", "howItWorks": "How it works", "steps": { "select": "Upload your riff, cover, or composition", "analyze": "FlowFret analysis detects chord roots", "review": "Review the detected chord cues", "preview": "Preview fingerings on the fretboard" } },
-  "auth": { "title": { "login": "Welcome back", "register": "Create an account", "verify": "Verify your email", "forgot": "Forgot password", "reset": "New password" }, "subtitle": { "login": "Sign in to keep practicing and sharing.", "register": "Join FretFlow and unlock your guitar workflow.", "verify": "Enter the 4-digit code sent to {{email}}.", "forgot": "Enter your email address to receive a secure link.", "reset": "Choose a new password of at least 8 characters." }, "yourEmail": "your email" },
-  "scales": { "title": "Scales", "description": "Explore modes on the fretboard — tap notes to hear them.", "root": "Root", "scale": "Scale" },
-  "deleteDialog": { "post": { "trigger": "Delete post", "title": "Delete this post?", "description": "This post will no longer appear in the feed. This action cannot be undone from the application.", "success": "Post deleted successfully." }, "comment": { "trigger": "Delete comment", "title": "Delete this comment?", "description": "This comment will no longer be visible. This action cannot be undone from the application.", "success": "Comment deleted successfully." }, "avatar": { "trigger": "Delete profile picture", "title": "Delete profile picture?", "description": "Only the picture stored in this application will be removed. Your Google profile picture will not be changed.", "success": "Profile picture removed." }, "cancel": "Cancel", "confirm": "Delete", "deleting": "Deleting…", "error": "Deletion failed. Please try again." },
-  "postDetails": { "title": "Post by {{username}}", "imageCount": "{{count}} photo(s)", "imageAlt": "Photo {{current}} of {{total}}", "previewAlt": "Post photo {{number}}", "morePhotos": "+{{count}} photos", "previous": "Previous photo", "next": "Next photo", "openImage": "Open photo {{number}}" },
-  "help": { "menuLabel": "Help", "menuDescription": "Music notation and theory guide", "title": "Music Theory Help", "intro": "A practical reference for understanding notes, chord symbols, harmony, and the circle of fifths.", "notes": { "title": "Notation of scale notes", "description": "Western music names seven natural notes. The sequence repeats at each octave.", "names": { "0": "Do", "1": "Re", "2": "Mi", "3": "Fa", "4": "Sol", "5": "La", "6": "Ti" }, "accidentals": "A sharp (♯) raises a note by one semitone; a flat (♭) lowers it by one semitone." }, "chordNotation": { "title": "Chord notation", "description": "A chord symbol starts with its root note, followed by characters describing its quality or added notes.", "types": { "0": "C major", "1": "C minor", "2": "C dominant seventh", "3": "C major seventh", "4": "C minor seventh", "5": "C diminished", "6": "C augmented", "7": "C suspended fourth" } }, "derived": { "title": "Derived chords", "description": "Harmonizing each note of a major scale creates a predictable family of chords. In C major these are C, Dm, Em, F, G, Am, and B diminished.", "functions": { "0": "Tonic", "1": "Supertonic", "2": "Mediant", "3": "Subdominant", "4": "Dominant", "5": "Submediant", "6": "Leading tone" } }, "reading": { "title": "Reading chords", "description": "Read chord charts from left to right. Vertical bars divide measures; two chords inside one measure usually share its duration.", "example": "This example plays C for one measure, Am for one, Dm7 and G7 for half a measure each, then resolves to Cmaj7." }, "circle": { "title": "Interactive circle of fifths", "description": "Move clockwise to add sharps and counter-clockwise to add flats. Select a position to compare its major key, relative minor, and leading-tone diminished chord.", "major": "Major key", "relativeMinor": "Relative minor", "diminished": "Diminished chord", "select": "Select {{major}} major, {{minor}} minor, and {{diminished}} diminished" } },
+  "feed": {
+    "title": "Feed",
+    "newPost": "New post",
+    "composerPlaceholder": "Share a progression, tip, or practice note…",
+    "publish": "Publish",
+    "publishing": "Publishing…",
+    "addImages": "Add photos",
+    "selectedImages": "{{count}}/{{max}} photos",
+    "imagePreviewAlt": "Preview of photo {{number}}",
+    "removeImage": "Remove photo {{number}}",
+    "imageValidation": "Only JPEG, PNG, or WebP images up to 8 MB are accepted.",
+    "imageLimit": "You can add up to {{count}} photos.",
+    "uploadingPost": "Uploading images and publishing…",
+    "postCreated": "Post published successfully.",
+    "postCreateError": "Unable to publish the post.",
+    "commentPublishing": "Publishing comment…",
+    "commentCreated": "Comment published successfully.",
+    "commentCreateError": "Unable to publish the comment.",
+    "loadError": "Unable to load the feed. Please try again later.",
+    "empty": "No posts yet. Be the first to share something."
+  },
+  "morePage": {
+    "title": "Menu",
+    "subtitle": "Tools and pages beyond the main navigation."
+  },
+  "history": {
+    "title": "History of the Guitar",
+    "origins": "The modern six-string guitar evolved from earlier plucked instruments across Europe and the Middle East. By the 19th century, Spanish makers refined it into the classical form we recognize today.",
+    "modern": "Steel-string acoustics and electric pickups in the 20th century opened blues, jazz, rock, and countless hybrids — while the fretboard remained a map of the chromatic scale.",
+    "fretflow": "FretFlow continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing."
+  },
+  "profile": {
+    "title": "Profile",
+    "settings": "Settings",
+    "avatarAlt": "Profile picture",
+    "guest": "Guest",
+    "openMenu": "Open menu",
+    "logout": "Log out",
+    "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FretFlow community."
+  },
+  "notFound": {
+    "message": "Oops! Page not found",
+    "backHome": "Return to Home"
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Questions, feedback, or collaboration ideas — we’d love to hear from you.",
+    "email": "Email {{email}}"
+  },
+  "chords": {
+    "title": "Chord Explorer",
+    "searchPlaceholder": "Search chords… (Am, Cmaj7, F#dim)",
+    "voicing": "Voicing",
+    "strum": "Strum",
+    "selectPrompt": "Select a chord to preview"
+  },
+  "metronome": {
+    "title": "Metronome",
+    "decrease": "Decrease BPM",
+    "increase": "Increase BPM",
+    "start": "Start",
+    "stop": "Stop",
+    "timeSignature": "Time signature",
+    "tapTempo": "Tap Tempo"
+  },
+  "tuner": {
+    "title": "Guitar Tuner",
+    "automatic": "Automatic",
+    "manual": "Manual",
+    "inTune": "In Tune ✓",
+    "startMicrophone": "Start microphone",
+    "stopMicrophone": "Stop microphone",
+    "selectString": "Select String",
+    "referenceStrings": "Reference strings"
+  },
+  "player": {
+    "importedSubtitle": "Imported track · Guitar Player",
+    "demoSubtitle": "Demo · Guitar Player",
+    "chordCount": "{{count}} chords",
+    "importedSuffix": " · Imported",
+    "demoSuffix": " · Demo track",
+    "restart": "Restart",
+    "syncPrompt": "Play to sync chords",
+    "play": "Play",
+    "pause": "Pause",
+    "seek": "Seek",
+    "audioError": "Unable to play this audio source.",
+    "timeline": "Chord timeline"
+  },
+  "upload": {
+    "title": "Upload & Analyze",
+    "analyzing": "Analyzing…",
+    "invalidFile": "Please select an audio file (MP3, WAV…).",
+    "tooLarge": "File too large (max 20MB).",
+    "analysisFailed": "Analysis failed. Try another file.",
+    "dropHere": "Drop your audio file here",
+    "anotherAudio": "Upload another audio file",
+    "replaceHint": "Choose a file or drop it here to replace the current track",
+    "formats": "MP3, WAV · Max 20MB",
+    "howItWorks": "How it works",
+    "steps": {
+      "select": "Upload your riff, cover, or composition",
+      "analyze": "FlowFret analysis detects chord roots",
+      "review": "Review the detected chord cues",
+      "preview": "Preview fingerings on the fretboard"
+    }
+  },
+  "auth": {
+    "title": {
+      "login": "Welcome back",
+      "register": "Create an account",
+      "verify": "Verify your email",
+      "forgot": "Forgot password",
+      "reset": "New password"
+    },
+    "subtitle": {
+      "login": "Sign in to keep practicing and sharing.",
+      "register": "Join FretFlow and unlock your guitar workflow.",
+      "verify": "Enter the 4-digit code sent to {{email}}.",
+      "forgot": "Enter your email address to receive a secure link.",
+      "reset": "Choose a new password of at least 8 characters."
+    },
+    "yourEmail": "your email"
+  },
+  "scales": {
+    "title": "Scales",
+    "description": "Explore modes on the fretboard — tap notes to hear them.",
+    "root": "Root",
+    "scale": "Scale"
+  },
+  "deleteDialog": {
+    "post": {
+      "trigger": "Delete post",
+      "title": "Delete this post?",
+      "description": "This post will no longer appear in the feed. This action cannot be undone from the application.",
+      "success": "Post deleted successfully."
+    },
+    "comment": {
+      "trigger": "Delete comment",
+      "title": "Delete this comment?",
+      "description": "This comment will no longer be visible. This action cannot be undone from the application.",
+      "success": "Comment deleted successfully."
+    },
+    "avatar": {
+      "trigger": "Delete profile picture",
+      "title": "Delete profile picture?",
+      "description": "Only the picture stored in this application will be removed. Your Google profile picture will not be changed.",
+      "success": "Profile picture removed."
+    },
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "deleting": "Deleting…",
+    "error": "Deletion failed. Please try again."
+  },
+  "postDetails": {
+    "title": "Post by {{username}}",
+    "imageCount": "{{count}} photo(s)",
+    "imageAlt": "Photo {{current}} of {{total}}",
+    "previewAlt": "Post photo {{number}}",
+    "morePhotos": "+{{count}} photos",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "openImage": "Open photo {{number}}"
+  },
+  "help": {
+    "menuLabel": "Help",
+    "menuDescription": "Music notation and theory guide",
+    "title": "Music Theory Help",
+    "intro": "A practical reference for understanding notes, chord symbols, harmony, and the circle of fifths.",
+    "notes": {
+      "title": "Notation of scale notes",
+      "description": "Western music names seven natural notes. The sequence repeats at each octave.",
+      "names": {
+        "0": "Do",
+        "1": "Re",
+        "2": "Mi",
+        "3": "Fa",
+        "4": "Sol",
+        "5": "La",
+        "6": "Ti"
+      },
+      "accidentals": "A sharp (♯) raises a note by one semitone; a flat (♭) lowers it by one semitone."
+    },
+    "chordNotation": {
+      "title": "Chord notation",
+      "description": "A chord symbol starts with its root note, followed by characters describing its quality or added notes.",
+      "types": {
+        "0": "C major",
+        "1": "C minor",
+        "2": "C dominant seventh",
+        "3": "C major seventh",
+        "4": "C minor seventh",
+        "5": "C diminished",
+        "6": "C augmented",
+        "7": "C suspended fourth"
+      }
+    },
+    "derived": {
+      "title": "Derived chords",
+      "description": "Harmonizing each note of a major scale creates a predictable family of chords. In C major these are C, Dm, Em, F, G, Am, and B diminished.",
+      "functions": {
+        "0": "Tonic",
+        "1": "Supertonic",
+        "2": "Mediant",
+        "3": "Subdominant",
+        "4": "Dominant",
+        "5": "Submediant",
+        "6": "Leading tone"
+      }
+    },
+    "reading": {
+      "title": "Reading chords",
+      "description": "Read chord charts from left to right. Vertical bars divide measures; two chords inside one measure usually share its duration.",
+      "example": "This example plays C for one measure, Am for one, Dm7 and G7 for half a measure each, then resolves to Cmaj7."
+    },
+    "circle": {
+      "title": "Interactive circle of fifths",
+      "description": "Move clockwise to add sharps and counter-clockwise to add flats. Select a position to compare its major key, relative minor, and leading-tone diminished chord.",
+      "major": "Major key",
+      "relativeMinor": "Relative minor",
+      "diminished": "Diminished chord",
+      "select": "Select {{major}} major, {{minor}} minor, and {{diminished}} diminished"
+    }
+  },
   "music": {
     "title": "Search music",
     "subtitle": "Discover your next favorite track and start listening now.",

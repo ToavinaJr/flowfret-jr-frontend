@@ -28,22 +28,230 @@
   "common": {
     "menu": "Menu"
   },
-  "feed": { "title": "Fil d’actualité", "newPost": "Nouvelle publication", "composerPlaceholder": "Partagez une progression, une astuce ou une note de pratique…", "publish": "Publier", "publishing": "Publication…", "addImages": "Ajouter des photos", "selectedImages": "{{count}}/{{max}} photos", "imagePreviewAlt": "Aperçu de la photo {{number}}", "removeImage": "Retirer la photo {{number}}", "imageValidation": "Seules les images JPEG, PNG ou WebP de 8 Mo maximum sont acceptées.", "imageLimit": "Vous pouvez ajouter jusqu’à {{count}} photos.", "uploadingPost": "Envoi des images et publication…", "postCreated": "Publication créée avec succès.", "postCreateError": "Impossible de créer la publication.", "commentPublishing": "Publication du commentaire…", "commentCreated": "Commentaire publié avec succès.", "commentCreateError": "Impossible de publier le commentaire.", "loadError": "Impossible de charger le fil. Réessayez plus tard.", "empty": "Aucune publication. Soyez la première personne à partager quelque chose." },
-  "morePage": { "title": "Menu", "subtitle": "Outils et pages au-delà de la navigation principale." },
-  "history": { "title": "Histoire de la guitare", "origins": "La guitare moderne à six cordes est issue d’instruments à cordes pincées plus anciens d’Europe et du Moyen-Orient. Au XIXe siècle, les luthiers espagnols lui ont donné la forme classique actuelle.", "modern": "Les cordes en acier et les micros électriques du XXe siècle ont ouvert la voie au blues, au jazz, au rock et à d’innombrables styles hybrides, tandis que le manche restait une carte de la gamme chromatique.", "fretflow": "FretFlow poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage." },
-  "profile": { "title": "Profil", "settings": "Paramètres", "avatarAlt": "Photo de profil", "guest": "Invité", "openMenu": "Ouvrir le menu", "logout": "Se déconnecter", "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FretFlow." },
-  "notFound": { "message": "Oups ! Page introuvable", "backHome": "Retour à l’accueil" },
-  "contact": { "title": "Contact", "description": "Une question, un retour ou une idée de collaboration ? Nous serions ravis de vous lire.", "email": "Écrire à {{email}}" },
-  "chords": { "title": "Explorateur d’accords", "searchPlaceholder": "Rechercher des accords… (Am, Cmaj7, F#dim)", "voicing": "Position", "strum": "Jouer l’accord", "selectPrompt": "Sélectionnez un accord pour l’afficher" },
-  "metronome": { "title": "Métronome", "decrease": "Réduire le BPM", "increase": "Augmenter le BPM", "start": "Démarrer", "stop": "Arrêter", "timeSignature": "Signature rythmique", "tapTempo": "Taper le tempo" },
-  "tuner": { "title": "Accordeur de guitare", "automatic": "Automatique", "manual": "Manuel", "inTune": "Accordé ✓", "startMicrophone": "Démarrer le microphone", "stopMicrophone": "Arrêter le microphone", "selectString": "Sélectionner une corde", "referenceStrings": "Cordes de référence" },
-  "player": { "importedSubtitle": "Morceau importé · Lecteur guitare", "demoSubtitle": "Démo · Lecteur guitare", "chordCount": "{{count}} accords", "importedSuffix": " · Importé", "demoSuffix": " · Morceau de démonstration", "restart": "Recommencer", "syncPrompt": "Lancez la lecture pour synchroniser les accords", "play": "Lire", "pause": "Pause", "seek": "Position de lecture", "audioError": "Impossible de lire cette source audio.", "timeline": "Chronologie des accords" },
-  "upload": { "title": "Importer et analyser", "analyzing": "Analyse en cours…", "invalidFile": "Sélectionnez un fichier audio (MP3, WAV…).", "tooLarge": "Fichier trop volumineux (20 Mo maximum).", "analysisFailed": "Échec de l’analyse. Essayez un autre fichier.", "dropHere": "Déposez votre fichier audio ici", "formats": "MP3, WAV · 20 Mo maximum", "howItWorks": "Fonctionnement", "steps": { "select": "Importez votre riff, reprise ou composition", "analyze": "L’analyse FlowFret détecte les fondamentales des accords", "review": "Vérifiez les accords détectés", "preview": "Visualisez les doigtés sur le manche" } },
-  "auth": { "title": { "login": "Bon retour", "register": "Créer un compte", "verify": "Vérifier votre e-mail", "forgot": "Mot de passe oublié", "reset": "Nouveau mot de passe" }, "subtitle": { "login": "Connectez-vous pour continuer à pratiquer et partager.", "register": "Rejoignez FretFlow et débloquez votre workflow guitare.", "verify": "Saisissez le code à 4 chiffres envoyé à {{email}}.", "forgot": "Saisissez votre adresse e-mail pour recevoir un lien sécurisé.", "reset": "Choisissez un nouveau mot de passe d’au moins 8 caractères." }, "yourEmail": "votre e-mail" },
-  "scales": { "title": "Gammes", "description": "Explorez les modes sur le manche — touchez les notes pour les écouter.", "root": "Fondamentale", "scale": "Gamme" },
-  "deleteDialog": { "post": { "trigger": "Supprimer la publication", "title": "Supprimer cette publication ?", "description": "Cette publication ne sera plus visible dans le fil. Cette action ne peut pas être annulée depuis l’application.", "success": "Publication supprimée avec succès." }, "comment": { "trigger": "Supprimer le commentaire", "title": "Supprimer ce commentaire ?", "description": "Ce commentaire ne sera plus visible. Cette action ne peut pas être annulée depuis l’application.", "success": "Commentaire supprimé avec succès." }, "avatar": { "trigger": "Supprimer la photo de profil", "title": "Supprimer la photo de profil ?", "description": "Seule la photo enregistrée dans cette application sera supprimée. Votre photo Google ne sera pas modifiée.", "success": "Photo de profil supprimée." }, "cancel": "Annuler", "confirm": "Supprimer", "deleting": "Suppression…", "error": "La suppression a échoué. Veuillez réessayer." },
-  "postDetails": { "title": "Publication de {{username}}", "imageCount": "{{count}} photo(s)", "imageAlt": "Photo {{current}} sur {{total}}", "previewAlt": "Photo {{number}} de la publication", "morePhotos": "+{{count}} photos", "previous": "Photo précédente", "next": "Photo suivante", "openImage": "Ouvrir la photo {{number}}" },
-  "help": { "menuLabel": "Aide", "menuDescription": "Guide de notation et de théorie musicale", "title": "Aide en théorie musicale", "intro": "Une référence pratique pour comprendre les notes, les symboles d’accords, l’harmonie et le cercle des quintes.", "notes": { "title": "Notation des notes de la gamme", "description": "La musique occidentale nomme sept notes naturelles. La séquence se répète à chaque octave.", "names": { "0": "Do", "1": "Ré", "2": "Mi", "3": "Fa", "4": "Sol", "5": "La", "6": "Si" }, "accidentals": "Un dièse (♯) élève une note d’un demi-ton ; un bémol (♭) l’abaisse d’un demi-ton." }, "chordNotation": { "title": "Notation des accords", "description": "Le symbole d’un accord commence par sa fondamentale, suivie de caractères décrivant sa qualité ou les notes ajoutées.", "types": { "0": "Do majeur", "1": "Do mineur", "2": "Do septième de dominante", "3": "Do septième majeure", "4": "Do septième mineure", "5": "Do diminué", "6": "Do augmenté", "7": "Do quarte suspendue" } }, "derived": { "title": "Accords dérivés", "description": "Harmoniser chaque note d’une gamme majeure produit une famille prévisible d’accords. En Do majeur : Do, Rém, Mim, Fa, Sol, Lam et Si diminué.", "functions": { "0": "Tonique", "1": "Sus-tonique", "2": "Médiante", "3": "Sous-dominante", "4": "Dominante", "5": "Sus-dominante", "6": "Sensible" } }, "reading": { "title": "Lecture des accords", "description": "Lisez les grilles d’accords de gauche à droite. Les barres verticales séparent les mesures ; deux accords dans une mesure se partagent généralement sa durée.", "example": "Cet exemple joue Do pendant une mesure, Lam pendant une mesure, Rém7 et Sol7 pendant une demi-mesure chacun, puis revient sur DoMaj7." }, "circle": { "title": "Cercle des quintes interactif", "description": "Dans le sens horaire, on ajoute des dièses ; dans le sens antihoraire, des bémols. Sélectionnez une position pour comparer sa tonalité majeure, sa relative mineure et son accord diminué de sensible.", "major": "Tonalité majeure", "relativeMinor": "Relative mineure", "diminished": "Accord diminué", "select": "Sélectionner {{major}} majeur, {{minor}} mineur et {{diminished}} diminué" } },
+  "feed": {
+    "title": "Fil d’actualité",
+    "newPost": "Nouvelle publication",
+    "composerPlaceholder": "Partagez une progression, une astuce ou une note de pratique…",
+    "publish": "Publier",
+    "publishing": "Publication…",
+    "addImages": "Ajouter des photos",
+    "selectedImages": "{{count}}/{{max}} photos",
+    "imagePreviewAlt": "Aperçu de la photo {{number}}",
+    "removeImage": "Retirer la photo {{number}}",
+    "imageValidation": "Seules les images JPEG, PNG ou WebP de 8 Mo maximum sont acceptées.",
+    "imageLimit": "Vous pouvez ajouter jusqu’à {{count}} photos.",
+    "uploadingPost": "Envoi des images et publication…",
+    "postCreated": "Publication créée avec succès.",
+    "postCreateError": "Impossible de créer la publication.",
+    "commentPublishing": "Publication du commentaire…",
+    "commentCreated": "Commentaire publié avec succès.",
+    "commentCreateError": "Impossible de publier le commentaire.",
+    "loadError": "Impossible de charger le fil. Réessayez plus tard.",
+    "empty": "Aucune publication. Soyez la première personne à partager quelque chose."
+  },
+  "morePage": {
+    "title": "Menu",
+    "subtitle": "Outils et pages au-delà de la navigation principale."
+  },
+  "history": {
+    "title": "Histoire de la guitare",
+    "origins": "La guitare moderne à six cordes est issue d’instruments à cordes pincées plus anciens d’Europe et du Moyen-Orient. Au XIXe siècle, les luthiers espagnols lui ont donné la forme classique actuelle.",
+    "modern": "Les cordes en acier et les micros électriques du XXe siècle ont ouvert la voie au blues, au jazz, au rock et à d’innombrables styles hybrides, tandis que le manche restait une carte de la gamme chromatique.",
+    "fretflow": "FretFlow poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage."
+  },
+  "profile": {
+    "title": "Profil",
+    "settings": "Paramètres",
+    "avatarAlt": "Photo de profil",
+    "guest": "Invité",
+    "openMenu": "Ouvrir le menu",
+    "logout": "Se déconnecter",
+    "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FretFlow."
+  },
+  "notFound": {
+    "message": "Oups ! Page introuvable",
+    "backHome": "Retour à l’accueil"
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Une question, un retour ou une idée de collaboration ? Nous serions ravis de vous lire.",
+    "email": "Écrire à {{email}}"
+  },
+  "chords": {
+    "title": "Explorateur d’accords",
+    "searchPlaceholder": "Rechercher des accords… (Am, Cmaj7, F#dim)",
+    "voicing": "Position",
+    "strum": "Jouer l’accord",
+    "selectPrompt": "Sélectionnez un accord pour l’afficher"
+  },
+  "metronome": {
+    "title": "Métronome",
+    "decrease": "Réduire le BPM",
+    "increase": "Augmenter le BPM",
+    "start": "Démarrer",
+    "stop": "Arrêter",
+    "timeSignature": "Signature rythmique",
+    "tapTempo": "Taper le tempo"
+  },
+  "tuner": {
+    "title": "Accordeur de guitare",
+    "automatic": "Automatique",
+    "manual": "Manuel",
+    "inTune": "Accordé ✓",
+    "startMicrophone": "Démarrer le microphone",
+    "stopMicrophone": "Arrêter le microphone",
+    "selectString": "Sélectionner une corde",
+    "referenceStrings": "Cordes de référence"
+  },
+  "player": {
+    "importedSubtitle": "Morceau importé · Lecteur guitare",
+    "demoSubtitle": "Démo · Lecteur guitare",
+    "chordCount": "{{count}} accords",
+    "importedSuffix": " · Importé",
+    "demoSuffix": " · Morceau de démonstration",
+    "restart": "Recommencer",
+    "syncPrompt": "Lancez la lecture pour synchroniser les accords",
+    "play": "Lire",
+    "pause": "Pause",
+    "seek": "Position de lecture",
+    "audioError": "Impossible de lire cette source audio.",
+    "timeline": "Chronologie des accords"
+  },
+  "upload": {
+    "title": "Importer et analyser",
+    "analyzing": "Analyse en cours…",
+    "invalidFile": "Sélectionnez un fichier audio (MP3, WAV…).",
+    "tooLarge": "Fichier trop volumineux (20 Mo maximum).",
+    "analysisFailed": "Échec de l’analyse. Essayez un autre fichier.",
+    "dropHere": "Déposez votre fichier audio ici",
+    "anotherAudio": "Importer un autre fichier audio",
+    "replaceHint": "Choisissez un fichier ou déposez-le ici pour remplacer le morceau actuel",
+    "formats": "MP3, WAV · 20 Mo maximum",
+    "howItWorks": "Fonctionnement",
+    "steps": {
+      "select": "Importez votre riff, reprise ou composition",
+      "analyze": "L’analyse FlowFret détecte les fondamentales des accords",
+      "review": "Vérifiez les accords détectés",
+      "preview": "Visualisez les doigtés sur le manche"
+    }
+  },
+  "auth": {
+    "title": {
+      "login": "Bon retour",
+      "register": "Créer un compte",
+      "verify": "Vérifier votre e-mail",
+      "forgot": "Mot de passe oublié",
+      "reset": "Nouveau mot de passe"
+    },
+    "subtitle": {
+      "login": "Connectez-vous pour continuer à pratiquer et partager.",
+      "register": "Rejoignez FretFlow et débloquez votre workflow guitare.",
+      "verify": "Saisissez le code à 4 chiffres envoyé à {{email}}.",
+      "forgot": "Saisissez votre adresse e-mail pour recevoir un lien sécurisé.",
+      "reset": "Choisissez un nouveau mot de passe d’au moins 8 caractères."
+    },
+    "yourEmail": "votre e-mail"
+  },
+  "scales": {
+    "title": "Gammes",
+    "description": "Explorez les modes sur le manche — touchez les notes pour les écouter.",
+    "root": "Fondamentale",
+    "scale": "Gamme"
+  },
+  "deleteDialog": {
+    "post": {
+      "trigger": "Supprimer la publication",
+      "title": "Supprimer cette publication ?",
+      "description": "Cette publication ne sera plus visible dans le fil. Cette action ne peut pas être annulée depuis l’application.",
+      "success": "Publication supprimée avec succès."
+    },
+    "comment": {
+      "trigger": "Supprimer le commentaire",
+      "title": "Supprimer ce commentaire ?",
+      "description": "Ce commentaire ne sera plus visible. Cette action ne peut pas être annulée depuis l’application.",
+      "success": "Commentaire supprimé avec succès."
+    },
+    "avatar": {
+      "trigger": "Supprimer la photo de profil",
+      "title": "Supprimer la photo de profil ?",
+      "description": "Seule la photo enregistrée dans cette application sera supprimée. Votre photo Google ne sera pas modifiée.",
+      "success": "Photo de profil supprimée."
+    },
+    "cancel": "Annuler",
+    "confirm": "Supprimer",
+    "deleting": "Suppression…",
+    "error": "La suppression a échoué. Veuillez réessayer."
+  },
+  "postDetails": {
+    "title": "Publication de {{username}}",
+    "imageCount": "{{count}} photo(s)",
+    "imageAlt": "Photo {{current}} sur {{total}}",
+    "previewAlt": "Photo {{number}} de la publication",
+    "morePhotos": "+{{count}} photos",
+    "previous": "Photo précédente",
+    "next": "Photo suivante",
+    "openImage": "Ouvrir la photo {{number}}"
+  },
+  "help": {
+    "menuLabel": "Aide",
+    "menuDescription": "Guide de notation et de théorie musicale",
+    "title": "Aide en théorie musicale",
+    "intro": "Une référence pratique pour comprendre les notes, les symboles d’accords, l’harmonie et le cercle des quintes.",
+    "notes": {
+      "title": "Notation des notes de la gamme",
+      "description": "La musique occidentale nomme sept notes naturelles. La séquence se répète à chaque octave.",
+      "names": {
+        "0": "Do",
+        "1": "Ré",
+        "2": "Mi",
+        "3": "Fa",
+        "4": "Sol",
+        "5": "La",
+        "6": "Si"
+      },
+      "accidentals": "Un dièse (♯) élève une note d’un demi-ton ; un bémol (♭) l’abaisse d’un demi-ton."
+    },
+    "chordNotation": {
+      "title": "Notation des accords",
+      "description": "Le symbole d’un accord commence par sa fondamentale, suivie de caractères décrivant sa qualité ou les notes ajoutées.",
+      "types": {
+        "0": "Do majeur",
+        "1": "Do mineur",
+        "2": "Do septième de dominante",
+        "3": "Do septième majeure",
+        "4": "Do septième mineure",
+        "5": "Do diminué",
+        "6": "Do augmenté",
+        "7": "Do quarte suspendue"
+      }
+    },
+    "derived": {
+      "title": "Accords dérivés",
+      "description": "Harmoniser chaque note d’une gamme majeure produit une famille prévisible d’accords. En Do majeur : Do, Rém, Mim, Fa, Sol, Lam et Si diminué.",
+      "functions": {
+        "0": "Tonique",
+        "1": "Sus-tonique",
+        "2": "Médiante",
+        "3": "Sous-dominante",
+        "4": "Dominante",
+        "5": "Sus-dominante",
+        "6": "Sensible"
+      }
+    },
+    "reading": {
+      "title": "Lecture des accords",
+      "description": "Lisez les grilles d’accords de gauche à droite. Les barres verticales séparent les mesures ; deux accords dans une mesure se partagent généralement sa durée.",
+      "example": "Cet exemple joue Do pendant une mesure, Lam pendant une mesure, Rém7 et Sol7 pendant une demi-mesure chacun, puis revient sur DoMaj7."
+    },
+    "circle": {
+      "title": "Cercle des quintes interactif",
+      "description": "Dans le sens horaire, on ajoute des dièses ; dans le sens antihoraire, des bémols. Sélectionnez une position pour comparer sa tonalité majeure, sa relative mineure et son accord diminué de sensible.",
+      "major": "Tonalité majeure",
+      "relativeMinor": "Relative mineure",
+      "diminished": "Accord diminué",
+      "select": "Sélectionner {{major}} majeur, {{minor}} mineur et {{diminished}} diminué"
+    }
+  },
   "music": {
     "title": "Rechercher une musique",
     "subtitle": "Découvrez votre prochain morceau préféré et lancez l’écoute dès maintenant.",
