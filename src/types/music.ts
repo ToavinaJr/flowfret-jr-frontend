@@ -5,11 +5,15 @@ export interface MusicArtist {
 
 export interface MusicTrack {
   provider: "YOUTUBE" | "AUDIUS" | "SPOTIFY";
+  id: string;
   audiusId: string;
   title: string;
   artists: MusicArtist[];
   imageUrl: string | null;
   audiusUrl: string;
+  externalUrl: string;
+  album: string | null;
+  isrc: string | null;
   streamUrl: string;
   genre: string | null;
   geniusUrl: string | null;

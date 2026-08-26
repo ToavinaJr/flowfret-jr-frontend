@@ -15,11 +15,15 @@ vi.mock("@/hooks/useTranscriptionEvents", () => ({
 
 const track = {
   provider: "AUDIUS" as const,
+  id: "track",
   audiusId: "track",
   title: "Song",
   artists: [{ id: "artist", name: "Artist" }],
   imageUrl: null,
   audiusUrl: "https://audius.co/artist/song",
+  externalUrl: "https://audius.co/artist/song",
+  album: null,
+  isrc: null,
   streamUrl: "https://audio.audius.co/song.mp3",
   genre: "Rock",
   geniusUrl: null,

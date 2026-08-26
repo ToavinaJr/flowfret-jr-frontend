@@ -21,6 +21,9 @@ export interface PlaybackItem {
   duration?: number;
   destination?: string;
   trackActivity?: boolean;
+  provider?: string;
+  artist?: string;
+  album?: string | null;
 }
 
 interface SpotifyPlaybackEvent {

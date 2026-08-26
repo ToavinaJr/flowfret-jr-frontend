@@ -12,10 +12,14 @@ export const SEARCH_MUSIC_QUERY = `
       total
       tracks {
         provider
+        id
         audiusId
         title
         imageUrl
         audiusUrl
+        externalUrl
+        album
+        isrc
         streamUrl
         genre
         geniusUrl

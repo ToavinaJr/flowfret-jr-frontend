@@ -273,6 +273,15 @@
     "albumCoverAlt": "Album cover for {{title}}",
     "videoThumbnailAlt": "Video thumbnail for {{title}}"
   },
+  "lyrics": {
+    "title": "Lyrics",
+    "open": "Show lyrics",
+    "close": "Hide lyrics",
+    "loading": "Loading lyrics…",
+    "unavailable": "Lyrics unavailable",
+    "instrumental": "Instrumental",
+    "error": "Lyrics cannot be loaded right now."
+  },
   "circleHarmony": {
     "major": "Major chords",
     "minor": "Minor chords",

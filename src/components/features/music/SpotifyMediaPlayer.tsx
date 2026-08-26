@@ -16,6 +16,9 @@ export function SpotifyMediaPlayer({ track }: { track: MusicTrack }) {
     imageUrl: track.imageUrl,
     duration: track.durationMs / 1000,
     destination: "/music",
+    provider: track.provider,
+    artist: track.artists[0]?.name ?? "",
+    album: track.album,
   };
 
   return (

@@ -273,6 +273,15 @@
     "albumCoverAlt": "Pochette de {{title}}",
     "videoThumbnailAlt": "Miniature de la vidéo {{title}}"
   },
+  "lyrics": {
+    "title": "Paroles",
+    "open": "Afficher les paroles",
+    "close": "Masquer les paroles",
+    "loading": "Chargement des paroles…",
+    "unavailable": "Paroles indisponibles",
+    "instrumental": "Instrumental",
+    "error": "Impossible de charger les paroles pour le moment."
+  },
   "circleHarmony": {
     "major": "Accords majeurs",
     "minor": "Accords mineurs",
