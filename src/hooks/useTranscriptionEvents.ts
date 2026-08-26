@@ -31,7 +31,6 @@ export function useTranscriptionEvents(track: MusicTrack) {
     controllerRef.current?.abort();
     const controller = new AbortController(); controllerRef.current = controller;
     for (let attempt = 0; attempt < 4 && !controller.signal.aborted; attempt += 1) {
-      console.info("[FretFlow:transcription] sse_attempt", { transcriptionId: id, attempt: attempt + 1 });
       try {
         if (attempt > 0) setState(await getTranscription(id));
         await streamTranscriptionEvents(id, controller.signal, applyEvent);
@@ -47,12 +46,10 @@ export function useTranscriptionEvents(track: MusicTrack) {
 
   const prepare = useCallback(async () => {
     setError(null);
-    console.info("[FretFlow:transcription] prepare_started", { trackId: track.audiusId, title: track.title });
     try {
       const response = await createTranscription({ trackId: track.audiusId, audioUrl: track.streamUrl, title: track.title, artist: track.artists[0]?.name, model: "small" });
       activeIdRef.current = response.transcriptionId;
       setState(response);
-      console.info("[FretFlow:transcription] prepare_completed", { trackId: track.audiusId, transcriptionId: response.transcriptionId, status: response.status, cached: response.cached, readyToPlay: response.readyToPlay });
       if (!response.cached && response.status !== "FAILED") void connect(response.transcriptionId);
       return response;
     } catch (prepareError) {

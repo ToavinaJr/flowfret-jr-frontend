@@ -15,14 +15,9 @@ function headers(json = false): HeadersInit {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const startedAt = performance.now();
   const controller = new AbortController();
   const timeoutMs = Number(import.meta.env.VITE_TRANSCRIPTION_HTTP_TIMEOUT_MS ?? 20_000);
   const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
-  debug("http.request", {
-    method: init?.method ?? "GET",
-    path: new URL(url).pathname,
-  });
   let response: Response;
   try {
     response = await fetch(url, { ...init, signal: controller.signal });
@@ -38,24 +33,12 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   } finally {
     window.clearTimeout(timeout);
   }
-  debug("http.response", {
-    method: init?.method ?? "GET",
-    path: new URL(url).pathname,
-    status: response.status,
-    elapsedMs: Math.round(performance.now() - startedAt),
-  });
   if (!response.ok) {
     const body = await response.text();
     debug("http.error", { status: response.status, body: body.slice(0, 1000) });
     throw new Error(`Transcription request failed (${response.status}): ${body.slice(0, 300)}`);
   }
-  const payload = (await response.json()) as T;
-  debug("http.payload", {
-    transcriptionId: (payload as { transcriptionId?: string }).transcriptionId,
-    status: (payload as { status?: string }).status,
-    jobId: (payload as { jobId?: string }).jobId,
-  });
-  return payload;
+  return (await response.json()) as T;
 }
 
 export function getTranscriptionQueueDiagnostics(): Promise<Record<string, unknown>> {
@@ -80,9 +63,7 @@ export async function downloadTranscriptionLrc(id: string): Promise<void> {
 }
 
 export async function streamTranscriptionEvents(id: string, signal: AbortSignal, onEvent: (event: TranscriptionEvent) => void): Promise<void> {
-  debug("sse.connecting", { transcriptionId: id });
   const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}/events`, { headers: { ...headers(), Accept: "text/event-stream" }, signal });
-  debug("sse.response", { transcriptionId: id, status: response.status, hasBody: Boolean(response.body) });
   if (!response.ok || !response.body) {
     const body = await response.text();
     throw new Error(`SSE connection failed (${response.status}): ${body.slice(0, 300)}`);
@@ -101,7 +82,6 @@ export async function streamTranscriptionEvents(id: string, signal: AbortSignal,
       const parsed: unknown = JSON.parse(data);
       if (parsed && typeof parsed === "object" && "type" in parsed && "transcriptionId" in parsed) {
         const event = parsed as TranscriptionEvent;
-        if (event.type !== "transcription.heartbeat") debug("sse.event", { transcriptionId: id, type: event.type, progress: event.progress, bufferedUntil: event.bufferedUntil });
         onEvent(event);
       }
     }
