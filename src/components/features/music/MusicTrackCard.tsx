@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MusicTrack } from "@/types/music";
 import { MusicMediaPlayer } from "./MusicMediaPlayer";
+import { TrackLyrics } from "./TrackLyrics";
 
 interface MusicTrackCardProps {
   track: MusicTrack;
@@ -76,6 +77,7 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
         </div>
 
         <MusicMediaPlayer track={track} />
+        {track.provider === "SPOTIFY" ? <TrackLyrics track={track} /> : null}
       </CardContent>
     </Card>
   );

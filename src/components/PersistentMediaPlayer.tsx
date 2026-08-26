@@ -15,7 +15,7 @@ export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
   const [lyricsOpen, setLyricsOpen] = useState(false);
   const { item, playState, currentTime, duration, volume, toggle, seek, setVolume } = usePlayback();
-  const lyricsTrack = item?.provider && item.artist ? {
+  const lyricsTrack = item?.provider === "SPOTIFY" && item.artist ? {
     id: item.id,
     provider: item.provider,
     title: item.title,
