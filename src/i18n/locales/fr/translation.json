@@ -258,7 +258,7 @@
     "searchLabel": "Titre ou artiste",
     "searchPlaceholder": "Titre ou artiste",
     "search": "Rechercher",
-    "searching": "Recherche en cours",
+    "searching": "Recherche",
     "queryRequired": "Saisissez un titre ou un artiste.",
     "emptyBeforeSearch": "Lancez une recherche pour afficher des morceaux.",
     "noResults": "Aucun résultat trouvé",

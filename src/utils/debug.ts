@@ -1,5 +1,5 @@
 const DEBUG_ENABLED = ['1', 'true', 'yes', 'on'].includes(
-  (import.meta.env.VITE_DEBUG ?? '').trim().toLowerCase(),
+  (import.meta.env.DEBUG ?? '').trim().toLowerCase(),
 );
 
 export function debugLog(event: string, details: Record<string, unknown>): void {
