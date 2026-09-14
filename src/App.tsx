@@ -1,28 +1,30 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AuthGate } from "@/components/AuthGate";
 import AppLayout from "@/components/AppLayout";
-import FeedPage from "@/pages/FeedPage";
-import TunerPage from "@/pages/TunerPage";
-import ChordsPage from "@/pages/ChordsPage";
-import UploadPage from "@/pages/UploadPage";
-import ProfilePage from "@/pages/ProfilePage";
-import MetronomePage from "@/pages/MetronomePage";
-import ScalesPage from "@/pages/ScalesPage";
-import MenuPage from "@/pages/MenuPage";
-import HistoirePage from "@/pages/HistoirePage";
-import ContactPage from "@/pages/ContactPage";
-import ParametresPage from "@/pages/ParametresPage";
-import MusicSearchPage from "@/pages/MusicSearchPage";
-import NotFound from "@/pages/NotFound";
-import HelpPage from "@/pages/HelpPage";
-import FriendsPage from "@/pages/FriendsPage";
-import NotificationsPage from "@/pages/NotificationsPage";
-import PostPage from "@/pages/PostPage";
+
+const FeedPage = lazy(() => import("@/pages/FeedPage"));
+const TunerPage = lazy(() => import("@/pages/TunerPage"));
+const ChordsPage = lazy(() => import("@/pages/ChordsPage"));
+const UploadPage = lazy(() => import("@/pages/UploadPage"));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
+const MetronomePage = lazy(() => import("@/pages/MetronomePage"));
+const ScalesPage = lazy(() => import("@/pages/ScalesPage"));
+const MenuPage = lazy(() => import("@/pages/MenuPage"));
+const HistoirePage = lazy(() => import("@/pages/HistoirePage"));
+const ContactPage = lazy(() => import("@/pages/ContactPage"));
+const ParametresPage = lazy(() => import("@/pages/ParametresPage"));
+const MusicSearchPage = lazy(() => import("@/pages/MusicSearchPage"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const HelpPage = lazy(() => import("@/pages/HelpPage"));
+const FriendsPage = lazy(() => import("@/pages/FriendsPage"));
+const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
+const PostPage = lazy(() => import("@/pages/PostPage"));
 
 const queryClient = new QueryClient();
 
@@ -34,7 +36,14 @@ const App = () => (
         <AuthProvider>
           <BrowserRouter>
             <AuthGate>
-              <Routes>
+              <Suspense
+                fallback={
+                  <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+                    Chargementâ€¦
+                  </div>
+                }
+              >
+                <Routes>
                 <Route element={<AppLayout />}>
                   <Route path="/" element={<FeedPage />} />
                   <Route path="/tuner" element={<TunerPage />} />
@@ -57,7 +66,8 @@ const App = () => (
                   <Route path="/reset-password" element={<FeedPage />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
-              </Routes>
+                </Routes>
+              </Suspense>
             </AuthGate>
           </BrowserRouter>
         </AuthProvider>

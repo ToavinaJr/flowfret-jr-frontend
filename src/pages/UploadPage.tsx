@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useRef,
   useState,
   type ChangeEvent,
@@ -9,7 +8,6 @@ import {
 import { Upload } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { analyzeAudioFile } from "@/utils/chordDetection";
-import { setImportedSong } from "@/utils/importStore";
 import type { SongMeta } from "@/types/song";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,15 +27,6 @@ const UploadPage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [importedSong, setImportedSongState] = useState<ImportedSong | null>(
     null,
-  );
-  const songRef = useRef<ImportedSong | null>(null);
-
-  useEffect(
-    () => () => {
-      if (songRef.current?.uri.startsWith("blob:"))
-        URL.revokeObjectURL(songRef.current.uri);
-    },
-    [],
   );
 
   async function processFile(file: File) {
@@ -72,11 +61,7 @@ const UploadPage = () => {
         duration: result.duration,
         cues: result.cues,
       };
-      if (songRef.current?.uri.startsWith("blob:"))
-        URL.revokeObjectURL(songRef.current.uri);
       const song = { meta, uri };
-      songRef.current = song;
-      setImportedSong(song);
       setImportedSongState(song);
       setStatus("idle");
       toast.success("Analyse terminée.");

@@ -1,4 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   useState,
   type ChangeEvent,
@@ -16,17 +15,10 @@ import {
   X,
 } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
-import { useAuth } from "@/hooks/useAuth";
 import {
-  createFeedComment,
-  createFeedLike,
-  createFeedPost,
-  deleteFeedLike,
   deleteFeedComment,
   deleteFeedPost,
-  fetchFeedPosts,
   fetchPostComments,
-  uploadImages,
   updateFeedComment,
   updateFeedPost,
 } from "@/services/api";
@@ -572,150 +564,6 @@ export function FeedCard({
   );
 }
 
-const LegacyFeedPage = () => {
-  const { user, status } = useAuth();
-  const queryClient = useQueryClient();
-  const [draft, setDraft] = useState("");
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [images, setImages] = useState<File[]>([]);
-
-  const postsQuery = useQuery({
-    queryKey: ["feed-posts"],
-    queryFn: fetchFeedPosts,
-    enabled: status === "authenticated",
-    retry: 1,
-  });
-
-  const createPostMutation = useMutation({
-    mutationFn: createFeedPost,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-      setDraft("");
-      setComposerOpen(false);
-      setImages([]);
-    },
-  });
-
-  async function handleComment(postId: string, content: string) {
-    if (!user) return;
-    await createFeedComment({
-      postId,
-      content,
-      authorId: user.id,
-    });
-    await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-  }
-
-  async function handleToggleLike(post: FeedPost) {
-    if (!user) return;
-    const existingLike = post.likes.find((like) => like.userId === user.id);
-    if (existingLike) await deleteFeedLike(existingLike.id);
-    else await createFeedLike(post.id, user.id);
-    await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-  }
-
-  async function refreshFeed() {
-    await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
-  }
-
-  async function handleCreatePost(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!user || (!draft.trim() && images.length === 0) || images.length > 6)
-      return;
-    const uploaded = images.length ? await uploadImages(images) : [];
-    createPostMutation.mutate({
-      ...(draft.trim() ? { content: draft.trim() } : {}),
-      authorId: user.id,
-      imageUploadIds: uploaded.map((item) => item.id),
-    });
-  }
-
-  const errorMessage = postsQuery.error
-    ? "Unable to load the feed. Please try again later."
-    : null;
-
-  return (
-    <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
-      <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
-        <h1 className={`${PAGE_TITLE} mb-0`}>Feed</h1>
-        <button
-          type="button"
-          onClick={() => setComposerOpen((v) => !v)}
-          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border bg-card p-2 text-muted-foreground transition-colors hover:text-foreground"
-          aria-label="New post"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
-      </div>
-
-      {composerOpen && user && (
-        <form
-          onSubmit={handleCreatePost}
-          className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4"
-        >
-          <textarea
-            value={draft}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setDraft(e.target.value)
-            }
-            placeholder="Share a progression, tip, or practice note…"
-            rows={3}
-            className="w-full resize-none rounded-md border border-border bg-secondary p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <div className="mt-2 flex justify-end">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={(event) =>
-                setImages(Array.from(event.target.files ?? []).slice(0, 6))
-              }
-              className="mr-auto max-w-[65%] text-xs text-muted-foreground"
-            />
-            <button
-              type="submit"
-              disabled={
-                createPostMutation.isPending ||
-                (!draft.trim() && images.length === 0)
-              }
-              className="min-h-[44px] rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
-            >
-              {createPostMutation.isPending ? "Publishing…" : "Publish"}
-            </button>
-          </div>
-        </form>
-      )}
-
-      {postsQuery.isLoading && <FeedSkeleton />}
-
-      {errorMessage && (
-        <div className="mb-4 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
-          {errorMessage}
-        </div>
-      )}
-
-      <div className="space-y-3 sm:space-y-4">
-        {(postsQuery.data ?? []).map((post) => (
-          <FeedCard
-            key={post.id}
-            post={post}
-            onComment={handleComment}
-            currentUserId={user?.id ?? ""}
-            onToggleLike={handleToggleLike}
-            onChanged={refreshFeed}
-          />
-        ))}
-      </div>
-
-      {postsQuery.isSuccess && (postsQuery.data?.length ?? 0) === 0 && (
-        <p className="py-10 text-center text-sm text-muted-foreground sm:py-12">
-          No posts yet. Be the first to share something.
-        </p>
-      )}
-    </div>
-  );
-};
-
 const FeedPage = () => {
   const { t } = useTranslation();
   const { user, postsQuery, createPost, comment, toggleLike, refresh } =
@@ -770,5 +618,4 @@ const FeedPage = () => {
   );
 };
 
-void LegacyFeedPage;
 export default FeedPage;

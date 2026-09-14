@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createTranscription, getTranscription, getTranscriptionQueueDiagnostics, retryTranscription, streamTranscriptionEvents } from "@/services/transcriptionsApi";
+import { createTranscription, getTranscription, retryTranscription, streamTranscriptionEvents } from "@/services/transcriptionsApi";
 import type { MusicTrack } from "@/types/music";
 import type { TranscriptionEvent, TranscriptionResponse } from "@/types/transcription";
 import { mergeSegments } from "@/utils/transcription";
@@ -25,6 +25,18 @@ export function useTranscriptionEvents(track: MusicTrack) {
         status: failed ? "FAILED" : completed ? "COMPLETED" : event.type === "transcription.ready-to-play" ? "READY_TO_PLAY" : current.status,
         lrcAvailable: current.lrcAvailable || completed, error: failed ? { code: event.errorCode ?? "TRANSCRIPTION_FAILED", message: event.message ?? "Transcription failed" } : current.error };
     });
+    if (event.type === "transcription.completed") {
+      void getTranscription(event.transcriptionId)
+        .then((snapshot) => {
+          if (activeIdRef.current === event.transcriptionId) setState(snapshot);
+        })
+        .catch((snapshotError) => {
+          console.error("[FretFlow:transcription] final_snapshot_failed", {
+            transcriptionId: event.transcriptionId,
+            error: snapshotError,
+          });
+        });
+    }
   }, []);
 
   const connect = useCallback(async (id: string) => {
@@ -55,9 +67,6 @@ export function useTranscriptionEvents(track: MusicTrack) {
     } catch (prepareError) {
       console.error("[FretFlow:transcription] prepare_failed", { trackId: track.audiusId, error: prepareError });
       setError(prepareError instanceof Error ? prepareError.message : "La préparation de la transcription a échoué");
-      void getTranscriptionQueueDiagnostics()
-        .then((diagnostics) => console.info("[FretFlow:transcription] queue_diagnostics", diagnostics))
-        .catch((diagnosticError) => console.error("[FretFlow:transcription] queue_diagnostics_failed", diagnosticError));
       throw prepareError;
     }
   }, [connect, track]);

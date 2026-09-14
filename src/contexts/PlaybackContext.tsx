@@ -24,6 +24,7 @@ export interface PlaybackItem {
   provider?: string;
   artist?: string;
   album?: string | null;
+  revokeSourceOnRelease?: boolean;
 }
 
 interface SpotifyPlaybackEvent {
@@ -113,6 +114,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [duration, setDuration] = useState(0);
   const [volumeState, setVolumeState] = useState(1);
 
+  const releaseItemSource = useCallback((releasedItem: PlaybackItem | null) => {
+    if (releasedItem?.revokeSourceOnRelease && releasedItem.src.startsWith("blob:")) {
+      URL.revokeObjectURL(releasedItem.src);
+    }
+  }, []);
+
   useEffect(() => {
     const audio = new Audio();
     audio.preload = "auto";
@@ -143,8 +150,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       audio.removeEventListener("ended", onEnded);
       audio.removeEventListener("error", onError);
       audioRef.current = null;
+      releaseItemSource(itemRef.current);
     };
-  }, []);
+  }, [releaseItemSource]);
 
   const getSpotifyController = useCallback(async (uri: string) => {
     if (spotifyControllerRef.current) {
@@ -198,10 +206,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const select = useCallback((next: PlaybackItem) => {
     if (itemRef.current?.id === next.id && itemRef.current.src === next.src)
       return;
+    const previousItem = itemRef.current;
     const audio = audioRef.current;
     if (itemRef.current?.engine === "spotify")
       spotifyControllerRef.current?.pause();
     else audio?.pause();
+    releaseItemSource(previousItem);
     itemRef.current = next;
     setItem(next);
     setCurrentTime(0);
@@ -212,7 +222,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       audio.load();
     }
     setPlayState("paused");
-  }, []);
+  }, [releaseItemSource]);
 
   const play = useCallback(
     async (next?: PlaybackItem) => {

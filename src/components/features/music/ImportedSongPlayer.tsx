@@ -47,6 +47,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
       duration: song.meta.duration,
       destination: "/upload",
       trackActivity: false,
+      revokeSourceOnRelease: true,
     }),
     [song],
   );
