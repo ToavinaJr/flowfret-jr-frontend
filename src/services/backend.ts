@@ -2,6 +2,9 @@ function getDefaultGraphqlUrl(): string {
   if (typeof window === "undefined") {
     return "http://localhost:3000/graphql";
   }
+  if (window.location.protocol === "https:") {
+    return `${window.location.origin}/graphql`;
+  }
   const host = window.location.hostname || "localhost";
   return `http://${host}:3000/graphql`;
 }
@@ -12,6 +15,9 @@ function getConfiguredGraphqlUrl(): string {
   try {
     const url = new URL(configured);
     if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Unsupported protocol');
+    if (typeof window !== "undefined" && window.location.protocol === "https:" && url.protocol !== "https:") {
+      return getDefaultGraphqlUrl();
+    }
     return url.toString().replace(/\/$/, '');
   } catch {
     console.warn(`Invalid VITE_GRAPHQL_URL, using the default backend URL: ${configured}`);

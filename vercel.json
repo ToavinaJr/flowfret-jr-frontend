@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/graphql",
+      "destination": "http://51.178.85.156:3000/graphql"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "http://51.178.85.156:3000/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "http://51.178.85.156:3000/uploads/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
