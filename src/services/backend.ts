@@ -19,8 +19,11 @@ function getConfiguredGraphqlUrl(): string {
       return getDefaultGraphqlUrl();
     }
     return url.toString().replace(/\/$/, '');
-  } catch {
-    console.warn(`Invalid VITE_GRAPHQL_URL, using the default backend URL: ${configured}`);
+  } catch (error) {
+    console.warn(
+      `Invalid VITE_GRAPHQL_URL, using the default backend URL: ${configured}`,
+      error,
+    );
     return getDefaultGraphqlUrl();
   }
 }
