@@ -17,6 +17,20 @@ interface GraphQLRequestOptions {
 }
 
 let refreshPromise: Promise<boolean> | null = null;
+const GRAPHQL_TIMEOUT_MS = 15_000;
+
+async function fetchGraphQL(
+  input: RequestInfo | URL,
+  init: RequestInit,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), GRAPHQL_TIMEOUT_MS);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
 
 function isAuthenticationError(message: string): boolean {
   return /unauthenticated|unauthorized|jwt expired|invalid token/i.test(message);
@@ -26,7 +40,7 @@ async function refreshAccessToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     try {
-      const response = await fetch(GRAPHQL_URL, {
+      const response = await fetchGraphQL(GRAPHQL_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -82,7 +96,7 @@ export async function graphqlRequest<TData>(
 
   let response: Response;
   try {
-    response = await fetch(GRAPHQL_URL, {
+    response = await fetchGraphQL(GRAPHQL_URL, {
       method: "POST",
       credentials: "include",
       headers: {
