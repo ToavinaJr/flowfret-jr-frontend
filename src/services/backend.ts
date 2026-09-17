@@ -1,31 +1,43 @@
-function getDefaultGraphqlUrl(): string {
-  if (typeof window === "undefined") {
+type RuntimeLocation = Pick<Location, "hostname" | "origin" | "protocol">;
+
+function getDefaultGraphqlUrl(location?: RuntimeLocation): string {
+  if (!location) {
     return "http://localhost:3000/graphql";
   }
-  if (window.location.protocol === "https:") {
-    return `${window.location.origin}/graphql`;
-  }
-  const host = window.location.hostname || "localhost";
+  const host = location.hostname || "localhost";
   return `http://${host}:3000/graphql`;
 }
 
-function getConfiguredGraphqlUrl(): string {
-  const configured = import.meta.env.VITE_GRAPHQL_URL?.trim();
-  if (!configured) return getDefaultGraphqlUrl();
+export function resolveGraphqlUrl(
+  configuredValue: string | undefined,
+  location: RuntimeLocation | undefined,
+  production: boolean,
+): string {
+  const configured = configuredValue?.trim();
+  if (!configured) {
+    if (production) {
+      throw new Error("VITE_GRAPHQL_URL is required for production builds.");
+    }
+    return getDefaultGraphqlUrl(location);
+  }
   try {
     const url = new URL(configured);
-    if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Unsupported protocol');
-    if (typeof window !== "undefined" && window.location.protocol === "https:" && url.protocol !== "https:") {
-      return getDefaultGraphqlUrl();
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("Unsupported protocol");
     }
-    return url.toString().replace(/\/$/, '');
+    if ((production || location?.protocol === "https:") && url.protocol !== "https:") {
+      throw new Error("Production GraphQL endpoints must use HTTPS");
+    }
+    return url.toString().replace(/\/$/, "");
   } catch (error) {
-    console.warn(
-      `Invalid VITE_GRAPHQL_URL, using the default backend URL: ${configured}`,
-      error,
+    throw new Error(
+      `Invalid VITE_GRAPHQL_URL (${configured}): ${error instanceof Error ? error.message : "invalid URL"}`,
     );
-    return getDefaultGraphqlUrl();
   }
 }
 
-export const GRAPHQL_URL = getConfiguredGraphqlUrl();
+export const GRAPHQL_URL = resolveGraphqlUrl(
+  import.meta.env.VITE_GRAPHQL_URL,
+  typeof window === "undefined" ? undefined : window.location,
+  import.meta.env.PROD,
+);

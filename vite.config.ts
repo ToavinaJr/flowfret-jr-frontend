@@ -1,12 +1,13 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import react from "@vitejs/plugin-react";
+import { resolve } from "node:path";
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
   server: {
-    host: "::",
+    host: "localhost",
     port: 8080,
+    strictPort: true,
     hmr: {
       overlay: false,
     },
@@ -15,18 +16,36 @@ export default defineConfig(() => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          "vendor-query": ["@tanstack/react-query"],
-          "vendor-motion": ["framer-motion"],
-          "vendor-i18n": ["i18next", "react-i18next"],
+        manualChunks(moduleId) {
+          if (!moduleId.includes("node_modules")) return undefined;
+          if (
+            ["react", "react-dom", "react-router-dom"].some((dependency) =>
+              moduleId.includes(`/node_modules/${dependency}/`),
+            )
+          ) {
+            return "vendor-react";
+          }
+          if (moduleId.includes("/node_modules/@tanstack/react-query/")) {
+            return "vendor-query";
+          }
+          if (moduleId.includes("/node_modules/framer-motion/")) {
+            return "vendor-motion";
+          }
+          if (
+            ["i18next", "react-i18next"].some((dependency) =>
+              moduleId.includes(`/node_modules/${dependency}/`),
+            )
+          ) {
+            return "vendor-i18n";
+          }
+          return undefined;
         },
       },
     },
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": resolve(import.meta.dirname, "./src"),
     },
   },
 }));

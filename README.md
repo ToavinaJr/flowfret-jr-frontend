@@ -12,6 +12,13 @@ bun run dev
 
 Package manager in use: **bun**.
 
+## Production configuration
+
+Set `VITE_GRAPHQL_URL` to the public HTTPS API endpoint at build time, for
+example `https://api.fretflow.app/graphql`. Application initialization fails
+in production when this variable is missing or uses HTTP. Vercel no longer
+proxies API traffic to an unencrypted IP address.
+
 ## Music search
 
 - Route: `/music`

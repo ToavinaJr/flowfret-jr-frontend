@@ -7,7 +7,7 @@ const segment = (
   start: number,
   end: number,
   text = id,
-): TranscriptionSegment => ({ id, start, end, text });
+): TranscriptionSegment => ({ id, start, end, text, words: [] });
 
 describe("transcription utilities", () => {
   it("finds a segment at its inclusive start and excludes its end", () => {
