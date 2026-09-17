@@ -72,7 +72,15 @@ export function parseTranscriptionApiError(status: number, rawBody: string, retr
     return new TranscriptionRateLimitError(retryAfterSeconds, `Le service de transcription est temporairement saturé.${delayText}`);
   }
 
-  const parsedMessage = parsedBody?.message;
+  const parsedMessage = parsedBody?.message ?? rawBody;
+  if (status === 409 || /Only failed transcriptions can be retried|Retry limit reached|already running|already exists/i.test(parsedMessage)) {
+    return new Error("La transcription ne peut pas être relancée pour le moment. Si elle a échoué définitivement, choisissez une autre piste ou réessayez plus tard.");
+  }
+
+  if (/Missing required configuration: AUDIUS_ACCESS_TOKEN|AUDIUS_ACCESS_TOKEN/i.test(parsedMessage)) {
+    return new Error("La transcription nécessite un token Audius valide. Ajoutez AUDIUS_ACCESS_TOKEN dans votre fichier .env.development.local et redémarrez le worker.");
+  }
+
   if (parsedMessage && /Trop de requêtes|too many requests|temporarily satur/i.test(parsedMessage)) {
     return new TranscriptionRateLimitError(parsedRetryAfter ?? 30, "Le service de transcription est temporairement saturé. Réessayez dans quelques instants.");
   }
