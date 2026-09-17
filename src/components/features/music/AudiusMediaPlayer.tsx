@@ -75,7 +75,7 @@ export function AudiusMediaPlayer({ track }: { track: MusicTrack }) {
       {lyricsOpen ? (
         <section className="basis-full pt-3" aria-label={`Transcription de ${track.title}`}>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <span>{transcription?.status === "COMPLETED" ? "Transcription synchronisée" : transcription ? `Transcription ${Math.round(transcription.progress)} %` : "Préparation de la transcription…"}</span>
+            <span>{transcription?.status === "COMPLETED" ? "Transcription synchronisée" : transcription?.processingPhase === "MODEL_LOADING" ? "Téléchargement du modèle Whisper…" : transcription?.processingPhase === "MODEL_READY" ? "Modèle Whisper prêt, transcription en cours…" : transcription ? `Transcription ${Math.round(transcription.progress)} %` : "Préparation de la transcription…"}</span>
             <div className="flex gap-2">
               {transcription?.status === "FAILED" ? <button type="button" disabled={preparing} onClick={() => void retryTranscription()} className="inline-flex min-h-9 items-center gap-1 rounded-md bg-secondary px-3 disabled:opacity-50"><RefreshCw className="h-3.5 w-3.5" />Réessayer</button> : null}
               {transcription?.lrcAvailable ? <button type="button" onClick={() => void downloadTranscriptionLrc(transcription.transcriptionId).catch((cause) => setActionError(cause instanceof Error ? cause.message : "Téléchargement impossible."))} className="inline-flex min-h-9 items-center gap-1 rounded-md bg-secondary px-3"><Download className="h-3.5 w-3.5" />LRC</button> : null}

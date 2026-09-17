@@ -30,6 +30,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
       const completed = event.type === "transcription.completed";
       const ready = current.readyToPlay || event.type === "transcription.ready-to-play" || completed;
       return { ...current, segments, progress: event.progress ?? current.progress, bufferedUntil: event.bufferedUntil ?? current.bufferedUntil, readyToPlay: ready,
+        processingPhase: event.processingPhase ?? (event.type === "transcription.model-loading" ? "MODEL_LOADING" : event.type === "transcription.model-ready" ? "MODEL_READY" : current.processingPhase),
         status: failed ? "FAILED" : completed ? "COMPLETED" : event.type === "transcription.ready-to-play" ? "READY_TO_PLAY" : current.status,
         lrcAvailable: current.lrcAvailable || completed, error: failed ? { code: event.errorCode ?? "TRANSCRIPTION_FAILED", message: event.message ?? "Transcription failed" } : current.error };
     });
