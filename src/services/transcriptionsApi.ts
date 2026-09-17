@@ -41,14 +41,17 @@ function parseRetryAfter(value: string | null): number | null {
   return null;
 }
 
-function parseErrorBody(rawBody: string): { message?: string } | null {
+function parseErrorBody(rawBody: string): { message?: string; retryAfterSeconds?: number | string } | null {
   if (!rawBody.trim()) return null;
   try {
     const parsed = JSON.parse(rawBody) as unknown;
     if (parsed && typeof parsed === "object") {
       const record = parsed as Record<string, unknown>;
-      if (typeof record.message === "string") {
-        return { message: record.message };
+      if (typeof record.message === "string" || typeof record.retryAfterSeconds !== "undefined") {
+        return {
+          message: typeof record.message === "string" ? record.message : undefined,
+          retryAfterSeconds: typeof record.retryAfterSeconds === "number" || typeof record.retryAfterSeconds === "string" ? record.retryAfterSeconds : undefined,
+        };
       }
     }
   } catch {
@@ -58,15 +61,20 @@ function parseErrorBody(rawBody: string): { message?: string } | null {
 }
 
 export function parseTranscriptionApiError(status: number, rawBody: string, retryAfterHeader: string | null): Error {
+  const parsedBody = parseErrorBody(rawBody);
+  const parsedRetryAfter = parseRetryAfter(retryAfterHeader) ??
+    (typeof parsedBody?.retryAfterSeconds === "number" ? parsedBody.retryAfterSeconds :
+      typeof parsedBody?.retryAfterSeconds === "string" ? Number(parsedBody.retryAfterSeconds) : null);
+
   if (status === 429) {
-    const retryAfterSeconds = parseRetryAfter(retryAfterHeader) ?? 30;
+    const retryAfterSeconds = parsedRetryAfter ?? 30;
     const delayText = retryAfterSeconds > 0 ? ` Nous réessaierons automatiquement dans ${retryAfterSeconds} secondes.` : " Réessayez dans quelques instants.";
     return new TranscriptionRateLimitError(retryAfterSeconds, `Le service de transcription est temporairement saturé.${delayText}`);
   }
 
-  const parsedMessage = parseErrorBody(rawBody)?.message;
-  if (parsedMessage && /Trop de requêtes|too many requests/i.test(parsedMessage)) {
-    return new TranscriptionRateLimitError(parseRetryAfter(retryAfterHeader) ?? 30, "Le service de transcription est temporairement saturé. Réessayez dans quelques instants.");
+  const parsedMessage = parsedBody?.message;
+  if (parsedMessage && /Trop de requêtes|too many requests|temporarily satur/i.test(parsedMessage)) {
+    return new TranscriptionRateLimitError(parsedRetryAfter ?? 30, "Le service de transcription est temporairement saturé. Réessayez dans quelques instants.");
   }
 
   return new Error("La transcription a échoué. Réessayez plus tard.");
