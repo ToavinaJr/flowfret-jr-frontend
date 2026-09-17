@@ -1,4 +1,10 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Guitar, Loader2 } from "lucide-react";
@@ -80,6 +86,7 @@ export function AuthGate({ children }: AuthGateProps) {
   const [passwordResetToken, setPasswordResetToken] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const actionInFlight = useRef(false);
   const googleConfigured = getGoogleClientId().length > 0;
 
   useEffect(() => {
@@ -123,7 +130,7 @@ export function AuthGate({ children }: AuthGateProps) {
   }
 
   async function handleGoogleClick() {
-    if (pendingAction) {
+    if (actionInFlight.current) {
       return;
     }
 
@@ -141,6 +148,7 @@ export function AuthGate({ children }: AuthGateProps) {
       return;
     }
 
+    actionInFlight.current = true;
     setPendingAction("google");
     setError(null);
     try {
@@ -169,6 +177,7 @@ export function AuthGate({ children }: AuthGateProps) {
         setError("Impossible de se connecter avec Google. Réessayez.");
       }
     } finally {
+      actionInFlight.current = false;
       setPendingAction(null);
     }
   }
@@ -179,10 +188,11 @@ export function AuthGate({ children }: AuthGateProps) {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (pendingAction) {
+    if (actionInFlight.current) {
       return;
     }
 
+    actionInFlight.current = true;
     setPendingAction("submit");
     setError(null);
 
@@ -276,12 +286,13 @@ export function AuthGate({ children }: AuthGateProps) {
         );
       }
     } finally {
+      actionInFlight.current = false;
       setPendingAction(null);
     }
   }
 
   async function handleResendOtp() {
-    if (pendingAction) {
+    if (actionInFlight.current) {
       return;
     }
 
@@ -290,6 +301,7 @@ export function AuthGate({ children }: AuthGateProps) {
       return;
     }
 
+    actionInFlight.current = true;
     setPendingAction("resend");
     setError(null);
     try {
@@ -306,6 +318,7 @@ export function AuthGate({ children }: AuthGateProps) {
         setError("Impossible de renvoyer le code. Réessayez.");
       }
     } finally {
+      actionInFlight.current = false;
       setPendingAction(null);
     }
   }
