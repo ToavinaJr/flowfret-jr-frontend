@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createTranscription, getTranscription, retryTranscription, streamTranscriptionEvents } from "@/services/transcriptionsApi";
+import {
+  createTranscription,
+  getFriendlyTranscriptionError,
+  getTranscription,
+  retryTranscription,
+  streamTranscriptionEvents,
+  TranscriptionRateLimitError,
+} from "@/services/transcriptionsApi";
 import type { MusicTrack } from "@/types/music";
 import type { TranscriptionEvent, TranscriptionResponse } from "@/types/transcription";
 import { mergeSegments } from "@/utils/transcription";
@@ -9,6 +16,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
   const [error, setError] = useState<string | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
   const activeIdRef = useRef<string | null>(null);
+  const retryTimerRef = useRef<number | null>(null);
 
   const applyEvent = useCallback((event: TranscriptionEvent) => {
     if (event.transcriptionId !== activeIdRef.current) {
@@ -66,18 +74,48 @@ export function useTranscriptionEvents(track: MusicTrack) {
       return response;
     } catch (prepareError) {
       console.error("[FretFlow:transcription] prepare_failed", { trackId: track.audiusId, error: prepareError });
-      setError(prepareError instanceof Error ? prepareError.message : "La préparation de la transcription a échoué");
+      const friendlyError = getFriendlyTranscriptionError(prepareError);
+      if (scheduleRateLimitRetry(prepareError)) {
+        setError(friendlyError);
+        return undefined;
+      }
+      setError(friendlyError);
       throw prepareError;
     }
   }, [connect, track]);
 
+  const scheduleRateLimitRetry = useCallback((error: unknown) => {
+    if (!(error instanceof TranscriptionRateLimitError)) return false;
+    const delayMs = ((error.retryAfterSeconds ?? 30) + 1) * 1000;
+    if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = window.setTimeout(() => {
+      setError(null);
+      void prepare();
+    }, delayMs);
+    return true;
+  }, [prepare]);
+
   const retry = useCallback(async () => {
     if (!state) return;
-    const response = await retryTranscription(state.transcriptionId, track.streamUrl);
-    activeIdRef.current = response.transcriptionId; setState(response); setError(null); void connect(response.transcriptionId);
-  }, [connect, state, track.streamUrl]);
+    try {
+      const response = await retryTranscription(state.transcriptionId, track.streamUrl);
+      activeIdRef.current = response.transcriptionId; setState(response); setError(null); void connect(response.transcriptionId);
+      return response;
+    } catch (retryError) {
+      const friendlyError = getFriendlyTranscriptionError(retryError);
+      if (scheduleRateLimitRetry(retryError)) {
+        setError(friendlyError);
+        return undefined;
+      }
+      setError(friendlyError);
+      throw retryError;
+    }
+  }, [connect, scheduleRateLimitRetry, state, track.streamUrl]);
 
-  useEffect(() => () => controllerRef.current?.abort(), []);
+  useEffect(() => () => {
+    controllerRef.current?.abort();
+    if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
+  }, []);
   useEffect(() => { controllerRef.current?.abort(); activeIdRef.current = null; setState(null); setError(null); }, [track.audiusId]);
   return { transcription: state, error, prepare, retry };
 }

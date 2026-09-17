@@ -5,6 +5,17 @@ import type { TranscriptionEvent, TranscriptionResponse } from "@/types/transcri
 const API_ORIGIN = new URL(GRAPHQL_URL).origin;
 const BASE_URL = `${API_ORIGIN}/api/transcriptions`;
 
+export class TranscriptionRateLimitError extends Error {
+  readonly statusCode = 429;
+  readonly retryAfterSeconds: number | null;
+
+  constructor(retryAfterSeconds: number | null = null, message?: string) {
+    super(message ?? "Le service de transcription est temporairement saturé.");
+    this.name = "TranscriptionRateLimitError";
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 function debug(event: string, details: Record<string, unknown> = {}): void {
   console.info(`[FretFlow:transcription] ${event}`, details);
 }
@@ -12,6 +23,63 @@ function debug(event: string, details: Record<string, unknown> = {}): void {
 function headers(json = false): HeadersInit {
   const token = getAccessToken();
   return { ...(json ? { "Content-Type": "application/json" } : {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+}
+
+function parseRetryAfter(value: string | null): number | null {
+  if (!value) return null;
+
+  const numericValue = Number(value);
+  if (Number.isFinite(numericValue)) {
+    return Math.max(0, Math.ceil(numericValue));
+  }
+
+  const timestamp = Date.parse(value);
+  if (!Number.isNaN(timestamp)) {
+    return Math.max(0, Math.ceil((timestamp - Date.now()) / 1000));
+  }
+
+  return null;
+}
+
+function parseErrorBody(rawBody: string): { message?: string } | null {
+  if (!rawBody.trim()) return null;
+  try {
+    const parsed = JSON.parse(rawBody) as unknown;
+    if (parsed && typeof parsed === "object") {
+      const record = parsed as Record<string, unknown>;
+      if (typeof record.message === "string") {
+        return { message: record.message };
+      }
+    }
+  } catch {
+    // Ignore invalid JSON; keep the generic user-facing message.
+  }
+  return null;
+}
+
+export function parseTranscriptionApiError(status: number, rawBody: string, retryAfterHeader: string | null): Error {
+  if (status === 429) {
+    const retryAfterSeconds = parseRetryAfter(retryAfterHeader) ?? 30;
+    const delayText = retryAfterSeconds > 0 ? ` Nous réessaierons automatiquement dans ${retryAfterSeconds} secondes.` : " Réessayez dans quelques instants.";
+    return new TranscriptionRateLimitError(retryAfterSeconds, `Le service de transcription est temporairement saturé.${delayText}`);
+  }
+
+  const parsedMessage = parseErrorBody(rawBody)?.message;
+  if (parsedMessage && /Trop de requêtes|too many requests/i.test(parsedMessage)) {
+    return new TranscriptionRateLimitError(parseRetryAfter(retryAfterHeader) ?? 30, "Le service de transcription est temporairement saturé. Réessayez dans quelques instants.");
+  }
+
+  return new Error("La transcription a échoué. Réessayez plus tard.");
+}
+
+export function getFriendlyTranscriptionError(error: unknown): string {
+  if (error instanceof TranscriptionRateLimitError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "La transcription a échoué. Réessayez plus tard.";
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -35,8 +103,9 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   }
   if (!response.ok) {
     const body = await response.text();
-    debug("http.error", { status: response.status, body: body.slice(0, 1000) });
-    throw new Error(`Transcription request failed (${response.status}): ${body.slice(0, 300)}`);
+    const retryAfterHeader = response.headers.get("Retry-After") ?? response.headers.get("retry-after");
+    debug("http.error", { status: response.status, body: body.slice(0, 1000), retryAfterHeader });
+    throw parseTranscriptionApiError(response.status, body, retryAfterHeader);
   }
   return (await response.json()) as T;
 }
