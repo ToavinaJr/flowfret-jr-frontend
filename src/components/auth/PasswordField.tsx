@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PasswordFieldProps {
   id: string;
@@ -16,6 +17,7 @@ export function PasswordField({
   autoComplete,
   onChange,
 }: PasswordFieldProps) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   return (
@@ -37,7 +39,7 @@ export function PasswordField({
           type="button"
           onClick={() => setVisible((value) => !value)}
           className="absolute right-1 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
-          aria-label={visible ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+          aria-label={visible ? t("auth.hidePassword") : t("auth.showPassword")}
           aria-pressed={visible}
         >
           {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

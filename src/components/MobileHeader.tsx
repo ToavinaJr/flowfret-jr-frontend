@@ -19,16 +19,17 @@ const MobileHeader = () => {
   const [open, setOpen] = useState(false);
 
   const fallbackNavLabels: Record<string, string> = {
-    "/": "Feed",
-    "/music": "Music",
-    "/upload": "Upload",
-    "/friends": "Amis",
-    "/chords": "Chords",
-    "/scales": "Scales",
-    "/metronome": "Metronome",
-    "/tuner": "Tuner",
-    "/menu": "More",
-    "/profile": "Profile",
+    "/": "nav.feed",
+    "/music": "nav.music",
+    "/upload": "nav.upload",
+    "/friends": "friends.title",
+    "/notifications": "notifications.title",
+    "/chords": "nav.chords",
+    "/scales": "nav.scales",
+    "/metronome": "nav.metronome",
+    "/tuner": "nav.tuner",
+    "/menu": "nav.more",
+    "/profile": "nav.profile",
   };
 
   return (
@@ -47,7 +48,7 @@ const MobileHeader = () => {
           <button
             type="button"
             className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-card text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Open menu"
+            aria-label={t("profile.openMenu")}
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -72,7 +73,7 @@ const MobileHeader = () => {
                   )}
                 >
                   <item.icon className="h-4 w-4 shrink-0" />
-                  <span>{t(item.label, { defaultValue: fallbackNavLabels[item.path] ?? item.label })}</span>
+                  <span>{t(item.label, { defaultValue: t(fallbackNavLabels[item.path] ?? item.label) })}</span>
                 </NavLink>
               );
             })}

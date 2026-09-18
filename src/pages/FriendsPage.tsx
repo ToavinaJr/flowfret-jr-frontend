@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Clock3, Search, UserPlus, Users, X } from "lucide-react";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ import { PersonListSkeleton } from "@/components/skeletons/AppSkeletons";
 import { PersonCard } from "@/components/friends/PersonCard";
 
 export default function FriendsPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const client = useQueryClient();
   const [query, setQuery] = useState("");
@@ -31,7 +33,7 @@ export default function FriendsPage() {
   const add = useMutation({
     mutationFn: sendFriendRequest,
     onSuccess: () => {
-      toast.success("Demande d’amitié envoyée.");
+      toast.success(t("friends.requestSent"));
       void refresh();
       void results.refetch();
     },
@@ -41,14 +43,14 @@ export default function FriendsPage() {
     mutationFn: ({ id, accept }: { id: string; accept: boolean }) =>
       respondFriendRequest(id, accept),
     onSuccess: () => {
-      toast.success("Demande traitée.");
+      toast.success(t("friends.requestHandled"));
       void refresh();
     },
   });
   if (friendships.isLoading || results.isLoading)
     return (
       <main className={PAGE_SHELL}>
-        <h1 className={PAGE_TITLE}>Amis</h1>
+        <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
         <div
           className="mb-3 h-5 w-24 animate-pulse rounded-md bg-muted"
           aria-hidden="true"
@@ -66,9 +68,9 @@ export default function FriendsPage() {
   const accepted = rows.filter((row) => row.status === "ACCEPTED");
   return (
     <main className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Amis</h1>
+      <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
       <section className="mb-8">
-        <h2 className="mb-3 font-semibold">Mes amis</h2>
+        <h2 className="mb-3 font-semibold">{t("friends.myFriends")}</h2>
         <div className="space-y-3">
           {accepted.map((row) => {
             const person =
@@ -79,22 +81,22 @@ export default function FriendsPage() {
         {friendships.isSuccess && accepted.length === 0 && (
           <div className="rounded-xl border border-dashed bg-card p-7 text-center">
             <Users className="mx-auto mb-3 h-7 w-7 text-muted-foreground" />
-            <p className="font-medium">Votre liste d’amis est encore vide</p>
+            <p className="font-medium">{t("friends.emptyTitle")}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Découvrez des guitaristes et envoyez votre première demande.
+              {t("friends.emptyDescription")}
             </p>
             <a
               href="#discover"
               className="mt-4 inline-flex min-h-10 items-center rounded-md bg-primary px-4 text-sm text-primary-foreground"
             >
-              Trouver des amis
+              {t("friends.findFriends")}
             </a>
           </div>
         )}
       </section>
       {(incoming.length > 0 || outgoing.length > 0) && (
         <section className="mb-8">
-          <h2 className="mb-3 font-semibold">Demandes en attente</h2>
+          <h2 className="mb-3 font-semibold">{t("friends.pendingRequests")}</h2>
           <div className="space-y-3">
             {incoming.map((row) => (
               <PersonCard
@@ -103,7 +105,7 @@ export default function FriendsPage() {
                 action={
                   <div className="flex gap-1">
                     <button
-                      aria-label="Accepter"
+                      aria-label={t("friends.accept")}
                       onClick={() =>
                         respond.mutate({ id: row.id, accept: true })
                       }
@@ -112,7 +114,7 @@ export default function FriendsPage() {
                       <Check className="h-4 w-4" />
                     </button>
                     <button
-                      aria-label="Refuser"
+                      aria-label={t("friends.decline")}
                       onClick={() =>
                         respond.mutate({ id: row.id, accept: false })
                       }
@@ -128,7 +130,7 @@ export default function FriendsPage() {
               <PersonCard
                 key={row.id}
                 person={row.receiver}
-                note="Demande envoyée"
+                note={t("friends.requestSent")}
                 action={
                   <Clock3 className="h-5 w-5 shrink-0 text-muted-foreground" />
                 }
@@ -139,7 +141,7 @@ export default function FriendsPage() {
       )}
       <section id="discover" className="scroll-mt-20">
         <h2 className="mb-3 font-semibold">
-          Personnes que vous pouvez ajouter
+          {t("friends.peopleToAdd")}
         </h2>
         <label className="mb-4 flex items-center gap-2 rounded-lg border bg-card px-3">
           <Search className="h-4 w-4" />
@@ -147,7 +149,7 @@ export default function FriendsPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             maxLength={50}
-            placeholder="Rechercher un pseudo…"
+            placeholder={t("friends.searchPlaceholder")}
             className="min-h-11 flex-1 bg-transparent outline-none"
           />
         </label>
@@ -163,7 +165,7 @@ export default function FriendsPage() {
                   className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md bg-primary px-3 text-primary-foreground disabled:opacity-50"
                 >
                   <UserPlus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Ajouter</span>
+                  <span className="hidden sm:inline">{t("friends.add")}</span>
                 </button>
               }
             />
@@ -171,7 +173,7 @@ export default function FriendsPage() {
         </div>
         {results.isSuccess && results.data.length === 0 && (
           <p className="rounded-lg border border-dashed bg-card p-5 text-center text-sm text-muted-foreground">
-            Aucune personne à ajouter pour le moment.
+            {t("friends.noPeople")}
           </p>
         )}
       </section>

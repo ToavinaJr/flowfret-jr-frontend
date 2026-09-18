@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, MessageCircle, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -16,28 +17,29 @@ import { NotificationsSkeleton } from "@/components/skeletons/AppSkeletons";
 
 type ConfigurableKind = Exclude<NotificationKind, "FRIEND_ACCEPTED">;
 const preferenceLabels: Record<ConfigurableKind, string> = {
-  FRIEND_POST: "Publications de mes amis",
-  POST_COMMENT: "Commentaires sur mes publications",
-  FOLLOWED_POST_ACTIVITY: "Activité de mes amis sur les publications suivies",
+  FRIEND_POST: "notifications.preference.friendPost",
+  POST_COMMENT: "notifications.preference.postComment",
+  FOLLOWED_POST_ACTIVITY: "notifications.preference.followedPostActivity",
 };
 
-function message(row: AppNotification): string {
-  const actor = row.payload.actorUsername || "Un ami";
+function message(row: AppNotification, t: (key: string, options?: Record<string, unknown>) => string): string {
+  const actor = row.payload.actorUsername || t("notifications.friend");
   if (row.type === "FRIEND_ACCEPTED")
-    return `${actor} a accepté votre demande d’amitié.`;
+    return t("notifications.message.friendAccepted", { actor });
   if (row.type === "FRIEND_POST")
-    return `${actor} a publié une nouvelle publication.`;
+    return t("notifications.message.friendPost", { actor });
   if (row.type === "POST_COMMENT")
-    return `${actor} a commenté votre publication.`;
+    return t("notifications.message.postComment", { actor });
   const owner = row.payload.postAuthorUsername
-    ? ` de ${row.payload.postAuthorUsername}`
+    ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
   return row.payload.action === "POST_LIKED"
-    ? `${actor} a réagi à la publication${owner}.`
-    : `${actor} a commenté la publication${owner}.`;
+    ? t("notifications.message.postLiked", { actor, owner })
+    : t("notifications.message.postCommented", { actor, owner });
 }
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const client = useQueryClient();
   const notifications = useQuery({
     queryKey: ["notifications"],
@@ -60,15 +62,15 @@ export default function NotificationsPage() {
       enabled: boolean;
     }) => setNotificationPreference(type, enabled),
     onSuccess: () => {
-      toast.success("Préférence mise à jour.");
+      toast.success(t("notifications.preferenceUpdated"));
       void client.invalidateQueries({ queryKey: ["notification-preferences"] });
     },
-    onError: () => toast.error("Impossible de modifier cette préférence."),
+    onError: () => toast.error(t("notifications.preferenceError")),
   });
   if (notifications.isLoading || preferences.isLoading)
     return (
       <main className={PAGE_SHELL}>
-        <h1 className={PAGE_TITLE}>Notifications</h1>
+        <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
         <NotificationsSkeleton />
       </main>
     );
@@ -78,16 +80,16 @@ export default function NotificationsPage() {
   const types = Object.keys(preferenceLabels) as ConfigurableKind[];
   return (
     <main className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Notifications</h1>
+      <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
       <section className="mb-7 rounded-xl border bg-card p-4">
-        <h2 className="mb-4 font-semibold">Ce que je souhaite recevoir</h2>
+        <h2 className="mb-4 font-semibold">{t("notifications.preferencesTitle")}</h2>
         <div className="space-y-4">
           {types.map((type) => (
             <label
               key={type}
               className="flex items-center justify-between gap-4 text-sm"
             >
-              <span>{preferenceLabels[type]}</span>
+              <span>{t(preferenceLabels[type])}</span>
               <Switch
                 checked={configured.get(type) ?? true}
                 disabled={updatePreference.isPending}
@@ -100,7 +102,7 @@ export default function NotificationsPage() {
         </div>
       </section>
       <section>
-        <h2 className="mb-3 font-semibold">Activité récente</h2>
+        <h2 className="mb-3 font-semibold">{t("notifications.recentActivity")}</h2>
         <div className="space-y-2">
           {(notifications.data ?? []).map((row) => {
             const destination = row.payload.postId
@@ -132,11 +134,11 @@ export default function NotificationsPage() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm">{message(row)}</p>
+                  <p className="text-sm">{message(row, t)}</p>
                   <span className="mt-2 block text-xs text-primary">
                     {row.payload.postId
-                      ? "Voir la publication"
-                      : "Voir le profil"}
+                      ? t("notifications.viewPost")
+                      : t("notifications.viewProfile")}
                   </span>
                 </div>
               </Link>
@@ -146,7 +148,7 @@ export default function NotificationsPage() {
         {notifications.isSuccess && notifications.data.length === 0 && (
           <div className="rounded-lg border border-dashed bg-card p-8 text-center text-sm text-muted-foreground">
             <Bell className="mx-auto mb-2 h-5 w-5" />
-            Aucune notification pour le moment.
+            {t("notifications.empty")}
           </div>
         )}
       </section>

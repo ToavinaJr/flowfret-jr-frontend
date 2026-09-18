@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import type { AuthMode } from "@/types/auth";
 
 interface AuthModeSwitcherProps {
@@ -7,11 +8,12 @@ interface AuthModeSwitcherProps {
 }
 
 export function AuthModeSwitcher({ mode, onSwitchMode }: AuthModeSwitcherProps) {
+  const { t } = useTranslation();
   return (
     <div
       className="mb-6 grid grid-cols-2 rounded-lg bg-secondary p-1"
       role="tablist"
-      aria-label="Mode d’authentification"
+      aria-label={t("auth.mode")}
     >
       <button
         type="button"
@@ -25,7 +27,7 @@ export function AuthModeSwitcher({ mode, onSwitchMode }: AuthModeSwitcherProps) 
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        Connexion
+        {t("auth.login")}
       </button>
       <button
         type="button"
@@ -39,7 +41,7 @@ export function AuthModeSwitcher({ mode, onSwitchMode }: AuthModeSwitcherProps) 
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        Inscription
+        {t("auth.register")}
       </button>
     </div>
   );

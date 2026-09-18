@@ -1,5 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Settings, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -18,6 +19,7 @@ import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { ProfileSkeleton } from "@/components/skeletons/AppSkeletons";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { userId } = useParams();
   const viewedId = userId ?? user?.id;
@@ -86,9 +88,9 @@ export default function ProfilePage() {
         profile?.id,
       );
       await load();
-      toast.success("Photo de profil mise à jour.");
+      toast.success(t("profilePage.avatarUpdated"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Échec de l’envoi.");
+      toast.error(error instanceof Error ? error.message : t("profilePage.uploadFailed"));
     } finally {
       setSaving(false);
       event.target.value = "";
@@ -114,10 +116,10 @@ export default function ProfilePage() {
     try {
       await saveProfile(user.id, { displayName, bio, visibility }, profile?.id);
       await load();
-      toast.success("Profil mis à jour.");
+      toast.success(t("profilePage.updated"));
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Échec de la modification.",
+        error instanceof Error ? error.message : t("profilePage.updateFailed"),
       );
     } finally {
       setSaving(false);
@@ -145,18 +147,18 @@ export default function ProfilePage() {
   if (!profile && !own)
     return (
       <main className={PAGE_SHELL}>
-        <p>Ce profil est privé ou introuvable.</p>
+        <p>{t("profilePage.privateOrMissing")}</p>
       </main>
     );
   const avatar = profile?.avatarUrl;
   return (
     <main className={PAGE_SHELL}>
       <header className="mb-6 flex items-center justify-between">
-        <h1 className={`${PAGE_TITLE} mb-0`}>Profil</h1>
+        <h1 className={`${PAGE_TITLE} mb-0`}>{t("profile.title")}</h1>
         <div className="flex gap-2">
           <Link
             to="/friends"
-            aria-label="Amis"
+            aria-label={t("friends.title")}
             className="rounded-md bg-card p-3"
           >
             <Users className="h-4 w-4" />
@@ -164,7 +166,7 @@ export default function ProfilePage() {
           {own && (
             <Link
               to="/parametres"
-              aria-label="Paramètres"
+              aria-label={t("profile.settings")}
               className="rounded-md bg-card p-3"
             >
               <Settings className="h-4 w-4" />
@@ -187,7 +189,7 @@ export default function ProfilePage() {
         onRemoveAvatar={removeAvatar}
         onSubmit={() => void submit()}
       />
-      <h2 className="mb-3 text-lg font-semibold">Publications</h2>
+      <h2 className="mb-3 text-lg font-semibold">{t("profilePage.posts")}</h2>
       <div className="space-y-3 sm:space-y-4">
         {(profile?.user.authoredPosts ?? []).map((post) => (
           <FeedCard
@@ -202,7 +204,7 @@ export default function ProfilePage() {
       </div>
       {profile && profile.user.authoredPosts.length === 0 && (
         <p className="py-10 text-center text-sm text-muted-foreground">
-          Aucune publication pour le moment.
+          {t("profilePage.noPosts")}
         </p>
       )}
     </main>

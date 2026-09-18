@@ -28,6 +28,47 @@
   "common": {
     "menu": "Menu"
   },
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My friends",
+    "emptyTitle": "Your friends list is still empty",
+    "emptyDescription": "Discover guitarists and send your first request.",
+    "findFriends": "Find friends",
+    "pendingRequests": "Pending requests",
+    "accept": "Accept",
+    "decline": "Decline",
+    "requestSent": "Friend request sent.",
+    "requestHandled": "Request handled.",
+    "peopleToAdd": "People you can add",
+    "searchPlaceholder": "Search for a username…",
+    "add": "Add",
+    "noPeople": "No one to add right now.",
+    "avatarAlt": "Avatar of {{name}}"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "preferencesTitle": "What I want to receive",
+    "recentActivity": "Recent activity",
+    "friend": "A friend",
+    "postOwner": " by {{owner}}",
+    "preference": {
+      "friendPost": "Posts from my friends",
+      "postComment": "Comments on my posts",
+      "followedPostActivity": "My friends’ activity on followed posts"
+    },
+    "message": {
+      "friendAccepted": "{{actor}} accepted your friend request.",
+      "friendPost": "{{actor}} published a new post.",
+      "postComment": "{{actor}} commented on your post.",
+      "postLiked": "{{actor}} reacted to the post{{owner}}.",
+      "postCommented": "{{actor}} commented on the post{{owner}}."
+    },
+    "preferenceUpdated": "Preference updated.",
+    "preferenceError": "Unable to update this preference.",
+    "viewPost": "View post",
+    "viewProfile": "View profile",
+    "empty": "No notifications yet."
+  },
   "feed": {
     "title": "Feed",
     "newPost": "New post",
@@ -67,6 +108,26 @@
     "openMenu": "Open menu",
     "logout": "Log out",
     "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FretFlow community."
+  },
+  "profilePage": {
+    "avatarUpdated": "Profile picture updated.",
+    "uploadFailed": "Upload failed.",
+    "updated": "Profile updated.",
+    "updateFailed": "Update failed.",
+    "privateOrMissing": "This profile is private or could not be found.",
+    "posts": "Posts",
+    "noPosts": "No posts yet."
+  },
+  "profileEditor": {
+    "removePhoto": "Remove photo",
+    "displayName": "Display name",
+    "bio": "Bio",
+    "visibility": "Visibility",
+    "public": "Public",
+    "friends": "Friends",
+    "private": "Private",
+    "save": "Save",
+    "noBio": "No bio."
   },
   "notFound": {
     "message": "Oops! Page not found",
@@ -150,7 +211,12 @@
       "forgot": "Enter your email address to receive a secure link.",
       "reset": "Choose a new password of at least 8 characters."
     },
-    "yourEmail": "your email"
+    "yourEmail": "your email",
+    "mode": "Authentication mode",
+    "login": "Sign in",
+    "register": "Sign up",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "scales": {
     "title": "Scales",
@@ -280,7 +346,18 @@
     "loading": "Loading lyrics…",
     "unavailable": "Lyrics unavailable",
     "instrumental": "Instrumental",
-    "error": "Lyrics cannot be loaded right now."
+    "error": "Lyrics cannot be loaded right now.",
+    "empty": "The first lyrics will appear here.",
+    "synchronized": "Synchronized lyrics"
+  },
+  "scaleFretboard": {
+    "label": "Scale fretboard"
+  },
+  "mediaPlayer": {
+    "audioPlayer": "Audio player",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume"
   },
   "circleHarmony": {
     "major": "Major chords",

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { SocialUser } from "@/services/profileApi";
 
 export function PersonCard({
@@ -11,6 +12,7 @@ export function PersonCard({
   action?: ReactNode;
   note?: string;
 }) {
+  const { t } = useTranslation();
   const name = person.profile?.displayName || person.username;
   return (
     <article className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
@@ -20,7 +22,7 @@ export function PersonCard({
       >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-semibold">
           {person.profile?.avatarUrl ? (
-            <img src={person.profile.avatarUrl} alt={`Avatar de ${name}`} className="h-full w-full object-cover" />
+            <img src={person.profile.avatarUrl} alt={t("friends.avatarAlt", { name })} className="h-full w-full object-cover" />
           ) : (
             person.username.slice(0, 2).toUpperCase()
           )}

@@ -5,6 +5,7 @@ import {
   STRING_NAMES,
   STRING_OPEN_NOTES,
 } from "@/constants/scalesConstants";
+import { useTranslation } from "react-i18next";
 import { playStringNote } from "@/utils/stringSound";
 
 interface ScaleFretboardProps {
@@ -22,6 +23,7 @@ const SVG_W = LEFT_PAD + FRET_COUNT * FRET_W + 8;
 const SVG_H = TOP_PAD + 5 * STRING_H + BOT_PAD;
 
 export function ScaleFretboard({ rootIndex, scaleIntervals }: ScaleFretboardProps) {
+  const { t } = useTranslation();
   const scaleSet = new Set(scaleIntervals.map((i) => (rootIndex + i) % 12));
 
   async function handleNote(
@@ -41,7 +43,7 @@ export function ScaleFretboard({ rootIndex, scaleIntervals }: ScaleFretboardProp
         width={SVG_W}
         height={SVG_H}
         className="mx-auto"
-        aria-label="Manche des gammes"
+        aria-label={t("scaleFretboard.label")}
       >
         {FRET_MARKERS.map((fret) => {
           const cx = LEFT_PAD + fret * FRET_W - FRET_W / 2;

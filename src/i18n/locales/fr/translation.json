@@ -28,6 +28,47 @@
   "common": {
     "menu": "Menu"
   },
+  "friends": {
+    "title": "Amis",
+    "myFriends": "Mes amis",
+    "emptyTitle": "Votre liste d’amis est encore vide",
+    "emptyDescription": "Découvrez des guitaristes et envoyez votre première demande.",
+    "findFriends": "Trouver des amis",
+    "pendingRequests": "Demandes en attente",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "requestSent": "Demande d’amitié envoyée.",
+    "requestHandled": "Demande traitée.",
+    "peopleToAdd": "Personnes que vous pouvez ajouter",
+    "searchPlaceholder": "Rechercher un pseudo…",
+    "add": "Ajouter",
+    "noPeople": "Aucune personne à ajouter pour le moment.",
+    "avatarAlt": "Avatar de {{name}}"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "preferencesTitle": "Ce que je souhaite recevoir",
+    "recentActivity": "Activité récente",
+    "friend": "Un ami",
+    "postOwner": " de {{owner}}",
+    "preference": {
+      "friendPost": "Publications de mes amis",
+      "postComment": "Commentaires sur mes publications",
+      "followedPostActivity": "Activité de mes amis sur les publications suivies"
+    },
+    "message": {
+      "friendAccepted": "{{actor}} a accepté votre demande d’amitié.",
+      "friendPost": "{{actor}} a publié une nouvelle publication.",
+      "postComment": "{{actor}} a commenté votre publication.",
+      "postLiked": "{{actor}} a réagi à la publication{{owner}}.",
+      "postCommented": "{{actor}} a commenté la publication{{owner}}."
+    },
+    "preferenceUpdated": "Préférence mise à jour.",
+    "preferenceError": "Impossible de modifier cette préférence.",
+    "viewPost": "Voir la publication",
+    "viewProfile": "Voir le profil",
+    "empty": "Aucune notification pour le moment."
+  },
   "feed": {
     "title": "Fil d’actualité",
     "newPost": "Nouvelle publication",
@@ -67,6 +108,26 @@
     "openMenu": "Ouvrir le menu",
     "logout": "Se déconnecter",
     "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FretFlow."
+  },
+  "profilePage": {
+    "avatarUpdated": "Photo de profil mise à jour.",
+    "uploadFailed": "Échec de l’envoi.",
+    "updated": "Profil mis à jour.",
+    "updateFailed": "Échec de la modification.",
+    "privateOrMissing": "Ce profil est privé ou introuvable.",
+    "posts": "Publications",
+    "noPosts": "Aucune publication pour le moment."
+  },
+  "profileEditor": {
+    "removePhoto": "Supprimer la photo",
+    "displayName": "Nom affiché",
+    "bio": "Bio",
+    "visibility": "Visibilité",
+    "public": "Public",
+    "friends": "Amis",
+    "private": "Privé",
+    "save": "Enregistrer",
+    "noBio": "Aucune bio."
   },
   "notFound": {
     "message": "Oups ! Page introuvable",
@@ -150,7 +211,12 @@
       "forgot": "Saisissez votre adresse e-mail pour recevoir un lien sécurisé.",
       "reset": "Choisissez un nouveau mot de passe d’au moins 8 caractères."
     },
-    "yourEmail": "votre e-mail"
+    "yourEmail": "votre e-mail",
+    "mode": "Mode d’authentification",
+    "login": "Connexion",
+    "register": "Inscription",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "scales": {
     "title": "Gammes",
@@ -280,7 +346,18 @@
     "loading": "Chargement des paroles…",
     "unavailable": "Paroles indisponibles",
     "instrumental": "Instrumental",
-    "error": "Impossible de charger les paroles pour le moment."
+    "error": "Impossible de charger les paroles pour le moment.",
+    "empty": "Les premières paroles apparaîtront ici.",
+    "synchronized": "Paroles synchronisées"
+  },
+  "scaleFretboard": {
+    "label": "Manche des gammes"
+  },
+  "mediaPlayer": {
+    "audioPlayer": "Lecteur audio",
+    "mute": "Couper le son",
+    "unmute": "Activer le son",
+    "volume": "Volume"
   },
   "circleHarmony": {
     "major": "Accords majeurs",
