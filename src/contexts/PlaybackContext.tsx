@@ -10,6 +10,11 @@ import {
 } from "react";
 import type { PlayState } from "@/types/song";
 import { recordTrackListen } from "@/services/api";
+import {
+  loadSpotifyIframeApi,
+  type SpotifyEmbedController,
+  type SpotifyIframeApi,
+} from "@/services/spotifyIframe";
 
 export interface PlaybackItem {
   id: string;
@@ -27,60 +32,10 @@ export interface PlaybackItem {
   revokeSourceOnRelease?: boolean;
 }
 
-interface SpotifyPlaybackEvent {
-  data: {
-    isPaused: boolean;
-    isBuffering: boolean;
-    duration: number;
-    position: number;
-  };
-}
-
-interface SpotifyEmbedController {
-  loadEntity: (uri: string) => void;
-  play: () => void;
-  resume: () => void;
-  pause: () => void;
-  seek: (seconds: number) => void;
-  destroy: () => void;
-  addListener: (
-    event: string,
-    listener: (event: SpotifyPlaybackEvent) => void,
-  ) => void;
-}
-
-interface SpotifyIframeApi {
-  createController: (
-    element: HTMLElement,
-    options: { uri: string; width: number; height: number },
-    callback: (controller: SpotifyEmbedController) => void,
-  ) => void;
-}
-
 declare global {
   interface Window {
     onSpotifyIframeApiReady?: (api: SpotifyIframeApi) => void;
   }
-}
-
-let spotifyApiPromise: Promise<SpotifyIframeApi> | null = null;
-
-function loadSpotifyIframeApi(): Promise<SpotifyIframeApi> {
-  if (spotifyApiPromise) return spotifyApiPromise;
-  spotifyApiPromise = new Promise((resolve, reject) => {
-    window.onSpotifyIframeApiReady = resolve;
-    const existing = document.querySelector<HTMLScriptElement>(
-      "script[data-spotify-iframe-api]",
-    );
-    if (existing) return;
-    const script = document.createElement("script");
-    script.src = "https://open.spotify.com/embed/iframe-api/v1";
-    script.async = true;
-    script.dataset.spotifyIframeApi = "true";
-    script.onerror = () => reject(new Error("Unable to load Spotify player"));
-    document.body.appendChild(script);
-  });
-  return spotifyApiPromise;
 }
 
 interface PlaybackContextValue {
