@@ -8,7 +8,9 @@ import {
   respondFriendRequest,
   searchUsers,
   sendFriendRequest,
-} from "@/services/api";
+} from "@/services/friendsApi";
+import type { Friendship } from "@/services/friendsApi";
+import type { SocialUser } from "@/services/profileApi";
 import { useAuth } from "@/hooks/useAuth";
 import { PersonListSkeleton } from "@/components/skeletons/AppSkeletons";
 import { PersonCard } from "@/components/friends/PersonCard";
@@ -17,11 +19,11 @@ export default function FriendsPage() {
   const { user } = useAuth();
   const client = useQueryClient();
   const [query, setQuery] = useState("");
-  const friendships = useQuery({
+  const friendships = useQuery<Friendship[]>({
     queryKey: ["friendships"],
     queryFn: fetchFriendships,
   });
-  const results = useQuery({
+  const results = useQuery<SocialUser[]>({
     queryKey: ["user-search", query],
     queryFn: () => searchUsers(query.trim()),
   });

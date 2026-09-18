@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import type { SocialUser } from "@/services/api";
+import type { SocialUser } from "@/services/profileApi";
 
 export function PersonCard({
   person,
