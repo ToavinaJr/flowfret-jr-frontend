@@ -26,7 +26,11 @@
     "audioNotice": "Audio unlocks automatically on first interaction (browser autoplay policy). Chord detection runs entirely in your browser."
   },
   "common": {
-    "menu": "Menu"
+    "menu": "Menu",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "retry": "Retry"
   },
   "friends": {
     "title": "Friends",
@@ -88,7 +92,30 @@
     "commentCreated": "Comment published successfully.",
     "commentCreateError": "Unable to publish the comment.",
     "loadError": "Unable to load the feed. Please try again later.",
-    "empty": "No posts yet. Be the first to share something."
+    "empty": "No posts yet. Be the first to share something.",
+    "relativeMinutes": "{{count}}m ago",
+    "relativeHours": "{{count}}h ago",
+    "relativeDays": "{{count}}d ago",
+    "postContentRequired": "A post must contain text or an image.",
+    "editFailed": "The edit could not be saved.",
+    "commentRequired": "The comment cannot be empty.",
+    "commentEdited": "Comment edited.",
+    "commentEditFailed": "Comment edit failed.",
+    "editPost": "Edit post",
+    "yourText": "Your text",
+    "captionPlaceholder": "Add a caption…",
+    "writePlaceholder": "Write something…",
+    "removeReaction": "Remove reaction",
+    "reactToPost": "React to post",
+    "like": "like",
+    "likes": "likes",
+    "showComments": "Show comments",
+    "comments": "Comments",
+    "editComment": "Edit comment",
+    "commentContent": "Comment content",
+    "noComments": "No comments.",
+    "addComment": "Add a comment…",
+    "postComment": "Post"
   },
   "morePage": {
     "title": "Menu",
@@ -216,7 +243,46 @@
     "login": "Sign in",
     "register": "Sign up",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "backToLogin": "Back to sign in",
+    "or": "or",
+    "continueWithGoogle": "Continue with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "errors": {
+      "acceptTermsBeforeRegister": "You must accept the terms before signing up.",
+      "googleNotConfigured": "Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID.",
+      "googleCancelled": "Google sign-in cancelled.",
+      "googleLoginFailed": "Unable to sign in with Google. Try again.",
+      "resetLinkMissing": "Reset link is missing.",
+      "passwordTooShort": "The password must contain at least 8 characters.",
+      "passwordMismatch": "The passwords do not match.",
+      "verificationLinkMissing": "Verification link is missing.",
+      "otpInvalid": "Enter the 4-digit OTP code.",
+      "acceptTerms": "Please accept the terms to create an account.",
+      "loginFailed": "Unable to sign in. Check your credentials.",
+      "verificationFailed": "Unable to verify the code. Try again.",
+      "registrationFailed": "Unable to create the account. Try again later.",
+      "resendOtpFailed": "Unable to resend the code. Try again."
+    },
+    "toasts": {
+      "googleConnected": "Signed in with Google",
+      "googleAccountCreated": "Google account created",
+      "resetRequestSent": "Request sent",
+      "resetRequestDescription": "If an account matches this address, a link has been sent.",
+      "passwordChanged": "Password changed",
+      "passwordChangedDescription": "You can now sign in.",
+      "accountVerified": "Account verified. Welcome!",
+      "otpSent": "OTP code sent",
+      "newOtpSent": "New code sent"
+    },
+    "terms": {
+      "title": "Terms of use",
+      "description": "The complete terms will be available soon."
+    },
+    "hero": {
+      "title": "Unlock your guitar’s potential",
+      "description": "Analyze, practice, and share — a workbench designed for guitarists."
+    }
   },
   "scales": {
     "title": "Scales",

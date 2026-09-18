@@ -135,16 +135,12 @@ export function AuthGate({ children }: AuthGateProps) {
     }
 
     if (mode === "register" && !acceptedTerms) {
-      setError(
-        "Vous devez accepter les conditions d’utilisation avant de vous inscrire.",
-      );
+      setError(t("auth.errors.acceptTermsBeforeRegister"));
       return;
     }
 
     if (!googleConfigured) {
-      setError(
-        "Connexion Google non configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
-      );
+      setError(t("auth.errors.googleNotConfigured"));
       return;
     }
 
@@ -155,10 +151,10 @@ export function AuthGate({ children }: AuthGateProps) {
       const accessToken = await requestGoogleAccessToken();
       if (mode === "login") {
         await loginWithGoogle(accessToken);
-        toast.success("Connecté avec Google");
+        toast.success(t("auth.toasts.googleConnected"));
       } else {
         await registerWithGoogle(accessToken);
-        toast.success("Compte Google créé");
+        toast.success(t("auth.toasts.googleAccountCreated"));
       }
     } catch (err) {
       if (err instanceof ApiClientError) {
@@ -170,11 +166,11 @@ export function AuthGate({ children }: AuthGateProps) {
           );
         setError(
           cancelled
-            ? "Connexion Google annulée."
-            : "Impossible de se connecter avec Google. Réessayez.",
+            ? t("auth.errors.googleCancelled")
+            : t("auth.errors.googleLoginFailed"),
         );
       } else {
-        setError("Impossible de se connecter avec Google. Réessayez.");
+        setError(t("auth.errors.googleLoginFailed"));
       }
     } finally {
       actionInFlight.current = false;
@@ -199,9 +195,9 @@ export function AuthGate({ children }: AuthGateProps) {
     try {
       if (mode === "forgot") {
         await requestPasswordReset(formState.email);
-        toast.success("Demande envoyée", {
+        toast.success(t("auth.toasts.resetRequestSent"), {
           description:
-            "Si un compte correspond à cette adresse, un lien vient d’être envoyé.",
+            t("auth.toasts.resetRequestDescription"),
         });
         switchMode("login");
         return;
@@ -209,20 +205,20 @@ export function AuthGate({ children }: AuthGateProps) {
 
       if (mode === "reset") {
         if (!passwordResetToken) {
-          setError("Lien de réinitialisation manquant.");
+          setError(t("auth.errors.resetLinkMissing"));
           return;
         }
         if (formState.password.length < 8) {
-          setError("Le mot de passe doit contenir au moins 8 caractères.");
+          setError(t("auth.errors.passwordTooShort"));
           return;
         }
         if (formState.password !== formState.confirmPassword) {
-          setError("Les mots de passe ne correspondent pas.");
+          setError(t("auth.errors.passwordMismatch"));
           return;
         }
         await resetPassword(passwordResetToken, formState.password);
-        toast.success("Mot de passe modifié", {
-          description: "Vous pouvez maintenant vous connecter.",
+        toast.success(t("auth.toasts.passwordChanged"), {
+          description: t("auth.toasts.passwordChangedDescription"),
         });
         switchMode("login");
         return;
@@ -235,30 +231,30 @@ export function AuthGate({ children }: AuthGateProps) {
 
       if (mode === "verify") {
         if (!verificationToken) {
-          setError("Lien de vérification manquant.");
+          setError(t("auth.errors.verificationLinkMissing"));
           return;
         }
         if (!/^\d{4}$/.test(formState.otp)) {
-          setError("Saisissez le code OTP à 4 chiffres.");
+          setError(t("auth.errors.otpInvalid"));
           return;
         }
         await verifyEmail({ token: verificationToken, code: formState.otp });
-        toast.success("Compte vérifié. Bienvenue !");
+        toast.success(t("auth.toasts.accountVerified"));
         return;
       }
 
       if (formState.password !== formState.confirmPassword) {
-        setError("Les mots de passe ne correspondent pas.");
+        setError(t("auth.errors.passwordMismatch"));
         return;
       }
 
       if (!acceptedTerms) {
-        setError("Veuillez accepter les conditions pour créer un compte.");
+        setError(t("auth.errors.acceptTerms"));
         return;
       }
 
       if (formState.password.length < 8) {
-        setError("Le mot de passe doit contenir au moins 8 caractères.");
+        setError(t("auth.errors.passwordTooShort"));
         return;
       }
 
@@ -270,7 +266,7 @@ export function AuthGate({ children }: AuthGateProps) {
       setPendingEmail(pending.email);
       setVerificationToken(pending.verificationToken);
       setMode("verify");
-      toast.success("Code OTP envoyé", {
+      toast.success(t("auth.toasts.otpSent"), {
         description: pending.message,
       });
     } catch (err) {
@@ -279,10 +275,10 @@ export function AuthGate({ children }: AuthGateProps) {
       } else {
         setError(
           mode === "login"
-            ? "Impossible de se connecter. Vérifiez vos identifiants."
+            ? t("auth.errors.loginFailed")
             : mode === "verify"
-              ? "Impossible de vérifier le code. Réessayez."
-              : "Impossible de créer le compte. Réessayez plus tard.",
+              ? t("auth.errors.verificationFailed")
+              : t("auth.errors.registrationFailed"),
         );
       }
     } finally {
@@ -297,7 +293,7 @@ export function AuthGate({ children }: AuthGateProps) {
     }
 
     if (!verificationToken) {
-      setError("Lien de vérification manquant.");
+      setError(t("auth.errors.verificationLinkMissing"));
       return;
     }
 
@@ -308,14 +304,14 @@ export function AuthGate({ children }: AuthGateProps) {
       const pending = await resendVerification(verificationToken);
       setVerificationToken(pending.verificationToken);
       setPendingEmail(pending.email);
-      toast.success("Nouveau code envoyé", {
+      toast.success(t("auth.toasts.newOtpSent"), {
         description: pending.message,
       });
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError(err.message);
       } else {
-        setError("Impossible de renvoyer le code. Réessayez.");
+        setError(t("auth.errors.resendOtpFailed"));
       }
     } finally {
       actionInFlight.current = false;
@@ -374,7 +370,7 @@ export function AuthGate({ children }: AuthGateProps) {
                     onClick={() => switchMode("login")}
                     className="w-full min-h-[44px] text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Retour à la connexion
+                    {t("auth.backToLogin")}
                   </button>
                 </>
               ) : mode === "forgot" || mode === "reset" ? (
@@ -401,7 +397,7 @@ export function AuthGate({ children }: AuthGateProps) {
                     onClick={() => switchMode("login")}
                     className="min-h-[44px] w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Retour à la connexion
+                    {t("auth.backToLogin")}
                   </button>
                 </>
               ) : (
@@ -422,9 +418,9 @@ export function AuthGate({ children }: AuthGateProps) {
                     onTermsChange={setAcceptedTerms}
                     onForgotPassword={handleForgotPassword}
                     onOpenTerms={() =>
-                      toast.message("Conditions d’utilisation", {
+                      toast.message(t("auth.terms.title"), {
                         description:
-                          "Les conditions complètes seront bientôt disponibles.",
+                          t("auth.terms.description"),
                       })
                     }
                   />
@@ -443,7 +439,7 @@ export function AuthGate({ children }: AuthGateProps) {
                     {pendingAction === "submit" && (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     )}
-                    {mode === "login" ? "Se connecter" : "Créer mon compte"}
+                    {t(mode === "login" ? "auth.login" : "auth.register")}
                   </button>
 
                   <div className="relative py-2">
@@ -452,7 +448,7 @@ export function AuthGate({ children }: AuthGateProps) {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider">
                       <span className="bg-background px-3 text-muted-foreground">
-                        ou
+                        {t("auth.or")}
                       </span>
                     </div>
                   </div>
@@ -469,8 +465,8 @@ export function AuthGate({ children }: AuthGateProps) {
                       <GoogleLogo className="h-5 w-5" />
                     )}
                     {mode === "login"
-                      ? "Continuer avec Google"
-                      : "S’inscrire avec Google"}
+                      ? t("auth.continueWithGoogle")
+                      : t("auth.signUpWithGoogle")}
                   </button>
                 </>
               )}
@@ -501,11 +497,10 @@ export function AuthGate({ children }: AuthGateProps) {
             <Guitar className="h-8 w-8 text-primary" />
           </div>
           <h2 className="max-w-md text-3xl font-medium tracking-tight text-foreground xl:text-4xl">
-            Libérez le potentiel de votre guitare
+            {t("auth.hero.title")}
           </h2>
           <p className="mt-4 max-w-md text-base text-muted-foreground">
-            Analysez, pratiquez et partagez — un workbench pensé pour les
-            guitaristes.
+            {t("auth.hero.description")}
           </p>
           <AuthHighlights />
         </div>

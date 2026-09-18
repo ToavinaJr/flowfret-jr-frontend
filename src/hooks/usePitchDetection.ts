@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { unlockAudioContext } from "@/utils/audioContext";
+import { useTranslation } from "react-i18next";
 
 const NOTE_NAMES = [
   "C",
@@ -103,6 +104,7 @@ function frequencyToNote(freq: number): PitchReading {
 }
 
 export function usePitchDetection(): UsePitchDetectionResult {
+  const { t } = useTranslation();
   const [isListening, setIsListening] = useState(false);
   const [reading, setReading] = useState<PitchReading | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -162,10 +164,10 @@ export function usePitchDetection(): UsePitchDetectionResult {
       };
       rafRef.current = requestAnimationFrame(tick);
     } catch {
-      setError("Microphone access denied or unavailable.");
+      setError(t("tuner.microphoneError"));
       stop();
     }
-  }, [stop]);
+  }, [stop, t]);
 
   const toggle = useCallback(async () => {
     if (isListening) stop();

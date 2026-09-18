@@ -1,11 +1,13 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export function AppShellSkeleton() {
+  const { t } = useTranslation();
   return (
     <div
       className="flex min-h-screen bg-background"
       role="status"
-      aria-label="Chargement de l’application"
+      aria-label={t("skeletons.appLoading")}
     >
       <aside className="hidden w-64 shrink-0 border-r border-border p-5 md:block lg:w-72">
         <div className="mb-10 flex items-center gap-3">
@@ -33,11 +35,12 @@ export function AppShellSkeleton() {
 }
 
 export function FeedSkeleton({ count = 3 }: { count?: number }) {
+  const { t } = useTranslation();
   return (
     <div
       className="space-y-4"
       role="status"
-      aria-label="Chargement des publications"
+      aria-label={t("skeletons.postsLoading")}
     >
       {Array.from({ length: count }).map((_, i) => (
         <article
@@ -67,8 +70,9 @@ export function FeedSkeleton({ count = 3 }: { count?: number }) {
 }
 
 export function ProfileSkeleton() {
+  const { t } = useTranslation();
   return (
-    <div role="status" aria-label="Chargement du profil">
+    <div role="status" aria-label={t("skeletons.profileLoading")}>
       <div className="mb-6 flex justify-between">
         <Skeleton className="h-8 w-28" />
         <div className="flex gap-2">
@@ -98,11 +102,12 @@ export function ProfileSkeleton() {
 }
 
 export function PersonListSkeleton({ count = 3 }: { count?: number }) {
+  const { t } = useTranslation();
   return (
     <div
       className="space-y-3"
       role="status"
-      aria-label="Chargement des personnes"
+      aria-label={t("skeletons.peopleLoading")}
     >
       {Array.from({ length: count }).map((_, i) => (
         <div
@@ -122,8 +127,9 @@ export function PersonListSkeleton({ count = 3 }: { count?: number }) {
 }
 
 export function NotificationsSkeleton() {
+  const { t } = useTranslation();
   return (
-    <div role="status" aria-label="Chargement des notifications">
+    <div role="status" aria-label={t("skeletons.notificationsLoading")}>
       <section className="mb-7 rounded-xl border bg-card p-4">
         <Skeleton className="mb-5 h-5 w-52" />
         {Array.from({ length: 3 }).map((_, i) => (
@@ -140,11 +146,12 @@ export function NotificationsSkeleton() {
 }
 
 export function ChordAnalysisSkeleton() {
+  const { t } = useTranslation();
   return (
     <div
       className="grid min-h-[430px] overflow-hidden rounded-xl border bg-card lg:grid-cols-[minmax(0,1fr)_19rem]"
       role="status"
-      aria-label="Analyse des accords"
+      aria-label={t("skeletons.chordAnalysisLoading")}
     >
       <div className="flex items-center justify-center gap-5 p-8">
         <Skeleton className="hidden h-52 w-28 opacity-30 sm:block" />
@@ -164,11 +171,12 @@ export function ChordAnalysisSkeleton() {
 }
 
 export function CommentsSkeleton() {
+  const { t } = useTranslation();
   return (
     <div
       className="space-y-3 py-2"
       role="status"
-      aria-label="Chargement des commentaires"
+      aria-label={t("skeletons.commentsLoading")}
     >
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="flex gap-3">

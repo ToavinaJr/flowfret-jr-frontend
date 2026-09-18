@@ -64,7 +64,7 @@ const UploadPage = () => {
       const song = { meta, uri };
       setImportedSongState(song);
       setStatus("idle");
-      toast.success("Analyse terminée.");
+      toast.success(t("upload.analysisComplete"));
     } catch {
       setStatus("error");
       setErrorMessage(t("upload.analysisFailed"));

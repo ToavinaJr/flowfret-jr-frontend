@@ -4,6 +4,7 @@ import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
 import type { ImportedSong } from "@/types/song";
 import { getChordPosition } from "@/utils/chords";
 import { getCueIndexAtTime, normaliseKey } from "@/utils/songCues";
+import { useTranslation } from "react-i18next";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -36,6 +37,7 @@ function chordShape(label?: string) {
 }
 
 export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
+  const { t } = useTranslation();
   const { item, currentTime, select } = usePlayback();
   const [previewChord, setPreviewChord] = useState<string | null>(null);
   const playbackItem = useMemo<PlaybackItem>(
@@ -43,7 +45,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
       id: `import:${song.uri}`,
       src: song.uri,
       title: song.meta.title,
-      subtitle: "Morceau importé",
+      subtitle: t("player.importedSubtitle"),
       duration: song.meta.duration,
       destination: "/upload",
       trackActivity: false,
@@ -77,7 +79,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
   return (
     <section
       className="mt-6 grid min-h-[430px] overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(0,1fr)_19rem]"
-      aria-label={`Accords de ${song.meta.title}`}
+      aria-label={t("player.chordsFor", { title: song.meta.title })}
     >
       <div className="relative flex min-h-[390px] items-center justify-center overflow-hidden p-4 sm:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.09),transparent_62%)]" />
@@ -113,7 +115,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
             )}
             <p className="mt-1 text-center font-musical text-xs text-muted-foreground">
               {previewChord
-                ? "Aperçu de l’accord · recliquez pour revenir au suivi"
+                ? t("player.chordPreviewHint")
                 : `${formatTime(activeCue.start)} – ${formatTime(activeCue.end)}`}
             </p>
           </div>
@@ -144,11 +146,11 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
 
       <aside
         className="border-t border-border bg-background/45 p-3 lg:border-l lg:border-t-0"
-        aria-label="Liste des accords détectés"
+        aria-label={t("player.detectedChords")}
       >
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Tous les accords
+            {t("player.allChords")}
           </h2>
           <span className="font-musical text-xs text-muted-foreground">
             {chordSet.length}

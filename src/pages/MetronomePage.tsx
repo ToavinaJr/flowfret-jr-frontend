@@ -132,7 +132,7 @@ const MetronomePage = () => {
               setBpm(Number(e.target.value))
             }
             className="w-full max-w-[8rem] accent-primary sm:max-w-[12rem] md:max-w-[14rem]"
-            aria-label="BPM"
+            aria-label={t("metronome.bpm")}
           />
           <button
             type="button"

@@ -34,15 +34,15 @@ import { DetailsPost } from "@/components/feed/DetailsPost";
 import { Link } from "react-router-dom";
 import { CommentsSkeleton } from "@/components/skeletons/AppSkeletons";
 
-function formatRelative(iso: string): string {
+function formatRelative(iso: string, t: (key: string) => string): string {
   const then = new Date(iso).getTime();
   if (!Number.isFinite(then)) return "";
   const diff = Date.now() - then;
   const mins = Math.floor(diff / 60_000);
-  if (mins < 60) return `${Math.max(1, mins)}m ago`;
+  if (mins < 60) return t("feed.relativeMinutes").replace("{{count}}", String(Math.max(1, mins)));
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return t("feed.relativeHours").replace("{{count}}", String(hours));
+  return t("feed.relativeDays").replace("{{count}}", String(Math.floor(hours / 24)));
 }
 
 export interface FeedCardProps {
@@ -96,7 +96,7 @@ export function FeedCard({
     e.preventDefault();
     const content = editContent.trim();
     if (!content && !hasImages) {
-      setEditError("Une publication doit contenir du texte ou une image.");
+      setEditError(t("feed.postContentRequired"));
       return;
     }
     if (content === (post.content ?? "").trim()) {
@@ -110,7 +110,7 @@ export function FeedCard({
       await onChanged();
       setEditOpen(false);
     } catch {
-      setEditError("La modification n’a pas pu être enregistrée.");
+      setEditError(t("feed.editFailed"));
     } finally {
       setEditSaving(false);
     }
@@ -119,7 +119,7 @@ export function FeedCard({
   async function saveCommentEdit(commentId: string) {
     const content = editingCommentContent.trim();
     if (!content) {
-      setCommentEditError("Le commentaire ne peut pas être vide.");
+      setCommentEditError(t("feed.commentRequired"));
       return;
     }
     setCommentEditSaving(true);
@@ -133,10 +133,10 @@ export function FeedCard({
       );
       setEditingCommentId(null);
       await onChanged();
-      toast.success("Commentaire modifié.");
+      toast.success(t("feed.commentEdited"));
     } catch {
-      setCommentEditError("La modification n’a pas pu être enregistrée.");
-      toast.error("La modification du commentaire a échoué.");
+      setCommentEditError(t("feed.editFailed"));
+      toast.error(t("feed.commentEditFailed"));
     } finally {
       setCommentEditSaving(false);
     }
@@ -176,7 +176,7 @@ export function FeedCard({
               {post.author.username}
             </div>
             <div className="font-musical text-xs text-muted-foreground">
-              {formatRelative(post.createdAt)}
+              {formatRelative(post.createdAt, t)}
             </div>
           </div>
         </Link>
@@ -184,7 +184,7 @@ export function FeedCard({
           <div className="ml-auto flex gap-1">
             <button
               type="button"
-              aria-label="Modifier la publication"
+              aria-label={t("feed.editPost")}
               onClick={() => {
                 setEditContent(post.content ?? "");
                 setEditError(null);
@@ -258,6 +258,7 @@ export function FeedCard({
         <DialogContent className="w-[calc(100%-2rem)] max-w-xl rounded-xl p-0">
           <DialogHeader className="border-b border-border px-5 py-4 text-left">
             <DialogTitle>Modifier la publication</DialogTitle>
+                      <DialogTitle>{t("feed.editPost")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 px-5 pb-5">
             <div>
@@ -266,6 +267,7 @@ export function FeedCard({
                 className="mb-2 block text-sm font-medium text-foreground"
               >
                 Votre texte
+                              {t("feed.yourText")}
               </label>
               <textarea
                 id={`edit-post-${post.id}`}
@@ -280,6 +282,7 @@ export function FeedCard({
                 className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
                 placeholder={
                   hasImages ? "Ajoutez une légende…" : "Écrivez quelque chose…"
+                                  hasImages ? t("feed.captionPlaceholder") : t("feed.writePlaceholder")
                 }
               />
               <div className="mt-1 flex justify-between gap-3 text-xs">
@@ -309,6 +312,7 @@ export function FeedCard({
                 className="min-h-11 rounded-md px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary disabled:opacity-50"
               >
                 Annuler
+                              {t("common.cancel")}
               </button>
               <button
                 type="submit"
@@ -317,6 +321,7 @@ export function FeedCard({
               >
                 {editSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                 Enregistrer
+                              {t("common.save")}
               </button>
             </div>
           </form>
@@ -338,6 +343,8 @@ export function FeedCard({
           aria-pressed={isLiked}
           aria-label={
             isLiked ? "Retirer la réaction" : "Réagir à la publication"
+                      isLiked ? t("feed.removeReaction") : t("feed.reactToPost")
+                      {post.likeCount <= 1 ? t("feed.like") : t("feed.likes")}
           }
         >
           <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
@@ -360,6 +367,7 @@ export function FeedCard({
           }}
           className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 hover:bg-secondary"
           aria-label="Afficher les commentaires"
+                  aria-label={t("feed.showComments")}
         >
           <MessageCircle className="h-3.5 w-3.5" />
           {post.commentCount}
@@ -369,6 +377,7 @@ export function FeedCard({
         <DialogContent className="max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Commentaires</DialogTitle>
+                    <DialogTitle>{t("feed.comments")}</DialogTitle>
           </DialogHeader>
           <div
             className="max-h-[60vh] space-y-3 overflow-y-auto pr-2"
@@ -421,6 +430,7 @@ export function FeedCard({
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {formatRelative(c.createdAt)}
+                                              {formatRelative(c.createdAt, t)}
                       </div>
                     </div>
                   </Link>
@@ -429,6 +439,7 @@ export function FeedCard({
                       <button
                         type="button"
                         aria-label="Modifier le commentaire"
+                                                aria-label={t("feed.editComment")}
                         disabled={commentEditSaving}
                         onClick={() => {
                           setEditingCommentId(c.id);
@@ -473,6 +484,9 @@ export function FeedCard({
                       rows={3}
                       autoFocus
                       aria-label="Contenu du commentaire"
+                                            aria-label={t("feed.commentContent")}
+                                              {t("common.cancel")}
+                                              {t("common.save")}
                       className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
                     />
                     <div className="flex items-center gap-2">
@@ -525,6 +539,7 @@ export function FeedCard({
             {!commentsLoading && dialogComments.length === 0 && (
               <p className="py-8 text-center text-sm text-muted-foreground">
                 Aucun commentaire.
+                              {t("feed.noComments")}
               </p>
             )}
             {commentsLoading && <CommentsSkeleton />}
@@ -542,6 +557,7 @@ export function FeedCard({
             setComment(e.target.value)
           }
           placeholder="Add a comment…"
+                    placeholder={t("feed.addComment")}
           className="min-h-[44px] w-full flex-1 rounded-md border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <button
@@ -550,6 +566,7 @@ export function FeedCard({
           className="min-h-[44px] shrink-0 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
         >
           Post
+                  {t("feed.postComment")}
         </button>
       </form>
     </article>

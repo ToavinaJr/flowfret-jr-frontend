@@ -26,7 +26,11 @@
     "audioNotice": "L'audio se débloque automatiquement à la première interaction (politique de lecture automatique du navigateur). La détection d'accords s'exécute entièrement dans votre navigateur."
   },
   "common": {
-    "menu": "Menu"
+    "menu": "Menu",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "retry": "Réessayer"
   },
   "friends": {
     "title": "Amis",
@@ -88,7 +92,30 @@
     "commentCreated": "Commentaire publié avec succès.",
     "commentCreateError": "Impossible de publier le commentaire.",
     "loadError": "Impossible de charger le fil. Réessayez plus tard.",
-    "empty": "Aucune publication. Soyez la première personne à partager quelque chose."
+    "empty": "Aucune publication. Soyez la première personne à partager quelque chose.",
+    "relativeMinutes": "il y a {{count}} min",
+    "relativeHours": "il y a {{count}} h",
+    "relativeDays": "il y a {{count}} j",
+    "postContentRequired": "Une publication doit contenir du texte ou une image.",
+    "editFailed": "La modification n’a pas pu être enregistrée.",
+    "commentRequired": "Le commentaire ne peut pas être vide.",
+    "commentEdited": "Commentaire modifié.",
+    "commentEditFailed": "La modification du commentaire a échoué.",
+    "editPost": "Modifier la publication",
+    "yourText": "Votre texte",
+    "captionPlaceholder": "Ajoutez une légende…",
+    "writePlaceholder": "Écrivez quelque chose…",
+    "removeReaction": "Retirer la réaction",
+    "reactToPost": "Réagir à la publication",
+    "like": "like",
+    "likes": "likes",
+    "showComments": "Afficher les commentaires",
+    "comments": "Commentaires",
+    "editComment": "Modifier le commentaire",
+    "commentContent": "Contenu du commentaire",
+    "noComments": "Aucun commentaire.",
+    "addComment": "Ajouter un commentaire…",
+    "postComment": "Publier"
   },
   "morePage": {
     "title": "Menu",
