@@ -9,7 +9,7 @@ export function useFeed() {
   const { user, status } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const postsQuery = useQuery({ queryKey: ["feed-posts"], queryFn: fetchFeedPosts, enabled: status === "authenticated", retry: 1 });
+  const postsQuery = useQuery<FeedPost[]>({ queryKey: ["feed-posts"], queryFn: fetchFeedPosts, enabled: status === "authenticated", retry: 1 });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   const createPost = useMutation({
     mutationFn: async ({ content, images }: { content: string; images: File[] }) => {
