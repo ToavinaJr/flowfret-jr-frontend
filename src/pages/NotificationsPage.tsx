@@ -24,7 +24,10 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
   FOLLOWED_POST_ACTIVITY: "notifications.preference.followedPostActivity",
 };
 
-function message(row: AppNotification, t: (key: string, options?: Record<string, unknown>) => string): string {
+function message(
+  row: AppNotification,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
   const actor = row.payload.actorUsername || t("notifications.friend");
   if (row.type === "FRIEND_REQUEST")
     return t("notifications.message.friendRequest", { actor });
@@ -90,12 +93,17 @@ export default function NotificationsPage() {
     <main className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
       {notifications.isError || preferences.isError ? (
-        <p role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <p
+          role="alert"
+          className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+        >
           {t("notifications.loadError")}
         </p>
       ) : null}
       <section className="mb-7 rounded-xl border bg-card p-4">
-        <h2 className="mb-4 font-semibold">{t("notifications.preferencesTitle")}</h2>
+        <h2 className="mb-4 font-semibold">
+          {t("notifications.preferencesTitle")}
+        </h2>
         <div className="space-y-4">
           {types.map((type) => (
             <label
@@ -115,7 +123,9 @@ export default function NotificationsPage() {
         </div>
       </section>
       <section>
-        <h2 className="mb-3 font-semibold">{t("notifications.recentActivity")}</h2>
+        <h2 className="mb-3 font-semibold">
+          {t("notifications.recentActivity")}
+        </h2>
         <div className="space-y-2">
           {(notifications.data ?? []).map((row) => {
             const destination = row.payload.postId

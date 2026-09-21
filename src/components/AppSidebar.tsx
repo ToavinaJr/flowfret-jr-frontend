@@ -53,7 +53,11 @@ const AppSidebar = () => {
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{t(item.label, { defaultValue: fallbackNavLabels[item.path] ?? item.label })}</span>
+              <span className="truncate">
+                {t(item.label, {
+                  defaultValue: fallbackNavLabels[item.path] ?? item.label,
+                })}
+              </span>
               {item.path === "/notifications" ? <NotificationBadge /> : null}
             </NavLink>
           );

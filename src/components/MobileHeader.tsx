@@ -56,7 +56,9 @@ const MobileHeader = () => {
         </SheetTrigger>
         <SheetContent side="left" className="w-full max-w-xs p-0 sm:max-w-sm">
           <SheetHeader className="border-b border-border px-4 py-4 text-left">
-            <SheetTitle className="text-base font-medium">{t("common.menu")}</SheetTitle>
+            <SheetTitle className="text-base font-medium">
+              {t("common.menu")}
+            </SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 overflow-y-auto p-3">
             {SIDEBAR_NAV_ITEMS.map((item) => {
@@ -74,8 +76,16 @@ const MobileHeader = () => {
                   )}
                 >
                   <item.icon className="h-4 w-4 shrink-0" />
-                  <span>{t(item.label, { defaultValue: t(fallbackNavLabels[item.path] ?? item.label) })}</span>
-                  {item.path === "/notifications" ? <NotificationBadge /> : null}
+                  <span>
+                    {t(item.label, {
+                      defaultValue: t(
+                        fallbackNavLabels[item.path] ?? item.label,
+                      ),
+                    })}
+                  </span>
+                  {item.path === "/notifications" ? (
+                    <NotificationBadge />
+                  ) : null}
                 </NavLink>
               );
             })}
