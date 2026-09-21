@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import ThemeLanguageControls from "./ThemeLanguageControls";
+import { NotificationBadge } from "@/components/notifications/NotificationBadge";
 import {
   Sheet,
   SheetContent,
@@ -74,6 +75,7 @@ const MobileHeader = () => {
                 >
                   <item.icon className="h-4 w-4 shrink-0" />
                   <span>{t(item.label, { defaultValue: t(fallbackNavLabels[item.path] ?? item.label) })}</span>
+                  {item.path === "/notifications" ? <NotificationBadge /> : null}
                 </NavLink>
               );
             })}

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
+import { NotificationBadge } from "@/components/notifications/NotificationBadge";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const AppSidebar = () => {
     "/music": "Music",
     "/upload": "Upload",
     "/friends": "Amis",
+    "/notifications": "Notifications",
     "/chords": "Chords",
     "/scales": "Scales",
     "/metronome": "Metronome",
@@ -52,6 +54,7 @@ const AppSidebar = () => {
             >
               <item.icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{t(item.label, { defaultValue: fallbackNavLabels[item.path] ?? item.label })}</span>
+              {item.path === "/notifications" ? <NotificationBadge /> : null}
             </NavLink>
           );
         })}

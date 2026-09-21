@@ -17,19 +17,25 @@ import { NotificationsSkeleton } from "@/components/skeletons/AppSkeletons";
 
 type ConfigurableKind = Exclude<NotificationKind, "FRIEND_ACCEPTED">;
 const preferenceLabels: Record<ConfigurableKind, string> = {
+  FRIEND_REQUEST: "notifications.preference.friendRequest",
   FRIEND_POST: "notifications.preference.friendPost",
+  POST_LIKE: "notifications.preference.postLike",
   POST_COMMENT: "notifications.preference.postComment",
   FOLLOWED_POST_ACTIVITY: "notifications.preference.followedPostActivity",
 };
 
 function message(row: AppNotification, t: (key: string, options?: Record<string, unknown>) => string): string {
   const actor = row.payload.actorUsername || t("notifications.friend");
+  if (row.type === "FRIEND_REQUEST")
+    return t("notifications.message.friendRequest", { actor });
   if (row.type === "FRIEND_ACCEPTED")
     return t("notifications.message.friendAccepted", { actor });
   if (row.type === "FRIEND_POST")
     return t("notifications.message.friendPost", { actor });
   if (row.type === "POST_COMMENT")
     return t("notifications.message.postComment", { actor });
+  if (row.type === "POST_LIKE")
+    return t("notifications.message.postLike", { actor });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
@@ -44,6 +50,8 @@ export default function NotificationsPage() {
   const notifications = useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
   });
   const preferences = useQuery({
     queryKey: ["notification-preferences"],
@@ -81,6 +89,11 @@ export default function NotificationsPage() {
   return (
     <main className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
+      {notifications.isError || preferences.isError ? (
+        <p role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          {t("notifications.loadError")}
+        </p>
+      ) : null}
       <section className="mb-7 rounded-xl border bg-card p-4">
         <h2 className="mb-4 font-semibold">{t("notifications.preferencesTitle")}</h2>
         <div className="space-y-4">

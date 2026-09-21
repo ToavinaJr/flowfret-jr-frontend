@@ -56,19 +56,24 @@
     "friend": "Un ami",
     "postOwner": " de {{owner}}",
     "preference": {
+      "friendRequest": "Demandes d’amitié",
       "friendPost": "Publications de mes amis",
+      "postLike": "Réactions sur mes publications",
       "postComment": "Commentaires sur mes publications",
       "followedPostActivity": "Activité de mes amis sur les publications suivies"
     },
     "message": {
+      "friendRequest": "{{actor}} vous a envoyé une demande d’amitié.",
       "friendAccepted": "{{actor}} a accepté votre demande d’amitié.",
       "friendPost": "{{actor}} a publié une nouvelle publication.",
       "postComment": "{{actor}} a commenté votre publication.",
+      "postLike": "{{actor}} a aimé votre publication.",
       "postLiked": "{{actor}} a réagi à la publication{{owner}}.",
       "postCommented": "{{actor}} a commenté la publication{{owner}}."
     },
     "preferenceUpdated": "Préférence mise à jour.",
     "preferenceError": "Impossible de modifier cette préférence.",
+    "loadError": "Impossible de charger les notifications. Réessayez dans quelques instants.",
     "viewPost": "Voir la publication",
     "viewProfile": "Voir le profil",
     "empty": "Aucune notification pour le moment."
