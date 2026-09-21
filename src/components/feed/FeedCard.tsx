@@ -257,8 +257,7 @@ export function FeedCard({
       >
         <DialogContent className="w-[calc(100%-2rem)] max-w-xl rounded-xl p-0">
           <DialogHeader className="border-b border-border px-5 py-4 text-left">
-            <DialogTitle>Modifier la publication</DialogTitle>
-                      <DialogTitle>{t("feed.editPost")}</DialogTitle>
+            <DialogTitle>{t("feed.editPost")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEdit} className="space-y-4 px-5 pb-5">
             <div>
@@ -266,8 +265,7 @@ export function FeedCard({
                 htmlFor={`edit-post-${post.id}`}
                 className="mb-2 block text-sm font-medium text-foreground"
               >
-                Votre texte
-                              {t("feed.yourText")}
+                {t("feed.yourText")}
               </label>
               <textarea
                 id={`edit-post-${post.id}`}
@@ -281,8 +279,9 @@ export function FeedCard({
                 autoFocus
                 className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
                 placeholder={
-                  hasImages ? "Ajoutez une légende…" : "Écrivez quelque chose…"
-                                  hasImages ? t("feed.captionPlaceholder") : t("feed.writePlaceholder")
+                  hasImages
+                    ? t("feed.captionPlaceholder")
+                    : t("feed.writePlaceholder")
                 }
               />
               <div className="mt-1 flex justify-between gap-3 text-xs">
@@ -311,8 +310,7 @@ export function FeedCard({
                 onClick={() => setEditOpen(false)}
                 className="min-h-11 rounded-md px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary disabled:opacity-50"
               >
-                Annuler
-                              {t("common.cancel")}
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
@@ -320,8 +318,7 @@ export function FeedCard({
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {editSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-                Enregistrer
-                              {t("common.save")}
+                {t("common.save")}
               </button>
             </div>
           </form>
@@ -342,14 +339,13 @@ export function FeedCard({
           className={`inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 transition-colors disabled:opacity-50 ${isLiked ? "text-primary" : "hover:bg-secondary hover:text-foreground"}`}
           aria-pressed={isLiked}
           aria-label={
-            isLiked ? "Retirer la réaction" : "Réagir à la publication"
-                      isLiked ? t("feed.removeReaction") : t("feed.reactToPost")
-                      {post.likeCount <= 1 ? t("feed.like") : t("feed.likes")}
+            isLiked ? t("feed.removeReaction") : t("feed.reactToPost")
           }
         >
           <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
           <span>
-            {post.likeCount} {post.likeCount <= 1 ? "like" : "likes"}
+            {post.likeCount}{" "}
+            {post.likeCount <= 1 ? t("feed.like") : t("feed.likes")}
           </span>
         </button>
         <button
@@ -366,8 +362,7 @@ export function FeedCard({
             }
           }}
           className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 hover:bg-secondary"
-          aria-label="Afficher les commentaires"
-                  aria-label={t("feed.showComments")}
+          aria-label={t("feed.showComments")}
         >
           <MessageCircle className="h-3.5 w-3.5" />
           {post.commentCount}
@@ -376,8 +371,7 @@ export function FeedCard({
       <Dialog open={commentsOpen} onOpenChange={setCommentsOpen}>
         <DialogContent className="max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>Commentaires</DialogTitle>
-                    <DialogTitle>{t("feed.comments")}</DialogTitle>
+            <DialogTitle>{t("feed.comments")}</DialogTitle>
           </DialogHeader>
           <div
             className="max-h-[60vh] space-y-3 overflow-y-auto pr-2"
@@ -429,8 +423,7 @@ export function FeedCard({
                         {c.author.username}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {formatRelative(c.createdAt)}
-                                              {formatRelative(c.createdAt, t)}
+                        {formatRelative(c.createdAt, t)}
                       </div>
                     </div>
                   </Link>
@@ -438,8 +431,7 @@ export function FeedCard({
                     <div className="flex shrink-0 gap-1">
                       <button
                         type="button"
-                        aria-label="Modifier le commentaire"
-                                                aria-label={t("feed.editComment")}
+                        aria-label={t("feed.editComment")}
                         disabled={commentEditSaving}
                         onClick={() => {
                           setEditingCommentId(c.id);
@@ -483,10 +475,7 @@ export function FeedCard({
                       maxLength={5000}
                       rows={3}
                       autoFocus
-                      aria-label="Contenu du commentaire"
-                                            aria-label={t("feed.commentContent")}
-                                              {t("common.cancel")}
-                                              {t("common.save")}
+                      aria-label={t("feed.commentContent")}
                       className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
                     />
                     <div className="flex items-center gap-2">
@@ -510,7 +499,7 @@ export function FeedCard({
                         className="inline-flex min-h-9 items-center gap-1 rounded-md px-3 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground disabled:opacity-50"
                       >
                         <X className="h-3.5 w-3.5" />
-                        Annuler
+                        {t("common.cancel")}
                       </button>
                       <button
                         type="button"
@@ -525,7 +514,7 @@ export function FeedCard({
                         ) : (
                           <Check className="h-3.5 w-3.5" />
                         )}
-                        Enregistrer
+                        {t("common.save")}
                       </button>
                     </div>
                   </div>
@@ -538,8 +527,7 @@ export function FeedCard({
             ))}
             {!commentsLoading && dialogComments.length === 0 && (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                Aucun commentaire.
-                              {t("feed.noComments")}
+                {t("feed.noComments")}
               </p>
             )}
             {commentsLoading && <CommentsSkeleton />}
@@ -556,8 +544,7 @@ export function FeedCard({
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setComment(e.target.value)
           }
-          placeholder="Add a comment…"
-                    placeholder={t("feed.addComment")}
+          placeholder={t("feed.addComment")}
           className="min-h-[44px] w-full flex-1 rounded-md border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <button
@@ -565,8 +552,7 @@ export function FeedCard({
           disabled={submitting || !comment.trim()}
           className="min-h-[44px] shrink-0 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
         >
-          Post
-                  {t("feed.postComment")}
+          {t("feed.postComment")}
         </button>
       </form>
     </article>
