@@ -10,10 +10,10 @@ const ContactPage = () => {
         {t("contact.description")}
       </p>
       <a
-        href="mailto:hello@fretflow.app"
+        href="mailto:toavinasylvianno14@gmail.com"
         className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:w-auto"
       >
-        {t("contact.email", { email: "hello@fretflow.app" })}
+        {t("contact.email", { email: "toavinasylvianno14@gmail.com" })}
       </a>
     </div>
   );
