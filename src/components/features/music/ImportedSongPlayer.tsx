@@ -51,7 +51,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
       trackActivity: false,
       revokeSourceOnRelease: true,
     }),
-    [song],
+    [song, t],
   );
   const active = item?.id === playbackItem.id;
   const position = active ? currentTime : 0;

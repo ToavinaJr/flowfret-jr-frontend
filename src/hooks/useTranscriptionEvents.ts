@@ -17,6 +17,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
   const controllerRef = useRef<AbortController | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const retryTimerRef = useRef<number | null>(null);
+  const prepareRef = useRef<(() => Promise<TranscriptionResponse | undefined>) | null>(null);
 
   const applyEvent = useCallback((event: TranscriptionEvent) => {
     if (event.transcriptionId !== activeIdRef.current) {
@@ -65,6 +66,17 @@ export function useTranscriptionEvents(track: MusicTrack) {
     }
   }, [applyEvent]);
 
+  const scheduleRateLimitRetry = useCallback((retryError: unknown) => {
+    if (!(retryError instanceof TranscriptionRateLimitError)) return false;
+    const delayMs = ((retryError.retryAfterSeconds ?? 30) + 1) * 1000;
+    if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = window.setTimeout(() => {
+      setError(null);
+      void prepareRef.current?.();
+    }, delayMs);
+    return true;
+  }, []);
+
   const prepare = useCallback(async () => {
     setError(null);
     try {
@@ -83,18 +95,9 @@ export function useTranscriptionEvents(track: MusicTrack) {
       setError(friendlyError);
       throw prepareError;
     }
-  }, [connect, track]);
+  }, [connect, scheduleRateLimitRetry, track]);
 
-  const scheduleRateLimitRetry = useCallback((error: unknown) => {
-    if (!(error instanceof TranscriptionRateLimitError)) return false;
-    const delayMs = ((error.retryAfterSeconds ?? 30) + 1) * 1000;
-    if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
-    retryTimerRef.current = window.setTimeout(() => {
-      setError(null);
-      void prepare();
-    }, delayMs);
-    return true;
-  }, [prepare]);
+  prepareRef.current = prepare;
 
   const retry = useCallback(async () => {
     if (!state) return;
