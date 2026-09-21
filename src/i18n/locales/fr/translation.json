@@ -53,6 +53,8 @@
     "title": "Notifications",
     "preferencesTitle": "Ce que je souhaite recevoir",
     "recentActivity": "Activité récente",
+    "unreadCount_one": "{{count}} notification non lue",
+    "unreadCount_other": "{{count}} notifications non lues",
     "friend": "Un ami",
     "postOwner": " de {{owner}}",
     "preference": {
@@ -380,7 +382,20 @@
     "instrumental": "Instrumental",
     "error": "Impossible de charger les paroles pour le moment.",
     "empty": "Les premières paroles apparaîtront ici.",
-    "synchronized": "Paroles synchronisées"
+    "synchronized": "Paroles synchronisées",
+    "playTrack": "Lire {{title}}",
+    "pauseTrack": "Mettre {{title}} en pause",
+    "showTranscription": "Afficher la transcription",
+    "hideTranscription": "Masquer la transcription",
+    "transcriptionFor": "Transcription de {{title}}",
+    "loadingModel": "Chargement du modèle…",
+    "modelReady": "Modèle prêt",
+    "progress": "Transcription : {{progress}} %",
+    "preparing": "Préparation…",
+    "prepareFailed": "Impossible de préparer la transcription.",
+    "retryFailed": "Impossible de relancer la transcription.",
+    "downloadFailed": "Impossible de télécharger le fichier LRC.",
+    "downloadLrc": "Télécharger le LRC"
   },
   "scaleFretboard": {
     "label": "Manche des gammes"

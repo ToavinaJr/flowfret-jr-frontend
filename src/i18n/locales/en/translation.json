@@ -53,6 +53,8 @@
     "title": "Notifications",
     "preferencesTitle": "What I want to receive",
     "recentActivity": "Recent activity",
+    "unreadCount_one": "{{count}} unread notification",
+    "unreadCount_other": "{{count}} unread notifications",
     "friend": "A friend",
     "postOwner": " by {{owner}}",
     "preference": {
@@ -419,7 +421,20 @@
     "instrumental": "Instrumental",
     "error": "Lyrics cannot be loaded right now.",
     "empty": "The first lyrics will appear here.",
-    "synchronized": "Synchronized lyrics"
+    "synchronized": "Synchronized lyrics",
+    "playTrack": "Play {{title}}",
+    "pauseTrack": "Pause {{title}}",
+    "showTranscription": "Show transcription",
+    "hideTranscription": "Hide transcription",
+    "transcriptionFor": "Transcription of {{title}}",
+    "loadingModel": "Loading model…",
+    "modelReady": "Model ready",
+    "progress": "Transcription: {{progress}}%",
+    "preparing": "Preparing…",
+    "prepareFailed": "Unable to prepare the transcription.",
+    "retryFailed": "Unable to retry the transcription.",
+    "downloadFailed": "Unable to download the LRC file.",
+    "downloadLrc": "Download LRC"
   },
   "scaleFretboard": {
     "label": "Scale fretboard"
