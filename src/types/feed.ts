@@ -24,6 +24,7 @@ export interface FeedPost {
   author: FeedAuthor;
   comments?: FeedComment[];
   attachments: Array<{ id: string; upload: { id: string; storagePath: string } }>;
+  tags: Array<{ tagId: string; tag: { id: string; name: string } }>;
   isDeleted?: boolean;
 }
 

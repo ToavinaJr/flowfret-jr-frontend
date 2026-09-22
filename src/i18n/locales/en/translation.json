@@ -133,7 +133,10 @@
     "submitReport": "Submit report",
     "reporting": "Submitting…",
     "reportSuccess": "Report sent to moderation.",
-    "reportError": "The report could not be sent. It may already exist."
+    "reportError": "The report could not be sent. It may already exist.",
+    "tagHint": "Add up to 10 tags with @, for example @blues.",
+    "filteredByTag": "Posts tagged @{{tag}}",
+    "clearTagFilter": "Clear tag filter"
   },
   "morePage": {
     "title": "Menu",

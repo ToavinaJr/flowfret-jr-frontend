@@ -1,13 +1,13 @@
 import type { CreateCommentInput, CreatePostInput, FeedComment, FeedPost } from "@/types/feed";
 import { graphqlRequest } from "@/services/graphqlClient";
 
-export async function fetchFeedPosts(after?: string, take = 20): Promise<FeedPost[]> {
-  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!) { posts(after: $after, take: $take) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), take } });
+export async function fetchFeedPosts(after?: string, take = 20, tag?: string): Promise<FeedPost[]> {
+  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!, $tag: String) { posts(after: $after, take: $take, tag: $tag) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } tags { tagId tag { id name } } } }`, variables: { ...(after ? { after } : {}), ...(tag ? { tag } : {}), take } });
   return result.posts;
 }
 
 export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
-  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } }`, variables: { id } });
+  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } tags { tagId tag { id name } } }`, variables: { id } });
   return result.post;
 }
 

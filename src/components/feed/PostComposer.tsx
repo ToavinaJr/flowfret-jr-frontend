@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { extractPostTags } from "@/utils/postTags";
 
 const MAX_IMAGES = 12;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
@@ -15,6 +16,7 @@ export function PostComposer({ pending, onSubmit }: Props) {
   const [images, setImages] = useState<File[]>([]);
   const [selectionError, setSelectionError] = useState<string | null>(null);
   const previews = useMemo(() => images.map((file) => ({ file, url: URL.createObjectURL(file) })), [images]);
+  const tags = useMemo(() => extractPostTags(content), [content]);
 
   useEffect(() => () => previews.forEach(({ url }) => URL.revokeObjectURL(url)), [previews]);
 
@@ -43,6 +45,10 @@ export function PostComposer({ pending, onSubmit }: Props) {
 
   return <form onSubmit={submit} className="mb-4 space-y-3 rounded-lg border border-border bg-card p-3 sm:p-4">
     <textarea value={content} onChange={(event) => setContent(event.target.value)} placeholder={t("feed.composerPlaceholder")} rows={3} maxLength={10000} className="w-full resize-none rounded-md border border-border bg-secondary p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <span>{t("feed.tagHint")}</span>
+      {tags.map((tag) => <span key={tag} className="rounded-full bg-primary/10 px-2 py-1 text-primary">@{tag}</span>)}
+    </div>
     {previews.length > 0 && <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
       {previews.map(({ file, url }, index) => <div key={`${file.name}-${file.size}-${file.lastModified}`} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary">
         <img src={url} alt={t("feed.imagePreviewAlt", { number: index + 1 })} className="h-full w-full object-cover" />

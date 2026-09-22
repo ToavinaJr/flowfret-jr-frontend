@@ -235,6 +235,19 @@ export function FeedCard({
           {post.content}
         </p>
       )}
+      {post.tags.length > 0 ? (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {post.tags.map(({ tag }) => (
+            <Link
+              key={tag.id}
+              to={`/?tag=${encodeURIComponent(tag.name)}`}
+              className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20"
+            >
+              @{tag.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
       {post.attachments.length > 0 && (
         <div className="mb-3 grid h-64 shrink-0 grid-cols-2 gap-1 overflow-hidden rounded-lg bg-secondary">
           {post.attachments.slice(0, 4).map((attachment, index) => (
