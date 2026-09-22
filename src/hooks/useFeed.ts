@@ -35,9 +35,9 @@ export function useFeed() {
     onSuccess: refresh,
   });
   const comment = async (postId: string, content: string) => {
-    if (!user) return;
+    if (!user) throw new Error("Unauthenticated");
     const toastId = toast.loading(t("feed.commentPublishing"));
-    try { await createFeedComment({ postId, content, authorId: user.id }); await refresh(); toast.success(t("feed.commentCreated"), { id: toastId }); }
+    try { const created = await createFeedComment({ postId, content, authorId: user.id }); await refresh(); toast.success(t("feed.commentCreated"), { id: toastId }); return created; }
     catch (error) { toast.error(t("feed.commentCreateError"), { id: toastId }); throw error; }
   };
   const toggleLike = async (post: FeedPost) => { if (!user) return; if (post.viewerLikeId) await deleteFeedLike(post.viewerLikeId); else await createFeedLike(post.id, user.id); await refresh(); };

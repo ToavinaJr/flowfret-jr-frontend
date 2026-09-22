@@ -50,7 +50,7 @@ function formatRelative(iso: string, t: (key: string) => string): string {
 
 export interface FeedCardProps {
   post: FeedPost;
-  onComment: (postId: string, content: string) => Promise<void>;
+  onComment: (postId: string, content: string) => Promise<FeedComment>;
   currentUserId: string;
   onToggleLike: (post: FeedPost) => Promise<void>;
   onChanged: () => Promise<void>;
@@ -91,8 +91,13 @@ export function FeedCard({
     if (!comment.trim()) return;
     setSubmitting(true);
     try {
-      await onComment(post.id, comment.trim());
+      const created = await onComment(post.id, comment.trim());
+      setDialogComments((current) => [
+        created,
+        ...current.filter((item) => item.id !== created.id),
+      ]);
       setComment("");
+      setCommentsOpen(true);
     } finally {
       setSubmitting(false);
     }
@@ -131,10 +136,10 @@ export function FeedCard({
     setCommentEditSaving(true);
     setCommentEditError(null);
     try {
-      await updateFeedComment(commentId, content);
+      const updated = await updateFeedComment(commentId, content);
       setDialogComments((current) =>
         current.map((item) =>
-          item.id === commentId ? { ...item, content } : item,
+          item.id === commentId ? { ...item, ...updated } : item,
         ),
       );
       setEditingCommentId(null);
@@ -158,7 +163,7 @@ export function FeedCard({
         )
           setDetailsOpen(true);
       }}
-      className={`flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}
+      className={`flex cursor-pointer flex-col overflow-visible rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}
     >
       <div className="mb-3 flex items-center gap-3">
         <Link

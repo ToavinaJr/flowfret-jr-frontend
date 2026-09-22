@@ -20,7 +20,7 @@ export function MentionText({
           <Link
             key={`${index}-${segment.user.id}`}
             to={`/profile/${segment.user.id}`}
-            className="font-semibold text-primary hover:underline"
+            className="rounded bg-sky-100 px-0.5 font-semibold text-sky-700 hover:bg-sky-200 hover:underline dark:bg-sky-950/60 dark:text-sky-300 dark:hover:bg-sky-900/70"
           >
             {segment.text}
           </Link>

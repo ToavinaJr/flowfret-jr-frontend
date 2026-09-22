@@ -91,18 +91,28 @@ export function MentionInput({
         onClick={(event) => setCursor(event.currentTarget.selectionStart)}
         onSelect={(event) => setCursor(event.currentTarget.selectionStart)}
         onKeyDown={(event) => {
-          if (!menuOpen || !friends.length) return;
-          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          if (
+            menuOpen &&
+            friends.length &&
+            (event.key === "ArrowDown" || event.key === "ArrowUp")
+          ) {
             event.preventDefault();
             const direction = event.key === "ArrowDown" ? 1 : -1;
             setHighlighted((current) =>
               (current + direction + friends.length) % friends.length,
             );
-          } else if (event.key === "Enter" || event.key === "Tab") {
+          } else if (
+            menuOpen &&
+            friends.length &&
+            (event.key === "Enter" || event.key === "Tab")
+          ) {
             event.preventDefault();
             select(friends[highlighted] ?? friends[0]);
           } else if (event.key === "Escape") {
             setCursor(-1);
+          } else if (rows === 1 && event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            event.currentTarget.form?.requestSubmit();
           }
         }}
         placeholder={placeholder}
