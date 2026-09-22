@@ -16,8 +16,8 @@ export async function createFeedPost(data: CreatePostInput): Promise<FeedPost> {
   return result.createPost;
 }
 
-export async function createFeedComment(data: CreateCommentInput): Promise<{ id: string; content: string; createdAt: string; author: { id: string; username: string }; post: { id: string } }> {
-  const result = await graphqlRequest<{ createComment: { id: string; content: string; createdAt: string; author: { id: string; username: string }; post: { id: string } } }>({ query: `mutation CreateComment($data: CreateCommentInput!) { createComment(data: $data) { id content createdAt author { id username } mentionedUsers { id username } post { id } } }`, variables: { data } });
+export async function createFeedComment(data: CreateCommentInput): Promise<FeedComment> {
+  const result = await graphqlRequest<{ createComment: FeedComment }>({ query: `mutation CreateComment($data: CreateCommentInput!) { createComment(data: $data) { id content createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } } }`, variables: { data } });
   return result.createComment;
 }
 
@@ -44,9 +44,10 @@ export async function deleteFeedPost(id: string): Promise<void> {
   await graphqlRequest({ query: `mutation DeleteFeedPost($id: String!) { deletePost(id: $id) { id } }`, variables: { id } });
 }
 
-export async function updateFeedComment(id: string, content: string): Promise<void> {
+export async function updateFeedComment(id: string, content: string): Promise<FeedComment> {
   if (!id || !content.trim()) throw new Error("Commentaire invalide.");
-  await graphqlRequest({ query: `mutation UpdateFeedComment($id: String!, $data: UpdateCommentInput!) { updateComment(id: $id, data: $data) { id } }`, variables: { id, data: { content: content.trim() } } });
+  const result = await graphqlRequest<{ updateComment: FeedComment }>({ query: `mutation UpdateFeedComment($id: String!, $data: UpdateCommentInput!) { updateComment(id: $id, data: $data) { id content createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } } }`, variables: { id, data: { content: content.trim() } } });
+  return result.updateComment;
 }
 
 export async function deleteFeedComment(id: string): Promise<void> {
