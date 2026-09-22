@@ -92,10 +92,9 @@ export function FeedCard({
     setSubmitting(true);
     try {
       const created = await onComment(post.id, comment.trim());
-      setDialogComments((current) => [
-        created,
-        ...current.filter((item) => item.id !== created.id),
-      ]);
+      const comments = await fetchPostComments(post.id);
+      setDialogComments(comments.length ? comments : [created]);
+      setHasMoreComments(comments.length === 20);
       setComment("");
       setCommentsOpen(true);
     } finally {
