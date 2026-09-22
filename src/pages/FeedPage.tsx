@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
@@ -14,10 +13,8 @@ export type { FeedCardProps } from "@/components/feed/FeedCard";
 
 const FeedPage = () => {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const activeTag = searchParams.get("tag")?.replace(/^@/, "") || undefined;
   const { user, postsQuery, createPost, comment, toggleLike, refresh } =
-    useFeed(activeTag);
+    useFeed();
   const [composerOpen, setComposerOpen] = useState(false);
   const posts = postsQuery.data?.pages.flat() ?? [];
   return (
@@ -60,14 +57,6 @@ const FeedPage = () => {
           />
         ))}
       </div>
-      {activeTag ? (
-        <div className="mb-4 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm">
-          <span>{t("feed.filteredByTag", { tag: activeTag })}</span>
-          <Link to="/" aria-label={t("feed.clearTagFilter")} className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-md hover:bg-secondary">
-            <X className="h-4 w-4" />
-          </Link>
-        </div>
-      ) : null}
       {postsQuery.hasNextPage && (
         <button
           type="button"

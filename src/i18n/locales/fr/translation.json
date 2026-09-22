@@ -134,9 +134,8 @@
     "reporting": "Envoi…",
     "reportSuccess": "Signalement envoyé à la modération.",
     "reportError": "Le signalement n’a pas pu être envoyé. Il est peut-être déjà enregistré.",
-    "tagHint": "Ajoutez jusqu’à 10 tags avec @, par exemple @blues.",
-    "filteredByTag": "Publications avec @{{tag}}",
-    "clearTagFilter": "Effacer le filtre de tag"
+    "mentionHint": "Tapez @ pour identifier un ami.",
+    "noMentionFriends": "Aucun ami ne correspond à cette recherche."
   },
   "morePage": {
     "title": "Menu",

@@ -1,6 +1,5 @@
 import {
   useState,
-  type ChangeEvent,
   type FormEvent,
   type UIEvent,
 } from "react";
@@ -35,6 +34,8 @@ import { toast } from "sonner";
 import { DetailsPost } from "@/components/feed/DetailsPost";
 import { Link } from "react-router-dom";
 import { CommentsSkeleton } from "@/components/skeletons/AppSkeletons";
+import { MentionInput } from "@/components/feed/MentionInput";
+import { MentionText } from "@/components/feed/MentionText";
 
 function formatRelative(iso: string, t: (key: string) => string): string {
   const then = new Date(iso).getTime();
@@ -229,25 +230,12 @@ export function FeedCard({
         )}
       </div>
       {post.content && (
-        <p
+        <MentionText
+          content={post.content}
+          mentionedUsers={post.mentionedUsers ?? []}
           className={`text-body mb-3 whitespace-pre-wrap break-words text-foreground ${hasImages ? "line-clamp-4" : "line-clamp-8"}`}
-        >
-          {post.content}
-        </p>
+        />
       )}
-      {post.tags.length > 0 ? (
-        <div className="mb-3 flex flex-wrap gap-2">
-          {post.tags.map(({ tag }) => (
-            <Link
-              key={tag.id}
-              to={`/?tag=${encodeURIComponent(tag.name)}`}
-              className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20"
-            >
-              @{tag.name}
-            </Link>
-          ))}
-        </div>
-      ) : null}
       {post.attachments.length > 0 && (
         <div className="mb-3 grid h-64 shrink-0 grid-cols-2 gap-1 overflow-hidden rounded-lg bg-secondary">
           {post.attachments.slice(0, 4).map((attachment, index) => (
@@ -295,11 +283,11 @@ export function FeedCard({
               >
                 {t("feed.yourText")}
               </label>
-              <textarea
+              <MentionInput
                 id={`edit-post-${post.id}`}
                 value={editContent}
-                onChange={(event) => {
-                  setEditContent(event.target.value);
+                onChange={(value) => {
+                  setEditContent(value);
                   setEditError(null);
                 }}
                 maxLength={10000}
@@ -539,10 +527,10 @@ export function FeedCard({
                 </header>
                 {editingCommentId === c.id ? (
                   <div className="space-y-2 pl-11">
-                    <textarea
+                    <MentionInput
                       value={editingCommentContent}
-                      onChange={(event) => {
-                        setEditingCommentContent(event.target.value);
+                      onChange={(value) => {
+                        setEditingCommentContent(value);
                         setCommentEditError(null);
                       }}
                       maxLength={5000}
@@ -592,9 +580,11 @@ export function FeedCard({
                     </div>
                   </div>
                 ) : (
-                  <p className="whitespace-pre-wrap break-words pl-11 text-foreground/90">
-                    {c.content}
-                  </p>
+                  <MentionText
+                    content={c.content}
+                    mentionedUsers={c.mentionedUsers ?? []}
+                    className="block whitespace-pre-wrap break-words pl-11 text-foreground/90"
+                  />
                 )}
               </article>
             ))}
@@ -611,14 +601,13 @@ export function FeedCard({
         onSubmit={handleSubmit}
         className="mt-auto flex flex-col gap-2 border-t border-border pt-3 sm:flex-row"
       >
-        <input
-          type="text"
+        <MentionInput
           value={comment}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setComment(e.target.value)
-          }
+          onChange={setComment}
+          rows={1}
+          maxLength={5000}
           placeholder={t("feed.addComment")}
-          className="min-h-[44px] w-full flex-1 rounded-md border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          className="min-h-[44px] w-full resize-none rounded-md border border-border bg-secondary px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <button
           type="submit"

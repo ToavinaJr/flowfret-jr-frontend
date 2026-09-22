@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { FeedPost } from "@/types/feed";
+import { MentionText } from "@/components/feed/MentionText";
 import { Link } from "react-router-dom";
 
 interface DetailsPostProps { post: FeedPost; open: boolean; onOpenChange: (open: boolean) => void }
@@ -26,7 +27,7 @@ export function DetailsPost({ post, open, onOpenChange }: DetailsPostProps) {
           {images.length > 1 && <><button type="button" onClick={() => move(-1)} aria-label={t("postDetails.previous")} className="absolute left-3 grid h-11 w-11 place-items-center rounded-full bg-black/65 text-white backdrop-blur hover:bg-black/80"><ChevronLeft /></button><button type="button" onClick={() => move(1)} aria-label={t("postDetails.next")} className="absolute right-3 grid h-11 w-11 place-items-center rounded-full bg-black/65 text-white backdrop-blur hover:bg-black/80"><ChevronRight /></button><span className="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 text-xs text-white">{activeImage + 1}/{images.length}</span></>}
         </div>}
         {images.length > 1 && <div className="flex gap-2 overflow-x-auto border-b border-border p-3">{images.map((src, index) => <button key={`${src}-${index}`} type="button" onClick={() => setActiveImage(index)} aria-label={t("postDetails.openImage", { number: index + 1 })} className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 ${activeImage === index ? "border-primary" : "border-transparent"}`}><img src={src} alt="" className="h-full w-full object-cover" /></button>)}</div>}
-        {post.content && <p className="whitespace-pre-wrap break-words px-5 py-5 text-sm leading-6 text-foreground sm:text-base">{post.content}</p>}
+        {post.content && <MentionText content={post.content} mentionedUsers={post.mentionedUsers ?? []} className="block whitespace-pre-wrap break-words px-5 py-5 text-sm leading-6 text-foreground sm:text-base" />}
       </div>
     </DialogContent>
   </Dialog>;

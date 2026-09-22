@@ -9,6 +9,7 @@ export interface FeedComment {
   content: string;
   createdAt: string;
   author: FeedAuthor;
+  mentionedUsers: FeedAuthor[];
   likes?: Array<{ id: string; userId: string }>;
   isDeleted?: boolean;
 }
@@ -24,7 +25,7 @@ export interface FeedPost {
   author: FeedAuthor;
   comments?: FeedComment[];
   attachments: Array<{ id: string; upload: { id: string; storagePath: string } }>;
-  tags: Array<{ tagId: string; tag: { id: string; name: string } }>;
+  mentionedUsers: FeedAuthor[];
   isDeleted?: boolean;
 }
 
