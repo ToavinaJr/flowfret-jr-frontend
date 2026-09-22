@@ -32,8 +32,7 @@ export default function PostPage() {
   };
   const toggleLike = async (row: FeedPost) => {
     if (!user) return;
-    const like = row.likes.find((item) => item.userId === user.id);
-    if (like) await deleteFeedLike(like.id);
+    if (row.viewerLikeId) await deleteFeedLike(row.viewerLikeId);
     else await createFeedLike(row.id, user.id);
     await refresh();
   };

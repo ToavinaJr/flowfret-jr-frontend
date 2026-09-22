@@ -6,6 +6,7 @@ import {
 } from "react";
 import {
   Check,
+  Flag,
   Heart,
   Loader2,
   MessageCircle,
@@ -19,6 +20,7 @@ import {
   fetchPostComments,
   updateFeedComment,
   updateFeedPost,
+  reportFeedPost,
 } from "@/services/api";
 import type { FeedPost, FeedComment } from "@/types/feed";
 import {
@@ -77,7 +79,10 @@ export function FeedCard({
   const [editContent, setEditContent] = useState(post.content ?? "");
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
-  const isLiked = post.likes.some((like) => like.userId === currentUserId);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reporting, setReporting] = useState(false);
+  const isLiked = post.viewerHasLiked;
   const hasImages = post.attachments.length > 0;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -212,6 +217,16 @@ export function FeedCard({
             />
           </div>
         )}
+        {post.author.id !== currentUserId && (
+          <button
+            type="button"
+            onClick={() => setReportOpen(true)}
+            className="ml-auto inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary hover:text-destructive"
+            aria-label={t("feed.reportPost")}
+          >
+            <Flag className="h-4 w-4" />
+          </button>
+        )}
       </div>
       {post.content && (
         <p
@@ -319,6 +334,51 @@ export function FeedCard({
               >
                 {editSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("common.save")}
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={reportOpen} onOpenChange={(open) => !reporting && setReportOpen(open)}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
+          <DialogHeader>
+            <DialogTitle>{t("feed.reportPost")}</DialogTitle>
+          </DialogHeader>
+          <form
+            className="space-y-4"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (reportReason.trim().length < 5) return;
+              setReporting(true);
+              try {
+                await reportFeedPost(post.id, currentUserId, reportReason);
+                toast.success(t("feed.reportSuccess"));
+                setReportReason("");
+                setReportOpen(false);
+              } catch {
+                toast.error(t("feed.reportError"));
+              } finally {
+                setReporting(false);
+              }
+            }}
+          >
+            <textarea
+              value={reportReason}
+              onChange={(event) => setReportReason(event.target.value)}
+              minLength={5}
+              maxLength={1000}
+              rows={5}
+              required
+              placeholder={t("feed.reportPlaceholder")}
+              aria-label={t("feed.reportReason")}
+              className="w-full resize-y rounded-lg border border-border bg-secondary p-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            <div className="flex justify-end gap-2">
+              <button type="button" disabled={reporting} onClick={() => setReportOpen(false)} className="min-h-11 rounded-md px-4 text-sm hover:bg-secondary disabled:opacity-50">
+                {t("common.cancel")}
+              </button>
+              <button type="submit" disabled={reporting || reportReason.trim().length < 5} className="min-h-11 rounded-md bg-destructive px-4 text-sm text-destructive-foreground disabled:opacity-50">
+                {t(reporting ? "feed.reporting" : "feed.submitReport")}
               </button>
             </div>
           </form>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, MessageCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -50,9 +50,11 @@ function message(
 export default function NotificationsPage() {
   const { t } = useTranslation();
   const client = useQueryClient();
-  const notifications = useQuery({
+  const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
-    queryFn: fetchNotifications,
+    queryFn: ({ pageParam }) => fetchNotifications(typeof pageParam === "string" ? pageParam : undefined),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.length === 25 ? lastPage[lastPage.length - 1]?.id : undefined,
     refetchInterval: 15_000,
     refetchOnWindowFocus: true,
   });
@@ -89,6 +91,7 @@ export default function NotificationsPage() {
     (preferences.data ?? []).map((row) => [row.type, row.enabled]),
   );
   const types = Object.keys(preferenceLabels) as ConfigurableKind[];
+  const rows = notifications.data?.pages.flat() ?? [];
   return (
     <main className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
@@ -127,7 +130,7 @@ export default function NotificationsPage() {
           {t("notifications.recentActivity")}
         </h2>
         <div className="space-y-2">
-          {(notifications.data ?? []).map((row) => {
+          {rows.map((row) => {
             const destination = row.payload.postId
               ? `/post/${row.payload.postId}`
               : `/profile/${row.payload.actorId}`;
@@ -168,7 +171,12 @@ export default function NotificationsPage() {
             );
           })}
         </div>
-        {notifications.isSuccess && notifications.data.length === 0 && (
+        {notifications.hasNextPage ? (
+          <button type="button" disabled={notifications.isFetchingNextPage} onClick={() => void notifications.fetchNextPage()} className="mt-4 min-h-11 w-full rounded-md border border-border bg-card text-sm disabled:opacity-50">
+            {notifications.isFetchingNextPage ? t("notifications.loadingMore") : t("notifications.loadMore")}
+          </button>
+        ) : null}
+        {notifications.isSuccess && rows.length === 0 && (
           <div className="rounded-lg border border-dashed bg-card p-8 text-center text-sm text-muted-foreground">
             <Bell className="mx-auto mb-2 h-5 w-5" />
             {t("notifications.empty")}

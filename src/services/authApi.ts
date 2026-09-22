@@ -2,7 +2,7 @@ import type { AuthSession, LoginInput, RegisterInput, RegisterPendingResult, Ver
 import { graphqlRequest } from "@/services/graphqlClient";
 import { clearAuthSession, setAuthSession } from "@/services/authToken";
 
-type AuthPayload = { accessToken: string; user: { id: string; username: string; email: string } };
+type AuthPayload = { accessToken: string; user: { id: string; username: string; email: string; role: "USER" | "ADMIN" } };
 
 function persistSession(session: AuthSession): AuthSession {
   setAuthSession({ accessToken: session.accessToken, userId: session.user.id, username: session.user.username, email: session.user.email });
@@ -10,7 +10,7 @@ function persistSession(session: AuthSession): AuthSession {
 }
 
 export async function loginUser(data: LoginInput): Promise<AuthSession> {
-  const result = await graphqlRequest<{ login: AuthPayload }>({ query: `mutation LoginUser($data: LoginInput!) { login(data: $data) { accessToken user { id username email } } }`, variables: { data } });
+  const result = await graphqlRequest<{ login: AuthPayload }>({ query: `mutation LoginUser($data: LoginInput!) { login(data: $data) { accessToken user { id username email role } } }`, variables: { data } });
   return persistSession({ accessToken: result.login.accessToken, user: result.login.user });
 }
 
@@ -20,17 +20,17 @@ export async function registerUser(data: RegisterInput): Promise<RegisterPending
 }
 
 export async function verifyEmailUser(data: VerifyEmailInput): Promise<AuthSession> {
-  const result = await graphqlRequest<{ verifyEmail: AuthPayload }>({ query: `mutation VerifyEmail($data: VerifyEmailInput!) { verifyEmail(data: $data) { accessToken user { id username email } } }`, variables: { data } });
+  const result = await graphqlRequest<{ verifyEmail: AuthPayload }>({ query: `mutation VerifyEmail($data: VerifyEmailInput!) { verifyEmail(data: $data) { accessToken user { id username email role } } }`, variables: { data } });
   return persistSession({ accessToken: result.verifyEmail.accessToken, user: result.verifyEmail.user });
 }
 
 export async function loginWithGoogleUser(accessToken: string): Promise<AuthSession> {
-  const result = await graphqlRequest<{ loginWithGoogle: AuthPayload }>({ query: `mutation LoginWithGoogle($data: GoogleAuthInput!) { loginWithGoogle(data: $data) { accessToken user { id username email } } }`, variables: { data: { accessToken } } });
+  const result = await graphqlRequest<{ loginWithGoogle: AuthPayload }>({ query: `mutation LoginWithGoogle($data: GoogleAuthInput!) { loginWithGoogle(data: $data) { accessToken user { id username email role } } }`, variables: { data: { accessToken } } });
   return persistSession({ accessToken: result.loginWithGoogle.accessToken, user: result.loginWithGoogle.user });
 }
 
 export async function registerWithGoogleUser(accessToken: string): Promise<AuthSession> {
-  const result = await graphqlRequest<{ registerWithGoogle: AuthPayload }>({ query: `mutation RegisterWithGoogle($data: GoogleAuthInput!) { registerWithGoogle(data: $data) { accessToken user { id username email } } }`, variables: { data: { accessToken } } });
+  const result = await graphqlRequest<{ registerWithGoogle: AuthPayload }>({ query: `mutation RegisterWithGoogle($data: GoogleAuthInput!) { registerWithGoogle(data: $data) { accessToken user { id username email role } } }`, variables: { data: { accessToken } } });
   return persistSession({ accessToken: result.registerWithGoogle.accessToken, user: result.registerWithGoogle.user });
 }
 
@@ -40,7 +40,7 @@ export async function resendVerificationEmail(token: string): Promise<RegisterPe
 }
 
 export async function restoreSession(): Promise<AuthSession> {
-  const result = await graphqlRequest<{ refreshSession: AuthPayload }>({ query: `mutation RestoreSession { refreshSession { accessToken user { id username email } } }` });
+  const result = await graphqlRequest<{ refreshSession: AuthPayload }>({ query: `mutation RestoreSession { refreshSession { accessToken user { id username email role } } }` });
   return persistSession({ accessToken: result.refreshSession.accessToken, user: result.refreshSession.user });
 }
 

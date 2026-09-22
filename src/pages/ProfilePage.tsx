@@ -132,8 +132,7 @@ export default function ProfilePage() {
   }
   async function toggleLike(post: FeedPost) {
     if (!user) return;
-    const like = post.likes.find((item) => item.userId === user.id);
-    if (like) await deleteFeedLike(like.id);
+    if (post.viewerLikeId) await deleteFeedLike(post.viewerLikeId);
     else await createFeedLike(post.id, user.id);
     await load();
   }

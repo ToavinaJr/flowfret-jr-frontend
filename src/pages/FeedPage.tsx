@@ -16,6 +16,7 @@ const FeedPage = () => {
   const { user, postsQuery, createPost, comment, toggleLike, refresh } =
     useFeed();
   const [composerOpen, setComposerOpen] = useState(false);
+  const posts = postsQuery.data?.pages.flat() ?? [];
   return (
     <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
       <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
@@ -45,7 +46,7 @@ const FeedPage = () => {
         </div>
       )}
       <div className="space-y-3 sm:space-y-4">
-        {(postsQuery.data ?? []).map((post: FeedPost) => (
+        {posts.map((post: FeedPost) => (
           <FeedCard
             key={post.id}
             post={post}
@@ -56,7 +57,17 @@ const FeedPage = () => {
           />
         ))}
       </div>
-      {postsQuery.isSuccess && !postsQuery.data?.length && (
+      {postsQuery.hasNextPage && (
+        <button
+          type="button"
+          disabled={postsQuery.isFetchingNextPage}
+          onClick={() => void postsQuery.fetchNextPage()}
+          className="mt-5 min-h-11 w-full rounded-md border border-border bg-card text-sm text-foreground disabled:opacity-50"
+        >
+          {t(postsQuery.isFetchingNextPage ? "feed.loadingMore" : "feed.loadMore")}
+        </button>
+      )}
+      {postsQuery.isSuccess && !posts.length && (
         <p className="py-10 text-center text-sm text-muted-foreground">
           {t("feed.empty")}
         </p>

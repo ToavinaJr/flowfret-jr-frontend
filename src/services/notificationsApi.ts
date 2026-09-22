@@ -27,9 +27,10 @@ export interface NotificationPreference {
   enabled: boolean;
 }
 
-export async function fetchNotifications(): Promise<AppNotification[]> {
+export async function fetchNotifications(after?: string): Promise<AppNotification[]> {
   const result = await graphqlRequest<{ myNotifications: AppNotification[] }>({
-    query: `query Notifications { myNotifications { id type payload readAt createdAt } }`,
+    query: `query Notifications($after: String) { myNotifications(take: 25, after: $after) { id type payload readAt createdAt } }`,
+    variables: after ? { after } : {},
   });
   return result.myNotifications;
 }

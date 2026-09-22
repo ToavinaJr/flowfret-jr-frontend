@@ -51,6 +51,8 @@
   },
   "notifications": {
     "title": "Notifications",
+    "loadMore": "Charger plus de notifications",
+    "loadingMore": "Chargement…",
     "preferencesTitle": "Ce que je souhaite recevoir",
     "recentActivity": "Activité récente",
     "unreadCount_one": "{{count}} notification non lue",
@@ -122,7 +124,16 @@
     "commentContent": "Contenu du commentaire",
     "noComments": "Aucun commentaire.",
     "addComment": "Ajouter un commentaire…",
-    "postComment": "Publier"
+    "postComment": "Publier",
+    "loadMore": "Charger plus de publications",
+    "loadingMore": "Chargement…",
+    "reportPost": "Signaler la publication",
+    "reportReason": "Motif du signalement",
+    "reportPlaceholder": "Expliquez pourquoi cette publication doit être examinée…",
+    "submitReport": "Envoyer le signalement",
+    "reporting": "Envoi…",
+    "reportSuccess": "Signalement envoyé à la modération.",
+    "reportError": "Le signalement n’a pas pu être envoyé. Il est peut-être déjà enregistré."
   },
   "morePage": {
     "title": "Menu",

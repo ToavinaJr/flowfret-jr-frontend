@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { createFeedComment, createFeedLike, createFeedPost, deleteFeedLike, fetchFeedPosts, uploadImages } from "@/services/api";
 import type { FeedPost } from "@/types/feed";
@@ -9,7 +9,14 @@ export function useFeed() {
   const { user, status } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const postsQuery = useQuery<FeedPost[]>({ queryKey: ["feed-posts"], queryFn: fetchFeedPosts, enabled: status === "authenticated", retry: 1 });
+  const postsQuery = useInfiniteQuery<FeedPost[]>({
+    queryKey: ["feed-posts"],
+    queryFn: ({ pageParam }) => fetchFeedPosts(typeof pageParam === "string" ? pageParam : undefined),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.length === 20 ? lastPage[lastPage.length - 1]?.id : undefined,
+    enabled: status === "authenticated",
+    retry: 1,
+  });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
   const createPost = useMutation({
     mutationFn: async ({ content, images }: { content: string; images: File[] }) => {
@@ -33,6 +40,6 @@ export function useFeed() {
     try { await createFeedComment({ postId, content, authorId: user.id }); await refresh(); toast.success(t("feed.commentCreated"), { id: toastId }); }
     catch (error) { toast.error(t("feed.commentCreateError"), { id: toastId }); throw error; }
   };
-  const toggleLike = async (post: FeedPost) => { if (!user) return; const like = post.likes.find(({ userId }) => userId === user.id); if (like) await deleteFeedLike(like.id); else await createFeedLike(post.id, user.id); await refresh(); };
+  const toggleLike = async (post: FeedPost) => { if (!user) return; if (post.viewerLikeId) await deleteFeedLike(post.viewerLikeId); else await createFeedLike(post.id, user.id); await refresh(); };
   return { user, postsQuery, createPost, comment, toggleLike, refresh };
 }

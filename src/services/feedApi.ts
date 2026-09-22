@@ -1,13 +1,13 @@
 import type { CreateCommentInput, CreatePostInput, FeedComment, FeedPost } from "@/types/feed";
 import { graphqlRequest } from "@/services/graphqlClient";
 
-export async function fetchFeedPosts(): Promise<FeedPost[]> {
-  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts { posts { id content likeCount commentCount createdAt author { id username profile { avatarUrl } } likes { id userId } attachments { id upload { id storagePath } } } }` });
+export async function fetchFeedPosts(after?: string, take = 20): Promise<FeedPost[]> {
+  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!) { posts(after: $after, take: $take) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), take } });
   return result.posts;
 }
 
 export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
-  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount createdAt author { id username profile { avatarUrl } } likes { id userId } attachments { id upload { id storagePath } } } }`, variables: { id } });
+  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } attachments { id upload { id storagePath } } }`, variables: { id } });
   return result.post;
 }
 
@@ -52,4 +52,15 @@ export async function updateFeedComment(id: string, content: string): Promise<vo
 export async function deleteFeedComment(id: string): Promise<void> {
   if (!id) throw new Error("Commentaire invalide.");
   await graphqlRequest({ query: `mutation DeleteFeedComment($id: String!) { deleteComment(id: $id) { id } }`, variables: { id } });
+}
+
+export async function reportFeedPost(
+  postId: string,
+  reporterId: string,
+  reason: string,
+): Promise<void> {
+  await graphqlRequest({
+    query: `mutation ReportFeedPost($data: CreatePostReportInput!) { createPostReport(data: $data) { id } }`,
+    variables: { data: { postId, reporterId, reason: reason.trim() } },
+  });
 }

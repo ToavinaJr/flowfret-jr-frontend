@@ -51,6 +51,8 @@
   },
   "notifications": {
     "title": "Notifications",
+    "loadMore": "Load more notifications",
+    "loadingMore": "Loading…",
     "preferencesTitle": "What I want to receive",
     "recentActivity": "Recent activity",
     "unreadCount_one": "{{count}} unread notification",
@@ -122,7 +124,16 @@
     "commentContent": "Comment content",
     "noComments": "No comments.",
     "addComment": "Add a comment…",
-    "postComment": "Post"
+    "postComment": "Post",
+    "loadMore": "Load more posts",
+    "loadingMore": "Loading…",
+    "reportPost": "Report post",
+    "reportReason": "Report reason",
+    "reportPlaceholder": "Explain why this post should be reviewed…",
+    "submitReport": "Submit report",
+    "reporting": "Submitting…",
+    "reportSuccess": "Report sent to moderation.",
+    "reportError": "The report could not be sent. It may already exist."
   },
   "morePage": {
     "title": "Menu",

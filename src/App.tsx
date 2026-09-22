@@ -25,6 +25,7 @@ const HelpPage = lazy(() => import("@/pages/HelpPage"));
 const FriendsPage = lazy(() => import("@/pages/FriendsPage"));
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
 const PostPage = lazy(() => import("@/pages/PostPage"));
+const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
                   <Route path="/notifications" element={<NotificationsPage />} />
                   <Route path="/post/:postId" element={<PostPage />} />
                   <Route path="/help" element={<HelpPage />} />
+                  <Route path="/moderation" element={<ModerationPage />} />
                   <Route path="/verify-email" element={<FeedPage />} />
                   <Route path="/reset-password" element={<FeedPage />} />
                 </Route>
