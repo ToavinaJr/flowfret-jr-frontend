@@ -45,6 +45,8 @@
     "requestHandled": "Request handled.",
     "peopleToAdd": "People you can add",
     "searchPlaceholder": "Search for a username…",
+    "searchLoading": "Searching…",
+    "searchError": "Unable to search for people.",
     "add": "Add",
     "noPeople": "No one to add right now.",
     "avatarAlt": "Avatar of {{name}}"

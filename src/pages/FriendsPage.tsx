@@ -1,7 +1,20 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Clock3, Search, UserPlus, Users, X } from "lucide-react";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  Check,
+  Clock3,
+  Loader2,
+  Search,
+  UserPlus,
+  Users,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import {
@@ -15,20 +28,28 @@ import type { SocialUser } from "@/services/profileApi";
 import { useAuth } from "@/hooks/useAuth";
 import { PersonListSkeleton } from "@/components/skeletons/AppSkeletons";
 import { PersonCard } from "@/components/friends/PersonCard";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 export default function FriendsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const client = useQueryClient();
   const [query, setQuery] = useState("");
+  const normalizedQuery = query.trim();
+  const debouncedQuery = useDebouncedValue(normalizedQuery, 300);
   const friendships = useQuery<Friendship[]>({
     queryKey: ["friendships"],
     queryFn: fetchFriendships,
   });
   const results = useQuery<SocialUser[]>({
-    queryKey: ["user-search", query],
-    queryFn: () => searchUsers(query.trim()),
+    queryKey: ["user-search", debouncedQuery],
+    queryFn: () => searchUsers(debouncedQuery),
+    enabled: Boolean(user),
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
   });
+  const searchPending =
+    normalizedQuery !== debouncedQuery || results.isFetching;
   const refresh = () => client.invalidateQueries({ queryKey: ["friendships"] });
   const add = useMutation({
     mutationFn: sendFriendRequest,
@@ -47,7 +68,7 @@ export default function FriendsPage() {
       void refresh();
     },
   });
-  if (friendships.isLoading || results.isLoading)
+  if (friendships.isLoading)
     return (
       <main className={PAGE_SHELL}>
         <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
@@ -152,8 +173,14 @@ export default function FriendsPage() {
             placeholder={t("friends.searchPlaceholder")}
             className="min-h-11 flex-1 bg-transparent outline-none"
           />
+          {searchPending && (
+            <Loader2
+              className="h-4 w-4 animate-spin text-muted-foreground"
+              aria-label={t("friends.searchLoading")}
+            />
+          )}
         </label>
-        <div className="space-y-3">
+        <div className="space-y-3" aria-busy={searchPending}>
           {(results.data ?? []).map((person) => (
             <PersonCard
               key={person.id}
@@ -170,8 +197,21 @@ export default function FriendsPage() {
               }
             />
           ))}
+          {results.isPending && <PersonListSkeleton count={3} />}
         </div>
-        {results.isSuccess && results.data.length === 0 && (
+        {results.isError && (
+          <div className="rounded-lg border border-destructive/40 bg-card p-5 text-center text-sm">
+            <p className="text-destructive">{t("friends.searchError")}</p>
+            <button
+              type="button"
+              onClick={() => void results.refetch()}
+              className="mt-3 min-h-10 rounded-md border border-border px-4"
+            >
+              {t("common.retry")}
+            </button>
+          </div>
+        )}
+        {results.isSuccess && !searchPending && results.data.length === 0 && (
           <p className="rounded-lg border border-dashed bg-card p-5 text-center text-sm text-muted-foreground">
             {t("friends.noPeople")}
           </p>

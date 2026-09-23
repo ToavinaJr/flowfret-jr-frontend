@@ -45,6 +45,8 @@
     "requestHandled": "Demande traitée.",
     "peopleToAdd": "Personnes que vous pouvez ajouter",
     "searchPlaceholder": "Rechercher un pseudo…",
+    "searchLoading": "Recherche en cours…",
+    "searchError": "Impossible de rechercher des personnes.",
     "add": "Ajouter",
     "noPeople": "Aucune personne à ajouter pour le moment.",
     "avatarAlt": "Avatar de {{name}}"
