@@ -4,7 +4,7 @@ export interface MusicArtist {
 }
 
 export interface MusicTrack {
-  provider: "YOUTUBE" | "AUDIUS" | "SPOTIFY";
+  provider: MusicProvider;
   id: string;
   audiusId: string;
   title: string;
@@ -22,7 +22,7 @@ export interface MusicTrack {
 }
 
 export interface MusicSearchResult {
-  provider: "YOUTUBE" | "AUDIUS" | "SPOTIFY";
+  provider: MusicProvider;
   tracks: MusicTrack[];
   total: number;
 }
@@ -35,3 +35,4 @@ export interface SearchMusicQueryVariables {
   query: string;
   limit: number;
 }
+import type { MusicProvider } from "@/constants/domain";

@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Bell, MessageCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { ACTIVITY_ACTION, NOTIFICATION_KIND } from "@/constants/domain";
 import {
   fetchNotificationPreferences,
   fetchNotifications,
@@ -15,13 +21,17 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { NotificationsSkeleton } from "@/components/skeletons/AppSkeletons";
 
-type ConfigurableKind = Exclude<NotificationKind, "FRIEND_ACCEPTED">;
+type ConfigurableKind = Exclude<
+  NotificationKind,
+  typeof NOTIFICATION_KIND.FRIEND_ACCEPTED
+>;
 const preferenceLabels: Record<ConfigurableKind, string> = {
-  FRIEND_REQUEST: "notifications.preference.friendRequest",
-  FRIEND_POST: "notifications.preference.friendPost",
-  POST_LIKE: "notifications.preference.postLike",
-  POST_COMMENT: "notifications.preference.postComment",
-  FOLLOWED_POST_ACTIVITY: "notifications.preference.followedPostActivity",
+  [NOTIFICATION_KIND.FRIEND_REQUEST]: "notifications.preference.friendRequest",
+  [NOTIFICATION_KIND.FRIEND_POST]: "notifications.preference.friendPost",
+  [NOTIFICATION_KIND.POST_LIKE]: "notifications.preference.postLike",
+  [NOTIFICATION_KIND.POST_COMMENT]: "notifications.preference.postComment",
+  [NOTIFICATION_KIND.FOLLOWED_POST_ACTIVITY]:
+    "notifications.preference.followedPostActivity",
 };
 
 function message(
@@ -29,20 +39,20 @@ function message(
   t: (key: string, options?: Record<string, unknown>) => string,
 ): string {
   const actor = row.payload.actorUsername || t("notifications.friend");
-  if (row.type === "FRIEND_REQUEST")
+  if (row.type === NOTIFICATION_KIND.FRIEND_REQUEST)
     return t("notifications.message.friendRequest", { actor });
-  if (row.type === "FRIEND_ACCEPTED")
+  if (row.type === NOTIFICATION_KIND.FRIEND_ACCEPTED)
     return t("notifications.message.friendAccepted", { actor });
-  if (row.type === "FRIEND_POST")
+  if (row.type === NOTIFICATION_KIND.FRIEND_POST)
     return t("notifications.message.friendPost", { actor });
-  if (row.type === "POST_COMMENT")
+  if (row.type === NOTIFICATION_KIND.POST_COMMENT)
     return t("notifications.message.postComment", { actor });
-  if (row.type === "POST_LIKE")
+  if (row.type === NOTIFICATION_KIND.POST_LIKE)
     return t("notifications.message.postLike", { actor });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
-  return row.payload.action === "POST_LIKED"
+  return row.payload.action === ACTIVITY_ACTION.POST_LIKED
     ? t("notifications.message.postLiked", { actor, owner })
     : t("notifications.message.postCommented", { actor, owner });
 }
@@ -52,9 +62,11 @@ export default function NotificationsPage() {
   const client = useQueryClient();
   const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
-    queryFn: ({ pageParam }) => fetchNotifications(typeof pageParam === "string" ? pageParam : undefined),
+    queryFn: ({ pageParam }) =>
+      fetchNotifications(typeof pageParam === "string" ? pageParam : undefined),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.length === 25 ? lastPage[lastPage.length - 1]?.id : undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.length === 25 ? lastPage[lastPage.length - 1]?.id : undefined,
     refetchInterval: 15_000,
     refetchOnWindowFocus: true,
   });
@@ -152,7 +164,7 @@ export default function NotificationsPage() {
                     />
                   ) : (
                     row.payload.actorUsername?.slice(0, 2).toUpperCase() ||
-                    (row.type === "FRIEND_POST" ? (
+                    (row.type === NOTIFICATION_KIND.FRIEND_POST ? (
                       <Users className="h-5 w-5" />
                     ) : (
                       <MessageCircle className="h-5 w-5" />
@@ -172,8 +184,15 @@ export default function NotificationsPage() {
           })}
         </div>
         {notifications.hasNextPage ? (
-          <button type="button" disabled={notifications.isFetchingNextPage} onClick={() => void notifications.fetchNextPage()} className="mt-4 min-h-11 w-full rounded-md border border-border bg-card text-sm disabled:opacity-50">
-            {notifications.isFetchingNextPage ? t("notifications.loadingMore") : t("notifications.loadMore")}
+          <button
+            type="button"
+            disabled={notifications.isFetchingNextPage}
+            onClick={() => void notifications.fetchNextPage()}
+            className="mt-4 min-h-11 w-full rounded-md border border-border bg-card text-sm disabled:opacity-50"
+          >
+            {notifications.isFetchingNextPage
+              ? t("notifications.loadingMore")
+              : t("notifications.loadMore")}
           </button>
         ) : null}
         {notifications.isSuccess && rows.length === 0 && (

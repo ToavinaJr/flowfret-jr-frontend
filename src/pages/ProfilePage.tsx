@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Settings, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { PROFILE_VISIBILITY, type ProfileVisibility } from "@/constants/domain";
 import { useAuth } from "@/hooks/useAuth";
 import {
   createFeedComment,
@@ -28,9 +29,9 @@ export default function ProfilePage() {
     useState<Awaited<ReturnType<typeof fetchMyProfile>>>(null);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
-  const [visibility, setVisibility] = useState<
-    "PUBLIC" | "FRIENDS" | "PRIVATE"
-  >("PUBLIC");
+  const [visibility, setVisibility] = useState<ProfileVisibility>(
+    PROFILE_VISIBILITY.PUBLIC,
+  );
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const load = async () => {
@@ -39,7 +40,7 @@ export default function ProfilePage() {
     setProfile(value);
     setDisplayName(value?.displayName ?? (own ? (user?.username ?? "") : ""));
     setBio(value?.bio ?? "");
-    setVisibility(value?.visibility ?? "PUBLIC");
+    setVisibility(value?.visibility ?? PROFILE_VISIBILITY.PUBLIC);
   };
   useEffect(() => {
     let active = true;
@@ -59,7 +60,7 @@ export default function ProfilePage() {
           value?.displayName ?? (own ? (user?.username ?? "") : ""),
         );
         setBio(value?.bio ?? "");
-        setVisibility(value?.visibility ?? "PUBLIC");
+        setVisibility(value?.visibility ?? PROFILE_VISIBILITY.PUBLIC);
       })
       .catch(() => {
         if (active) setProfile(null);
@@ -90,7 +91,9 @@ export default function ProfilePage() {
       await load();
       toast.success(t("profilePage.avatarUpdated"));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("profilePage.uploadFailed"));
+      toast.error(
+        error instanceof Error ? error.message : t("profilePage.uploadFailed"),
+      );
     } finally {
       setSaving(false);
       event.target.value = "";

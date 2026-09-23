@@ -2,7 +2,7 @@ export interface AuthUser {
   id: string;
   username: string;
   email: string;
-  role: "USER" | "ADMIN";
+  role: UserRole;
 }
 
 export interface AuthSession {
@@ -35,3 +35,4 @@ export interface VerifyEmailInput {
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 export type AuthMode = "login" | "register" | "verify" | "forgot" | "reset";
+import type { UserRole } from "@/constants/domain";

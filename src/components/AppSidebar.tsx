@@ -2,6 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Guitar, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { USER_ROLE } from "@/constants/domain";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
@@ -65,8 +66,11 @@ const AppSidebar = () => {
       </nav>
 
       <div className="space-y-3 border-t border-border p-3">
-        {user?.role === "ADMIN" ? (
-          <NavLink to="/moderation" className="flex min-h-[44px] items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary">
+        {user?.role === USER_ROLE.ADMIN ? (
+          <NavLink
+            to="/moderation"
+            className="flex min-h-[44px] items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary"
+          >
             <ShieldCheck className="h-4 w-4" /> Modération
           </NavLink>
         ) : null}

@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchFriendships } from "@/services/friendsApi";
 import type { SocialUser } from "@/services/profileApi";
 import { activeMentionAt } from "@/utils/mentions";
+import { FRIENDSHIP_STATUS } from "@/constants/domain";
 
 interface MentionInputProps {
   id?: string;
@@ -45,7 +46,7 @@ export function MentionInput({
     if (!user) return [];
     const accepted: SocialUser[] = [];
     for (const friendship of friendships.data ?? []) {
-      if (friendship.status !== "ACCEPTED") continue;
+      if (friendship.status !== FRIENDSHIP_STATUS.ACCEPTED) continue;
       accepted.push(
         friendship.requesterId === user.id
           ? friendship.receiver
@@ -98,8 +99,9 @@ export function MentionInput({
           ) {
             event.preventDefault();
             const direction = event.key === "ArrowDown" ? 1 : -1;
-            setHighlighted((current) =>
-              (current + direction + friends.length) % friends.length,
+            setHighlighted(
+              (current) =>
+                (current + direction + friends.length) % friends.length,
             );
           } else if (
             menuOpen &&
@@ -137,19 +139,29 @@ export function MentionInput({
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary font-semibold">
                   {friend.profile?.avatarUrl ? (
-                    <img src={friend.profile.avatarUrl} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={friend.profile.avatarUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     friend.username.slice(0, 2).toUpperCase()
                   )}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate font-medium">{friend.profile?.displayName ?? friend.username}</span>
-                  <span className="block truncate text-xs text-muted-foreground">@{friend.username}</span>
+                  <span className="block truncate font-medium">
+                    {friend.profile?.displayName ?? friend.username}
+                  </span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    @{friend.username}
+                  </span>
                 </span>
               </button>
             ))
           ) : (
-            <p className="px-3 py-2 text-sm text-muted-foreground">{t("feed.noMentionFriends")}</p>
+            <p className="px-3 py-2 text-sm text-muted-foreground">
+              {t("feed.noMentionFriends")}
+            </p>
           )}
         </div>
       )}

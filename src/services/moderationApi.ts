@@ -1,6 +1,7 @@
 import { graphqlRequest } from "@/services/graphqlClient";
+import { REPORT_STATUS, type ReportStatus } from "@/constants/domain";
 
-export type ReportStatus = "OPEN" | "REVIEWED" | "DISMISSED" | "RESOLVED";
+export type { ReportStatus } from "@/constants/domain";
 
 export interface ModerationReport {
   id: string;
@@ -25,7 +26,7 @@ export async function fetchModerationReports(): Promise<ModerationReport[]> {
 
 export async function setReportStatus(
   id: string,
-  status: Exclude<ReportStatus, "OPEN">,
+  status: Exclude<ReportStatus, typeof REPORT_STATUS.OPEN>,
 ): Promise<void> {
   await graphqlRequest({
     query: `mutation ModerateReport($id: String!, $data: UpdatePostReportInput!) { updatePostReport(id: $id, data: $data) { id status reviewedAt } }`,

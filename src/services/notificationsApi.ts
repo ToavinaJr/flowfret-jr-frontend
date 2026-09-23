@@ -1,12 +1,11 @@
 import { graphqlRequest } from "@/services/graphqlClient";
+import {
+  ACTIVITY_ACTION,
+  type ActivityAction,
+  type NotificationKind,
+} from "@/constants/domain";
 
-export type NotificationKind =
-  | "FRIEND_REQUEST"
-  | "FRIEND_ACCEPTED"
-  | "FRIEND_POST"
-  | "POST_LIKE"
-  | "POST_COMMENT"
-  | "FOLLOWED_POST_ACTIVITY";
+export type { NotificationKind } from "@/constants/domain";
 export interface AppNotification {
   id: string;
   type: NotificationKind;
@@ -16,7 +15,7 @@ export interface AppNotification {
     actorAvatarUrl?: string | null;
     postId?: string;
     postAuthorUsername?: string | null;
-    action?: string;
+    action?: ActivityAction;
   };
   readAt: string | null;
   createdAt: string;
@@ -27,7 +26,9 @@ export interface NotificationPreference {
   enabled: boolean;
 }
 
-export async function fetchNotifications(after?: string): Promise<AppNotification[]> {
+export async function fetchNotifications(
+  after?: string,
+): Promise<AppNotification[]> {
   const result = await graphqlRequest<{ myNotifications: AppNotification[] }>({
     query: `query Notifications($after: String) { myNotifications(take: 25, after: $after) { id type payload readAt createdAt } }`,
     variables: after ? { after } : {},
@@ -71,7 +72,7 @@ export async function recordTrackListen(trackId: string): Promise<void> {
   await graphqlRequest({
     query: `mutation TrackListened($action: String!, $entityType: String!, $entityId: String) { recordActivity(action: $action, entityType: $entityType, entityId: $entityId) { id } }`,
     variables: {
-      action: "TRACK_LISTENED",
+      action: ACTIVITY_ACTION.TRACK_LISTENED,
       entityType: "track",
       entityId: trackId,
     },

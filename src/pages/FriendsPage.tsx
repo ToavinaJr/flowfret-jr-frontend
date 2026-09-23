@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { FRIENDSHIP_STATUS } from "@/constants/domain";
 import {
   fetchFriendships,
   respondFriendRequest,
@@ -81,12 +82,16 @@ export default function FriendsPage() {
     );
   const rows = friendships.data ?? [];
   const incoming = rows.filter(
-    (row) => row.status === "PENDING" && row.receiverId === user?.id,
+    (row) =>
+      row.status === FRIENDSHIP_STATUS.PENDING && row.receiverId === user?.id,
   );
   const outgoing = rows.filter(
-    (row) => row.status === "PENDING" && row.requesterId === user?.id,
+    (row) =>
+      row.status === FRIENDSHIP_STATUS.PENDING && row.requesterId === user?.id,
   );
-  const accepted = rows.filter((row) => row.status === "ACCEPTED");
+  const accepted = rows.filter(
+    (row) => row.status === FRIENDSHIP_STATUS.ACCEPTED,
+  );
   return (
     <main className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
@@ -161,9 +166,7 @@ export default function FriendsPage() {
         </section>
       )}
       <section id="discover" className="scroll-mt-20">
-        <h2 className="mb-3 font-semibold">
-          {t("friends.peopleToAdd")}
-        </h2>
+        <h2 className="mb-3 font-semibold">{t("friends.peopleToAdd")}</h2>
         <label className="mb-4 flex items-center gap-2 rounded-lg border bg-card px-3">
           <Search className="h-4 w-4" />
           <input
