@@ -2,19 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
+import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
+import { usePlaybackQueue } from "@/hooks/usePlaybackQueue";
 import type { PlayState } from "@/types/song";
-import { recordTrackListen } from "@/services/api";
-import {
-  loadSpotifyIframeApi,
-  type SpotifyEmbedController,
-  type SpotifyIframeApi,
-} from "@/services/spotifyIframe";
 
 export interface PlaybackItem {
   id: string;
@@ -32,260 +25,102 @@ export interface PlaybackItem {
   revokeSourceOnRelease?: boolean;
 }
 
-declare global {
-  interface Window {
-    onSpotifyIframeApiReady?: (api: SpotifyIframeApi) => void;
-  }
-}
-
 interface PlaybackContextValue {
   item: PlaybackItem | null;
   playState: PlayState;
   currentTime: number;
   duration: number;
   volume: number;
+  queue: PlaybackItem[];
+  currentIndex: number;
+  shuffle: boolean;
   select: (item: PlaybackItem) => void;
   play: (item?: PlaybackItem) => Promise<void>;
   pause: () => void;
   toggle: (item?: PlaybackItem) => Promise<void>;
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
+  setQueue: (items: PlaybackItem[], startIndex?: number) => void;
+  setShuffle: (enabled: boolean) => void;
+  next: () => Promise<void>;
+  previous: () => Promise<void>;
 }
 
 const PlaybackContext = createContext<PlaybackContextValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const spotifyHostRef = useRef<HTMLDivElement | null>(null);
-  const spotifyControllerRef = useRef<SpotifyEmbedController | null>(null);
-  const spotifyControllerPromiseRef =
-    useRef<Promise<SpotifyEmbedController> | null>(null);
-  const spotifyUriRef = useRef<string | null>(null);
-  const itemRef = useRef<PlaybackItem | null>(null);
-  const loggedItemRef = useRef<string | null>(null);
-  const [item, setItem] = useState<PlaybackItem | null>(null);
-  const [playState, setPlayState] = useState<PlayState>("idle");
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volumeState, setVolumeState] = useState(1);
+  const engine = usePlaybackEngine();
+  const queue = usePlaybackQueue();
 
-  const releaseItemSource = useCallback((releasedItem: PlaybackItem | null) => {
-    if (releasedItem?.revokeSourceOnRelease && releasedItem.src.startsWith("blob:")) {
-      URL.revokeObjectURL(releasedItem.src);
-    }
-  }, []);
-
-  useEffect(() => {
-    const audio = new Audio();
-    audio.preload = "auto";
-    audio.volume = 1;
-    audioRef.current = audio;
-
-    const onTime = () => setCurrentTime(audio.currentTime);
-    const onMetadata = () =>
-      setDuration(audio.duration || itemRef.current?.duration || 0);
-    const onPlay = () => setPlayState("playing");
-    const onPause = () =>
-      setPlayState((state) => (state === "error" ? state : "paused"));
-    const onEnded = () => setPlayState("paused");
-    const onError = () => setPlayState("error");
-
-    audio.addEventListener("timeupdate", onTime);
-    audio.addEventListener("loadedmetadata", onMetadata);
-    audio.addEventListener("play", onPlay);
-    audio.addEventListener("pause", onPause);
-    audio.addEventListener("ended", onEnded);
-    audio.addEventListener("error", onError);
-    return () => {
-      audio.pause();
-      audio.removeEventListener("timeupdate", onTime);
-      audio.removeEventListener("loadedmetadata", onMetadata);
-      audio.removeEventListener("play", onPlay);
-      audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("ended", onEnded);
-      audio.removeEventListener("error", onError);
-      audioRef.current = null;
-      releaseItemSource(itemRef.current);
-    };
-  }, [releaseItemSource]);
-
-  const getSpotifyController = useCallback(async (uri: string) => {
-    if (spotifyControllerRef.current) {
-      if (spotifyUriRef.current !== uri) {
-        spotifyControllerRef.current.loadEntity(uri);
-        spotifyUriRef.current = uri;
-      }
-      return spotifyControllerRef.current;
-    }
-    if (spotifyControllerPromiseRef.current)
-      return spotifyControllerPromiseRef.current;
-
-    spotifyControllerPromiseRef.current = (async () => {
-      const api = await loadSpotifyIframeApi();
-      const host = spotifyHostRef.current;
-      if (!host) throw new Error("Spotify player host is unavailable");
-      return new Promise<SpotifyEmbedController>((resolve) => {
-        api.createController(
-          host,
-          { uri, width: 300, height: 80 },
-          (controller) => {
-            spotifyControllerRef.current = controller;
-            spotifyUriRef.current = uri;
-            controller.addListener("playback_started", () =>
-              setPlayState("playing"),
-            );
-            controller.addListener("playback_update", (event) => {
-              setCurrentTime(event.data.position / 1000);
-              setDuration(event.data.duration / 1000);
-              setPlayState(
-                event.data.isBuffering
-                  ? "loading"
-                  : event.data.isPaused
-                    ? "paused"
-                    : "playing",
-              );
-            });
-            resolve(controller);
-          },
-        );
-      });
-    })().catch((error) => {
-      spotifyControllerPromiseRef.current = null;
-      throw error;
-    });
-    return spotifyControllerPromiseRef.current;
-  }, []);
-
-  useEffect(() => () => spotifyControllerRef.current?.destroy(), []);
-
-  const select = useCallback((next: PlaybackItem) => {
-    if (itemRef.current?.id === next.id && itemRef.current.src === next.src)
-      return;
-    const previousItem = itemRef.current;
-    const audio = audioRef.current;
-    if (itemRef.current?.engine === "spotify")
-      spotifyControllerRef.current?.pause();
-    else audio?.pause();
-    releaseItemSource(previousItem);
-    itemRef.current = next;
-    setItem(next);
-    setCurrentTime(0);
-    setDuration(next.duration || 0);
-    setPlayState("loading");
-    if ((next.engine ?? "audio") === "audio" && audio) {
-      audio.src = next.src;
-      audio.load();
-    }
-    setPlayState("paused");
-  }, [releaseItemSource]);
-
+  const select = useCallback(
+    (item: PlaybackItem) => {
+      queue.syncSelection(item);
+      engine.select(item);
+    },
+    [engine, queue],
+  );
   const play = useCallback(
-    async (next?: PlaybackItem) => {
-      const isSameItem =
-        !next ||
-        (itemRef.current?.id === next.id && itemRef.current.src === next.src);
-      if (next) select(next);
-      const audio = audioRef.current;
-      const activeItem = next ?? itemRef.current;
-      if (!activeItem) return;
-      if (
-        activeItem.trackActivity !== false &&
-        loggedItemRef.current !== activeItem.id
-      ) {
-        loggedItemRef.current = activeItem.id;
-        void recordTrackListen(activeItem.id).catch(() => {
-          loggedItemRef.current = null;
-        });
-      }
-      try {
-        if (activeItem.engine === "spotify") {
-          const controller = await getSpotifyController(activeItem.src);
-          if (isSameItem && spotifyUriRef.current === activeItem.src) {
-            controller.resume();
-          } else {
-            controller.play();
-          }
-          return;
-        }
-        if (!audio) return;
-        await audio.play();
-        setPlayState("playing");
-      } catch {
-        setPlayState("error");
-      }
+    async (item?: PlaybackItem) => {
+      if (item) queue.syncSelection(item);
+      await engine.play(item);
     },
-    [getSpotifyController, select],
+    [engine, queue],
   );
-
-  const pause = useCallback(() => {
-    if (itemRef.current?.engine === "spotify")
-      spotifyControllerRef.current?.pause();
-    else audioRef.current?.pause();
-    setPlayState("paused");
-  }, []);
-
   const toggle = useCallback(
-    async (next?: PlaybackItem) => {
-      const isSame =
-        !next ||
-        (itemRef.current?.id === next.id && itemRef.current.src === next.src);
-      if (isSame && playState === "playing") pause();
-      else await play(next);
+    async (item?: PlaybackItem) => {
+      const same =
+        !item ||
+        (engine.item?.id === item.id && engine.item.src === item.src);
+      if (same && engine.playState === "playing") engine.pause();
+      else await play(item);
     },
-    [pause, play, playState],
+    [engine, play],
   );
+  const setQueue = useCallback(
+    (items: PlaybackItem[], startIndex = 0) => {
+      const selected = queue.setQueue(items, startIndex);
+      if (selected) engine.select(selected);
+    },
+    [engine, queue],
+  );
+  const next = useCallback(async () => {
+    const item = queue.next();
+    if (item) await engine.play(item);
+  }, [engine, queue]);
+  const previous = useCallback(async () => {
+    const item = queue.previous();
+    if (item) await engine.play(item);
+  }, [engine, queue]);
 
-  const seek = useCallback((time: number) => {
-    if (itemRef.current?.engine === "spotify") {
-      spotifyControllerRef.current?.seek(time);
-      setCurrentTime(time);
-      return;
-    }
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
-    setCurrentTime(audio.currentTime);
-  }, []);
-
-  const setVolume = useCallback((next: number) => {
-    const safe = Math.max(0, Math.min(1, next));
-    if (audioRef.current) audioRef.current.volume = safe;
-    setVolumeState(safe);
-  }, []);
-
-  const value = useMemo(
+  const value = useMemo<PlaybackContextValue>(
     () => ({
-      item,
-      playState,
-      currentTime,
-      duration,
-      volume: volumeState,
+      item: engine.item,
+      playState: engine.playState,
+      currentTime: engine.currentTime,
+      duration: engine.duration,
+      volume: engine.volume,
+      queue: queue.queue,
+      currentIndex: queue.currentIndex,
+      shuffle: queue.shuffle,
       select,
       play,
-      pause,
+      pause: engine.pause,
       toggle,
-      seek,
-      setVolume,
+      seek: engine.seek,
+      setVolume: engine.setVolume,
+      setQueue,
+      setShuffle: queue.setShuffle,
+      next,
+      previous,
     }),
-    [
-      item,
-      playState,
-      currentTime,
-      duration,
-      volumeState,
-      select,
-      play,
-      pause,
-      toggle,
-      seek,
-      setVolume,
-    ],
+    [engine, next, play, previous, queue, select, setQueue, toggle],
   );
+
   return (
     <PlaybackContext.Provider value={value}>
       {children}
       <div
-        ref={spotifyHostRef}
+        ref={engine.spotifyHostRef}
         className="pointer-events-none fixed -bottom-24 left-0 h-20 w-[300px] opacity-0"
         aria-hidden="true"
       />
