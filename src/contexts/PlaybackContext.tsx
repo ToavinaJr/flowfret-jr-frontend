@@ -12,7 +12,7 @@ import type { PlayState } from "@/types/song";
 export interface PlaybackItem {
   id: string;
   src: string;
-  engine?: "audio" | "spotify";
+  engine?: "audio" | "spotify" | "youtube";
   title: string;
   subtitle: string;
   imageUrl?: string | null;
@@ -121,6 +121,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         ref={engine.spotifyHostRef}
+        className="pointer-events-none fixed -bottom-24 left-0 h-20 w-[300px] opacity-0"
+        aria-hidden="true"
+      />
+      <iframe
+        ref={engine.youtubeHostRef}
+        title="YouTube playlist player"
+        allow="autoplay; encrypted-media"
         className="pointer-events-none fixed -bottom-24 left-0 h-20 w-[300px] opacity-0"
         aria-hidden="true"
       />

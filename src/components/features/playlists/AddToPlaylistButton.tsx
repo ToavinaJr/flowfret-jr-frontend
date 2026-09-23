@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ListPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { addTrackToPlaylist, fetchPlaylists } from "@/services/playlistsApi";
 import type { MusicTrack } from "@/types/music";
-import type { Playlist } from "@/types/playlist";
 
 export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    void fetchPlaylists().then(setPlaylists).catch(() => undefined);
-  }, []);
+  const { data: playlists = [] } = useQuery({
+    queryKey: ["my-playlists"],
+    queryFn: fetchPlaylists,
+    staleTime: 60_000,
+  });
 
   async function add(playlistId: string) {
     if (!playlistId) return;

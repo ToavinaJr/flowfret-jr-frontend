@@ -3,6 +3,7 @@ import { recordTrackListen } from "@/services/api";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import type { PlayState } from "@/types/song";
 import { useSpotifyController } from "./useSpotifyController";
+import { useYouTubeController } from "./useYouTubeController";
 
 export function usePlaybackEngine() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -18,6 +19,7 @@ export function usePlaybackEngine() {
     setCurrentTime,
     setDuration,
   });
+  const youtube = useYouTubeController();
 
   const releaseSource = useCallback((releasedItem: PlaybackItem | null) => {
     if (
@@ -65,6 +67,7 @@ export function usePlaybackEngine() {
         return;
       const previous = itemRef.current;
       if (previous?.engine === "spotify") spotify.pause();
+      else if (previous?.engine === "youtube") youtube.pause();
       else audioRef.current?.pause();
       releaseSource(previous);
       itemRef.current = next;
@@ -95,6 +98,9 @@ export function usePlaybackEngine() {
           const controller = await spotify.getController(active.src);
           if (same && spotify.uriRef.current === active.src) controller.resume();
           else controller.play();
+        } else if (active.engine === "youtube") {
+          youtube.play(active.src);
+          setPlayState("playing");
         } else {
           await audioRef.current?.play();
           setPlayState("playing");
@@ -103,19 +109,23 @@ export function usePlaybackEngine() {
         setPlayState("error");
       }
     },
-    [select, spotify],
+    [select, spotify, youtube],
   );
 
   const pause = useCallback(() => {
     if (itemRef.current?.engine === "spotify") spotify.pause();
+    else if (itemRef.current?.engine === "youtube") youtube.pause();
     else audioRef.current?.pause();
     setPlayState("paused");
-  }, [spotify]);
+  }, [spotify, youtube]);
 
   const seek = useCallback(
     (time: number) => {
       if (itemRef.current?.engine === "spotify") {
         spotify.seek(time);
+        setCurrentTime(time);
+      } else if (itemRef.current?.engine === "youtube") {
+        youtube.seek(time);
         setCurrentTime(time);
       } else if (audioRef.current) {
         const audio = audioRef.current;
@@ -123,7 +133,7 @@ export function usePlaybackEngine() {
         setCurrentTime(audio.currentTime);
       }
     },
-    [spotify],
+    [spotify, youtube],
   );
 
   const setVolume = useCallback((next: number) => {
@@ -139,6 +149,7 @@ export function usePlaybackEngine() {
     duration,
     volume,
     spotifyHostRef: spotify.hostRef,
+    youtubeHostRef: youtube.hostRef,
     select,
     play,
     pause,

@@ -21,6 +21,7 @@ export interface PlaylistTrack {
   title: string;
   artists: Array<{ id: string; name: string }>;
   album: string | null;
+  genre: string | null;
   imageUrl: string | null;
   externalUrl: string;
   durationMs: number;

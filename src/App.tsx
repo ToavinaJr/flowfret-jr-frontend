@@ -26,6 +26,7 @@ const FriendsPage = lazy(() => import("@/pages/FriendsPage"));
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
 const PostPage = lazy(() => import("@/pages/PostPage"));
 const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
+const PlaylistsPage = lazy(() => import("@/pages/PlaylistsPage"));
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
                     <Route path="/chords" element={<ChordsPage />} />
                     <Route path="/upload" element={<UploadPage />} />
                     <Route path="/music" element={<MusicSearchPage />} />
+                    <Route path="/playlists" element={<PlaylistsPage />} />
                     <Route path="/metronome" element={<MetronomePage />} />
                     <Route path="/scales" element={<ScalesPage />} />
                     <Route path="/menu" element={<MenuPage />} />

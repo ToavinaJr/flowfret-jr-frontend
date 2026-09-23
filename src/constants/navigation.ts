@@ -10,6 +10,7 @@ import {
   Timer,
   Menu,
   Search,
+  ListMusic,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ export interface AppNavItem {
 export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
   { icon: Search, label: "Music", path: "/music" },
+  { icon: ListMusic, label: "Playlists", path: "/playlists" },
   { icon: Upload, label: "Upload", path: "/upload" },
   { icon: Users, label: "Amis", path: "/friends" },
   { icon: Bell, label: "Notifications", path: "/notifications" },

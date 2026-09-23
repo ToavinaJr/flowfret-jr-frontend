@@ -7,7 +7,7 @@ const PLAYLIST_FIELDS = `
 `;
 const ITEM_FIELDS = `
   id playlistId trackId addedById position
-  track { id provider providerTrackId title artists { id name } album imageUrl externalUrl durationMs isrc }
+  track { id provider providerTrackId title artists { id name } album genre imageUrl externalUrl durationMs isrc }
 `;
 
 export async function fetchPlaylists(): Promise<Playlist[]> {
@@ -55,6 +55,7 @@ export async function addTrackToPlaylist(
           title: track.title,
           artists: track.artists,
           album: track.album,
+          genre: track.genre,
           imageUrl: track.imageUrl,
           externalUrl: track.externalUrl,
           durationMs: track.durationMs,
