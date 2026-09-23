@@ -25,7 +25,7 @@
         "react-router-dom": "7.18.4",
         "sonner": "^1.7.4",
         "tailwind-merge": "^2.6.1",
-        "tailwindcss-animate": "^1.0.7",
+        "tailwindcss-animate": "^1.0.7"
       },
       "devDependencies": {
         "@eslint/js": "^9.39.5",
@@ -47,14 +47,14 @@
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.70.1",
         "vite": "8.3.0",
-        "vitest": "5.0.1",
-      },
-    },
+        "vitest": "5.0.1"
+      }
+    }
   },
   "overrides": {
     "picomatch": "4.0.7",
     "postcss-selector-parser": "6.1.3",
-    "yaml": "2.8.3",
+    "yaml": "2.8.3"
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.4.4", "", {}, "sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg=="],
@@ -879,6 +879,6 @@
 
     "wrap-ansi-cjs/string-width/emoji-regex": ["emoji-regex@8.0.0", "", {}, "sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A=="],
 
-    "@typescript-eslint/typescript-estree/minimatch/brace-expansion/balanced-match": ["balanced-match@4.0.4", "", {}, "sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA=="],
+    "@typescript-eslint/typescript-estree/minimatch/brace-expansion/balanced-match": ["balanced-match@4.0.4", "", {}, "sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA=="]
   }
 }
