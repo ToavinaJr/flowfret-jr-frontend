@@ -24,7 +24,7 @@ export function useFeed() {
       const toastId = toast.loading(t(images.length ? "feed.uploadingPost" : "feed.publishing"));
       try {
         const uploaded = images.length ? await uploadImages(images) : [];
-        const post = await createFeedPost({ ...(content.trim() ? { content: content.trim() } : {}), authorId: user.id, imageUploadIds: uploaded.map(({ id }) => id) });
+        const post = await createFeedPost({ ...(content.trim() ? { content: content.trim() } : {}), imageUploadIds: uploaded.map(({ id }) => id) });
         toast.success(t("feed.postCreated"), { id: toastId });
         return post;
       } catch (error) {
@@ -37,9 +37,9 @@ export function useFeed() {
   const comment = async (postId: string, content: string) => {
     if (!user) throw new Error("Unauthenticated");
     const toastId = toast.loading(t("feed.commentPublishing"));
-    try { const created = await createFeedComment({ postId, content, authorId: user.id }); await refresh(); toast.success(t("feed.commentCreated"), { id: toastId }); return created; }
+    try { const created = await createFeedComment({ postId, content }); await refresh(); toast.success(t("feed.commentCreated"), { id: toastId }); return created; }
     catch (error) { toast.error(t("feed.commentCreateError"), { id: toastId }); throw error; }
   };
-  const toggleLike = async (post: FeedPost) => { if (!user) return; if (post.viewerLikeId) await deleteFeedLike(post.viewerLikeId); else await createFeedLike(post.id, user.id); await refresh(); };
+  const toggleLike = async (post: FeedPost) => { if (!user) return; if (post.viewerHasLiked) await deleteFeedLike(post.id); else await createFeedLike(post.id); await refresh(); };
   return { user, postsQuery, createPost, comment, toggleLike, refresh };
 }

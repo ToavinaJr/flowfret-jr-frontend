@@ -40,34 +40,34 @@ const App = () => (
               <Suspense
                 fallback={
                   <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-                    Chargementâ€¦
+                    Chargement...
                   </div>
                 }
               >
                 <Routes>
-                <Route element={<AppLayout />}>
-                  <Route path="/" element={<FeedPage />} />
-                  <Route path="/tuner" element={<TunerPage />} />
-                  <Route path="/chords" element={<ChordsPage />} />
-                  <Route path="/upload" element={<UploadPage />} />
-                  <Route path="/music" element={<MusicSearchPage />} />
-                  <Route path="/metronome" element={<MetronomePage />} />
-                  <Route path="/scales" element={<ScalesPage />} />
-                  <Route path="/menu" element={<MenuPage />} />
-                  <Route path="/histoire" element={<HistoirePage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/parametres" element={<ParametresPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/profile/:userId" element={<ProfilePage />} />
-                  <Route path="/friends" element={<FriendsPage />} />
-                  <Route path="/notifications" element={<NotificationsPage />} />
-                  <Route path="/post/:postId" element={<PostPage />} />
-                  <Route path="/help" element={<HelpPage />} />
-                  <Route path="/moderation" element={<ModerationPage />} />
-                  <Route path="/verify-email" element={<FeedPage />} />
-                  <Route path="/reset-password" element={<FeedPage />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
+                  <Route element={<AppLayout />}>
+                    <Route path="/" element={<FeedPage />} />
+                    <Route path="/tuner" element={<TunerPage />} />
+                    <Route path="/chords" element={<ChordsPage />} />
+                    <Route path="/upload" element={<UploadPage />} />
+                    <Route path="/music" element={<MusicSearchPage />} />
+                    <Route path="/metronome" element={<MetronomePage />} />
+                    <Route path="/scales" element={<ScalesPage />} />
+                    <Route path="/menu" element={<MenuPage />} />
+                    <Route path="/histoire" element={<HistoirePage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/parametres" element={<ParametresPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile/:userId" element={<ProfilePage />} />
+                    <Route path="/friends" element={<FriendsPage />} />
+                    <Route path="/notifications" element={<NotificationsPage />} />
+                    <Route path="/post/:postId" element={<PostPage />} />
+                    <Route path="/help" element={<HelpPage />} />
+                    <Route path="/moderation" element={<ModerationPage />} />
+                    <Route path="/verify-email" element={<FeedPage />} />
+                    <Route path="/reset-password" element={<FeedPage />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
             </AuthGate>

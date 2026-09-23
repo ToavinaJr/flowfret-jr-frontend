@@ -31,12 +31,10 @@ export interface FeedPost {
 
 export interface CreatePostInput {
   content?: string;
-  authorId: string;
   imageUploadIds?: string[];
 }
 
 export interface CreateCommentInput {
   content: string;
   postId: string;
-  authorId: string;
 }

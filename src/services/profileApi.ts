@@ -48,7 +48,6 @@ export async function fetchMyProfile(
 }
 
 export async function saveProfile(
-  userId: string,
   data: {
     displayName: string;
     bio: string;
@@ -75,12 +74,11 @@ export async function saveProfile(
       : `mutation CreateProfile($data: CreateProfileInput!) { createProfile(data: $data) { id } }`,
     variables: profileId
       ? { id: profileId, data: payload }
-      : { data: { ...payload, userId } },
+      : { data: payload },
   });
 }
 
 export async function saveProfileImage(
-  userId: string,
   username: string,
   avatarUrl: string,
   profileId?: string,
@@ -93,6 +91,6 @@ export async function saveProfileImage(
       : `mutation CreateProfile($data: CreateProfileInput!) { createProfile(data: $data) { id } }`,
     variables: profileId
       ? { id: profileId, data: { avatarUrl } }
-      : { data: { userId, displayName: username, avatarUrl } },
+      : { data: { displayName: username, avatarUrl } },
   });
 }

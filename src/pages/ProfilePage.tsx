@@ -79,7 +79,6 @@ export default function ProfilePage() {
     try {
       const [image] = await uploadImages([file]);
       await saveProfile(
-        user.id,
         {
           displayName: displayName || user.username,
           bio,
@@ -102,7 +101,6 @@ export default function ProfilePage() {
   async function removeAvatar() {
     if (!user || !profile?.id || !own) return;
     await saveProfile(
-      user.id,
       {
         displayName: displayName || user.username,
         bio,
@@ -117,7 +115,7 @@ export default function ProfilePage() {
     if (!user || !own) return;
     setSaving(true);
     try {
-      await saveProfile(user.id, { displayName, bio, visibility }, profile?.id);
+      await saveProfile({ displayName, bio, visibility }, profile?.id);
       await load();
       toast.success(t("profilePage.updated"));
     } catch (error) {
@@ -133,15 +131,14 @@ export default function ProfilePage() {
     const created = await createFeedComment({
       postId,
       content,
-      authorId: user.id,
     });
     await load();
     return created;
   }
   async function toggleLike(post: FeedPost) {
     if (!user) return;
-    if (post.viewerLikeId) await deleteFeedLike(post.viewerLikeId);
-    else await createFeedLike(post.id, user.id);
+    if (post.viewerHasLiked) await deleteFeedLike(post.id);
+    else await createFeedLike(post.id);
     await load();
   }
   if (!viewedId) return null;

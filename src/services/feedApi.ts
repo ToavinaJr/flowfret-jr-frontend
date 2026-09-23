@@ -26,12 +26,12 @@ export async function fetchPostComments(postId: string, skip = 0, take = 20): Pr
   return result.commentsByPost;
 }
 
-export async function createFeedLike(postId: string, userId: string): Promise<void> {
-  await graphqlRequest({ query: `mutation LikePost($data: CreatePostLikeInput!) { createPostLike(data: $data) { id } }`, variables: { data: { postId, userId } } });
+export async function createFeedLike(postId: string): Promise<void> {
+  await graphqlRequest({ query: `mutation LikePost($postId: String!) { likePost(postId: $postId) { id } }`, variables: { postId } });
 }
 
-export async function deleteFeedLike(id: string): Promise<void> {
-  await graphqlRequest({ query: `mutation UnlikePost($id: String!) { deletePostLike(id: $id) { id } }`, variables: { id } });
+export async function deleteFeedLike(postId: string): Promise<void> {
+  await graphqlRequest({ query: `mutation UnlikePost($postId: String!) { unlikePost(postId: $postId) { id } }`, variables: { postId } });
 }
 
 export async function updateFeedPost(id: string, content: string): Promise<void> {
@@ -57,11 +57,10 @@ export async function deleteFeedComment(id: string): Promise<void> {
 
 export async function reportFeedPost(
   postId: string,
-  reporterId: string,
   reason: string,
 ): Promise<void> {
   await graphqlRequest({
-    query: `mutation ReportFeedPost($data: CreatePostReportInput!) { createPostReport(data: $data) { id } }`,
-    variables: { data: { postId, reporterId, reason: reason.trim() } },
+    query: `mutation ReportFeedPost($postId: String!, $reason: String!) { reportPost(postId: $postId, reason: $reason) { id } }`,
+    variables: { postId, reason: reason.trim() },
   });
 }

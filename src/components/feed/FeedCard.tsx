@@ -356,7 +356,7 @@ export function FeedCard({
               if (reportReason.trim().length < 5) return;
               setReporting(true);
               try {
-                await reportFeedPost(post.id, currentUserId, reportReason);
+                await reportFeedPost(post.id, reportReason);
                 toast.success(t("feed.reportSuccess"));
                 setReportReason("");
                 setReportOpen(false);

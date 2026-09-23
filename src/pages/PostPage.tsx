@@ -30,15 +30,14 @@ export default function PostPage() {
     const created = await createFeedComment({
       postId: id,
       content,
-      authorId: user.id,
     });
     await refresh();
     return created;
   };
   const toggleLike = async (row: FeedPost) => {
     if (!user) return;
-    if (row.viewerLikeId) await deleteFeedLike(row.viewerLikeId);
-    else await createFeedLike(row.id, user.id);
+    if (row.viewerHasLiked) await deleteFeedLike(row.id);
+    else await createFeedLike(row.id);
     await refresh();
   };
   return (
