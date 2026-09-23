@@ -1,4 +1,14 @@
-import { FileText, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import {
+  FileText,
+  Pause,
+  Play,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -26,6 +36,11 @@ export default function PersistentMediaPlayer() {
     toggle,
     seek,
     setVolume,
+    queue,
+    shuffle,
+    setShuffle,
+    next,
+    previous,
   } = usePlayback();
   const lyricsTrack =
     item?.provider === MUSIC_PROVIDER.SPOTIFY && item.artist
@@ -101,6 +116,15 @@ export default function PersistentMediaPlayer() {
         )}
         <button
           type="button"
+          disabled={queue.length < 2}
+          onClick={() => void previous()}
+          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:flex"
+          aria-label="Morceau précédent"
+        >
+          <SkipBack className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
           onClick={() => void toggle()}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
           aria-label={
@@ -112,6 +136,25 @@ export default function PersistentMediaPlayer() {
           ) : (
             <Play className="ml-0.5 h-5 w-5" />
           )}
+        </button>
+        <button
+          type="button"
+          disabled={queue.length < 2}
+          onClick={() => void next()}
+          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:flex"
+          aria-label="Morceau suivant"
+        >
+          <SkipForward className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          disabled={queue.length < 2}
+          onClick={() => setShuffle(!shuffle)}
+          className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md disabled:opacity-30 md:flex ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+          aria-label="Lecture aléatoire"
+          aria-pressed={shuffle}
+        >
+          <Shuffle className="h-4 w-4" />
         </button>
         {lyricsTrack ? (
           <button

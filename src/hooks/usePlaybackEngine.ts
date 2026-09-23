@@ -81,7 +81,7 @@ export function usePlaybackEngine() {
       }
       setPlayState("paused");
     },
-    [releaseSource, spotify],
+    [releaseSource, spotify, youtube],
   );
 
   const play = useCallback(
