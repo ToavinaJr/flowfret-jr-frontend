@@ -13,6 +13,7 @@ export const SEARCH_MUSIC_QUERY = `
       tracks {
         provider
         id
+        providerTrackId
         audiusId
         title
         imageUrl

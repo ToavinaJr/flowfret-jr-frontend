@@ -4,12 +4,12 @@ import type { MusicTrack } from "@/types/music";
 
 export function SpotifyMediaPlayer({ track }: { track: MusicTrack }) {
   const { item, playState, toggle } = usePlayback();
-  const id = `spotify:${track.audiusId}`;
+  const id = `spotify:${track.providerTrackId}`;
   const isActive = item?.id === id;
   const isPlaying = isActive && playState === "playing";
   const playbackItem: PlaybackItem = {
     id,
-    src: `spotify:track:${track.audiusId}`,
+    src: `spotify:track:${track.providerTrackId}`,
     engine: "spotify",
     title: track.title,
     subtitle: track.artists.map((artist) => artist.name).join(", "),

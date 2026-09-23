@@ -28,6 +28,12 @@ export interface SpotifyIframeApi {
   ) => void;
 }
 
+declare global {
+  interface Window {
+    onSpotifyIframeApiReady?: (api: SpotifyIframeApi) => void;
+  }
+}
+
 let spotifyApiPromise: Promise<SpotifyIframeApi> | null = null;
 
 export function loadSpotifyIframeApi(): Promise<SpotifyIframeApi> {

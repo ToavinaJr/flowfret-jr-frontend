@@ -6,6 +6,7 @@ export interface MusicArtist {
 export interface MusicTrack {
   provider: MusicProvider;
   id: string;
+  providerTrackId: string;
   audiusId: string;
   title: string;
   artists: MusicArtist[];

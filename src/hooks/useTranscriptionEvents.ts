@@ -143,7 +143,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
     setError(null);
     try {
       const response = await createTranscription({
-        trackId: track.audiusId,
+        trackId: track.providerTrackId,
         audioUrl: track.streamUrl,
         title: track.title,
         artist: track.artists[0]?.name,
@@ -156,7 +156,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
       return response;
     } catch (prepareError) {
       console.error("[FretFlow:transcription] prepare_failed", {
-        trackId: track.audiusId,
+        trackId: track.providerTrackId,
         error: prepareError,
       });
       const friendlyError = getFriendlyTranscriptionError(prepareError);
@@ -206,6 +206,6 @@ export function useTranscriptionEvents(track: MusicTrack) {
     activeIdRef.current = null;
     setState(null);
     setError(null);
-  }, [track.audiusId]);
+  }, [track.providerTrackId]);
   return { transcription: state, error, prepare, retry };
 }

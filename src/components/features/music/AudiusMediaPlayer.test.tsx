@@ -18,6 +18,7 @@ vi.mock("@/hooks/useTranscriptionEvents", () => ({
 const track = {
   provider: "AUDIUS" as const,
   id: "track",
+  providerTrackId: "track",
   audiusId: "track",
   title: "Song",
   artists: [{ id: "artist", name: "Artist" }],

@@ -12,7 +12,7 @@ import { getYouTubeEmbedUrl } from "@/utils/youtubeEmbed";
 
 export function EmbeddedMediaPlayer({ track }: { track: MusicTrack }) {
   const providerName = "YouTube";
-  const embedUrl = getYouTubeEmbedUrl(track.audiusId);
+  const embedUrl = getYouTubeEmbedUrl(track.providerTrackId);
 
   if (!embedUrl)
     return (
@@ -50,7 +50,7 @@ export function EmbeddedMediaPlayer({ track }: { track: MusicTrack }) {
 
         <div className="px-4 pb-4 sm:px-6 sm:pb-6">
           <iframe
-            key={track.audiusId}
+            key={track.providerTrackId}
             src={embedUrl}
             title={`${providerName} — ${track.title}`}
             className="aspect-video w-full rounded-xl border-0"
