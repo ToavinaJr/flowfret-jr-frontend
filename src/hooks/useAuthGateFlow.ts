@@ -10,12 +10,19 @@ import {
 } from "@/services/googleAuth";
 import { ApiClientError } from "@/types/api";
 import type { AuthMode } from "@/types/auth";
+import {
+  assertPasswords,
+  googleError,
+  LocalAuthError,
+  submitError,
+} from "./auth-flow-errors";
 
 export function useAuthGateFlow() {
   const { t } = useTranslation();
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const form = useAuthForm();
+  const { setMode } = form;
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [verificationToken, setVerificationToken] = useState("");
   const [passwordResetToken, setPasswordResetToken] = useState("");
@@ -28,18 +35,18 @@ export function useAuthGateFlow() {
     if (!token) return;
     if (window.location.pathname === "/reset-password") {
       setPasswordResetToken(token);
-      form.setMode("reset");
+      setMode("reset");
     } else if (
       window.location.pathname === "/verify-email" ||
       searchParams.has("token")
     ) {
       setVerificationToken(token);
-      form.setMode("verify");
+      setMode("verify");
     }
-  }, [searchParams, form.setMode]);
+  }, [searchParams, setMode]);
 
   function switchMode(next: AuthMode) {
-    form.setMode(next);
+  setMode(next);
     setError(null);
     setAcceptedTerms(false);
     form.resetForm();
@@ -145,7 +152,7 @@ export function useAuthGateFlow() {
     });
     setPendingEmail(pending.email);
     setVerificationToken(pending.verificationToken);
-    form.setMode("verify");
+    setMode("verify");
     toast.success(t("auth.toasts.otpSent"), { description: pending.message });
   }
 
@@ -189,35 +196,4 @@ export function useAuthGateFlow() {
     handleSubmit,
     handleResendOtp,
   };
-}
-
-type Translate = (key: string) => string;
-
-class LocalAuthError extends Error {}
-
-function assertPasswords(password: string, confirmation: string, t: Translate) {
-  if (password.length < 8)
-    throw new LocalAuthError(t("auth.errors.passwordTooShort"));
-  if (password !== confirmation)
-    throw new LocalAuthError(t("auth.errors.passwordMismatch"));
-}
-
-function googleError(cause: unknown, t: Translate): string {
-  if (cause instanceof ApiClientError) return cause.message;
-  if (cause instanceof Error) {
-    return /popup_closed|user.*cancel|access_denied|timed.?out/i.test(
-      cause.message,
-    )
-      ? t("auth.errors.googleCancelled")
-      : t("auth.errors.googleLoginFailed");
-  }
-  return t("auth.errors.googleLoginFailed");
-}
-
-function submitError(cause: unknown, mode: AuthMode, t: Translate): string {
-  if (cause instanceof ApiClientError || cause instanceof LocalAuthError)
-    return cause.message;
-  if (mode === "login") return t("auth.errors.loginFailed");
-  if (mode === "verify") return t("auth.errors.verificationFailed");
-  return t("auth.errors.registrationFailed");
 }
