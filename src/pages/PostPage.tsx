@@ -26,9 +26,14 @@ export default function PostPage() {
     await client.invalidateQueries({ queryKey: ["post", postId] });
   };
   const comment = async (id: string, content: string) => {
-    if (!user) return;
-    await createFeedComment({ postId: id, content, authorId: user.id });
+    if (!user) throw new Error("Unauthenticated");
+    const created = await createFeedComment({
+      postId: id,
+      content,
+      authorId: user.id,
+    });
     await refresh();
+    return created;
   };
   const toggleLike = async (row: FeedPost) => {
     if (!user) return;

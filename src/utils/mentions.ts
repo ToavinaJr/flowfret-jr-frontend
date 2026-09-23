@@ -17,7 +17,7 @@ export function mentionSegments(
   const segments: MentionSegment[] = [];
   const appendText = (text: string) => {
     if (!text) return;
-    const previous = segments.at(-1);
+    const previous = segments[segments.length - 1];
     if (previous && !previous.user) previous.text += text;
     else segments.push({ text });
   };

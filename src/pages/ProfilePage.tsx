@@ -126,9 +126,14 @@ export default function ProfilePage() {
     }
   }
   async function comment(postId: string, content: string) {
-    if (!user) return;
-    await createFeedComment({ postId, content, authorId: user.id });
+    if (!user) throw new Error("Unauthenticated");
+    const created = await createFeedComment({
+      postId,
+      content,
+      authorId: user.id,
+    });
     await load();
+    return created;
   }
   async function toggleLike(post: FeedPost) {
     if (!user) return;
