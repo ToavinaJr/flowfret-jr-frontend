@@ -3,6 +3,7 @@ import { Clock3, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { MusicTrack } from "@/types/music";
+import { AddToPlaylistButton } from "@/components/features/playlists/AddToPlaylistButton";
 import { MUSIC_PROVIDER } from "@/constants/domain";
 import { MusicMediaPlayer } from "./MusicMediaPlayer";
 import { TrackLyrics } from "./TrackLyrics";
@@ -78,6 +79,7 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
         </div>
 
         <MusicMediaPlayer track={track} />
+        <AddToPlaylistButton track={track} />
         {track.provider === MUSIC_PROVIDER.SPOTIFY ? (
           <TrackLyrics track={track} />
         ) : null}
