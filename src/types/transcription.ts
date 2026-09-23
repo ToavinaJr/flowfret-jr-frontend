@@ -29,6 +29,12 @@ export interface TranscriptionError {
 }
 export interface TranscriptionResponse {
   transcriptionId: string;
+  provider: "AUDIUS" | "SPOTIFY" | "YOUTUBE";
+  trackId: string;
+  title: string | null;
+  artist: string | null;
+  createdAt: string;
+  updatedAt: string;
   jobId: string | null;
   status: TranscriptionStatus;
   cached: boolean;

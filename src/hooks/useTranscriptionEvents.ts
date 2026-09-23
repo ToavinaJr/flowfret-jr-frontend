@@ -143,6 +143,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
     setError(null);
     try {
       const response = await createTranscription({
+        provider: track.provider,
         trackId: track.providerTrackId,
         audioUrl: track.streamUrl,
         title: track.title,

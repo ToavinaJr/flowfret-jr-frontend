@@ -11,6 +11,7 @@ import {
   Menu,
   Search,
   ListMusic,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Home, label: "Feed", path: "/" },
   { icon: Search, label: "Music", path: "/music" },
   { icon: ListMusic, label: "Playlists", path: "/playlists" },
+  { icon: FileText, label: "Transcriptions", path: "/transcriptions" },
   { icon: Upload, label: "Upload", path: "/upload" },
   { icon: Users, label: "Amis", path: "/friends" },
   { icon: Bell, label: "Notifications", path: "/notifications" },

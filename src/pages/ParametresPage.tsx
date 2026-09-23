@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import ThemeLanguageControls from "@/components/ThemeLanguageControls";
+import { AccountSecurity } from "@/components/settings/AccountSecurity";
+import { SessionManager } from "@/components/settings/SessionManager";
 
 const ParametresPage = () => {
   const { t } = useTranslation();
@@ -10,6 +12,11 @@ const ParametresPage = () => {
       <h1 className={PAGE_TITLE}>{t("settings.title")}</h1>
 
       <ThemeLanguageControls />
+
+      <div className="mt-4 space-y-4">
+        <SessionManager />
+        <AccountSecurity />
+      </div>
 
       <div className="mt-2 rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground sm:p-4">
         {t("settings.audioNotice")}

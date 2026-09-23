@@ -129,8 +129,13 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 export function getTranscriptionQueueDiagnostics(): Promise<Record<string, unknown>> {
   return request(`${BASE_URL}/diagnostics/queue`, { headers: headers() });
 }
+export function listTranscriptions(take = 20): Promise<TranscriptionResponse[]> {
+  return request(`${BASE_URL}?take=${encodeURIComponent(String(take))}`, {
+    headers: headers(),
+  });
+}
 
-export function createTranscription(input: { trackId: string; audioUrl: string; title?: string; artist?: string; language?: string; model?: string }): Promise<TranscriptionResponse> {
+export function createTranscription(input: { provider?: "AUDIUS" | "SPOTIFY" | "YOUTUBE"; trackId: string; audioUrl: string; title?: string; artist?: string; language?: string; model?: string }): Promise<TranscriptionResponse> {
   return request(BASE_URL, { method: "POST", headers: headers(true), body: JSON.stringify(input) });
 }
 export function getTranscription(id: string): Promise<TranscriptionResponse> { return request(`${BASE_URL}/${encodeURIComponent(id)}`, { headers: headers() }); }
