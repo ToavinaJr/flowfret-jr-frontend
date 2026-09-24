@@ -4,10 +4,15 @@ import {
   useContext,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
+import { usePlaybackMediaSession } from "@/hooks/usePlaybackMediaSession";
+import { usePlaybackPersistence } from "@/hooks/usePlaybackPersistence";
 import { usePlaybackQueue } from "@/hooks/usePlaybackQueue";
+import { usePlaybackTabCoordination } from "@/hooks/usePlaybackTabCoordination";
+import { readPlaybackSession } from "@/services/playbackSession";
 import type { PlayState } from "@/types/song";
 
 export interface PlaybackItem {
@@ -50,7 +55,8 @@ interface PlaybackContextValue {
 const PlaybackContext = createContext<PlaybackContextValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
-  const queue = usePlaybackQueue();
+  const [restoredSession] = useState(() => readPlaybackSession());
+  const queue = usePlaybackQueue(restoredSession);
   const playNextRef = useRef<((item: PlaybackItem) => Promise<void>) | null>(
     null,
   );
@@ -58,7 +64,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     const item = queue.next();
     if (item) void playNextRef.current?.(item);
   }, [queue]);
-  const engine = usePlaybackEngine(handleEnded);
+  const engine = usePlaybackEngine(handleEnded, {
+    item: restoredSession?.item ?? null,
+    currentTime: restoredSession?.currentTime ?? 0,
+    volume: restoredSession?.volume ?? 1,
+  });
+  const pausePlayback = engine.pause;
+  const seekPlayback = engine.seek;
   playNextRef.current = engine.play;
 
   const select = useCallback(
@@ -100,6 +112,27 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     const item = queue.previous();
     if (item) await engine.play(item);
   }, [engine, queue]);
+
+  usePlaybackPersistence({
+    item: engine.item,
+    queue: queue.queue,
+    currentIndex: queue.currentIndex,
+    currentTime: engine.currentTime,
+    volume: engine.volume,
+    shuffle: queue.shuffle,
+  });
+  usePlaybackTabCoordination(engine.playState, pausePlayback);
+  usePlaybackMediaSession({
+    item: engine.item,
+    playState: engine.playState,
+    currentTime: engine.currentTime,
+    duration: engine.duration,
+    play,
+    pause: pausePlayback,
+    next,
+    previous,
+    seek: seekPlayback,
+  });
 
   const value = useMemo<PlaybackContextValue>(
     () => ({

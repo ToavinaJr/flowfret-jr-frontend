@@ -1,10 +1,20 @@
 import { useCallback, useRef, useState } from "react";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 
-export function usePlaybackQueue() {
-  const [queue, setQueueState] = useState<PlaybackItem[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [shuffle, setShuffle] = useState(false);
+interface InitialPlaybackQueue {
+  queue: PlaybackItem[];
+  currentIndex: number;
+  shuffle: boolean;
+}
+
+export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
+  const [queue, setQueueState] = useState<PlaybackItem[]>(
+    () => initial?.queue ?? [],
+  );
+  const [currentIndex, setCurrentIndex] = useState(
+    () => initial?.currentIndex ?? -1,
+  );
+  const [shuffle, setShuffle] = useState(() => initial?.shuffle ?? false);
   const historyRef = useRef<number[]>([]);
 
   const setQueue = useCallback((items: PlaybackItem[], startIndex = 0) => {

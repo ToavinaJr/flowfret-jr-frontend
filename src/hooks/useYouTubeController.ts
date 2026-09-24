@@ -41,7 +41,7 @@ export function useYouTubeController({
     return () => window.removeEventListener("message", receive);
   }, [onEnded, setCurrentTime, setDuration, setPlayState]);
 
-  const play = useCallback((videoId: string) => {
+  const play = useCallback((videoId: string, startAt = 0) => {
     const host = hostRef.current;
     if (!host) throw new Error("YouTube player host is unavailable");
     if (videoIdRef.current !== videoId) {
@@ -49,7 +49,8 @@ export function useYouTubeController({
       lastPlayerStateRef.current = null;
       host.onload = () => listen(host);
       const origin = encodeURIComponent(window.location.origin);
-      host.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&enablejsapi=1&playsinline=1&origin=${origin}`;
+      const start = Math.max(0, Math.floor(startAt));
+      host.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&enablejsapi=1&playsinline=1&start=${start}&origin=${origin}`;
       return;
     }
     command(host, "playVideo");

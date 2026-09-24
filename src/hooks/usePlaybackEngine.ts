@@ -5,26 +5,42 @@ import type { PlayState } from "@/types/song";
 import { useSpotifyController } from "./useSpotifyController";
 import { useYouTubeController } from "./useYouTubeController";
 
-export function usePlaybackEngine(onEnded?: () => void) {
+interface InitialPlaybackState {
+  item: PlaybackItem | null;
+  currentTime: number;
+  volume: number;
+}
+
+export function usePlaybackEngine(
+  onEnded?: () => void,
+  initial?: InitialPlaybackState,
+) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const itemRef = useRef<PlaybackItem | null>(null);
+  const itemRef = useRef<PlaybackItem | null>(initial?.item ?? null);
+  const resumeAtRef = useRef(initial?.currentTime ?? 0);
   const loggedItemRef = useRef<string | null>(null);
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
   const handleYouTubeEnded = useCallback(() => onEndedRef.current?.(), []);
-  const [item, setItem] = useState<PlaybackItem | null>(null);
-  const [playState, setPlayState] = useState<PlayState>("idle");
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolumeState] = useState(1);
+  const [item, setItem] = useState<PlaybackItem | null>(initial?.item ?? null);
+  const [playState, setPlayState] = useState<PlayState>(
+    initial?.item ? "paused" : "idle",
+  );
+  const [currentTime, setCurrentTime] = useState(initial?.currentTime ?? 0);
+  const [duration, setDuration] = useState(initial?.item?.duration ?? 0);
+  const [volume, setVolumeState] = useState(initial?.volume ?? 1);
+  const updateCurrentTime = useCallback((time: number) => {
+    resumeAtRef.current = time;
+    setCurrentTime(time);
+  }, []);
   const spotify = useSpotifyController({
     setPlayState,
-    setCurrentTime,
+    setCurrentTime: updateCurrentTime,
     setDuration,
   });
   const youtube = useYouTubeController({
     setPlayState,
-    setCurrentTime,
+    setCurrentTime: updateCurrentTime,
     setDuration,
     onEnded: handleYouTubeEnded,
   });
@@ -40,11 +56,17 @@ export function usePlaybackEngine(onEnded?: () => void) {
   useEffect(() => {
     const audio = new Audio();
     audio.preload = "auto";
-    audio.volume = 1;
+    audio.volume = initial?.volume ?? 1;
     audioRef.current = audio;
-    const onTime = () => setCurrentTime(audio.currentTime);
-    const onMetadata = () =>
+    const onTime = () => {
+      resumeAtRef.current = audio.currentTime;
+      updateCurrentTime(audio.currentTime);
+    };
+    const onMetadata = () => {
       setDuration(audio.duration || itemRef.current?.duration || 0);
+      if (resumeAtRef.current > 0)
+        audio.currentTime = Math.min(resumeAtRef.current, audio.duration || resumeAtRef.current);
+    };
     const onPlay = () => setPlayState("playing");
     const onPause = () =>
       setPlayState((state) => (state === "error" ? state : "paused"));
@@ -59,6 +81,11 @@ export function usePlaybackEngine(onEnded?: () => void) {
     audio.addEventListener("pause", onPause);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", onError);
+    const restoredItem = itemRef.current;
+    if ((restoredItem?.engine ?? "audio") === "audio" && restoredItem) {
+      audio.src = restoredItem.src;
+      audio.load();
+    }
     return () => {
       audio.pause();
       audio.removeEventListener("timeupdate", onTime);
@@ -70,7 +97,9 @@ export function usePlaybackEngine(onEnded?: () => void) {
       audioRef.current = null;
       releaseSource(itemRef.current);
     };
-  }, [releaseSource]);
+    // Initial values are intentionally captured once when the engine is created.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [releaseSource, updateCurrentTime]);
 
   const select = useCallback(
     (next: PlaybackItem) => {
@@ -82,6 +111,7 @@ export function usePlaybackEngine(onEnded?: () => void) {
       else audioRef.current?.pause();
       releaseSource(previous);
       itemRef.current = next;
+      resumeAtRef.current = 0;
       setItem(next);
       setCurrentTime(0);
       setDuration(next.duration || 0);
@@ -107,10 +137,11 @@ export function usePlaybackEngine(onEnded?: () => void) {
       try {
         if (active.engine === "spotify") {
           const controller = await spotify.getController(active.src);
+          if (resumeAtRef.current > 0) controller.seek(resumeAtRef.current);
           if (same && spotify.uriRef.current === active.src) controller.resume();
           else controller.play();
         } else if (active.engine === "youtube") {
-          youtube.play(active.src);
+          youtube.play(active.src, resumeAtRef.current);
           setPlayState("playing");
         } else {
           await audioRef.current?.play();
@@ -134,13 +165,16 @@ export function usePlaybackEngine(onEnded?: () => void) {
     (time: number) => {
       if (itemRef.current?.engine === "spotify") {
         spotify.seek(time);
+        resumeAtRef.current = time;
         setCurrentTime(time);
       } else if (itemRef.current?.engine === "youtube") {
         youtube.seek(time);
+        resumeAtRef.current = time;
         setCurrentTime(time);
       } else if (audioRef.current) {
         const audio = audioRef.current;
         audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
+        resumeAtRef.current = audio.currentTime;
         setCurrentTime(audio.currentTime);
       }
     },

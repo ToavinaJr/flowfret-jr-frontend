@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AuthGate } from "@/components/AuthGate";
 import AppLayout from "@/components/AppLayout";
+import { PlaybackProvider } from "@/contexts/PlaybackContext";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
@@ -38,7 +39,8 @@ const App = () => (
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            <AuthGate>
+            <PlaybackProvider>
+              <AuthGate>
               <Suspense
                 fallback={
                   <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
@@ -74,7 +76,8 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-            </AuthGate>
+              </AuthGate>
+            </PlaybackProvider>
           </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
