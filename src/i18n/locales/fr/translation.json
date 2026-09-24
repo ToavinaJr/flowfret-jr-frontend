@@ -519,6 +519,8 @@
     "open": "Afficher les accords",
     "close": "Masquer les accords",
     "current": "Accord actuel",
+    "playNow": "À jouer maintenant",
+    "alternative": "Alternative {{number}}",
     "timeline": "Chronologie des accords",
     "chordCount_one": "{{count}} accord détecté",
     "chordCount_other": "{{count}} accords détectés",

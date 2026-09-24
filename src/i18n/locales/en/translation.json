@@ -518,6 +518,8 @@
     "open": "Show chords",
     "close": "Hide chords",
     "current": "Current chord",
+    "playNow": "Play now",
+    "alternative": "Alternative {{number}}",
     "timeline": "Chord timeline",
     "chordCount_one": "{{count}} chord detected",
     "chordCount_other": "{{count}} chords detected",

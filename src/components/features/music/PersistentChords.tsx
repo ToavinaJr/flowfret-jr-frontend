@@ -113,11 +113,44 @@ export function PersistentChords({
                       {activeChord.positions.map((position, index) => (
                         <div
                           key={`${activeChord.label}-${position.baseFret}-${index}`}
-                          className="relative min-w-0"
+                          aria-current={index === 0 ? "true" : undefined}
+                          aria-label={
+                            index === 0
+                              ? t("chordPlayer.playNow")
+                              : t("chordPlayer.alternative", {
+                                  number: index + 1,
+                                })
+                          }
+                          className={`relative min-w-0 rounded-lg border p-1 transition-colors ${
+                            index === 0
+                              ? "border-primary bg-primary/15 shadow-[0_0_0_1px_hsl(var(--primary)/0.35)]"
+                              : "border-transparent bg-secondary/35 opacity-75"
+                          }`}
                         >
-                          <span className="absolute right-1 top-5 z-10 grid h-5 min-w-5 place-items-center rounded-full bg-secondary px-1 font-musical text-[10px] text-muted-foreground">
-                            {index + 1}
-                          </span>
+                          <div className="flex min-h-6 items-center justify-between gap-1 px-1">
+                            <span
+                              className={`truncate text-[10px] font-semibold uppercase tracking-wide ${
+                                index === 0
+                                  ? "text-primary"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {index === 0
+                                ? t("chordPlayer.playNow")
+                                : t("chordPlayer.alternative", {
+                                    number: index + 1,
+                                  })}
+                            </span>
+                            <span
+                              className={`grid h-5 min-w-5 shrink-0 place-items-center rounded-full px-1 font-musical text-[10px] ${
+                                index === 0
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-secondary text-muted-foreground"
+                              }`}
+                            >
+                              {index + 1}
+                            </span>
+                          </div>
                           <ChordDiagram
                             chord={activeChord.label}
                             position={position}
@@ -163,7 +196,6 @@ export function PersistentChords({
                   );
                 })}
               </div>
-
             </div>
           ) : null}
         </div>
