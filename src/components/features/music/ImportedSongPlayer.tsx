@@ -50,6 +50,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
       destination: "/upload",
       trackActivity: false,
       revokeSourceOnRelease: true,
+      chordCues: song.meta.cues,
     }),
     [song, t],
   );

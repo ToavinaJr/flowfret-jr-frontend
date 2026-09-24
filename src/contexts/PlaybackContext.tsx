@@ -19,6 +19,7 @@ import {
 } from "@/services/playbackSession";
 import type { PlayState } from "@/types/song";
 import { useTranslation } from "react-i18next";
+import type { ChordCue } from "@/types/song";
 
 export interface PlaybackItem {
   id: string;
@@ -33,6 +34,7 @@ export interface PlaybackItem {
   provider?: string;
   artist?: string;
   album?: string | null;
+  chordCues?: ChordCue[];
   revokeSourceOnRelease?: boolean;
 }
 

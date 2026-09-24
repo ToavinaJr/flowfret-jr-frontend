@@ -243,6 +243,13 @@
   "upload": {
     "title": "Importer et analyser",
     "analyzing": "Analyse en cours…",
+    "analysisPhases": {
+      "matching": "Recherche d’une source audio correspondante…",
+      "downloading": "Chargement de l’audio…",
+      "decoding": "Décodage audio…",
+      "classifying": "Détection des accords…",
+      "complete": "Analyse terminée"
+    },
     "invalidFile": "Sélectionnez un fichier audio (MP3, WAV…).",
     "tooLarge": "Fichier trop volumineux (20 Mo maximum).",
     "analysisFailed": "Échec de l’analyse. Essayez un autre fichier.",
@@ -507,6 +514,26 @@
     "next": "Morceau suivant",
     "shuffle": "Lecture aléatoire",
     "youtubePlayer": "Lecteur de playlist YouTube"
+  },
+  "chordPlayer": {
+    "title": "Accords",
+    "open": "Afficher les accords",
+    "close": "Masquer les accords",
+    "current": "Accord actuel",
+    "timeline": "Chronologie des accords",
+    "chordCount_one": "{{count}} accord détecté",
+    "chordCount_other": "{{count}} accords détectés",
+    "analysisHint": "La première analyse peut prendre un moment. Le résultat reste ensuite en cache.",
+    "unavailable": "Aucune source audio correspondante n’a été trouvée pour analyser ce morceau.",
+    "error": "Les accords ne peuvent pas être analysés pour le moment.",
+    "alternateSource": "Analyse basée sur « {{title}} » par {{artist}} sur Audius ; la synchronisation peut varier selon la version.",
+    "phases": {
+      "matching": "Recherche de la version audio…",
+      "downloading": "Chargement de l’audio…",
+      "decoding": "Décodage audio…",
+      "classifying": "Détection des accords…",
+      "complete": "Analyse terminée"
+    }
   },
   "playlists": {
     "title": "Mes playlists",

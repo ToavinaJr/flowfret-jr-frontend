@@ -42,9 +42,9 @@ const UploadPage = () => {
     setProgress(0);
 
     try {
-      const result = await analyzeAudioFile(file, (ratio, label) => {
+      const result = await analyzeAudioFile(file, (ratio, phase) => {
         setProgress(ratio);
-        setProgressLabel(label);
+        setProgressLabel(t(`upload.analysisPhases.${phase}`));
       });
 
       const uri = URL.createObjectURL(file);

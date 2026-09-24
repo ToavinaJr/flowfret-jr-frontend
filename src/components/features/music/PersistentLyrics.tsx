@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FileText, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
@@ -10,13 +9,16 @@ export function PersistentLyrics({
   item,
   currentTime,
   onSeek,
+  open,
+  onOpenChange,
 }: {
   item: PlaybackItem;
   currentTime: number;
   onSeek: (time: number) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
   const track =
     item.provider === MUSIC_PROVIDER.SPOTIFY && item.artist
       ? {
@@ -39,7 +41,7 @@ export function PersistentLyrics({
             <h2 className="text-sm font-semibold">{t("lyrics.title")}</h2>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => onOpenChange(false)}
               className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
               aria-label={t("lyrics.close")}
             >
@@ -56,7 +58,7 @@ export function PersistentLyrics({
       )}
       <button
         type="button"
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => onOpenChange(!open)}
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${open ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
         aria-label={open ? t("lyrics.close") : t("lyrics.open")}
         aria-expanded={open}

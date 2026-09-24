@@ -7,10 +7,12 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { usePlayback } from "@/contexts/PlaybackContext";
 import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
+import { PersistentChords } from "@/components/features/music/PersistentChords";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -21,6 +23,9 @@ function formatTime(seconds: number): string {
 
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
+  const [activePanel, setActivePanel] = useState<"chords" | "lyrics" | null>(
+    null,
+  );
   const {
     item,
     playState,
@@ -36,6 +41,7 @@ export default function PersistentMediaPlayer() {
     next,
     previous,
   } = usePlayback();
+  useEffect(() => setActivePanel(null), [item?.id]);
   if (!item) return null;
   const isSpotify = item.engine === "spotify" || item.id.startsWith("spotify:");
 
@@ -117,7 +123,20 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        <PersistentLyrics item={item} currentTime={currentTime} onSeek={seek} />
+        <PersistentChords
+          item={item}
+          currentTime={currentTime}
+          onSeek={seek}
+          open={activePanel === "chords"}
+          onOpenChange={(open) => setActivePanel(open ? "chords" : null)}
+        />
+        <PersistentLyrics
+          item={item}
+          currentTime={currentTime}
+          onSeek={seek}
+          open={activePanel === "lyrics"}
+          onOpenChange={(open) => setActivePanel(open ? "lyrics" : null)}
+        />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
         </span>

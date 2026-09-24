@@ -6,8 +6,8 @@ import type {
 } from "@/types/music";
 
 export const SEARCH_MUSIC_QUERY = `
-  query SearchMusic($query: String!, $limit: Int!, $cursor: String) {
-    searchMusic(query: $query, limit: $limit, cursor: $cursor) {
+  query SearchMusic($query: String!, $limit: Int!, $cursor: String, $provider: String) {
+    searchMusic(query: $query, limit: $limit, cursor: $cursor, provider: $provider) {
       provider
       total
       nextCursor
@@ -42,6 +42,7 @@ export async function searchMusic(
   query: string,
   limit: number = DEFAULT_SEARCH_LIMIT,
   cursor?: string,
+  provider?: SearchMusicQueryVariables["provider"],
 ): Promise<MusicSearchResult> {
   const trimmedQuery = query.trim();
   if (!trimmedQuery) {
@@ -54,6 +55,7 @@ export async function searchMusic(
       query: trimmedQuery,
       limit,
       ...(cursor ? { cursor } : {}),
+      ...(provider ? { provider } : {}),
     } satisfies SearchMusicQueryVariables,
   });
 

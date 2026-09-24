@@ -243,6 +243,13 @@
   "upload": {
     "title": "Upload & Analyze",
     "analyzing": "Analyzing…",
+    "analysisPhases": {
+      "matching": "Finding a matching audio source…",
+      "downloading": "Loading audio…",
+      "decoding": "Decoding audio…",
+      "classifying": "Detecting chords…",
+      "complete": "Analysis complete"
+    },
     "invalidFile": "Please select an audio file (MP3, WAV…).",
     "tooLarge": "File too large (max 20MB).",
     "analysisFailed": "Analysis failed. Try another file.",
@@ -507,6 +514,26 @@
     "next": "Next track",
     "shuffle": "Shuffle",
     "youtubePlayer": "YouTube playlist player"
+  },
+  "chordPlayer": {
+    "title": "Chords",
+    "open": "Show chords",
+    "close": "Hide chords",
+    "current": "Current chord",
+    "timeline": "Chord timeline",
+    "chordCount_one": "{{count}} chord detected",
+    "chordCount_other": "{{count}} chords detected",
+    "analysisHint": "The first analysis may take a moment. The result is then kept in cache.",
+    "unavailable": "No matching audio source was found to analyze this track.",
+    "error": "Chords cannot be analyzed right now.",
+    "alternateSource": "Analysis based on “{{title}}” by {{artist}} on Audius; synchronization may vary between versions.",
+    "phases": {
+      "matching": "Finding the audio version…",
+      "downloading": "Loading audio…",
+      "decoding": "Decoding audio…",
+      "classifying": "Detecting chords…",
+      "complete": "Analysis complete"
+    }
   },
   "playlists": {
     "title": "My playlists",
