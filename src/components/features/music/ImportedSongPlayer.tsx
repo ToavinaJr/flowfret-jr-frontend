@@ -86,7 +86,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
         <div className="relative flex w-full items-center justify-center gap-0 sm:gap-4">
           <div
             key={`previous-${activeCueIndex}`}
-            className="hidden -translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-all duration-500 sm:block"
+            className="hidden -translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-[transform,opacity,filter] duration-500 sm:block"
             aria-hidden="true"
           >
             {previous.position ? (
@@ -121,7 +121,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
           </div>
           <div
             key={`next-${activeCueIndex}`}
-            className="hidden translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-all duration-500 sm:block"
+            className="hidden translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-[transform,opacity,filter] duration-500 sm:block"
             aria-hidden="true"
           >
             {next.position ? (
@@ -167,7 +167,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
                 )
               }
               aria-pressed={previewChord === label}
-              className={`rounded-lg border px-2 py-3 text-center transition-all ${previewChord === label ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
+              className={`rounded-lg border px-2 py-3 text-center transition-[color,background-color,border-color,box-shadow] ${previewChord === label ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
             >
               <span className="block text-center font-musical text-base font-semibold">
                 {label}

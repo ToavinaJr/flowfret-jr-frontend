@@ -144,19 +144,19 @@ export default function ProfilePage() {
   if (!viewedId) return null;
   if (loading)
     return (
-      <main className={PAGE_SHELL}>
+      <div className={PAGE_SHELL}>
         <ProfileSkeleton />
-      </main>
+      </div>
     );
   if (!profile && !own)
     return (
-      <main className={PAGE_SHELL}>
+      <div className={PAGE_SHELL}>
         <p>{t("profilePage.privateOrMissing")}</p>
-      </main>
+      </div>
     );
   const avatar = profile?.avatarUrl;
   return (
-    <main className={PAGE_SHELL}>
+    <div className={PAGE_SHELL}>
       <header className="mb-6 flex items-center justify-between">
         <h1 className={`${PAGE_TITLE} mb-0`}>{t("profile.title")}</h1>
         <div className="flex gap-2">
@@ -211,6 +211,6 @@ export default function ProfilePage() {
           {t("profilePage.noPosts")}
         </p>
       )}
-    </main>
+    </div>
   );
 }

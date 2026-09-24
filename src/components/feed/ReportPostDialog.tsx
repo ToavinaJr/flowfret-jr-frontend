@@ -51,6 +51,8 @@ export function ReportPostDialog({
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <textarea
+            id="report-reason"
+            name="reason"
             value={reason}
             onChange={(event) => setReason(event.target.value)}
             minLength={5}

@@ -8,7 +8,7 @@ const MobileNav = () => {
   const { t } = useTranslation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/90 md:hidden">
+    <nav aria-label={t("nav.mobileNavigation")} className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/90 md:hidden">
       <div className="flex items-stretch justify-around gap-0.5 px-1 py-1.5">
         {MOBILE_TAB_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;

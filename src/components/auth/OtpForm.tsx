@@ -56,7 +56,7 @@ export function OtpForm({
           type="button"
           onClick={onSubmit}
           className={cn(
-            "inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70",
+            "inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70",
             loading && "cursor-wait",
           )}
           disabled={loading || otp.length !== 4}

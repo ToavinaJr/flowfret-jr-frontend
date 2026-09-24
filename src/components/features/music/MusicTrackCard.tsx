@@ -29,7 +29,7 @@ export function MusicTrackCard({
   const artistNames = track.artists.map((artist) => artist.name).join(", ");
 
   return (
-    <Card className="group overflow-hidden border-border/70 bg-card shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+    <Card className="group overflow-hidden border-border/70 bg-card shadow-none transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
       <CardContent className="flex flex-wrap items-center gap-3 p-3 sm:gap-4 sm:p-4">
         <div className="relative shrink-0 overflow-hidden rounded-lg bg-secondary shadow-sm">
           <img

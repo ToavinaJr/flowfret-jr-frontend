@@ -48,8 +48,8 @@ export function CircleOfFifths() {
         const isDiminished = index === diminished;
         const label = isDiminished ? `${note}°` : note;
         const fill = isDiminished ? "hsl(36 100% 50%)" : degree ? "hsl(212 88% 58%)" : "hsl(205 78% 18%)";
-        return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: note })} className="cursor-pointer outline-none">
-          <path d={sectorPath(162, 232, start, start + 30)} fill={fill} stroke="white" strokeWidth={index === selected ? 4 : 2.5} className="transition-[fill,filter] hover:brightness-110 focus:brightness-110" />
+        return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: note })} className="group cursor-pointer outline-none">
+          <path d={sectorPath(162, 232, start, start + 30)} fill={fill} stroke="white" strokeWidth={index === selected ? 4 : 2.5} className="transition-[fill,filter] hover:brightness-110 group-focus:brightness-125" />
           <text x={labelPoint.x} y={labelPoint.y - (degree || isDiminished ? 8 : 0)} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20" fontWeight={degree || isDiminished ? 700 : 500} className="pointer-events-none select-none">{label}</text>
           {(degree || isDiminished) && <text x={labelPoint.x} y={labelPoint.y + 18} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="14" fontWeight="700" className="pointer-events-none select-none">{isDiminished ? "vii°" : degree}</text>}
         </g>;
@@ -58,8 +58,8 @@ export function CircleOfFifths() {
         const start = index * 30 - 15;
         const labelPoint = point(127, index * 30);
         const degree = minorDegrees.get(index);
-        return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: major[index] })} className="cursor-pointer outline-none">
-          <path d={sectorPath(92, 162, start, start + 30)} fill={degree ? "hsl(105 58% 48%)" : "hsl(205 78% 18%)"} stroke="white" strokeWidth="2.5" className="transition-[fill,filter] hover:brightness-110 focus:brightness-110" />
+        return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: major[index] })} className="group cursor-pointer outline-none">
+          <path d={sectorPath(92, 162, start, start + 30)} fill={degree ? "hsl(105 58% 48%)" : "hsl(205 78% 18%)"} stroke="white" strokeWidth="2.5" className="transition-[fill,filter] hover:brightness-110 group-focus:brightness-125" />
           <text x={labelPoint.x} y={labelPoint.y - (degree ? 7 : 0)} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="15" fontWeight={degree ? 700 : 500} className="pointer-events-none select-none">{note}</text>
           {degree && <text x={labelPoint.x} y={labelPoint.y + 15} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="12" fontWeight="700" className="pointer-events-none select-none">{degree}</text>}
         </g>;

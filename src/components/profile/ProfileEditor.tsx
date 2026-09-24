@@ -39,7 +39,7 @@ export function ProfileEditor({
   return (
     <section className="mb-6 rounded-xl border bg-card p-5">
       <div className="mb-5 flex items-center gap-4">
-        <label
+        <div
           className={`relative grid h-20 w-20 place-items-center overflow-hidden rounded-full bg-primary text-xl text-primary-foreground ${own ? "cursor-pointer" : ""}`}
         >
           {avatar ? (
@@ -53,19 +53,25 @@ export function ProfileEditor({
           )}
           {own && (
             <>
-              <span className="absolute inset-0 grid place-items-center bg-black/40 opacity-0 hover:opacity-100">
-                <Camera />
-              </span>
               <input
-                className="sr-only"
+                id="profile-avatar"
+                name="avatar"
+                className="peer sr-only"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={saving}
                 onChange={onAvatarChange}
               />
+              <label
+                htmlFor="profile-avatar"
+                className="absolute inset-0 grid cursor-pointer place-items-center bg-black/40 opacity-0 hover:opacity-100 peer-focus-visible:opacity-100"
+              >
+                <Camera />
+                <span className="sr-only">{t("profileEditor.changePhoto")}</span>
+              </label>
             </>
           )}
-        </label>
+        </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-xl font-semibold">{displayName}</div>
           <div className="text-muted-foreground">@{username}</div>
@@ -88,18 +94,22 @@ export function ProfileEditor({
       </div>
       {own ? (
         <div className="space-y-3">
-          <label className="block text-sm">
+          <label htmlFor="profile-display-name" className="block text-sm">
             {t("profileEditor.displayName")}
             <input
+              id="profile-display-name"
+              name="displayName"
               value={displayName}
               onChange={(event) => onDisplayNameChange(event.target.value)}
               maxLength={120}
               className="mt-1 min-h-11 w-full rounded-md border bg-background px-3"
             />
           </label>
-          <label className="block text-sm">
+          <label htmlFor="profile-bio" className="block text-sm">
             {t("profileEditor.bio")}
             <textarea
+              id="profile-bio"
+              name="bio"
               value={bio}
               onChange={(event) => onBioChange(event.target.value)}
               maxLength={1000}
@@ -107,9 +117,11 @@ export function ProfileEditor({
               className="mt-1 w-full rounded-md border bg-background p-3"
             />
           </label>
-          <label className="block text-sm">
+          <label htmlFor="profile-visibility" className="block text-sm">
             {t("profileEditor.visibility")}
             <select
+              id="profile-visibility"
+              name="visibility"
               value={visibility}
               onChange={(event) =>
                 onVisibilityChange(event.target.value as ProfileVisibility)
@@ -128,6 +140,7 @@ export function ProfileEditor({
             </select>
           </label>
           <button
+            type="button"
             disabled={saving || !displayName.trim()}
             onClick={onSubmit}
             className="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-4 text-primary-foreground disabled:opacity-50"

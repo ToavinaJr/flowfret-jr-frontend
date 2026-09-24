@@ -94,10 +94,10 @@ export default function NotificationsPage() {
   });
   if (notifications.isLoading || preferences.isLoading)
     return (
-      <main className={PAGE_SHELL}>
+      <div className={PAGE_SHELL}>
         <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
         <NotificationsSkeleton />
-      </main>
+      </div>
     );
   const configured = new Map(
     (preferences.data ?? []).map((row) => [row.type, row.enabled]),
@@ -105,7 +105,7 @@ export default function NotificationsPage() {
   const types = Object.keys(preferenceLabels) as ConfigurableKind[];
   const rows = notifications.data?.pages.flat() ?? [];
   return (
-    <main className={PAGE_SHELL}>
+    <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
       {notifications.isError || preferences.isError ? (
         <p
@@ -123,10 +123,12 @@ export default function NotificationsPage() {
           {types.map((type) => (
             <label
               key={type}
+              htmlFor={`notification-${type.toLowerCase()}`}
               className="flex items-center justify-between gap-4 text-sm"
             >
               <span>{t(preferenceLabels[type])}</span>
               <Switch
+                id={`notification-${type.toLowerCase()}`}
                 checked={configured.get(type) ?? true}
                 disabled={updatePreference.isPending}
                 onCheckedChange={(enabled) =>
@@ -202,6 +204,6 @@ export default function NotificationsPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

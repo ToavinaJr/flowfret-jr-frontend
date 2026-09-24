@@ -1,5 +1,8 @@
 {
   "nav": {
+    "mainNavigation": "Main navigation",
+    "mobileNavigation": "Mobile navigation",
+    "menuNavigation": "Menu navigation",
     "feed": "Feed",
     "music": "Music",
     "upload": "Upload",
@@ -175,6 +178,7 @@
     "noPosts": "No posts yet."
   },
   "profileEditor": {
+    "changePhoto": "Change profile picture",
     "removePhoto": "Remove photo",
     "displayName": "Display name",
     "bio": "Bio",
@@ -200,7 +204,8 @@
     "voicing": "Voicing",
     "strum": "Strum",
     "selectPrompt": "Select a chord to preview",
-    "diagram": "{{chord}} diagram"
+    "diagram": "{{chord}} diagram",
+    "playString": "Play string {{string}}"
   },
   "metronome": {
     "title": "Metronome",
@@ -371,6 +376,7 @@
     "error": "Deletion failed. Please try again."
   },
   "postDetails": {
+    "openPost": "Open post by {{username}}",
     "title": "Post by {{username}}",
     "imageCount": "{{count}} photo(s)",
     "imageAlt": "Photo {{current}} of {{total}}",
@@ -489,7 +495,8 @@
     "downloadLrc": "Download LRC"
   },
   "scaleFretboard": {
-    "label": "Scale fretboard"
+    "label": "Scale fretboard",
+    "playNote": "Play {{note}} at fret {{fret}}"
   },
   "mediaPlayer": {
     "audioPlayer": "Audio player",

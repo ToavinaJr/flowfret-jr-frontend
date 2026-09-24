@@ -38,6 +38,8 @@ export function PlaylistList({
     <aside className="space-y-3 rounded-xl border border-border bg-card p-4">
       <form onSubmit={submit} className="flex gap-2">
         <input
+          id="new-playlist-name"
+          name="playlistName"
           value={name}
           onChange={(event) => setName(event.target.value)}
           maxLength={120}

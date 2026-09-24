@@ -46,8 +46,8 @@ export function AccountSecurity() {
     <div className="space-y-4">
       <form onSubmit={changePassword} className="space-y-3 rounded-xl border border-border bg-card p-4">
         <h2 className="font-semibold">{t("account.security.changePassword")}</h2>
-        <PasswordInput label={t("account.security.currentPassword")} value={currentPassword} onChange={setCurrentPassword} />
-        <PasswordInput label={t("account.security.newPassword")} value={newPassword} onChange={setNewPassword} minLength={8} />
+        <PasswordInput id="current-password" label={t("account.security.currentPassword")} value={currentPassword} onChange={setCurrentPassword} />
+        <PasswordInput id="new-account-password" label={t("account.security.newPassword")} value={newPassword} onChange={setNewPassword} minLength={8} />
         <button
           type="submit"
           disabled={pending !== null || !currentPassword || newPassword.length < 8}
@@ -62,6 +62,8 @@ export function AccountSecurity() {
           {t("account.security.deleteDescription")}
         </p>
         <input
+          id="delete-account-confirmation"
+          name="confirmation"
           value={confirmation}
           onChange={(event) => setConfirmation(event.target.value)}
           placeholder="DELETE"
@@ -81,20 +83,24 @@ export function AccountSecurity() {
 }
 
 function PasswordInput({
+  id,
   label,
   value,
   onChange,
   minLength = 1,
 }: {
+  id: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
   minLength?: number;
 }) {
   return (
-    <label className="block text-sm">
+    <label htmlFor={id} className="block text-sm">
       <span className="mb-1 block text-muted-foreground">{label}</span>
       <input
+        id={id}
+        name={id}
         type="password"
         value={value}
         onChange={(event) => onChange(event.target.value)}

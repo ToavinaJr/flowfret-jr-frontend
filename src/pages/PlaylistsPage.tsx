@@ -99,7 +99,7 @@ export default function PlaylistsPage() {
   }
 
   return (
-    <main className={PAGE_SHELL}>
+    <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("playlists.title")}</h1>
       {loading ? (
         <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
@@ -126,6 +126,6 @@ export default function PlaylistsPage() {
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }

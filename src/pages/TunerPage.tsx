@@ -142,7 +142,7 @@ const TunerPage = () => {
           onClick={() => {
             void toggle();
           }}
-          className={`flex h-14 w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-all ${
+          className={`flex h-14 w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-[color,background-color,border-color,box-shadow] ${
             isListening
               ? "bg-primary text-primary-foreground shadow-[0_0_20px_-5px] shadow-primary"
               : "border border-border bg-card text-muted-foreground hover:text-foreground"

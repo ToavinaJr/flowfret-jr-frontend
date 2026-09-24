@@ -39,7 +39,7 @@ export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
           type="button"
           disabled={!onSeek || line.startTimeMs === null}
           onClick={() => line.startTimeMs !== null && onSeek?.(line.startTimeMs / 1000)}
-          className={`block w-full rounded-md px-3 py-2 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${index === activeIndex ? "scale-[1.02] bg-primary/15 text-base font-semibold text-foreground" : "text-sm text-muted-foreground opacity-55 hover:opacity-90"}`}
+          className={`block w-full rounded-md px-3 py-2 text-center transition-[transform,color,background-color,opacity,font-size] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${index === activeIndex ? "scale-[1.02] bg-primary/15 text-base font-semibold text-foreground" : "text-sm text-muted-foreground opacity-55 hover:opacity-90"}`}
         >
           {line.text || " "}
         </button>

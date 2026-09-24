@@ -71,14 +71,14 @@ export default function FriendsPage() {
   });
   if (friendships.isLoading)
     return (
-      <main className={PAGE_SHELL}>
+      <div className={PAGE_SHELL}>
         <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
         <div
           className="mb-3 h-5 w-24 animate-pulse rounded-md bg-muted"
           aria-hidden="true"
         />
         <PersonListSkeleton count={4} />
-      </main>
+      </div>
     );
   const rows = friendships.data ?? [];
   const incoming = rows.filter(
@@ -93,7 +93,7 @@ export default function FriendsPage() {
     (row) => row.status === FRIENDSHIP_STATUS.ACCEPTED,
   );
   return (
-    <main className={PAGE_SHELL}>
+    <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("friends.title")}</h1>
       <section className="mb-8">
         <h2 className="mb-3 font-semibold">{t("friends.myFriends")}</h2>
@@ -131,6 +131,7 @@ export default function FriendsPage() {
                 action={
                   <div className="flex gap-1">
                     <button
+                      type="button"
                       aria-label={t("friends.accept")}
                       onClick={() =>
                         respond.mutate({ id: row.id, accept: true })
@@ -140,6 +141,7 @@ export default function FriendsPage() {
                       <Check className="h-4 w-4" />
                     </button>
                     <button
+                      type="button"
                       aria-label={t("friends.decline")}
                       onClick={() =>
                         respond.mutate({ id: row.id, accept: false })
@@ -167,9 +169,12 @@ export default function FriendsPage() {
       )}
       <section id="discover" className="scroll-mt-20">
         <h2 className="mb-3 font-semibold">{t("friends.peopleToAdd")}</h2>
-        <label className="mb-4 flex items-center gap-2 rounded-lg border bg-card px-3">
+        <label htmlFor="friend-search" className="mb-4 flex items-center gap-2 rounded-lg border bg-card px-3 focus-within:ring-2 focus-within:ring-ring">
           <Search className="h-4 w-4" />
+          <span className="sr-only">{t("friends.searchPlaceholder")}</span>
           <input
+            id="friend-search"
+            name="friendSearch"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             maxLength={50}
@@ -190,6 +195,7 @@ export default function FriendsPage() {
               person={person}
               action={
                 <button
+                  type="button"
                   disabled={add.isPending}
                   onClick={() => add.mutate(person.id)}
                   className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md bg-primary px-3 text-primary-foreground disabled:opacity-50"
@@ -220,6 +226,6 @@ export default function FriendsPage() {
           </p>
         )}
       </section>
-    </main>
+    </div>
   );
 }

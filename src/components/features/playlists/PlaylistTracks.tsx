@@ -55,6 +55,8 @@ export function PlaylistTracks({
           </p>
         </div>
         <select
+          id="playlist-genre-filter"
+          name="genre"
           value={genre}
           onChange={(event) => setGenre(event.target.value)}
           aria-label={t("playlists.filterGenre")}

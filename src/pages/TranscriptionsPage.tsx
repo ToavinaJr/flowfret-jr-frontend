@@ -37,7 +37,7 @@ export default function TranscriptionsPage() {
   }
 
   return (
-    <main className={PAGE_SHELL}>
+    <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("transcriptions.title")}</h1>
       {loading ? (
         <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
@@ -60,7 +60,7 @@ export default function TranscriptionsPage() {
           {selected && <TranscriptionDetails item={selected} onRetry={() => retry(selected)} />}
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

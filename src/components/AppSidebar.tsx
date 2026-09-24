@@ -25,7 +25,7 @@ const AppSidebar = () => {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4">
+      <nav aria-label={t("nav.mainNavigation")} className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4">
         {SIDEBAR_NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
           return (

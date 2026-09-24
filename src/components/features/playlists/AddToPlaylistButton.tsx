@@ -136,6 +136,8 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
 
         <form onSubmit={createAndAdd} className="flex gap-2 border-t pt-4">
           <input
+            id="new-playlist-dialog-name"
+            name="playlistName"
             value={name}
             onChange={(event) => setName(event.target.value)}
             maxLength={120}

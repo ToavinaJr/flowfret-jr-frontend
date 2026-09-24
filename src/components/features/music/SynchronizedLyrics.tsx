@@ -18,7 +18,7 @@ export function SynchronizedLyrics({ segments, activeIndex, onSeek }: Props) {
     <div className="h-56 overflow-y-auto rounded-lg border border-border bg-background/60 px-3 py-20" aria-live="polite" aria-label={t("lyrics.synchronized")}>
       {segments.map((segment, index) => (
         <button key={segment.id} ref={index === activeIndex ? activeRef : undefined} type="button" onClick={() => onSeek(segment.start)}
-          className={`block w-full rounded-md px-3 py-2 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${index === activeIndex ? "scale-[1.02] bg-primary/15 text-base font-semibold text-foreground" : "text-sm text-muted-foreground opacity-55 hover:opacity-90"}`}>
+          className={`block w-full rounded-md px-3 py-2 text-left transition-[transform,color,background-color,opacity,font-size] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${index === activeIndex ? "scale-[1.02] bg-primary/15 text-base font-semibold text-foreground" : "text-sm text-muted-foreground opacity-55 hover:opacity-90"}`}>
           {segment.text}
         </button>
       ))}

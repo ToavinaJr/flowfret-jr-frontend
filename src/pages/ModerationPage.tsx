@@ -39,7 +39,7 @@ export default function ModerationPage() {
   if (user?.role !== USER_ROLE.ADMIN) return <Navigate to="/" replace />;
 
   return (
-    <main className={`${PAGE_SHELL} max-w-4xl lg:max-w-4xl`}>
+    <div className={`${PAGE_SHELL} max-w-4xl lg:max-w-4xl`}>
       <h1 className={`${PAGE_TITLE} flex items-center gap-2`}>
         <ShieldCheck className="h-5 w-5" /> {t("moderation.title")}
       </h1>
@@ -80,6 +80,7 @@ export default function ModerationPage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button
+                type="button"
                 disabled={moderate.isPending}
                 onClick={() =>
                   moderate.mutate({
@@ -92,6 +93,7 @@ export default function ModerationPage() {
                 {t("moderation.review")}
               </button>
               <button
+                type="button"
                 disabled={moderate.isPending}
                 onClick={() =>
                   moderate.mutate({
@@ -105,6 +107,7 @@ export default function ModerationPage() {
                 {t("moderation.resolve")}
               </button>
               <button
+                type="button"
                 disabled={moderate.isPending}
                 onClick={() =>
                   moderate.mutate({
@@ -126,6 +129,6 @@ export default function ModerationPage() {
           {t("moderation.empty")}
         </p>
       ) : null}
-    </main>
+    </div>
   );
 }

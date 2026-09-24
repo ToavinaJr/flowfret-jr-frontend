@@ -143,9 +143,21 @@ export function ScaleFretboard({ rootIndex, scaleIntervals }: ScaleFretboardProp
                   y={cy - hitSize / 2}
                   width={hitSize}
                   height={hitSize}
-                  className="fill-transparent cursor-pointer"
+                  className="fill-transparent cursor-pointer focus:outline-none focus:stroke-primary focus:stroke-2"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t("scaleFretboard.playNote", {
+                    note: NOTE_DISPLAY[noteIdx],
+                    fret,
+                  })}
                   onClick={() => {
                     void handleNote(si, fret, noteIdx);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      void handleNote(si, fret, noteIdx);
+                    }
                   }}
                 />
               </g>

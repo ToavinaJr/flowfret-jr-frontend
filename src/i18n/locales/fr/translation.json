@@ -1,5 +1,8 @@
 {
   "nav": {
+    "mainNavigation": "Navigation principale",
+    "mobileNavigation": "Navigation mobile",
+    "menuNavigation": "Navigation du menu",
     "feed": "Fil d'actualité",
     "music": "Musique",
     "upload": "Téléverser",
@@ -175,6 +178,7 @@
     "noPosts": "Aucune publication pour le moment."
   },
   "profileEditor": {
+    "changePhoto": "Modifier la photo de profil",
     "removePhoto": "Supprimer la photo",
     "displayName": "Nom affiché",
     "bio": "Bio",
@@ -200,7 +204,8 @@
     "voicing": "Position",
     "strum": "Jouer l’accord",
     "selectPrompt": "Sélectionnez un accord pour l’afficher",
-    "diagram": "Diagramme de {{chord}}"
+    "diagram": "Diagramme de {{chord}}",
+    "playString": "Jouer la corde {{string}}"
   },
   "metronome": {
     "title": "Métronome",
@@ -371,6 +376,7 @@
     "error": "La suppression a échoué. Veuillez réessayer."
   },
   "postDetails": {
+    "openPost": "Ouvrir la publication de {{username}}",
     "title": "Publication de {{username}}",
     "imageCount": "{{count}} photo(s)",
     "imageAlt": "Photo {{current}} sur {{total}}",
@@ -489,7 +495,8 @@
     "downloadLrc": "Télécharger le LRC"
   },
   "scaleFretboard": {
-    "label": "Manche des gammes"
+    "label": "Manche des gammes",
+    "playNote": "Jouer {{note}} à la case {{fret}}"
   },
   "mediaPlayer": {
     "audioPlayer": "Lecteur audio",

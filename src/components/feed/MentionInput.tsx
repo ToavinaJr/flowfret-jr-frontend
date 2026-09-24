@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -30,6 +30,8 @@ export function MentionInput({
   rows = 3,
   autoFocus,
 }: MentionInputProps) {
+  const generatedId = useId();
+  const inputId = id ?? `mention-input-${generatedId.replace(/:/g, "")}`;
   const { t } = useTranslation();
   const { user } = useAuth();
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -81,7 +83,8 @@ export function MentionInput({
   return (
     <div className="relative w-full">
       <textarea
-        id={id}
+        id={inputId}
+        name={inputId}
         ref={inputRef}
         value={value}
         onChange={(event) => {
@@ -118,7 +121,7 @@ export function MentionInput({
           }
         }}
         placeholder={placeholder}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? placeholder}
         aria-autocomplete="list"
         aria-expanded={menuOpen}
         maxLength={maxLength}

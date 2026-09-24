@@ -122,6 +122,7 @@ export default function PersistentMediaPlayer() {
           {formatTime(currentTime)}
         </span>
         <input
+          name="playbackPositionDesktop"
           type="range"
           min={0}
           max={duration || 1}
@@ -151,6 +152,7 @@ export default function PersistentMediaPlayer() {
               )}
             </button>
             <input
+              name="playbackVolumeDesktop"
               type="range"
               min={0}
               max={1}
@@ -175,6 +177,7 @@ export default function PersistentMediaPlayer() {
           <Shuffle className="h-4 w-4" />
         </button>
         <input
+          name="playbackPositionMobile"
           type="range"
           min={0}
           max={duration || 1}
@@ -201,6 +204,7 @@ export default function PersistentMediaPlayer() {
               )}
             </button>
             <input
+              name="playbackVolumeMobile"
               type="range"
               min={0}
               max={1}

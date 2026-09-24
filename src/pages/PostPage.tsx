@@ -43,7 +43,7 @@ export default function PostPage() {
     await refresh();
   };
   return (
-    <main className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
+    <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
       <Link
         to="/notifications"
         className="mb-5 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
@@ -66,6 +66,6 @@ export default function PostPage() {
           {t("feed.postUnavailable")}
         </p>
       )}
-    </main>
+    </div>
   );
 }

@@ -174,8 +174,17 @@ export function ChordDiagram({
             y={0}
             width={touchW}
             height={height + topY + 20}
-            className="fill-transparent cursor-pointer"
+            className="fill-transparent cursor-pointer focus:outline-none focus:stroke-primary focus:stroke-2"
+            role="button"
+            tabIndex={0}
+            aria-label={t("chords.playString", { string: si + 1 })}
             onClick={() => handleStringPress(si)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleStringPress(si);
+              }
+            }}
           />
         ))}
       </svg>

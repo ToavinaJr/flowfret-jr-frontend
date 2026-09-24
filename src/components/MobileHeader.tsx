@@ -46,7 +46,7 @@ const MobileHeader = () => {
               {t("common.menu")}
             </SheetTitle>
           </SheetHeader>
-          <nav className="flex flex-col gap-1 overflow-y-auto p-3">
+          <nav aria-label={t("nav.menuNavigation")} className="flex flex-col gap-1 overflow-y-auto p-3">
             {SIDEBAR_NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
               return (

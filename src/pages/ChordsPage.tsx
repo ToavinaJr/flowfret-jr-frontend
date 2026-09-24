@@ -65,6 +65,8 @@ const ChordsPage = () => {
       <div className="relative mb-3 sm:mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
+          id="chord-search"
+          name="chordSearch"
           type="text"
           placeholder={t("chords.searchPlaceholder")}
           value={search}
@@ -125,7 +127,7 @@ const ChordsPage = () => {
                     setSelectedSuffix(suffix);
                     setPositionIndex(0);
                   }}
-                  className={`flex min-h-[64px] flex-col items-center justify-center rounded-lg px-2 py-2.5 text-center transition-all ${
+                  className={`flex min-h-[64px] flex-col items-center justify-center rounded-lg px-2 py-2.5 text-center transition-colors ${
                     isActive
                       ? "border border-primary bg-primary/20 text-foreground"
                       : "border border-border bg-card text-foreground hover:bg-surface-elevated"

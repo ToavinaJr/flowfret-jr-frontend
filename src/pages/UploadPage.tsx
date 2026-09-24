@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useState,
-  type ChangeEvent,
-  type DragEvent,
-  type KeyboardEvent,
-} from "react";
+import { useState, type ChangeEvent, type DragEvent } from "react";
 import { Upload } from "lucide-react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { analyzeAudioFile } from "@/utils/chordDetection";
@@ -19,7 +13,6 @@ type UploadStatus = "idle" | "analyzing" | "error";
 
 const UploadPage = () => {
   const { t } = useTranslation();
-  const fileRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [progress, setProgress] = useState(0);
@@ -76,7 +69,7 @@ const UploadPage = () => {
     if (file) void processFile(file);
   }
 
-  function onDrop(e: DragEvent<HTMLDivElement>) {
+  function onDrop(e: DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files?.[0];
@@ -101,20 +94,15 @@ const UploadPage = () => {
     >
       <h1 className={PAGE_TITLE}>{t("upload.title")}</h1>
 
-      <div
-        onDragOver={(e: DragEvent<HTMLDivElement>) => {
+      <label
+        htmlFor="audio-upload"
+        onDragOver={(e: DragEvent<HTMLLabelElement>) => {
           e.preventDefault();
           setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
-        onClick={() => fileRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
-          if (e.key === "Enter" || e.key === " ") fileRef.current?.click();
-        }}
-        className={`flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed text-center transition-all ${importedSong ? "min-h-20 gap-3 px-4 py-3" : "min-h-[160px] flex-col p-6 sm:min-h-[200px] sm:p-8 md:p-12"} ${
+        className={`flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ${importedSong ? "min-h-20 gap-3 px-4 py-3" : "min-h-[160px] flex-col p-6 sm:min-h-[200px] sm:p-8 md:p-12"} ${
           dragOver
             ? "border-primary bg-primary/5"
             : "border-border hover:border-muted-foreground"
@@ -134,13 +122,14 @@ const UploadPage = () => {
           </div>
         </div>
         <input
-          ref={fileRef}
+          id="audio-upload"
+          name="audioFile"
           type="file"
           accept="audio/*"
-          className="hidden"
+          className="sr-only"
           onChange={onFileChange}
         />
-      </div>
+      </label>
 
       {errorMessage && (
         <p className="mt-4 text-sm text-destructive" role="alert">

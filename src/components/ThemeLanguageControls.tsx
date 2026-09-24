@@ -58,8 +58,8 @@ const ThemeLanguageControls = ({ compact = false, showTheme = true }: ThemeLangu
           <Globe2 className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-foreground">{t("settings.language")}</span>
         </div>
-        <Select value={language} onValueChange={(value) => setLanguage(value as LanguageOption)}>
-          <SelectTrigger className="w-full border-border bg-background text-foreground hover:border-primary/60 focus:ring-primary">
+        <Select name="language" value={language} onValueChange={(value) => setLanguage(value as LanguageOption)}>
+          <SelectTrigger id="language-select" aria-label={t("settings.language")} className="w-full border-border bg-background text-foreground hover:border-primary/60 focus:ring-primary">
             <SelectValue placeholder={t("settings.language")} />
           </SelectTrigger>
           <SelectContent>

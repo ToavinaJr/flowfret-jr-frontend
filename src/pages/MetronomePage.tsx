@@ -124,6 +124,8 @@ const MetronomePage = () => {
             <Minus className="h-5 w-5" />
           </button>
           <input
+            id="metronome-bpm"
+            name="bpm"
             type="range"
             min={MIN_BPM}
             max={MAX_BPM}
