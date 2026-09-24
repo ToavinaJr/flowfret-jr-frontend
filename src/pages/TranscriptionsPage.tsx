@@ -42,14 +42,14 @@ export default function TranscriptionsPage() {
       {loading ? (
         <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-[18rem_minmax(0,1fr)]">
-          <aside className="space-y-2 rounded-xl border border-border bg-card p-3">
+        <div className="grid min-w-0 gap-4 md:grid-cols-[18rem_minmax(0,1fr)]">
+          <aside className="max-h-[48dvh] min-w-0 space-y-2 overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-card p-3 md:max-h-none">
             {items.map((item) => (
               <button
                 type="button"
                 key={item.transcriptionId}
                 onClick={() => setSelected(item)}
-                className={`w-full rounded-md p-3 text-left ${selected?.transcriptionId === item.transcriptionId ? "bg-primary/10" : "hover:bg-secondary"}`}
+                className={`min-w-0 w-full overflow-hidden rounded-md p-3 text-left ${selected?.transcriptionId === item.transcriptionId ? "bg-primary/10" : "hover:bg-secondary"}`}
               >
                 <span className="block truncate text-sm font-medium">{item.title ?? item.trackId}</span>
                 <span className="block truncate text-xs text-muted-foreground">{item.artist ?? t("transcriptions.unknownArtist")} · {item.status}</span>
@@ -73,10 +73,10 @@ function TranscriptionDetails({
 }) {
   const { t } = useTranslation();
   return (
-    <section className="rounded-xl border border-border bg-card p-4">
+    <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card p-4">
       <div className="flex flex-wrap items-start gap-2">
         <div className="mr-auto">
-          <h2 className="font-semibold">{item.title ?? t("transcriptions.fallbackTitle")}</h2>
+          <h2 className="break-words font-semibold">{item.title ?? t("transcriptions.fallbackTitle")}</h2>
           <p className="text-xs text-muted-foreground">{t("transcriptions.progress", { progress: item.progress })}</p>
         </div>
         {item.status === "FAILED" && item.provider === "AUDIUS" && (
@@ -89,10 +89,10 @@ function TranscriptionDetails({
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
         <div className="h-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
       </div>
-      {item.error && <p className="mt-3 rounded-md bg-destructive/10 p-3 text-sm text-destructive">{item.error.message}</p>}
+      {item.error && <p className="mt-3 break-words rounded-md bg-destructive/10 p-3 text-sm text-destructive">{item.error.message}</p>}
       <div className="mt-4 max-h-[55vh] space-y-2 overflow-y-auto">
         {item.segments.map((segment) => (
-          <p key={segment.id} className="rounded-md bg-secondary p-3 text-sm">
+          <p key={segment.id} className="break-words rounded-md bg-secondary p-3 text-sm">
             <span className="mr-2 text-xs text-muted-foreground">{segment.start.toFixed(1)}s</span>{segment.text}
           </p>
         ))}

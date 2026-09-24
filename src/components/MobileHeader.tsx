@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Guitar, Menu } from "lucide-react";
+import { Guitar, LogOut, Menu, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import ThemeLanguageControls from "./ThemeLanguageControls";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
+import { useAuth } from "@/hooks/useAuth";
+import { USER_ROLE } from "@/constants/domain";
 import {
   Sheet,
   SheetContent,
@@ -17,6 +19,7 @@ import {
 const MobileHeader = () => {
   const location = useLocation();
   const { t } = useTranslation();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
@@ -40,13 +43,20 @@ const MobileHeader = () => {
             <Menu className="h-5 w-5" />
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-full max-w-xs p-0 sm:max-w-sm">
+        <SheetContent
+          side="left"
+          className="flex h-dvh max-h-dvh w-full max-w-xs flex-col gap-0 overflow-hidden p-0 sm:max-w-sm"
+        >
           <SheetHeader className="border-b border-border px-4 py-4 text-left">
             <SheetTitle className="text-base font-medium">
               {t("common.menu")}
             </SheetTitle>
           </SheetHeader>
-          <nav aria-label={t("nav.menuNavigation")} className="flex flex-col gap-1 overflow-y-auto p-3">
+          <nav
+            aria-label={t("nav.menuNavigation")}
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3"
+          >
+            <div className="flex flex-col gap-1">
             {SIDEBAR_NAV_ITEMS.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -71,9 +81,35 @@ const MobileHeader = () => {
                 </NavLink>
               );
             })}
+            </div>
           </nav>
-          <div className="border-t border-border p-3">
+          <div className="shrink-0 space-y-2 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            {user?.role === USER_ROLE.ADMIN ? (
+              <NavLink
+                to="/moderation"
+                onClick={() => setOpen(false)}
+                className="flex min-h-11 items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                {t("moderation.title")}
+              </NavLink>
+            ) : null}
             <ThemeLanguageControls compact showTheme={false} />
+            {user ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  void logout();
+                }}
+                className="flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-md bg-secondary px-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                <span className="truncate">
+                  {t("settings.logout")} ({user.username})
+                </span>
+              </button>
+            ) : null}
           </div>
         </SheetContent>
       </Sheet>

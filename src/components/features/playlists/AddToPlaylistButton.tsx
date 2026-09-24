@@ -88,7 +88,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
           <span className="hidden sm:inline">{t("playlists.playlist")}</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-md">
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md min-w-0 flex-col overflow-hidden p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{t("playlists.addToPlaylist")}</DialogTitle>
           <DialogDescription className="truncate">
@@ -109,7 +109,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
             {t("playlists.retryLoad")}
           </button>
         ) : (
-          <div className="max-h-56 space-y-2 overflow-y-auto">
+          <div className="min-h-0 space-y-2 overflow-y-auto">
             {playlists.map((playlist) => (
               <button
                 key={playlist.id}
@@ -118,7 +118,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
                 onClick={() => void add(playlist)}
                 className="flex min-h-11 w-full items-center justify-between rounded-md border border-border px-3 text-left text-sm hover:bg-secondary disabled:opacity-50"
               >
-                <span className="truncate">{playlist.name}</span>
+                <span className="min-w-0 truncate">{playlist.name}</span>
                 {loadingId === playlist.id ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -134,7 +134,10 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
           </div>
         )}
 
-        <form onSubmit={createAndAdd} className="flex gap-2 border-t pt-4">
+        <form
+          onSubmit={createAndAdd}
+          className="grid min-w-0 shrink-0 grid-cols-1 gap-2 border-t pt-4 sm:grid-cols-[minmax(0,1fr)_auto]"
+        >
           <input
             id="new-playlist-dialog-name"
             name="playlistName"
@@ -147,7 +150,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
           <button
             type="submit"
             disabled={!name.trim() || loadingId !== null}
-            className="min-h-11 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50"
+            className="min-h-11 w-full rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50 sm:w-auto"
           >
             {loadingId === "new" ? (
               <Loader2 className="h-4 w-4 animate-spin" />

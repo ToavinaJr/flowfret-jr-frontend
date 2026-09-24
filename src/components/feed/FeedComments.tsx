@@ -140,7 +140,7 @@ export function FeedComments({
       </Dialog>
       <form
         onSubmit={submit}
-        className="mt-auto flex flex-col gap-2 border-t border-border pt-3 sm:flex-row"
+        className="mt-auto flex min-w-0 flex-col gap-2 border-t border-border pt-3 sm:flex-row"
       >
         <MentionInput
           value={draft}
@@ -153,7 +153,7 @@ export function FeedComments({
         <button
           type="submit"
           disabled={submitting || !draft.trim()}
-          className="min-h-[44px] shrink-0 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
+          className="min-h-[44px] w-full shrink-0 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50 sm:w-auto"
         >
           {t("feed.postComment")}
         </button>

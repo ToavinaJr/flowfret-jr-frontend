@@ -24,8 +24,6 @@ export function FeedCard({
 }: FeedCardProps) {
   const { t } = useTranslation();
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const hasImages = post.attachments.length > 0;
-
   return (
     <article
       tabIndex={0}
@@ -47,7 +45,7 @@ export function FeedCard({
           setDetailsOpen(true);
         }
       }}
-      className={`flex cursor-pointer flex-col overflow-visible rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4 ${hasImages ? "h-[32rem]" : "h-auto"}`}
+      className="flex h-auto min-w-0 cursor-pointer flex-col rounded-xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/30 sm:p-4"
     >
       <FeedCardHeader
         post={post}

@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import { useChordAnalysis } from "@/hooks/useChordAnalysis";
+import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
+import { getDisplayChordShape } from "@/utils/chordShape";
 import { getCueIndexAtTime } from "@/utils/songCues";
 
 interface PersistentChordsProps {
@@ -33,6 +35,7 @@ export function PersistentChords({
     ? Math.max(0, getCueIndexAtTime(analysis.cues, currentTime))
     : 0;
   const activeCue = analysis?.cues[activeIndex];
+  const activeChord = getDisplayChordShape(activeCue?.chord);
   const nearbyCues = analysis?.cues.slice(
     Math.max(0, activeIndex - 2),
     activeIndex + 4,
@@ -47,7 +50,7 @@ export function PersistentChords({
       {open ? (
         <div
           id="persistent-chords-panel"
-          className="absolute bottom-full left-0 right-0 border-t border-border bg-card/98 shadow-2xl backdrop-blur md:left-auto md:w-[min(36rem,100%)]"
+          className="isolate absolute bottom-full left-0 right-0 max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border bg-card/95 shadow-[0_-20px_50px_rgba(0,0,0,0.45)] backdrop-blur-3xl supports-[backdrop-filter]:bg-card/90 md:left-auto md:w-[min(36rem,100%)]"
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-2">
             <div className="min-w-0">
@@ -100,16 +103,36 @@ export function PersistentChords({
 
           {status === "success" && analysis && activeCue ? (
             <div className="px-4 py-4">
-              <div className="flex items-end justify-between gap-4">
-                <div>
+              <div>
+                <div className="flex min-w-0 flex-col items-center">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {t("chordPlayer.current")}
                   </p>
-                  <p className="mt-1 font-musical text-5xl font-bold text-primary">
-                    {activeCue.chord}
-                  </p>
+                  {activeChord.positions?.length ? (
+                    <div className="mt-3 grid w-full grid-cols-2 place-items-center gap-2 rounded-xl border border-border/80 bg-background/80 p-2 shadow-inner backdrop-blur-xl sm:grid-cols-4">
+                      {activeChord.positions.map((position, index) => (
+                        <div
+                          key={`${activeChord.label}-${position.baseFret}-${index}`}
+                          className="relative min-w-0"
+                        >
+                          <span className="absolute right-1 top-5 z-10 grid h-5 min-w-5 place-items-center rounded-full bg-secondary px-1 font-musical text-[10px] text-muted-foreground">
+                            {index + 1}
+                          </span>
+                          <ChordDiagram
+                            chord={activeChord.label}
+                            position={position}
+                            scale={0.58}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 font-musical text-5xl font-bold text-primary">
+                      {activeChord.label}
+                    </p>
+                  )}
                 </div>
-                <p className="text-right text-xs text-muted-foreground">
+                <p className="mt-2 text-center text-xs text-muted-foreground">
                   {formatTime(activeCue.start)} – {formatTime(activeCue.end)}
                   <br />
                   {t("chordPlayer.chordCount", { count: chordCount })}
@@ -128,7 +151,7 @@ export function PersistentChords({
                       type="button"
                       onClick={() => onSeek(cue.start)}
                       aria-current={active ? "true" : undefined}
-                      className={`min-w-20 rounded-lg border px-3 py-2 text-left ${active ? "border-primary bg-primary/10 text-primary" : "border-border bg-secondary/60 text-foreground hover:border-primary/50"}`}
+                      className={`min-w-20 rounded-lg border px-3 py-2 text-left backdrop-blur-xl ${active ? "border-primary bg-primary/20 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
                     >
                       <span className="block font-musical font-semibold">
                         {cue.chord}
