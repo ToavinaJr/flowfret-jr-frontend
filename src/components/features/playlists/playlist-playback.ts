@@ -14,6 +14,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
       duration: track.durationMs / 1000,
       destination: "/playlists",
       provider: track.provider,
+      artist: subtitle,
       album: track.album,
     };
   }
@@ -28,6 +29,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
       duration: track.durationMs / 1000,
       destination: "/playlists",
       provider: track.provider,
+      artist: subtitle,
       album: track.album,
     };
   }
@@ -41,6 +43,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
     duration: track.durationMs / 1000,
     destination: "/playlists",
     provider: track.provider,
+    artist: subtitle,
     album: track.album,
   };
 }

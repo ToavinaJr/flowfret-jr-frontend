@@ -1,6 +1,8 @@
 import { GRAPHQL_URL } from "@/services/backend";
 import { getAccessToken } from "@/services/authToken";
 import type { TranscriptionEvent, TranscriptionResponse } from "@/types/transcription";
+import { debugLog } from "@/utils/debug";
+import { runtimeConfig } from "@/config/runtime";
 
 const API_ORIGIN = new URL(GRAPHQL_URL).origin;
 const BASE_URL = `${API_ORIGIN}/api/transcriptions`;
@@ -14,10 +16,6 @@ export class TranscriptionRateLimitError extends Error {
     this.name = "TranscriptionRateLimitError";
     this.retryAfterSeconds = retryAfterSeconds;
   }
-}
-
-function debug(event: string, details: Record<string, unknown> = {}): void {
-  console.info(`[FretFlow:transcription] ${event}`, details);
 }
 
 function headers(json = false): HeadersInit {
@@ -100,14 +98,14 @@ export function getFriendlyTranscriptionError(error: unknown): string {
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const controller = new AbortController();
-  const timeoutMs = Number(import.meta.env.VITE_TRANSCRIPTION_HTTP_TIMEOUT_MS ?? 20_000);
+  const timeoutMs = runtimeConfig.transcriptionHttpTimeoutMs;
   const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
   let response: Response;
   try {
     response = await fetch(url, { ...init, signal: controller.signal });
   } catch (error) {
     if (controller.signal.aborted) {
-      debug("http.timeout", {
+      debugLog("transcription.http.timeout", {
         path: new URL(url).pathname,
         timeoutMs,
       });
@@ -120,7 +118,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   if (!response.ok) {
     const body = await response.text();
     const retryAfterHeader = response.headers.get("Retry-After") ?? response.headers.get("retry-after");
-    debug("http.error", { status: response.status, body: body.slice(0, 1000), retryAfterHeader });
+    debugLog("transcription.http.error", { status: response.status, retryAfterHeader });
     throw parseTranscriptionApiError(response.status, body, retryAfterHeader);
   }
   return (await response.json()) as T;

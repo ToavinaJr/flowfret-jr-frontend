@@ -4,6 +4,7 @@
 
 import { unlockAudioContext } from "@/utils/audioContext";
 import { requestAudioOwner } from "@/utils/audioPriority";
+import { debugError } from "@/utils/debug";
 
 /** Standard tuning Hz: E2, A2, D3, G3, B3, E4 (low → high) */
 const OPEN_FREQ = [82.41, 110.0, 146.83, 196.0, 246.94, 329.63];
@@ -77,8 +78,8 @@ export async function playStringNote(
   try {
     const freq = getNoteFrequency(stringIdx, fret);
     await playFrequency(freq);
-  } catch (err) {
-    console.warn("[stringSound] playStringNote error:", err);
+  } catch (error) {
+    debugError("audio.string_note_failed", { error });
   }
 }
 

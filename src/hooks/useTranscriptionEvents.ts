@@ -12,13 +12,12 @@ import type {
   TranscriptionEvent,
   TranscriptionResponse,
 } from "@/types/transcription";
-import { mergeSegments } from "@/utils/transcription";
 import {
   TRANSCRIPTION_EVENT,
-  TRANSCRIPTION_ERROR_CODE,
-  TRANSCRIPTION_PHASE,
   TRANSCRIPTION_STATUS,
 } from "@/constants/domain";
+import { debugError, debugLog } from "@/utils/debug";
+import { reduceTranscriptionEvent } from "./transcription-event-state";
 
 export function useTranscriptionEvents(track: MusicTrack) {
   const [state, setState] = useState<TranscriptionResponse | null>(null);
@@ -32,59 +31,22 @@ export function useTranscriptionEvents(track: MusicTrack) {
 
   const applyEvent = useCallback((event: TranscriptionEvent) => {
     if (event.transcriptionId !== activeIdRef.current) {
-      console.warn("[FretFlow:transcription] stale_event_ignored", {
+      debugLog("transcription.stale_event_ignored", {
         eventId: event.transcriptionId,
         activeId: activeIdRef.current,
       });
       return;
     }
-    setState((current) => {
-      if (!current) return current;
-      const segments = event.segment
-        ? mergeSegments(current.segments, [event.segment])
-        : current.segments;
-      const failed = event.type === TRANSCRIPTION_EVENT.FAILED;
-      const completed = event.type === TRANSCRIPTION_EVENT.COMPLETED;
-      const ready =
-        current.readyToPlay ||
-        event.type === TRANSCRIPTION_EVENT.READY_TO_PLAY ||
-        completed;
-      return {
-        ...current,
-        segments,
-        progress: event.progress ?? current.progress,
-        bufferedUntil: event.bufferedUntil ?? current.bufferedUntil,
-        readyToPlay: ready,
-        processingPhase:
-          event.processingPhase ??
-          (event.type === TRANSCRIPTION_EVENT.MODEL_LOADING
-            ? TRANSCRIPTION_PHASE.MODEL_LOADING
-            : event.type === TRANSCRIPTION_EVENT.MODEL_READY
-              ? TRANSCRIPTION_PHASE.MODEL_READY
-              : current.processingPhase),
-        status: failed
-          ? TRANSCRIPTION_STATUS.FAILED
-          : completed
-            ? TRANSCRIPTION_STATUS.COMPLETED
-            : event.type === TRANSCRIPTION_EVENT.READY_TO_PLAY
-              ? TRANSCRIPTION_STATUS.READY_TO_PLAY
-              : current.status,
-        lrcAvailable: current.lrcAvailable || completed,
-        error: failed
-          ? {
-              code: event.errorCode ?? TRANSCRIPTION_ERROR_CODE.FAILED,
-              message: event.message ?? "Transcription failed",
-            }
-          : current.error,
-      };
-    });
+    setState((current) =>
+      current ? reduceTranscriptionEvent(current, event) : current,
+    );
     if (event.type === TRANSCRIPTION_EVENT.COMPLETED) {
       void getTranscription(event.transcriptionId)
         .then((snapshot) => {
           if (activeIdRef.current === event.transcriptionId) setState(snapshot);
         })
         .catch((snapshotError) => {
-          console.error("[FretFlow:transcription] final_snapshot_failed", {
+          debugError("transcription.final_snapshot_failed", {
             transcriptionId: event.transcriptionId,
             error: snapshotError,
           });
@@ -108,7 +70,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
           return;
         } catch (connectionError) {
           if (controller.signal.aborted) return;
-          console.error("[FretFlow:transcription] sse_attempt_failed", {
+          debugError("transcription.sse_attempt_failed", {
             transcriptionId: id,
             attempt: attempt + 1,
             error: connectionError,
@@ -156,7 +118,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
         void connect(response.transcriptionId);
       return response;
     } catch (prepareError) {
-      console.error("[FretFlow:transcription] prepare_failed", {
+      debugError("transcription.prepare_failed", {
         trackId: track.providerTrackId,
         error: prepareError,
       });

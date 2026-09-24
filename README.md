@@ -1,5 +1,10 @@
 # flowfret-jr
 
+The client includes social feeds, provider-neutral music search, playlists with
+genre filtering and shared queue playback, transcription history, and account
+session/security controls. Build-time public configuration is centralized in
+`src/config/runtime.ts`; never expose backend secrets through `VITE_*` values.
+
 React + Vite frontend for FretFlow.
 
 ## Setup

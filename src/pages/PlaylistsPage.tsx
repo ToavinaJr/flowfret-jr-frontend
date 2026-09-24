@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { PlaylistList } from "@/components/features/playlists/PlaylistList";
@@ -14,6 +15,7 @@ import {
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 
 export default function PlaylistsPage() {
+  const queryClient = useQueryClient();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [selected, setSelected] = useState<Playlist | null>(null);
   const [items, setItems] = useState<PlaylistItem[]>([]);
@@ -39,6 +41,10 @@ export default function PlaylistsPage() {
   async function add(name: string) {
     const created = await createPlaylist(name);
     setPlaylists((current) => [created, ...current]);
+    queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) => [
+      created,
+      ...current.filter((playlist) => playlist.id !== created.id),
+    ]);
     setSelected(created);
     setItems([]);
     toast.success("Playlist créée");
@@ -48,6 +54,9 @@ export default function PlaylistsPage() {
     await deletePlaylist(playlist.id);
     const remaining = playlists.filter((item) => item.id !== playlist.id);
     setPlaylists(remaining);
+    queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) =>
+      current.filter((item) => item.id !== playlist.id),
+    );
     if (selected?.id === playlist.id) {
       setSelected(null);
       setItems([]);

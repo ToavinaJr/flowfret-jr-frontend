@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
@@ -49,8 +50,16 @@ interface PlaybackContextValue {
 const PlaybackContext = createContext<PlaybackContextValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
-  const engine = usePlaybackEngine();
   const queue = usePlaybackQueue();
+  const playNextRef = useRef<((item: PlaybackItem) => Promise<void>) | null>(
+    null,
+  );
+  const handleEnded = useCallback(() => {
+    const item = queue.next();
+    if (item) void playNextRef.current?.(item);
+  }, [queue]);
+  const engine = usePlaybackEngine(handleEnded);
+  playNextRef.current = engine.play;
 
   const select = useCallback(
     (item: PlaybackItem) => {

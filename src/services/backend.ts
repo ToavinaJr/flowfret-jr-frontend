@@ -37,7 +37,8 @@ export function resolveGraphqlUrl(
 }
 
 export const GRAPHQL_URL = resolveGraphqlUrl(
-  import.meta.env.VITE_GRAPHQL_URL,
+  runtimeConfig.graphqlUrl,
   typeof window === "undefined" ? undefined : window.location,
   import.meta.env.PROD,
 );
+import { runtimeConfig } from "@/config/runtime";

@@ -1,11 +1,9 @@
-const DEBUG_ENABLED = ['1', 'true', 'yes', 'on'].includes(
-  (import.meta.env.DEBUG ?? '').trim().toLowerCase(),
-);
+import { runtimeConfig } from "@/config/runtime";
 
 export function debugLog(event: string, details: Record<string, unknown>): void {
-  if (DEBUG_ENABLED) console.debug(`[FretFlow] ${event}`, details);
+  if (runtimeConfig.debug) console.debug(`[FretFlow] ${event}`, details);
 }
 
 export function debugError(event: string, details: Record<string, unknown>): void {
-  if (DEBUG_ENABLED) console.error(`[FretFlow] ${event}`, details);
+  if (runtimeConfig.debug) console.error(`[FretFlow] ${event}`, details);
 }

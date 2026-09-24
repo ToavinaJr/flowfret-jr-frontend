@@ -76,7 +76,7 @@ function loadGoogleIdentityScript(): Promise<void> {
 }
 
 export function getGoogleClientId(): string {
-  return import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() ?? '';
+  return runtimeConfig.googleClientId;
 }
 
 export async function requestGoogleAccessToken(): Promise<string> {
@@ -118,3 +118,4 @@ export async function requestGoogleAccessToken(): Promise<string> {
     client.requestAccessToken({ prompt: 'select_account' });
   });
 }
+import { runtimeConfig } from "@/config/runtime";

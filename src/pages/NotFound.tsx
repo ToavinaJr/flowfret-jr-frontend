@@ -1,16 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { debugLog } from "@/utils/debug";
 
 const NotFound = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname,
-    );
+    debugLog("routing.not_found", { path: location.pathname });
   }, [location.pathname]);
 
   return (

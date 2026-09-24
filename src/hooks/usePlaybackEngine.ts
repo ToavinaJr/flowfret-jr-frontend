@@ -5,10 +5,12 @@ import type { PlayState } from "@/types/song";
 import { useSpotifyController } from "./useSpotifyController";
 import { useYouTubeController } from "./useYouTubeController";
 
-export function usePlaybackEngine() {
+export function usePlaybackEngine(onEnded?: () => void) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const itemRef = useRef<PlaybackItem | null>(null);
   const loggedItemRef = useRef<string | null>(null);
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
   const [item, setItem] = useState<PlaybackItem | null>(null);
   const [playState, setPlayState] = useState<PlayState>("idle");
   const [currentTime, setCurrentTime] = useState(0);
@@ -40,13 +42,16 @@ export function usePlaybackEngine() {
     const onPlay = () => setPlayState("playing");
     const onPause = () =>
       setPlayState((state) => (state === "error" ? state : "paused"));
-    const onEnded = () => setPlayState("paused");
+    const handleEnded = () => {
+      setPlayState("paused");
+      onEndedRef.current?.();
+    };
     const onError = () => setPlayState("error");
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onMetadata);
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
-    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", onError);
     return () => {
       audio.pause();
@@ -54,7 +59,7 @@ export function usePlaybackEngine() {
       audio.removeEventListener("loadedmetadata", onMetadata);
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", onError);
       audioRef.current = null;
       releaseSource(itemRef.current);

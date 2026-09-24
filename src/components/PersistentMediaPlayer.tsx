@@ -1,5 +1,4 @@
 import {
-  FileText,
   Pause,
   Play,
   Shuffle,
@@ -7,15 +6,11 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
-  X,
 } from "lucide-react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { usePlayback } from "@/contexts/PlaybackContext";
-import { MUSIC_PROVIDER } from "@/constants/domain";
-import { useLyrics } from "@/hooks/useLyrics";
-import { LyricsPanel } from "@/components/features/music/LyricsPanel";
+import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -26,7 +21,6 @@ function formatTime(seconds: number): string {
 
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
-  const [lyricsOpen, setLyricsOpen] = useState(false);
   const {
     item,
     playState,
@@ -42,18 +36,6 @@ export default function PersistentMediaPlayer() {
     next,
     previous,
   } = usePlayback();
-  const lyricsTrack =
-    item?.provider === MUSIC_PROVIDER.SPOTIFY && item.artist
-      ? {
-          id: item.id,
-          provider: item.provider,
-          title: item.title,
-          artist: item.artist,
-          album: item.album,
-          duration: item.duration,
-        }
-      : null;
-  const { lyrics, status: lyricsStatus } = useLyrics(lyricsTrack, lyricsOpen);
   if (!item) return null;
   const isSpotify = item.engine === "spotify" || item.id.startsWith("spotify:");
 
@@ -80,27 +62,6 @@ export default function PersistentMediaPlayer() {
       aria-label={t("mediaPlayer.audioPlayer")}
       className="fixed bottom-[65px] left-0 right-0 z-40 border-t border-border bg-card/95 shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur md:bottom-0 md:left-64 lg:left-72"
     >
-      {lyricsOpen && lyricsTrack ? (
-        <div className="absolute bottom-full left-0 right-0 border-t border-border bg-card/98 shadow-2xl backdrop-blur md:left-auto md:w-[min(36rem,100%)]">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2">
-            <h2 className="text-sm font-semibold">{t("lyrics.title")}</h2>
-            <button
-              type="button"
-              onClick={() => setLyricsOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
-              aria-label={t("lyrics.close")}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <LyricsPanel
-            lyrics={lyrics}
-            status={lyricsStatus}
-            currentTime={currentTime}
-            onSeek={seek}
-          />
-        </div>
-      ) : null}
       <div className="mx-auto flex h-[76px] max-w-5xl items-center gap-3 px-3 sm:px-5">
         {item.destination ? (
           <Link
@@ -156,17 +117,7 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        {lyricsTrack ? (
-          <button
-            type="button"
-            onClick={() => setLyricsOpen((open) => !open)}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${lyricsOpen ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={lyricsOpen ? t("lyrics.close") : t("lyrics.open")}
-            aria-expanded={lyricsOpen}
-          >
-            <FileText className="h-5 w-5" />
-          </button>
-        ) : null}
+        <PersistentLyrics item={item} currentTime={currentTime} onSeek={seek} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
         </span>
