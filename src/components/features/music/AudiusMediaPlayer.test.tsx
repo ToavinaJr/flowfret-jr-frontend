@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { I18nextProvider } from "react-i18next";
@@ -54,12 +55,17 @@ describe("AudiusMediaPlayer transcription", () => {
 
   it("starts audio and transcribes the selected Audius source", async () => {
     mocks.prepare.mockReturnValue(new Promise(() => undefined));
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     render(
-      <I18nextProvider i18n={i18n}>
-        <PlaybackProvider>
-          <AudiusMediaPlayer track={track} />
-        </PlaybackProvider>
-      </I18nextProvider>,
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <PlaybackProvider>
+            <AudiusMediaPlayer track={track} />
+          </PlaybackProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: "Lire Song" }));
     await waitFor(() =>

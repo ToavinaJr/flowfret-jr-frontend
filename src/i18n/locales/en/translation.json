@@ -459,6 +459,7 @@
     "searching": "Searching",
     "queryRequired": "Enter a song title or artist.",
     "emptyBeforeSearch": "Run a search to display tracks.",
+    "listeningHistory": "Your listening history",
     "noResults": "No results found",
     "errorTitle": "Search error",
     "errorGeneric": "An error occurred",

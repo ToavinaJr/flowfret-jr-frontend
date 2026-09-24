@@ -1,6 +1,5 @@
 import { graphqlRequest } from "@/services/graphqlClient";
 import {
-  ACTIVITY_ACTION,
   type ActivityAction,
   type NotificationKind,
 } from "@/constants/domain";
@@ -67,14 +66,3 @@ export async function setNotificationPreference(
   });
 }
 
-export async function recordTrackListen(trackId: string): Promise<void> {
-  if (!trackId || trackId.length > 255) return;
-  await graphqlRequest({
-    query: `mutation TrackListened($action: String!, $entityType: String!, $entityId: String) { recordActivity(action: $action, entityType: $entityType, entityId: $entityId) { id } }`,
-    variables: {
-      action: ACTIVITY_ACTION.TRACK_LISTENED,
-      entityType: "track",
-      entityId: trackId,
-    },
-  });
-}
