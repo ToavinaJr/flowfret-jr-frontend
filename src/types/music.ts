@@ -26,6 +26,7 @@ export interface MusicSearchResult {
   provider: MusicProvider;
   tracks: MusicTrack[];
   total: number;
+  nextCursor: string | null;
 }
 
 export interface SearchMusicQueryData {
@@ -35,5 +36,6 @@ export interface SearchMusicQueryData {
 export interface SearchMusicQueryVariables {
   query: string;
   limit: number;
+  cursor?: string;
 }
 import type { MusicProvider } from "@/constants/domain";

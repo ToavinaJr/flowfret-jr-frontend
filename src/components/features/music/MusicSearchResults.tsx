@@ -10,6 +10,9 @@ interface MusicSearchResultsProps {
   error: string | null;
   hasSearched: boolean;
   results: MusicSearchResult | null;
+  loadingMore: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
 }
 
 export function MusicSearchResults({
@@ -17,6 +20,9 @@ export function MusicSearchResults({
   error,
   hasSearched,
   results,
+  loadingMore,
+  hasMore,
+  onLoadMore,
 }: MusicSearchResultsProps) {
   const { t } = useTranslation();
   const tracks = results?.tracks ?? [];
@@ -41,7 +47,10 @@ export function MusicSearchResults({
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        {t("music.resultsCount", { count: results?.total ?? tracks.length })}
+        {t("music.resultsSummary", {
+          shown: tracks.length,
+          total: results?.total ?? tracks.length,
+        })}
       </p>
       <ul className="space-y-3">
         {tracks.map((track) => (
@@ -50,6 +59,16 @@ export function MusicSearchResults({
           </li>
         ))}
       </ul>
+      {hasMore ? (
+        <button
+          type="button"
+          disabled={loadingMore}
+          onClick={onLoadMore}
+          className="min-h-11 w-full rounded-md border border-border bg-card text-sm font-medium disabled:opacity-50"
+        >
+          {t(loadingMore ? "music.loadingMore" : "music.loadMore")}
+        </button>
+      ) : null}
     </div>
   );
 }

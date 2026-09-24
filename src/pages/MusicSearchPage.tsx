@@ -6,7 +6,16 @@ import { useMusicSearch } from "@/hooks/useMusicSearch";
 
 const MusicSearchPage = () => {
   const { t } = useTranslation();
-  const { results, loading, error, hasSearched, search } = useMusicSearch();
+  const {
+    results,
+    loading,
+    loadingMore,
+    hasMore,
+    error,
+    hasSearched,
+    search,
+    loadMore,
+  } = useMusicSearch();
 
   return (
     <div className={PAGE_SHELL}>
@@ -19,6 +28,9 @@ const MusicSearchPage = () => {
           error={error}
           hasSearched={hasSearched}
           results={results}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
         />
       </div>
     </div>
