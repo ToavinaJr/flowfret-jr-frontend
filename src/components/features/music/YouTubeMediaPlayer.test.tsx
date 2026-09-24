@@ -1,0 +1,52 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import type { MusicTrack } from "@/types/music";
+import { YouTubeMediaPlayer } from "./YouTubeMediaPlayer";
+
+const playback = vi.hoisted(() => ({ toggle: vi.fn() }));
+vi.mock("@/contexts/PlaybackContext", () => ({
+  usePlayback: () => ({
+    item: null,
+    playState: "paused",
+    toggle: playback.toggle,
+  }),
+}));
+
+const track: MusicTrack = {
+  provider: "YOUTUBE",
+  id: "youtube:video-1",
+  providerTrackId: "video-1",
+  audiusId: "video-1",
+  title: "Song",
+  artists: [{ id: "channel-1", name: "Artist" }],
+  imageUrl: "https://i.ytimg.com/vi/video-1/hqdefault.jpg",
+  audiusUrl: "https://www.youtube.com/watch?v=video-1",
+  externalUrl: "https://www.youtube.com/watch?v=video-1",
+  album: null,
+  isrc: null,
+  streamUrl: "",
+  genre: "Rock",
+  geniusUrl: null,
+  geniusMatchScore: null,
+  durationMs: 120_000,
+};
+
+describe("YouTubeMediaPlayer", () => {
+  it("uses the shared audio-style player without rendering a video", () => {
+    playback.toggle.mockResolvedValue(undefined);
+    render(<YouTubeMediaPlayer track={track} />);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.querySelector("iframe")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Lire Song" }));
+
+    expect(playback.toggle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "youtube:video-1",
+        src: "video-1",
+        engine: "youtube",
+        title: "Song",
+      }),
+    );
+  });
+});

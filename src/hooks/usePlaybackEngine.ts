@@ -11,6 +11,7 @@ export function usePlaybackEngine(onEnded?: () => void) {
   const loggedItemRef = useRef<string | null>(null);
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
+  const handleYouTubeEnded = useCallback(() => onEndedRef.current?.(), []);
   const [item, setItem] = useState<PlaybackItem | null>(null);
   const [playState, setPlayState] = useState<PlayState>("idle");
   const [currentTime, setCurrentTime] = useState(0);
@@ -21,7 +22,12 @@ export function usePlaybackEngine(onEnded?: () => void) {
     setCurrentTime,
     setDuration,
   });
-  const youtube = useYouTubeController();
+  const youtube = useYouTubeController({
+    setPlayState,
+    setCurrentTime,
+    setDuration,
+    onEnded: handleYouTubeEnded,
+  });
 
   const releaseSource = useCallback((releasedItem: PlaybackItem | null) => {
     if (
@@ -141,11 +147,15 @@ export function usePlaybackEngine(onEnded?: () => void) {
     [spotify, youtube],
   );
 
-  const setVolume = useCallback((next: number) => {
-    const safe = Math.max(0, Math.min(1, next));
-    if (audioRef.current) audioRef.current.volume = safe;
-    setVolumeState(safe);
-  }, []);
+  const setVolume = useCallback(
+    (next: number) => {
+      const safe = Math.max(0, Math.min(1, next));
+      if (itemRef.current?.engine === "youtube") youtube.setVolume(safe);
+      else if (audioRef.current) audioRef.current.volume = safe;
+      setVolumeState(safe);
+    },
+    [youtube],
+  );
 
   return {
     item,
