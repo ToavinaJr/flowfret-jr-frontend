@@ -42,9 +42,10 @@ export async function analyzeAudioUrl(
   title: string,
   onProgress: ProgressCallback,
   signal?: AbortSignal,
+  headers?: HeadersInit,
 ): Promise<AnalysisResult> {
   onProgress(0, "downloading");
-  const response = await fetch(url, { signal });
+  const response = await fetch(url, { signal, headers });
   if (!response.ok) throw new Error(`Audio request failed (${response.status})`);
   const blob = await response.blob();
   if (signal?.aborted) throw new DOMException("Aborted", "AbortError");

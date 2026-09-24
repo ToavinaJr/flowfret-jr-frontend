@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import type { ChordCue } from "@/types/song";
+import { getYouTubeAudioRequest } from "@/services/youtubeAudioApi";
 import {
   analyzeAudioUrl,
   type AnalysisPhase,
@@ -10,7 +11,7 @@ import {
 export interface ChordAnalysis {
   cues: ChordCue[];
   duration: number;
-  source: "original";
+  source: "original" | "youtube-extraction";
 }
 
 export type ChordAnalysisStatus =
@@ -20,10 +21,11 @@ export type ChordAnalysisStatus =
   | "unavailable"
   | "error";
 
-export function canAnalyzeDirectly(item: PlaybackItem): boolean {
+export function canAnalyzeSource(item: PlaybackItem): boolean {
   return (
     Boolean(item.chordCues?.length) ||
     item.engine === "audio" ||
+    (item.engine === "youtube" && Boolean(getYouTubeAudioRequest(item.src))) ||
     item.src.startsWith("blob:") ||
     item.src.startsWith("data:")
   );
@@ -43,13 +45,19 @@ async function analyzeDirectItem(
       source: "original",
     };
   }
+  const youtubeRequest =
+    item.engine === "youtube" ? getYouTubeAudioRequest(item.src) : null;
   const result = await analyzeAudioUrl(
-    item.src,
+    youtubeRequest?.url ?? item.src,
     item.title,
     onProgress,
     signal,
+    youtubeRequest?.headers,
   );
-  return { ...result, source: "original" };
+  return {
+    ...result,
+    source: youtubeRequest ? "youtube-extraction" : "original",
+  };
 }
 
 export function useChordAnalysis(
@@ -63,7 +71,7 @@ export function useChordAnalysis(
 } {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<AnalysisPhase>("decoding");
-  const direct = Boolean(item && canAnalyzeDirectly(item));
+  const analyzable = Boolean(item && canAnalyzeSource(item));
 
   useEffect(() => {
     setProgress(0);
@@ -81,7 +89,7 @@ export function useChordAnalysis(
         },
         signal,
       ),
-    enabled: enabled && direct,
+    enabled: enabled && analyzable,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: 30 * 60 * 1000,
     retry: false,
@@ -89,7 +97,7 @@ export function useChordAnalysis(
 
   if (!enabled || !item)
     return { analysis: null, status: "idle", progress, phase };
-  if (!direct)
+  if (!analyzable)
     return { analysis: null, status: "unavailable", progress, phase };
   if (query.isPending || query.isFetching)
     return {
