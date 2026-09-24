@@ -1,39 +1,32 @@
 import { Pause, Play } from "lucide-react";
 import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
 import type { MusicTrack } from "@/types/music";
+import { toMusicPlaybackItem } from "./music-playback";
 
 interface RemoteMediaPlayerProps {
   track: MusicTrack;
-  engine: "spotify" | "youtube";
-  source: string;
+  playbackQueue: PlaybackItem[];
+  queueIndex: number;
 }
 
 export function RemoteMediaPlayer({
   track,
-  engine,
-  source,
+  playbackQueue,
+  queueIndex,
 }: RemoteMediaPlayerProps) {
-  const { item, playState, toggle } = usePlayback();
-  const id = `${engine}:${track.providerTrackId}`;
-  const isPlaying = item?.id === id && playState === "playing";
-  const playbackItem: PlaybackItem = {
-    id,
-    src: source,
-    engine,
-    title: track.title,
-    subtitle: track.artists.map((artist) => artist.name).join(", "),
-    imageUrl: track.imageUrl,
-    duration: track.durationMs / 1000,
-    destination: "/music",
-    provider: track.provider,
-    artist: track.artists[0]?.name ?? "",
-    album: track.album,
-  };
+  const { item, playState, toggle, setQueue } = usePlayback();
+  const playbackItem = toMusicPlaybackItem(track);
+  const isPlaying = item?.id === playbackItem.id && playState === "playing";
+
+  function toggleFromQueue() {
+    if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
+    void toggle(playbackItem);
+  }
 
   return (
     <button
       type="button"
-      onClick={() => void toggle(playbackItem)}
+      onClick={toggleFromQueue}
       className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95"
       aria-label={isPlaying ? `Pause ${track.title}` : `Lire ${track.title}`}
     >

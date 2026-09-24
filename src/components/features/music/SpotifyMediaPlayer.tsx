@@ -1,12 +1,21 @@
 import type { MusicTrack } from "@/types/music";
 import { RemoteMediaPlayer } from "./RemoteMediaPlayer";
+import type { PlaybackItem } from "@/contexts/PlaybackContext";
 
-export function SpotifyMediaPlayer({ track }: { track: MusicTrack }) {
+export function SpotifyMediaPlayer({
+  track,
+  playbackQueue,
+  queueIndex,
+}: {
+  track: MusicTrack;
+  playbackQueue: PlaybackItem[];
+  queueIndex: number;
+}) {
   return (
     <RemoteMediaPlayer
       track={track}
-      engine="spotify"
-      source={`spotify:track:${track.providerTrackId}`}
+      playbackQueue={playbackQueue}
+      queueIndex={queueIndex}
     />
   );
 }

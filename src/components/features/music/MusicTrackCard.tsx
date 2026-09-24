@@ -7,9 +7,12 @@ import { AddToPlaylistButton } from "@/components/features/playlists/AddToPlayli
 import { MUSIC_PROVIDER } from "@/constants/domain";
 import { MusicMediaPlayer } from "./MusicMediaPlayer";
 import { TrackLyrics } from "./TrackLyrics";
+import type { PlaybackItem } from "@/contexts/PlaybackContext";
 
 interface MusicTrackCardProps {
   track: MusicTrack;
+  playbackQueue: PlaybackItem[];
+  queueIndex: number;
 }
 
 function formatDuration(durationMs: number): string {
@@ -17,7 +20,11 @@ function formatDuration(durationMs: number): string {
   return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
 }
 
-export function MusicTrackCard({ track }: MusicTrackCardProps) {
+export function MusicTrackCard({
+  track,
+  playbackQueue,
+  queueIndex,
+}: MusicTrackCardProps) {
   const { t } = useTranslation();
   const artistNames = track.artists.map((artist) => artist.name).join(", ");
 
@@ -78,7 +85,11 @@ export function MusicTrackCard({ track }: MusicTrackCardProps) {
           </div>
         </div>
 
-        <MusicMediaPlayer track={track} />
+        <MusicMediaPlayer
+          track={track}
+          playbackQueue={playbackQueue}
+          queueIndex={queueIndex}
+        />
         <AddToPlaylistButton track={track} />
         {track.provider === MUSIC_PROVIDER.SPOTIFY ? (
           <TrackLyrics track={track} />

@@ -15,17 +15,26 @@ import { findActiveSegment } from "@/utils/transcription";
 import { SynchronizedLyrics } from "./SynchronizedLyrics";
 import { useTranslation } from "react-i18next";
 import { TRANSCRIPTION_PHASE, TRANSCRIPTION_STATUS } from "@/constants/domain";
+import { toMusicPlaybackItem } from "./music-playback";
 
-export function AudiusMediaPlayer({ track }: { track: MusicTrack }) {
+export function AudiusMediaPlayer({
+  track,
+  playbackQueue = [],
+  queueIndex = 0,
+}: {
+  track: MusicTrack;
+  playbackQueue?: PlaybackItem[];
+  queueIndex?: number;
+}) {
   const { t } = useTranslation();
-  const { item, playState, currentTime, toggle, seek } = usePlayback();
+  const { item, playState, currentTime, toggle, seek, setQueue } = usePlayback();
   const { transcription, error, prepare, retry } =
     useTranscriptionEvents(track);
   const [lyricsOpen, setLyricsOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const id = `audius:${track.id}`;
-  const isActive = item?.id === id;
+  const playbackItem = toMusicPlaybackItem(track);
+  const isActive = item?.id === playbackItem.id;
   const isPlaying = isActive && playState === "playing";
   const activeIndex = useMemo(
     () =>
@@ -35,21 +44,8 @@ export function AudiusMediaPlayer({ track }: { track: MusicTrack }) {
       ),
     [currentTime, isActive, transcription?.segments],
   );
-  const playbackItem: PlaybackItem = {
-    id,
-    src: track.streamUrl,
-    engine: "audio",
-    title: track.title,
-    subtitle: track.artists.map((artist) => artist.name).join(", "),
-    imageUrl: track.imageUrl,
-    duration: track.durationMs / 1000,
-    destination: "/music",
-    provider: track.provider,
-    artist: track.artists[0]?.name ?? "",
-    album: track.album,
-  };
-
   async function startPlayback() {
+    if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
     void toggle(playbackItem);
     setLyricsOpen(true);
     if (transcription || preparing) return;

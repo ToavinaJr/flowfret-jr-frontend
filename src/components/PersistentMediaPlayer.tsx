@@ -44,7 +44,7 @@ export default function PersistentMediaPlayer() {
       <img
         src={item.imageUrl || "/favicon.svg"}
         alt=""
-        className="h-11 w-11 shrink-0 rounded-md bg-secondary object-cover"
+        className="h-10 w-10 shrink-0 rounded-md bg-secondary object-cover sm:h-11 sm:w-11"
       />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-foreground">
@@ -62,7 +62,7 @@ export default function PersistentMediaPlayer() {
       aria-label={t("mediaPlayer.audioPlayer")}
       className="fixed bottom-[65px] left-0 right-0 z-40 border-t border-border bg-card/95 shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur md:bottom-0 md:left-64 lg:left-72"
     >
-      <div className="mx-auto flex h-[76px] max-w-5xl items-center gap-3 px-3 sm:px-5">
+      <div className="mx-auto flex h-[76px] max-w-5xl items-center gap-1.5 px-2 sm:gap-3 sm:px-5">
         {item.destination ? (
           <Link
             to={item.destination}
@@ -79,7 +79,7 @@ export default function PersistentMediaPlayer() {
           type="button"
           disabled={queue.length < 2}
           onClick={() => void previous()}
-          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:flex"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
           aria-label="Morceau précédent"
         >
           <SkipBack className="h-4 w-4" />
@@ -87,7 +87,7 @@ export default function PersistentMediaPlayer() {
         <button
           type="button"
           onClick={() => void toggle()}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground sm:h-11 sm:w-11"
           aria-label={
             playState === "playing" ? t("player.pause") : t("player.play")
           }
@@ -102,7 +102,7 @@ export default function PersistentMediaPlayer() {
           type="button"
           disabled={queue.length < 2}
           onClick={() => void next()}
-          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:flex"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
           aria-label="Morceau suivant"
         >
           <SkipForward className="h-4 w-4" />
@@ -111,7 +111,7 @@ export default function PersistentMediaPlayer() {
           type="button"
           disabled={queue.length < 2}
           onClick={() => setShuffle(!shuffle)}
-          className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md disabled:opacity-30 md:flex ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+          className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 min-[380px]:flex sm:h-10 sm:w-10 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
           aria-label="Lecture aléatoire"
           aria-pressed={shuffle}
         >

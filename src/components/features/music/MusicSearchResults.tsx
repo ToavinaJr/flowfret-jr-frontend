@@ -4,6 +4,7 @@ import { MusicSearchEmptyState } from "./MusicSearchEmptyState";
 import { MusicSearchError } from "./MusicSearchError";
 import { MusicSearchSkeleton } from "./MusicSearchSkeleton";
 import { MusicTrackCard } from "./MusicTrackCard";
+import { toMusicPlaybackItem } from "./music-playback";
 
 interface MusicSearchResultsProps {
   loading: boolean;
@@ -26,6 +27,7 @@ export function MusicSearchResults({
 }: MusicSearchResultsProps) {
   const { t } = useTranslation();
   const tracks = results?.tracks ?? [];
+  const playbackQueue = tracks.map(toMusicPlaybackItem);
 
   if (loading) {
     return <MusicSearchSkeleton />;
@@ -53,9 +55,13 @@ export function MusicSearchResults({
         })}
       </p>
       <ul className="space-y-3">
-        {tracks.map((track) => (
+        {tracks.map((track, index) => (
           <li key={`${track.provider}:${track.providerTrackId}`}>
-            <MusicTrackCard track={track} />
+            <MusicTrackCard
+              track={track}
+              playbackQueue={playbackQueue}
+              queueIndex={index}
+            />
           </li>
         ))}
       </ul>
