@@ -28,7 +28,16 @@ export function PersistentChords({
   onOpenChange,
 }: PersistentChordsProps) {
   const { t } = useTranslation();
-  const { analysis, status, progress, phase } = useChordAnalysis(item, open);
+  const {
+    analysis,
+    status,
+    progress,
+    phase,
+    captureError,
+    requiresCapture,
+    startCapture,
+    finishCapture,
+  } = useChordAnalysis(item, open, currentTime);
   const activeIndex = analysis
     ? Math.max(0, getCueIndexAtTime(analysis.cues, currentTime))
     : 0;
@@ -66,29 +75,65 @@ export function PersistentChords({
             </button>
           </div>
 
-          {status === "loading" || status === "idle" ? (
+          {status === "loading" || status === "requesting-capture" ? (
             <div className="space-y-3 px-4 py-5" aria-live="polite">
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span>{t(`chordPlayer.phases.${phase}`)}</span>
-                <span className="font-musical text-muted-foreground">
-                  {Math.round(progress * 100)}%
+                <span>
+                  {status === "requesting-capture"
+                    ? t("chordPlayer.requestingCapture")
+                    : t(`chordPlayer.phases.${phase}`)}
                 </span>
+                {status === "loading" ? (
+                  <span className="font-musical text-muted-foreground">
+                    {Math.round(progress * 100)}%
+                  </span>
+                ) : null}
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-                <div
-                  className="h-full rounded-full bg-primary transition-[width]"
-                  style={{ width: `${Math.max(4, progress * 100)}%` }}
-                />
-              </div>
+              {status === "loading" ? (
+                <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width]"
+                    style={{ width: `${Math.max(4, progress * 100)}%` }}
+                  />
+                </div>
+              ) : null}
               <p className="text-xs text-muted-foreground">
-                {t("chordPlayer.analysisHint")}
+                {status === "requesting-capture"
+                  ? t("chordPlayer.captureHint")
+                  : t("chordPlayer.analysisHint")}
               </p>
+            </div>
+          ) : null}
+
+          {status === "idle" && requiresCapture ? (
+            <div className="space-y-3 px-4 py-5">
+              <p className="text-sm text-muted-foreground">
+                {t("chordPlayer.captureHint")}
+              </p>
+              <button
+                type="button"
+                onClick={() => void startCapture()}
+                className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+              >
+                {t("chordPlayer.startCapture")}
+              </button>
             </div>
           ) : null}
 
           {status === "unavailable" ? (
             <p className="px-4 py-6 text-sm text-muted-foreground" role="status">
-              {t("chordPlayer.unavailable")}
+              {captureError
+                ? t(`chordPlayer.captureErrors.${captureError}`)
+                : t("chordPlayer.unavailable")}
+              {requiresCapture ? (
+                <button
+                  type="button"
+                  onClick={() => void startCapture()}
+                  className="mt-3 block rounded-md bg-primary px-3 py-2 font-medium text-primary-foreground"
+                >
+                  {t("chordPlayer.retryCapture")}
+                </button>
+              ) : null}
             </p>
           ) : null}
 
@@ -98,13 +143,22 @@ export function PersistentChords({
             </p>
           ) : null}
 
-          {status === "success" && analysis && activeCue ? (
+          {(status === "success" || status === "capturing") &&
+          analysis &&
+          activeCue ? (
             <div className="px-4 py-4">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {t("chordPlayer.current")}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {t("chordPlayer.current")}
+                    </p>
+                    {status === "capturing" ? (
+                      <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-destructive">
+                        {t("chordPlayer.live")}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="mt-1 font-musical text-5xl font-bold text-primary">
                     {activeCue.chord}
                   </p>
@@ -141,14 +195,28 @@ export function PersistentChords({
                 })}
               </div>
 
-              {analysis.source === "audius-match" ? (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  {t("chordPlayer.alternateSource", {
-                    title: analysis.matchedTitle,
-                    artist: analysis.matchedArtist,
-                  })}
-                </p>
+              {status === "capturing" ? (
+                <button
+                  type="button"
+                  onClick={finishCapture}
+                  className="mt-3 rounded-md border border-border px-3 py-2 text-xs font-medium hover:bg-secondary"
+                >
+                  {t("chordPlayer.stopCapture")}
+                </button>
               ) : null}
+            </div>
+          ) : null}
+
+          {status === "capturing" && !activeCue ? (
+            <div className="px-4 py-6 text-sm text-muted-foreground" aria-live="polite">
+              <p>{t("chordPlayer.waitingForAudio")}</p>
+              <button
+                type="button"
+                onClick={finishCapture}
+                className="mt-3 rounded-md border border-border px-3 py-2 text-xs font-medium hover:bg-secondary"
+              >
+                {t("chordPlayer.stopCapture")}
+              </button>
             </div>
           ) : null}
         </div>
@@ -156,7 +224,14 @@ export function PersistentChords({
 
       <button
         type="button"
-        onClick={() => onOpenChange(!open)}
+        onClick={() => {
+          if (open) {
+            onOpenChange(false);
+            return;
+          }
+          onOpenChange(true);
+          if (requiresCapture) void startCapture();
+        }}
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${open ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
         aria-label={open ? t("chordPlayer.close") : t("chordPlayer.open")}
         aria-expanded={open}

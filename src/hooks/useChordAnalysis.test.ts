@@ -1,55 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { chooseBestAudiusMatch } from "./useChordAnalysis";
-import type { MusicTrack } from "@/types/music";
+import { appendCapturedChord } from "./useChordAnalysis";
 
-function track(
-  id: string,
-  title: string,
-  artist: string,
-  durationMs = 180_000,
-): MusicTrack {
-  return {
-    provider: "AUDIUS",
-    id,
-    providerTrackId: id,
-    audiusId: id,
-    title,
-    artists: [{ id: `artist-${id}`, name: artist }],
-    imageUrl: null,
-    audiusUrl: "https://audius.co",
-    externalUrl: "https://audius.co",
-    album: null,
-    isrc: null,
-    streamUrl: `https://api.audius.co/v1/tracks/${id}/stream`,
-    genre: null,
-    geniusUrl: null,
-    geniusMatchScore: null,
-    durationMs,
-  };
-}
+describe("captured chord timeline", () => {
+  it("merges consecutive identical chords", () => {
+    const first = appendCapturedChord([], "Am", 1);
+    const second = appendCapturedChord(first, "Am", 1.75);
 
-describe("Audius chord source matching", () => {
-  const item = {
-    title: "Everlong (Official Video)",
-    artist: "Foo Fighters",
-    subtitle: "Foo Fighters",
-    duration: 250,
-  };
-
-  it("prefers matching title, artist and duration", () => {
-    const match = chooseBestAudiusMatch(item, [
-      track("wrong", "Everlong remix", "Someone Else", 180_000),
-      track("right", "Everlong", "Foo Fighters", 251_000),
-    ]);
-
-    expect(match?.id).toBe("right");
+    expect(second).toEqual([{ start: 0.25, end: 2.5, chord: "Am" }]);
   });
 
-  it("rejects unrelated results", () => {
-    expect(
-      chooseBestAudiusMatch(item, [
-        track("wrong", "Another Song", "Another Artist"),
-      ]),
-    ).toBeNull();
+  it("starts a new cue when the chord changes", () => {
+    const first = appendCapturedChord([], "C", 1);
+    const second = appendCapturedChord(first, "G", 1.75);
+
+    expect(second).toHaveLength(2);
+    expect(second[1]).toEqual({ start: 1, end: 2.5, chord: "G" });
+  });
+
+  it("does not corrupt the timeline after seeking backwards", () => {
+    const cues = [{ start: 10, end: 11, chord: "F" }];
+
+    expect(appendCapturedChord(cues, "C", 2)).toEqual(cues);
   });
 });

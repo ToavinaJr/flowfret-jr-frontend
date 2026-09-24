@@ -12,7 +12,6 @@ import type { ChordCue } from "@/types/song";
 export { classifyChordFromChroma } from "@/utils/chordDetectionMath";
 
 export type AnalysisPhase =
-  | "matching"
   | "downloading"
   | "decoding"
   | "classifying"

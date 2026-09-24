@@ -37,6 +37,5 @@ export interface SearchMusicQueryVariables {
   query: string;
   limit: number;
   cursor?: string;
-  provider?: MusicProvider;
 }
 import type { MusicProvider } from "@/constants/domain";
