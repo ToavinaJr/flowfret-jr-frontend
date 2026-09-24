@@ -29,8 +29,7 @@
     "system": "Système",
     "english": "English",
     "french": "Français",
-    "logout": "Se déconnecter",
-    "audioNotice": "L'audio se débloque automatiquement à la première interaction (politique de lecture automatique du navigateur). La détection d'accords s'exécute entièrement dans votre navigateur."
+    "logout": "Se déconnecter"
   },
   "common": {
     "menu": "Menu",
