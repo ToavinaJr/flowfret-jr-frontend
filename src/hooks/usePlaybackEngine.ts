@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { recordTrackListen } from "@/services/api";
+import { useQueryClient } from "@tanstack/react-query";
+import { recordTrackListen } from "@/services/listeningHistoryApi";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import type { PlayState } from "@/types/song";
 import { useSpotifyController } from "./useSpotifyController";
@@ -15,6 +16,7 @@ export function usePlaybackEngine(
   onEnded?: () => void,
   initial?: InitialPlaybackState,
 ) {
+  const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const itemRef = useRef<PlaybackItem | null>(initial?.item ?? null);
   const resumeAtRef = useRef(initial?.currentTime ?? 0);
@@ -135,7 +137,9 @@ export function usePlaybackEngine(
       const active = next ?? itemRef.current;
       if (!active) return;
       const generation = generationRef.current;
-      recordListen(active, loggedItemRef);
+      recordListen(active, loggedItemRef, () =>
+        queryClient.invalidateQueries({ queryKey: ["listening-history"] }),
+      );
       try {
         if (active.engine === "spotify") {
           const controller = await spotify.getController(active.src);
@@ -154,7 +158,7 @@ export function usePlaybackEngine(
         if (generation === generationRef.current) setPlayState("error");
       }
     },
-    [select, spotify, youtube],
+    [queryClient, select, spotify, youtube],
   );
 
   const pause = useCallback(() => {
@@ -234,10 +238,13 @@ export function usePlaybackEngine(
 function recordListen(
   item: PlaybackItem,
   loggedItemRef: { current: string | null },
+  onRecorded: () => void,
 ) {
   if (item.trackActivity === false || loggedItemRef.current === item.id) return;
   loggedItemRef.current = item.id;
-  void recordTrackListen(item.id).catch(() => {
-    loggedItemRef.current = null;
-  });
+  void recordTrackListen(item)
+    .then(onRecorded)
+    .catch(() => {
+      loggedItemRef.current = null;
+    });
 }

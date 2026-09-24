@@ -12,6 +12,12 @@ export function toMusicPlaybackItem(track: MusicTrack): PlaybackItem {
     duration: track.durationMs / 1000,
     destination: "/music",
     provider: track.provider,
+    providerTrackId: track.providerTrackId,
+    artists: track.artists,
+    externalUrl: track.externalUrl,
+    streamUrl: track.streamUrl,
+    genre: track.genre,
+    isrc: track.isrc,
     artist: track.artists[0]?.name ?? "",
     album: track.album,
   };

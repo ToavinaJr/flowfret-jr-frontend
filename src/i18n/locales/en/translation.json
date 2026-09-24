@@ -29,9 +29,7 @@
     "system": "System",
     "english": "English",
     "french": "Français",
-    "logout": "Log out",
-    "audioNotice": "Audio unlocks automatically on first interaction (browser autoplay policy). Chord detection runs entirely in your browser."
-  },
+    "logout": "Log out"  },
   "common": {
     "menu": "Menu",
     "close": "Close",

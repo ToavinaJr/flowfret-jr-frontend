@@ -10,6 +10,7 @@ interface MusicSearchResultsProps {
   loading: boolean;
   error: string | null;
   hasSearched: boolean;
+  displayingHistory: boolean;
   results: MusicSearchResult | null;
   loadingMore: boolean;
   hasMore: boolean;
@@ -20,6 +21,7 @@ export function MusicSearchResults({
   loading,
   error,
   hasSearched,
+  displayingHistory,
   results,
   loadingMore,
   hasMore,
@@ -37,7 +39,7 @@ export function MusicSearchResults({
     return <MusicSearchError message={error} />;
   }
 
-  if (!hasSearched || tracks.length === 0) {
+  if ((!hasSearched && !displayingHistory) || tracks.length === 0) {
     return (
       <MusicSearchEmptyState
         hasSearched={hasSearched}
@@ -49,10 +51,12 @@ export function MusicSearchResults({
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        {t("music.resultsSummary", {
-          shown: tracks.length,
-          total: results?.total ?? tracks.length,
-        })}
+        {displayingHistory
+          ? t("music.listeningHistory")
+          : t("music.resultsSummary", {
+              shown: tracks.length,
+              total: results?.total ?? tracks.length,
+            })}
       </p>
       <ul className="space-y-3">
         {tracks.map((track, index) => (
@@ -65,7 +69,7 @@ export function MusicSearchResults({
           </li>
         ))}
       </ul>
-      {hasMore ? (
+      {hasSearched && hasMore ? (
         <button
           type="button"
           disabled={loadingMore}

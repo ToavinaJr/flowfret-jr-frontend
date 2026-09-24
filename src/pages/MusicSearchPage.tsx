@@ -13,6 +13,7 @@ const MusicSearchPage = () => {
     hasMore,
     error,
     hasSearched,
+    displayingHistory,
     search,
     loadMore,
   } = useMusicSearch();
@@ -27,6 +28,7 @@ const MusicSearchPage = () => {
           loading={loading}
           error={error}
           hasSearched={hasSearched}
+          displayingHistory={displayingHistory}
           results={results}
           loadingMore={loadingMore}
           hasMore={hasMore}

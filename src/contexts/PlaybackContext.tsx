@@ -20,6 +20,12 @@ import {
 import type { PlayState } from "@/types/song";
 import { useTranslation } from "react-i18next";
 import type { ChordCue } from "@/types/song";
+import type { MusicProvider } from "@/constants/domain";
+
+export interface PlaybackArtist {
+  id: string;
+  name: string;
+}
 
 export interface PlaybackItem {
   id: string;
@@ -31,7 +37,13 @@ export interface PlaybackItem {
   duration?: number;
   destination?: string;
   trackActivity?: boolean;
-  provider?: string;
+  provider?: MusicProvider;
+  providerTrackId?: string;
+  artists?: PlaybackArtist[];
+  externalUrl?: string;
+  streamUrl?: string;
+  genre?: string | null;
+  isrc?: string | null;
   artist?: string;
   album?: string | null;
   chordCues?: ChordCue[];

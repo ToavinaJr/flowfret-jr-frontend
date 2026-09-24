@@ -7,11 +7,19 @@ import {
   analyzeAudioUrl,
   type AnalysisPhase,
 } from "@/utils/chordDetection";
+import {
+  fetchChordTranscription,
+  saveChordTranscription,
+} from "@/services/chordTranscriptionsApi";
+
+const CHORD_ENGINE_VERSION = "browser-chroma-v1";
+
+class UnavailableChordSourceError extends Error {}
 
 export interface ChordAnalysis {
   cues: ChordCue[];
   duration: number;
-  source: "original" | "youtube-extraction";
+  source: "original" | "youtube-extraction" | "database";
 }
 
 export type ChordAnalysisStatus =
@@ -60,6 +68,54 @@ async function analyzeDirectItem(
   };
 }
 
+function hasDatabaseKey(item: PlaybackItem): boolean {
+  return Boolean(item.provider && item.providerTrackId);
+}
+
+async function loadOrAnalyzeItem(
+  item: PlaybackItem,
+  onProgress: (ratio: number, phase: AnalysisPhase) => void,
+  signal: AbortSignal,
+): Promise<ChordAnalysis> {
+  if (item.provider && item.providerTrackId) {
+    try {
+      const stored = await fetchChordTranscription(
+        item.provider,
+        item.providerTrackId,
+      );
+      if (stored?.cues.length) {
+        onProgress(1, "complete");
+        return {
+          cues: stored.cues,
+          duration: stored.duration,
+          source: "database",
+        };
+      }
+    } catch (error) {
+      if (!canAnalyzeSource(item)) throw error;
+    }
+  }
+
+  if (!canAnalyzeSource(item)) throw new UnavailableChordSourceError();
+  const analysis = await analyzeDirectItem(item, onProgress, signal);
+
+  if (item.provider && item.providerTrackId && analysis.cues.length) {
+    try {
+      await saveChordTranscription({
+        provider: item.provider,
+        providerTrackId: item.providerTrackId,
+        title: item.title,
+        artist: item.artist,
+        analysis,
+        engineVersion: CHORD_ENGINE_VERSION,
+      });
+    } catch {
+      // The local analysis remains usable if persistence is temporarily down.
+    }
+  }
+  return analysis;
+}
+
 export function useChordAnalysis(
   item: PlaybackItem | null,
   enabled: boolean,
@@ -71,7 +127,9 @@ export function useChordAnalysis(
 } {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<AnalysisPhase>("decoding");
-  const analyzable = Boolean(item && canAnalyzeSource(item));
+  const analyzable = Boolean(
+    item && (canAnalyzeSource(item) || hasDatabaseKey(item)),
+  );
 
   useEffect(() => {
     setProgress(0);
@@ -81,7 +139,7 @@ export function useChordAnalysis(
   const query = useQuery({
     queryKey: ["chord-analysis", item?.id, item?.src],
     queryFn: ({ signal }) =>
-      analyzeDirectItem(
+      loadOrAnalyzeItem(
         item!,
         (nextProgress, nextPhase) => {
           setProgress(nextProgress);
@@ -106,6 +164,8 @@ export function useChordAnalysis(
       progress,
       phase,
     };
+  if (query.error instanceof UnavailableChordSourceError)
+    return { analysis: null, status: "unavailable", progress, phase };
   if (query.isError)
     return { analysis: null, status: "error", progress, phase };
   return {
