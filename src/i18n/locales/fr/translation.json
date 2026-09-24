@@ -525,19 +525,7 @@
     "analysisHint": "La première analyse peut prendre un moment. Le résultat reste ensuite en cache.",
     "unavailable": "Aucun accord n’a pu être détecté dans le son partagé.",
     "error": "Les accords ne peuvent pas être analysés pour le moment.",
-    "requestingCapture": "Autorisation de capture en attente…",
-    "captureHint": "Sélectionnez cet onglet et activez « Partager l’audio de l’onglet ». L’audio reste en mémoire et seuls les accords détectés sont mis en cache.",
-    "startCapture": "Partager l’audio de l’onglet",
-    "retryCapture": "Réessayer la capture",
-    "stopCapture": "Arrêter et conserver les accords",
-    "waitingForAudio": "Capture active : lancez la musique pour commencer la détection.",
-    "live": "Direct",
-    "captureErrors": {
-      "unsupported": "Ce navigateur ne prend pas en charge la capture audio d’un onglet.",
-      "permission-denied": "La capture a été annulée ou refusée.",
-      "no-audio": "L’onglet sélectionné ne partage aucun son. Activez l’option de partage audio.",
-      "failed": "Impossible de démarrer la capture audio de l’onglet."
-    },
+    "directSourceRequired": "Ce provider ne fournit pas de source audio directe autorisée pour l’analyse des accords.",
     "phases": {
       "downloading": "Chargement de l’audio…",
       "decoding": "Décodage audio…",

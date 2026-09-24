@@ -525,19 +525,7 @@
     "analysisHint": "The first analysis may take a moment. The result is then kept in cache.",
     "unavailable": "No chords could be detected in the shared audio.",
     "error": "Chords cannot be analyzed right now.",
-    "requestingCapture": "Waiting for capture permission…",
-    "captureHint": "Select this tab and enable “Share tab audio”. Audio stays in memory and only detected chords are cached.",
-    "startCapture": "Share tab audio",
-    "retryCapture": "Retry capture",
-    "stopCapture": "Stop and keep chords",
-    "waitingForAudio": "Capture is active: play the track to start detection.",
-    "live": "Live",
-    "captureErrors": {
-      "unsupported": "This browser does not support tab audio capture.",
-      "permission-denied": "Capture was cancelled or denied.",
-      "no-audio": "The selected tab is not sharing audio. Enable the audio sharing option.",
-      "failed": "Unable to start tab audio capture."
-    },
+    "directSourceRequired": "This provider does not expose an authorized direct audio source for chord analysis.",
     "phases": {
       "downloading": "Loading audio…",
       "decoding": "Decoding audio…",

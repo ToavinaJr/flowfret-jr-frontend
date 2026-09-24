@@ -133,7 +133,7 @@ const ChordsPage = () => {
                       : "border border-border bg-card text-foreground hover:bg-surface-elevated"
                   }`}
                 >
-                  <span className="w-full break-words font-musical text-sm font-bold uppercase leading-snug tracking-tight [overflow-wrap:anywhere] sm:text-[0.9375rem]">
+                  <span className="w-full font-musical text-sm font-bold uppercase leading-snug tracking-tight [overflow-wrap:anywhere] sm:text-[0.9375rem]">
                     {name}
                   </span>
                   <span className="mt-1 text-[10px] text-muted-foreground">
