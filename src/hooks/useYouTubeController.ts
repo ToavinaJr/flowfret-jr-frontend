@@ -72,12 +72,24 @@ export function useYouTubeController({
       ]);
   }, []);
 
+  const reset = useCallback(() => {
+    const host = hostRef.current;
+    videoIdRef.current = null;
+    lastPlayerStateRef.current = null;
+    if (!host) return;
+    host.onload = null;
+    host.removeAttribute("src");
+  }, []);
+
+  useEffect(() => reset, [reset]);
+
   return {
     hostRef: hostRef as RefObject<HTMLIFrameElement>,
     play,
     pause,
     seek,
     setVolume,
+    reset,
   };
 }
 

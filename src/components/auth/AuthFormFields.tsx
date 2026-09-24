@@ -1,6 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import type { AuthMode } from "@/types/auth";
 import { PasswordField } from "@/components/auth/PasswordField";
+import { useTranslation } from "react-i18next";
 
 interface AuthFormFieldsProps {
   mode: AuthMode;
@@ -33,12 +34,13 @@ export function AuthFormFields({
   onForgotPassword,
   onOpenTerms,
 }: AuthFormFieldsProps) {
+  const { t } = useTranslation();
   return (
     <>
       {mode === "register" && (
         <div>
           <label className="text-xs text-muted-foreground" htmlFor="username">
-            Nom d’utilisateur
+            {t("auth.fields.username")}
           </label>
           <input
             id="username"
@@ -54,7 +56,7 @@ export function AuthFormFields({
 
       <div>
         <label className="text-xs text-muted-foreground" htmlFor="email">
-          E-mail
+          {t("auth.fields.email")}
         </label>
         <input
           id="email"
@@ -69,7 +71,7 @@ export function AuthFormFields({
 
       <PasswordField
         id="password"
-        label="Mot de passe"
+        label={t("auth.fields.password")}
         value={password}
         autoComplete={mode === "login" ? "current-password" : "new-password"}
         onChange={onPasswordChange}
@@ -82,7 +84,7 @@ export function AuthFormFields({
             onClick={onForgotPassword}
             className="min-h-[36px] text-xs text-muted-foreground transition-colors hover:text-primary"
           >
-            Mot de passe oublié ?
+            {t("auth.forgotPassword")}
           </button>
         </div>
       )}
@@ -91,7 +93,7 @@ export function AuthFormFields({
         <>
           <PasswordField
             id="confirm-password"
-            label="Confirmer le mot de passe"
+            label={t("auth.fields.confirmPassword")}
             value={confirmPassword}
             autoComplete="new-password"
             onChange={onConfirmPasswordChange}
@@ -110,13 +112,13 @@ export function AuthFormFields({
               htmlFor="terms"
               className="text-sm leading-relaxed text-muted-foreground"
             >
-              J’accepte les{" "}
+              {t("auth.acceptTermsPrefix")}{" "}
               <button
                 type="button"
                 onClick={onOpenTerms}
                 className="text-foreground underline underline-offset-2 hover:text-primary"
               >
-                Conditions Générales d’Utilisation
+                {t("auth.termsLink")}
               </button>
             </label>
           </div>

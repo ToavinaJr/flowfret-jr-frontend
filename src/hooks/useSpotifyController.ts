@@ -20,6 +20,7 @@ export function useSpotifyController({
   const controllerRef = useRef<SpotifyEmbedController | null>(null);
   const pendingRef = useRef<Promise<SpotifyEmbedController> | null>(null);
   const uriRef = useRef<string | null>(null);
+  const generationRef = useRef(0);
 
   const getController = useCallback(
     async (uri: string) => {
@@ -31,16 +32,22 @@ export function useSpotifyController({
         return controllerRef.current;
       }
       if (pendingRef.current) return pendingRef.current;
+      const generation = generationRef.current;
       pendingRef.current = loadSpotifyIframeApi()
         .then(
           (api) =>
-            new Promise<SpotifyEmbedController>((resolve) => {
+            new Promise<SpotifyEmbedController>((resolve, reject) => {
               if (!hostRef.current)
                 throw new Error("Spotify player host is unavailable");
               api.createController(
                 hostRef.current,
                 { uri, width: 300, height: 80 },
                 (controller) => {
+                  if (generation !== generationRef.current) {
+                    controller.destroy();
+                    reject(new Error("Spotify player initialization cancelled"));
+                    return;
+                  }
                   controllerRef.current = controller;
                   uriRef.current = uri;
                   controller.addListener("playback_started", () =>
@@ -71,7 +78,15 @@ export function useSpotifyController({
     [setCurrentTime, setDuration, setPlayState],
   );
 
-  useEffect(() => () => controllerRef.current?.destroy(), []);
+  const reset = useCallback(() => {
+    generationRef.current += 1;
+    controllerRef.current?.destroy();
+    controllerRef.current = null;
+    pendingRef.current = null;
+    uriRef.current = null;
+  }, []);
+
+  useEffect(() => reset, [reset]);
 
   return {
     hostRef: hostRef as RefObject<HTMLDivElement>,
@@ -79,5 +94,6 @@ export function useSpotifyController({
     getController,
     pause: () => controllerRef.current?.pause(),
     seek: (time: number) => controllerRef.current?.seek(time),
+    reset,
   };
 }

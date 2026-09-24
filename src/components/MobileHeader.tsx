@@ -19,20 +19,6 @@ const MobileHeader = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  const fallbackNavLabels: Record<string, string> = {
-    "/": "nav.feed",
-    "/music": "nav.music",
-    "/upload": "nav.upload",
-    "/friends": "friends.title",
-    "/notifications": "notifications.title",
-    "/chords": "nav.chords",
-    "/scales": "nav.scales",
-    "/metronome": "nav.metronome",
-    "/tuner": "nav.tuner",
-    "/menu": "nav.more",
-    "/profile": "nav.profile",
-  };
-
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
       <div className="flex min-w-0 items-center gap-2">
@@ -77,11 +63,7 @@ const MobileHeader = () => {
                 >
                   <item.icon className="h-4 w-4 shrink-0" />
                   <span>
-                    {t(item.label, {
-                      defaultValue: t(
-                        fallbackNavLabels[item.path] ?? item.label,
-                      ),
-                    })}
+                    {t(item.translationKey)}
                   </span>
                   {item.path === "/notifications" ? (
                     <NotificationBadge />

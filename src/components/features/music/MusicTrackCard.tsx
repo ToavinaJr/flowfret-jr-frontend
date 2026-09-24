@@ -79,7 +79,7 @@ export function MusicTrackCard({
                 className="ml-auto hidden items-center gap-1 rounded-md px-2 py-1 font-medium transition-colors hover:bg-secondary hover:text-foreground sm:flex"
                 aria-label={t("music.openGenius")}
               >
-                Paroles <ExternalLink className="h-3 w-3" />
+                {t("lyrics.title")} <ExternalLink className="h-3 w-3" />
               </a>
             ) : null}
           </div>

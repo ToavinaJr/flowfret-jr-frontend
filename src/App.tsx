@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -32,7 +33,9 @@ const TranscriptionsPage = lazy(() => import("@/pages/TranscriptionsPage"));
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const { t } = useTranslation();
+  return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem value={{ light: "light", dark: "dark" }}>
       <TooltipProvider>
@@ -44,7 +47,7 @@ const App = () => (
               <Suspense
                 fallback={
                   <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-                    Chargement...
+                    {t("common.loading")}
                   </div>
                 }
               >
@@ -83,6 +86,7 @@ const App = () => (
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

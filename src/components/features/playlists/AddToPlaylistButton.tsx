@@ -17,8 +17,10 @@ import {
 } from "@/services/playlistsApi";
 import type { MusicTrack } from "@/types/music";
 import type { Playlist } from "@/types/playlist";
+import { useTranslation } from "react-i18next";
 
 export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -35,13 +37,13 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
     setLoadingId(playlist.id);
     try {
       await addTrackToPlaylist(playlist.id, track);
-      toast.success(`Morceau ajouté à « ${playlist.name} »`);
+      toast.success(t("playlists.trackAdded", { name: playlist.name }));
       setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Ajout à la playlist impossible",
+          : t("playlists.addFailed"),
       );
     } finally {
       setLoadingId(null);
@@ -60,14 +62,14 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
         ...current,
       ]);
       await addTrackToPlaylist(playlist.id, track);
-      toast.success(`Playlist « ${playlist.name} » créée avec ce morceau`);
+      toast.success(t("playlists.createdWithTrack", { name: playlist.name }));
       setName("");
       setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Création de la playlist impossible",
+          : t("playlists.createFailed"),
       );
     } finally {
       setLoadingId(null);
@@ -80,15 +82,15 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
         <button
           type="button"
           className="inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
-          aria-label={`Ajouter ${track.title} à une playlist`}
+          aria-label={t("playlists.addNamed", { title: track.title })}
         >
           <ListPlus className="h-4 w-4" />
-          <span className="hidden sm:inline">Playlist</span>
+          <span className="hidden sm:inline">{t("playlists.playlist")}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="w-[calc(100%-2rem)] max-w-md">
         <DialogHeader>
-          <DialogTitle>Ajouter à une playlist</DialogTitle>
+          <DialogTitle>{t("playlists.addToPlaylist")}</DialogTitle>
           <DialogDescription className="truncate">
             {track.title}
           </DialogDescription>
@@ -104,7 +106,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
             onClick={() => void playlistsQuery.refetch()}
             className="min-h-11 rounded-md border border-border px-4 text-sm"
           >
-            Réessayer de charger les playlists
+            {t("playlists.retryLoad")}
           </button>
         ) : (
           <div className="max-h-56 space-y-2 overflow-y-auto">
@@ -126,7 +128,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
             ))}
             {!playlists.length ? (
               <p className="py-3 text-center text-sm text-muted-foreground">
-                Vous n’avez pas encore de playlist.
+                {t("playlists.noneYet")}
               </p>
             ) : null}
           </div>
@@ -137,7 +139,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
             value={name}
             onChange={(event) => setName(event.target.value)}
             maxLength={120}
-            placeholder="Nouvelle playlist"
+            placeholder={t("playlists.newPlaceholder")}
             className="min-h-11 min-w-0 flex-1 rounded-md border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
           <button
@@ -148,7 +150,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
             {loadingId === "new" ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              "Créer"
+              t("playlists.create")
             )}
           </button>
         </form>

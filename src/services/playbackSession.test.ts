@@ -1,4 +1,6 @@
 import {
+  PLAYBACK_LOGOUT_EVENT,
+  clearPlaybackSession,
   readPlaybackSession,
   writePlaybackSession,
   type PlaybackSession,
@@ -47,5 +49,24 @@ describe("playbackSession", () => {
     localStorage.setItem("fretflow.playback.session.v1", "not-json");
 
     expect(readPlaybackSession()).toBeUndefined();
+  });
+
+  it("clears persisted playback and notifies the active player on logout", () => {
+    const onLogout = vi.fn();
+    window.addEventListener(PLAYBACK_LOGOUT_EVENT, onLogout);
+    writePlaybackSession({
+      item,
+      queue: [item],
+      currentIndex: 0,
+      currentTime: 12,
+      volume: 1,
+      shuffle: false,
+    });
+
+    clearPlaybackSession();
+
+    expect(readPlaybackSession()).toBeUndefined();
+    expect(onLogout).toHaveBeenCalledOnce();
+    window.removeEventListener(PLAYBACK_LOGOUT_EVENT, onLogout);
   });
 });

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ChangeEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface OtpFormProps {
   otp: string;
@@ -19,6 +20,7 @@ export function OtpForm({
   onResend,
   resendPending,
 }: OtpFormProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -28,12 +30,12 @@ export function OtpForm({
   return (
     <div className="space-y-5">
       <div className="rounded-xl border border-border/70 bg-background/80 p-4 text-sm text-muted-foreground">
-        Un code de vérification a été envoyé à votre adresse e-mail. Entrez-le ci-dessous.
+        {t("auth.otp.instructions")}
       </div>
 
       <div>
         <label className="text-xs text-muted-foreground" htmlFor="otp">
-          Code de vérification
+          {t("auth.otp.label")}
         </label>
         <input
           ref={inputRef}
@@ -62,10 +64,10 @@ export function OtpForm({
           {loading ? (
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Vérification...
+              {t("auth.otp.verifying")}
             </span>
           ) : (
-            "Vérifier"
+            t("auth.otp.verify")
           )}
         </button>
 
@@ -78,10 +80,10 @@ export function OtpForm({
           {resendPending ? (
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Envoi...
+              {t("auth.otp.sending")}
             </span>
           ) : (
-            "Renvoyer le code"
+            t("auth.otp.resend")
           )}
         </button>
       </div>

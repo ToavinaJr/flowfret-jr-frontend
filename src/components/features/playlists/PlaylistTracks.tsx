@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { usePlayback } from "@/contexts/PlaybackContext";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 import { toPlaybackItem } from "./playlist-playback";
+import { useTranslation } from "react-i18next";
 
 interface PlaylistTracksProps {
   playlist: Playlist;
@@ -17,6 +18,7 @@ export function PlaylistTracks({
   onRemove,
   onReorder,
 }: PlaylistTracksProps) {
+  const { t } = useTranslation();
   const playback = usePlayback();
   const [genre, setGenre] = useState("ALL");
   const genres = useMemo(
@@ -49,16 +51,16 @@ export function PlaylistTracks({
         <div className="mr-auto min-w-0">
           <h2 className="truncate text-lg font-semibold">{playlist.name}</h2>
           <p className="text-xs text-muted-foreground">
-            {items.length} morceau{items.length > 1 ? "x" : ""}
+            {t("playlists.trackCount", { count: items.length })}
           </p>
         </div>
         <select
           value={genre}
           onChange={(event) => setGenre(event.target.value)}
-          aria-label="Filtrer par genre"
+          aria-label={t("playlists.filterGenre")}
           className="min-h-10 rounded-md border border-border bg-secondary px-3 text-sm"
         >
-          <option value="ALL">Tous les genres</option>
+          <option value="ALL">{t("playlists.allGenres")}</option>
           {genres.map((value) => (
             <option key={value} value={value}>{value}</option>
           ))}
@@ -69,7 +71,7 @@ export function PlaylistTracks({
           onClick={() => start(false)}
           className="inline-flex min-h-10 items-center gap-2 rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50"
         >
-          <Play className="h-4 w-4" /> Lire
+          <Play className="h-4 w-4" /> {t("player.play")}
         </button>
         <button
           type="button"
@@ -77,7 +79,7 @@ export function PlaylistTracks({
           onClick={() => start(true)}
           className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm disabled:opacity-50"
         >
-          <Shuffle className="h-4 w-4" /> Aléatoire
+          <Shuffle className="h-4 w-4" /> {t("mediaPlayer.shuffle")}
         </button>
       </header>
       <div className="space-y-2">
@@ -88,7 +90,7 @@ export function PlaylistTracks({
               <button
                 type="button"
                 onClick={() => void playback.play(toPlaybackItem(item.track))}
-                aria-label={`Lire ${item.track.title}`}
+                aria-label={t("lyrics.playTrack", { title: item.track.title })}
                 className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-md bg-card"
               >
                 {item.track.imageUrl ? (
@@ -104,13 +106,13 @@ export function PlaylistTracks({
                   {item.track.genre ? ` · ${item.track.genre}` : ""}
                 </p>
               </div>
-              <button type="button" disabled={originalIndex === 0} onClick={() => void move(originalIndex, -1)} aria-label="Monter" className="p-2 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
-              <button type="button" disabled={originalIndex === items.length - 1} onClick={() => void move(originalIndex, 1)} aria-label="Descendre" className="p-2 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
-              <button type="button" onClick={() => void onRemove(item.id)} aria-label="Retirer" className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+              <button type="button" disabled={originalIndex === 0} onClick={() => void move(originalIndex, -1)} aria-label={t("playlists.moveUp")} className="p-2 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
+              <button type="button" disabled={originalIndex === items.length - 1} onClick={() => void move(originalIndex, 1)} aria-label={t("playlists.moveDown")} className="p-2 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
+              <button type="button" onClick={() => void onRemove(item.id)} aria-label={t("playlists.removeTrack")} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
             </article>
           );
         })}
-        {!visible.length && <p className="py-8 text-center text-sm text-muted-foreground">Aucun morceau dans cette sélection.</p>}
+        {!visible.length && <p className="py-8 text-center text-sm text-muted-foreground">{t("playlists.noTracks")}</p>}
       </div>
     </section>
   );

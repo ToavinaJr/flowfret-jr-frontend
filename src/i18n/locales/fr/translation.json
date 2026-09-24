@@ -9,6 +9,10 @@
     "metronome": "Métronome",
     "tuner": "Accordeur",
     "more": "Plus",
+    "playlists": "Playlists",
+    "transcriptions": "Transcriptions",
+    "friends": "Amis",
+    "notifications": "Notifications",
     "profile": "Profil"
   },
   "settings": {
@@ -30,7 +34,9 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "loadFailed": "Chargement impossible"
   },
   "friends": {
     "title": "Amis",
@@ -137,7 +143,8 @@
     "reportSuccess": "Signalement envoyé à la modération.",
     "reportError": "Le signalement n’a pas pu être envoyé. Il est peut-être déjà enregistré.",
     "mentionHint": "Tapez @ pour identifier un ami.",
-    "noMentionFriends": "Aucun ami ne correspond à cette recherche."
+    "noMentionFriends": "Aucun ami ne correspond à cette recherche.",
+    "postUnavailable": "Cette publication n’est plus disponible."
   },
   "morePage": {
     "title": "Menu",
@@ -192,7 +199,8 @@
     "searchPlaceholder": "Rechercher des accords… (Am, Cmaj7, F#dim)",
     "voicing": "Position",
     "strum": "Jouer l’accord",
-    "selectPrompt": "Sélectionnez un accord pour l’afficher"
+    "selectPrompt": "Sélectionnez un accord pour l’afficher",
+    "diagram": "Diagramme de {{chord}}"
   },
   "metronome": {
     "title": "Métronome",
@@ -264,8 +272,73 @@
     "mode": "Mode d’authentification",
     "login": "Connexion",
     "register": "Inscription",
+    "forgotPassword": "Mot de passe oublié ?",
+    "acceptTermsPrefix": "J’accepte les",
+    "termsLink": "Conditions Générales d’Utilisation",
+    "sendResetLink": "Envoyer le lien",
+    "changePassword": "Modifier le mot de passe",
+    "fields": {
+      "username": "Nom d’utilisateur",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe"
+    },
+    "otp": {
+      "instructions": "Un code de vérification a été envoyé à votre adresse e-mail. Entrez-le ci-dessous.",
+      "label": "Code de vérification",
+      "verifying": "Vérification…",
+      "verify": "Vérifier",
+      "sending": "Envoi…",
+      "resend": "Renvoyer le code"
+    },
+    "highlights": {
+      "savedProgressions": { "title": "Grilles personnalisées", "description": "Accédez à vos progressions et diagrammes sauvegardés." },
+      "realtimePractice": { "title": "Pratique en temps réel", "description": "Accordeur, métronome et analyse d’accords synchronisés." },
+      "clearProgress": { "title": "Progression claire", "description": "Suivez vos sessions et partagez vos riffs." }
+    },
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "backToLogin": "Retour à la connexion",
+    "or": "ou",
+    "continueWithGoogle": "Continuer avec Google",
+    "signUpWithGoogle": "S’inscrire avec Google",
+    "errors": {
+      "acceptTermsBeforeRegister": "Vous devez accepter les conditions avant de vous inscrire.",
+      "googleNotConfigured": "La connexion Google n’est pas configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
+      "googleCancelled": "Connexion Google annulée.",
+      "googleLoginFailed": "Impossible de se connecter avec Google. Réessayez.",
+      "resetLinkMissing": "Le lien de réinitialisation est manquant.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "verificationLinkMissing": "Le lien de vérification est manquant.",
+      "otpInvalid": "Saisissez le code OTP à 4 chiffres.",
+      "acceptTerms": "Veuillez accepter les conditions pour créer un compte.",
+      "loginFailed": "Impossible de se connecter. Vérifiez vos identifiants.",
+      "verificationFailed": "Impossible de vérifier le code. Réessayez.",
+      "registrationFailed": "Impossible de créer le compte. Réessayez plus tard.",
+      "resendOtpFailed": "Impossible de renvoyer le code. Réessayez."
+    },
+    "toasts": {
+      "googleConnected": "Connexion avec Google réussie",
+      "googleAccountCreated": "Compte Google créé",
+      "resetRequestSent": "Demande envoyée",
+      "resetRequestDescription": "Si un compte correspond à cette adresse, un lien a été envoyé.",
+      "passwordChanged": "Mot de passe modifié",
+      "passwordChangedDescription": "Vous pouvez maintenant vous connecter.",
+      "accountVerified": "Compte vérifié. Bienvenue !",
+      "otpSent": "Code OTP envoyé",
+      "newOtpSent": "Nouveau code envoyé"
+    },
+    "terms": {
+      "title": "Conditions d’utilisation",
+      "description": "Les conditions complètes seront bientôt disponibles."
+    },
+    "hero": {
+      "title": "Libérez le potentiel de votre guitare",
+      "description": "Analysez, pratiquez et partagez — un atelier conçu pour les guitaristes."
+    }
   },
   "scales": {
     "title": "Gammes",
@@ -422,7 +495,85 @@
     "audioPlayer": "Lecteur audio",
     "mute": "Couper le son",
     "unmute": "Activer le son",
-    "volume": "Volume"
+    "volume": "Volume",
+    "previous": "Morceau précédent",
+    "next": "Morceau suivant",
+    "shuffle": "Lecture aléatoire",
+    "youtubePlayer": "Lecteur de playlist YouTube"
+  },
+  "playlists": {
+    "title": "Mes playlists",
+    "playlist": "Playlist",
+    "created": "Playlist créée",
+    "deleted": "Playlist supprimée",
+    "reorderFailed": "Réorganisation impossible",
+    "selectOrCreate": "Sélectionnez ou créez une playlist.",
+    "newPlaceholder": "Nouvelle playlist",
+    "nameLabel": "Nom de la playlist",
+    "create": "Créer la playlist",
+    "deleteNamed": "Supprimer {{name}}",
+    "empty": "Créez votre première playlist.",
+    "trackCount_one": "{{count}} morceau",
+    "trackCount_other": "{{count}} morceaux",
+    "filterGenre": "Filtrer par genre",
+    "allGenres": "Tous les genres",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "removeTrack": "Retirer",
+    "noTracks": "Aucun morceau dans cette sélection.",
+    "trackAdded": "Morceau ajouté à « {{name}} »",
+    "addFailed": "Ajout à la playlist impossible",
+    "createdWithTrack": "Playlist « {{name}} » créée avec ce morceau",
+    "createFailed": "Création de la playlist impossible",
+    "addNamed": "Ajouter {{title}} à une playlist",
+    "addToPlaylist": "Ajouter à une playlist",
+    "retryLoad": "Réessayer de charger les playlists",
+    "noneYet": "Vous n’avez pas encore de playlist."
+  },
+  "transcriptions": {
+    "title": "Mes transcriptions",
+    "retried": "Transcription relancée",
+    "unknownArtist": "Artiste inconnu",
+    "empty": "Aucune transcription.",
+    "fallbackTitle": "Transcription",
+    "progress": "Progression : {{progress}} %",
+    "retry": "Relancer"
+  },
+  "account": {
+    "sessions": {
+      "title": "Sessions actives",
+      "description": "Révoquez les appareils que vous ne reconnaissez pas.",
+      "current": "Session actuelle",
+      "other": "Autre session",
+      "createdAt": "Créée le {{date}}",
+      "revoke": "Révoquer"
+    },
+    "security": {
+      "passwordChanged": "Mot de passe modifié. Reconnectez-vous.",
+      "changeFailed": "Modification impossible",
+      "accountDeleted": "Compte supprimé",
+      "deleteFailed": "Suppression impossible",
+      "changePassword": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "saveAndLogout": "Enregistrer et déconnecter les sessions",
+      "deleteAccount": "Supprimer le compte",
+      "deleteDescription": "Cette action désactive immédiatement le compte et toutes ses sessions. Saisissez DELETE pour confirmer.",
+      "deleteConfirmation": "Confirmation de suppression",
+      "deletePermanently": "Supprimer définitivement mon compte"
+    }
+  },
+  "moderation": {
+    "title": "Modération",
+    "updated": "Signalement mis à jour.",
+    "failed": "La modération a échoué.",
+    "loadFailed": "Impossible de charger les signalements.",
+    "postWithoutText": "Publication sans texte",
+    "reportedBy": "Signalé par @{{reporter}} · auteur @{{author}}",
+    "review": "Examiner",
+    "resolve": "Résoudre",
+    "dismiss": "Rejeter",
+    "empty": "Aucun signalement."
   },
   "circleHarmony": {
     "major": "Accords majeurs",

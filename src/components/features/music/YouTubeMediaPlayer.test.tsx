@@ -61,7 +61,7 @@ describe("YouTubeMediaPlayer", () => {
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(document.querySelector("iframe")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Lire Song" }));
+    fireEvent.click(screen.getByRole("button", { name: "Play Song" }));
 
     expect(playback.setQueue).toHaveBeenCalledWith(queue, 0);
     expect(playback.toggle).toHaveBeenCalledWith(

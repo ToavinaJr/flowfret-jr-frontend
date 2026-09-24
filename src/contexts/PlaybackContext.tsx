@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffect,
   type ReactNode,
 } from "react";
 import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
@@ -12,8 +13,12 @@ import { usePlaybackMediaSession } from "@/hooks/usePlaybackMediaSession";
 import { usePlaybackPersistence } from "@/hooks/usePlaybackPersistence";
 import { usePlaybackQueue } from "@/hooks/usePlaybackQueue";
 import { usePlaybackTabCoordination } from "@/hooks/usePlaybackTabCoordination";
-import { readPlaybackSession } from "@/services/playbackSession";
+import {
+  PLAYBACK_LOGOUT_EVENT,
+  readPlaybackSession,
+} from "@/services/playbackSession";
 import type { PlayState } from "@/types/song";
+import { useTranslation } from "react-i18next";
 
 export interface PlaybackItem {
   id: string;
@@ -55,6 +60,7 @@ interface PlaybackContextValue {
 const PlaybackContext = createContext<PlaybackContextValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const [restoredSession] = useState(() => readPlaybackSession());
   const queue = usePlaybackQueue(restoredSession);
   const playNextRef = useRef<((item: PlaybackItem) => Promise<void>) | null>(
@@ -69,9 +75,23 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     currentTime: restoredSession?.currentTime ?? 0,
     volume: restoredSession?.volume ?? 1,
   });
+  const clearPlaybackRef = useRef(engine.clear);
+  clearPlaybackRef.current = engine.clear;
+  const clearQueue = queue.setQueue;
+  const resetShuffle = queue.setShuffle;
   const pausePlayback = engine.pause;
   const seekPlayback = engine.seek;
   playNextRef.current = engine.play;
+
+  useEffect(() => {
+    const clear = () => {
+      clearPlaybackRef.current();
+      clearQueue([]);
+      resetShuffle(false);
+    };
+    window.addEventListener(PLAYBACK_LOGOUT_EVENT, clear);
+    return () => window.removeEventListener(PLAYBACK_LOGOUT_EVENT, clear);
+  }, [clearQueue, resetShuffle]);
 
   const select = useCallback(
     (item: PlaybackItem) => {
@@ -168,7 +188,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       />
       <iframe
         ref={engine.youtubeHostRef}
-        title="YouTube playlist player"
+        title={t("mediaPlayer.youtubePlayer")}
         allow="autoplay; encrypted-media"
         className="pointer-events-none fixed -bottom-24 left-0 h-20 w-[300px] opacity-0"
         aria-hidden="true"

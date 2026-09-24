@@ -62,7 +62,7 @@ export default function PersistentMediaPlayer() {
       aria-label={t("mediaPlayer.audioPlayer")}
       className="fixed bottom-[65px] left-0 right-0 z-40 border-t border-border bg-card/95 shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur md:bottom-0 md:left-64 lg:left-72"
     >
-      <div className="mx-auto flex h-[76px] max-w-5xl items-center gap-1.5 px-2 sm:gap-3 sm:px-5">
+      <div className="mx-auto flex h-[68px] max-w-5xl items-center gap-1.5 px-2 sm:h-[76px] sm:gap-3 sm:px-5">
         {item.destination ? (
           <Link
             to={item.destination}
@@ -80,7 +80,7 @@ export default function PersistentMediaPlayer() {
           disabled={queue.length < 2}
           onClick={() => void previous()}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
-          aria-label="Morceau précédent"
+          aria-label={t("mediaPlayer.previous")}
         >
           <SkipBack className="h-4 w-4" />
         </button>
@@ -103,7 +103,7 @@ export default function PersistentMediaPlayer() {
           disabled={queue.length < 2}
           onClick={() => void next()}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
-          aria-label="Morceau suivant"
+          aria-label={t("mediaPlayer.next")}
         >
           <SkipForward className="h-4 w-4" />
         </button>
@@ -111,8 +111,8 @@ export default function PersistentMediaPlayer() {
           type="button"
           disabled={queue.length < 2}
           onClick={() => setShuffle(!shuffle)}
-          className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 min-[380px]:flex sm:h-10 sm:w-10 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-          aria-label="Lecture aléatoire"
+          className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 sm:flex sm:h-10 sm:w-10 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+          aria-label={t("mediaPlayer.shuffle")}
           aria-pressed={shuffle}
         >
           <Shuffle className="h-4 w-4" />
@@ -163,16 +163,56 @@ export default function PersistentMediaPlayer() {
           </>
         ) : null}
       </div>
-      <input
-        type="range"
-        min={0}
-        max={duration || 1}
-        step={0.1}
-        value={Math.min(currentTime, duration || 1)}
-        onChange={(event) => seek(Number(event.target.value))}
-        className="absolute bottom-0 left-0 h-1 w-full cursor-pointer accent-primary sm:hidden"
-        aria-label={t("player.seek")}
-      />
+      <div className="flex h-10 items-center gap-1.5 border-t border-border/70 px-2 sm:hidden">
+        <button
+          type="button"
+          disabled={queue.length < 2}
+          onClick={() => setShuffle(!shuffle)}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
+          aria-label={t("mediaPlayer.shuffle")}
+          aria-pressed={shuffle}
+        >
+          <Shuffle className="h-4 w-4" />
+        </button>
+        <input
+          type="range"
+          min={0}
+          max={duration || 1}
+          step={0.1}
+          value={Math.min(currentTime, duration || 1)}
+          onChange={(event) => seek(Number(event.target.value))}
+          className="min-w-0 flex-1 accent-primary"
+          aria-label={t("player.seek")}
+        />
+        {!isSpotify ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setVolume(volume > 0 ? 0 : 1)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground"
+              aria-label={
+                volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")
+              }
+            >
+              {volume > 0 ? (
+                <Volume2 className="h-4 w-4" />
+              ) : (
+                <VolumeX className="h-4 w-4" />
+              )}
+            </button>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(event) => setVolume(Number(event.target.value))}
+              className="w-16 shrink-0 accent-primary min-[390px]:w-20"
+              aria-label={t("mediaPlayer.volume")}
+            />
+          </>
+        ) : null}
+      </div>
     </section>
   );
 }

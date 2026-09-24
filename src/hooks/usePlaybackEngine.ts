@@ -19,6 +19,7 @@ export function usePlaybackEngine(
   const itemRef = useRef<PlaybackItem | null>(initial?.item ?? null);
   const resumeAtRef = useRef(initial?.currentTime ?? 0);
   const loggedItemRef = useRef<string | null>(null);
+  const generationRef = useRef(0);
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
   const handleYouTubeEnded = useCallback(() => onEndedRef.current?.(), []);
@@ -133,10 +134,12 @@ export function usePlaybackEngine(
       if (next) select(next);
       const active = next ?? itemRef.current;
       if (!active) return;
+      const generation = generationRef.current;
       recordListen(active, loggedItemRef);
       try {
         if (active.engine === "spotify") {
           const controller = await spotify.getController(active.src);
+          if (generation !== generationRef.current) return;
           if (resumeAtRef.current > 0) controller.seek(resumeAtRef.current);
           if (same && spotify.uriRef.current === active.src) controller.resume();
           else controller.play();
@@ -145,10 +148,10 @@ export function usePlaybackEngine(
           setPlayState("playing");
         } else {
           await audioRef.current?.play();
-          setPlayState("playing");
+          if (generation === generationRef.current) setPlayState("playing");
         }
       } catch {
-        setPlayState("error");
+        if (generation === generationRef.current) setPlayState("error");
       }
     },
     [select, spotify, youtube],
@@ -160,6 +163,26 @@ export function usePlaybackEngine(
     else audioRef.current?.pause();
     setPlayState("paused");
   }, [spotify, youtube]);
+
+  const clear = useCallback(() => {
+    generationRef.current += 1;
+    const previous = itemRef.current;
+    audioRef.current?.pause();
+    if (audioRef.current) {
+      audioRef.current.removeAttribute("src");
+      audioRef.current.load();
+    }
+    spotify.reset();
+    youtube.reset();
+    releaseSource(previous);
+    itemRef.current = null;
+    resumeAtRef.current = 0;
+    loggedItemRef.current = null;
+    setItem(null);
+    setPlayState("idle");
+    setCurrentTime(0);
+    setDuration(0);
+  }, [releaseSource, spotify, youtube]);
 
   const seek = useCallback(
     (time: number) => {
@@ -202,6 +225,7 @@ export function usePlaybackEngine(
     select,
     play,
     pause,
+    clear,
     seek,
     setVolume,
   };

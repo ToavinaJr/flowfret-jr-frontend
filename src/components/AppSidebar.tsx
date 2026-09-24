@@ -12,20 +12,6 @@ const AppSidebar = () => {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
 
-  const fallbackNavLabels: Record<string, string> = {
-    "/": "Feed",
-    "/music": "Music",
-    "/upload": "Upload",
-    "/friends": "Amis",
-    "/notifications": "Notifications",
-    "/chords": "Chords",
-    "/scales": "Scales",
-    "/metronome": "Metronome",
-    "/tuner": "Tuner",
-    "/menu": "More",
-    "/profile": "Profile",
-  };
-
   return (
     <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar lg:w-72">
       <div className="border-b border-border px-4 py-4 lg:px-6 lg:py-5">
@@ -55,9 +41,7 @@ const AppSidebar = () => {
             >
               <item.icon className="h-4 w-4 shrink-0" />
               <span className="truncate">
-                {t(item.label, {
-                  defaultValue: fallbackNavLabels[item.path] ?? item.label,
-                })}
+                {t(item.translationKey)}
               </span>
               {item.path === "/notifications" ? <NotificationBadge /> : null}
             </NavLink>
@@ -71,7 +55,7 @@ const AppSidebar = () => {
             to="/moderation"
             className="flex min-h-[44px] items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary"
           >
-            <ShieldCheck className="h-4 w-4" /> Modération
+            <ShieldCheck className="h-4 w-4" /> {t("moderation.title")}
           </NavLink>
         ) : null}
         {user && (

@@ -1,34 +1,33 @@
 import { Music2, Radio, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const HIGHLIGHTS = [
   {
     icon: Music2,
-    title: "Grilles personnalisées",
-    text: "Accédez à vos progressions et diagrams sauvegardés.",
+    key: "savedProgressions",
   },
   {
     icon: Radio,
-    title: "Pratique en temps réel",
-    text: "Tuner, métronome et analyse d’accords synchronisés.",
+    key: "realtimePractice",
   },
   {
     icon: Sparkles,
-    title: "Progression claire",
-    text: "Suivez vos sessions et partagez vos riffs.",
+    key: "clearProgress",
   },
 ] as const;
 
 export function AuthHighlights() {
+  const { t } = useTranslation();
   return (
     <ul className="mt-10 space-y-5">
       {HIGHLIGHTS.map((item) => (
-        <li key={item.title} className="flex gap-4">
+        <li key={item.key} className="flex gap-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-card/80 ring-1 ring-border">
             <item.icon className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <div className="text-sm font-medium text-foreground">{item.title}</div>
-            <p className="mt-1 text-sm text-muted-foreground">{item.text}</p>
+            <div className="text-sm font-medium text-foreground">{t(`auth.highlights.${item.key}.title`)}</div>
+            <p className="mt-1 text-sm text-muted-foreground">{t(`auth.highlights.${item.key}.description`)}</p>
           </div>
         </li>
       ))}

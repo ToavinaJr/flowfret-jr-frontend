@@ -12,8 +12,10 @@ import {
 import { FeedCard } from "@/pages/FeedPage";
 import type { FeedPost } from "@/types/feed";
 import { FeedSkeleton } from "@/components/skeletons/AppSkeletons";
+import { useTranslation } from "react-i18next";
 
 export default function PostPage() {
+  const { t } = useTranslation();
   const { postId } = useParams();
   const { user } = useAuth();
   const client = useQueryClient();
@@ -47,7 +49,7 @@ export default function PostPage() {
         className="mb-5 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Notifications
+        {t("notifications.title")}
       </Link>
       {post.isLoading && <FeedSkeleton count={1} />}
       {post.data && (
@@ -61,7 +63,7 @@ export default function PostPage() {
       )}{" "}
       {post.isSuccess && !post.data && (
         <p className="rounded-lg border bg-card p-5 text-sm text-muted-foreground">
-          Cette publication n’est plus disponible.
+          {t("feed.postUnavailable")}
         </p>
       )}
     </main>

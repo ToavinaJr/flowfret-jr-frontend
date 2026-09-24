@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { PasswordField } from "@/components/auth/PasswordField";
+import { useTranslation } from "react-i18next";
 
 interface PasswordResetFormProps {
   mode: "forgot" | "reset";
@@ -22,12 +23,13 @@ export function PasswordResetForm({
   onPasswordChange,
   onConfirmPasswordChange,
 }: PasswordResetFormProps) {
+  const { t } = useTranslation();
   return (
     <>
       {mode === "forgot" ? (
         <div>
           <label className="text-xs text-muted-foreground" htmlFor="reset-email">
-            E-mail
+            {t("auth.fields.email")}
           </label>
           <input
             id="reset-email"
@@ -43,14 +45,14 @@ export function PasswordResetForm({
         <>
           <PasswordField
             id="new-password"
-            label="Nouveau mot de passe"
+            label={t("auth.fields.newPassword")}
             value={password}
             autoComplete="new-password"
             onChange={onPasswordChange}
           />
           <PasswordField
             id="confirm-new-password"
-            label="Confirmer le nouveau mot de passe"
+            label={t("auth.fields.confirmNewPassword")}
             value={confirmPassword}
             autoComplete="new-password"
             onChange={onConfirmPasswordChange}
@@ -63,7 +65,7 @@ export function PasswordResetForm({
         className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-md bg-primary font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-        {mode === "forgot" ? "Envoyer le lien" : "Modifier le mot de passe"}
+        {mode === "forgot" ? t("auth.sendResetLink") : t("auth.changePassword")}
       </button>
     </>
   );

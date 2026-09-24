@@ -17,32 +17,32 @@ import {
 
 export interface AppNavItem {
   icon: LucideIcon;
-  label: string;
+  translationKey: string;
   path: string;
 }
 
 export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
-  { icon: Home, label: "Feed", path: "/" },
-  { icon: Search, label: "Music", path: "/music" },
-  { icon: ListMusic, label: "Playlists", path: "/playlists" },
-  { icon: FileText, label: "Transcriptions", path: "/transcriptions" },
-  { icon: Upload, label: "Upload", path: "/upload" },
-  { icon: Users, label: "Amis", path: "/friends" },
-  { icon: Bell, label: "Notifications", path: "/notifications" },
-  { icon: BookOpen, label: "Chords", path: "/chords" },
-  { icon: Music2, label: "Scales", path: "/scales" },
-  { icon: Radio, label: "Tuner", path: "/tuner" },
-  { icon: Timer, label: "Metronome", path: "/metronome" },
-  { icon: User, label: "Profile", path: "/profile" },
-  { icon: Menu, label: "More", path: "/menu" },
+  { icon: Home, translationKey: "nav.feed", path: "/" },
+  { icon: Search, translationKey: "nav.music", path: "/music" },
+  { icon: ListMusic, translationKey: "nav.playlists", path: "/playlists" },
+  { icon: FileText, translationKey: "nav.transcriptions", path: "/transcriptions" },
+  { icon: Upload, translationKey: "nav.upload", path: "/upload" },
+  { icon: Users, translationKey: "nav.friends", path: "/friends" },
+  { icon: Bell, translationKey: "nav.notifications", path: "/notifications" },
+  { icon: BookOpen, translationKey: "nav.chords", path: "/chords" },
+  { icon: Music2, translationKey: "nav.scales", path: "/scales" },
+  { icon: Radio, translationKey: "nav.tuner", path: "/tuner" },
+  { icon: Timer, translationKey: "nav.metronome", path: "/metronome" },
+  { icon: User, translationKey: "nav.profile", path: "/profile" },
+  { icon: Menu, translationKey: "nav.more", path: "/menu" },
 ];
 
 export const MOBILE_TAB_ITEMS: AppNavItem[] = [
-  { icon: Home, label: "Feed", path: "/" },
-  { icon: Search, label: "Music", path: "/music" },
-  { icon: Upload, label: "Upload", path: "/upload" },
-  { icon: Users, label: "Amis", path: "/friends" },
-  { icon: Menu, label: "More", path: "/menu" },
+  { icon: Home, translationKey: "nav.feed", path: "/" },
+  { icon: Search, translationKey: "nav.music", path: "/music" },
+  { icon: Upload, translationKey: "nav.upload", path: "/upload" },
+  { icon: Users, translationKey: "nav.friends", path: "/friends" },
+  { icon: Menu, translationKey: "nav.more", path: "/menu" },
 ];
 
 export const PAGE_SHELL =

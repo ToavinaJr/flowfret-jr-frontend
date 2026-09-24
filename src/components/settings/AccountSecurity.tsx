@@ -2,8 +2,10 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { changeAccountPassword, deleteAccount } from "@/services/accountApi";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 export function AccountSecurity() {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -16,10 +18,10 @@ export function AccountSecurity() {
     setPending("password");
     try {
       await changeAccountPassword(currentPassword, newPassword);
-      toast.success("Mot de passe modifié. Reconnectez-vous.");
+      toast.success(t("account.security.passwordChanged"));
       await logout();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Modification impossible");
+      toast.error(error instanceof Error ? error.message : t("account.security.changeFailed"));
     } finally {
       setPending(null);
     }
@@ -31,10 +33,10 @@ export function AccountSecurity() {
     setPending("delete");
     try {
       await deleteAccount(currentPassword, confirmation);
-      toast.success("Compte supprimé");
+      toast.success(t("account.security.accountDeleted"));
       await logout();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Suppression impossible");
+      toast.error(error instanceof Error ? error.message : t("account.security.deleteFailed"));
     } finally {
       setPending(null);
     }
@@ -43,28 +45,27 @@ export function AccountSecurity() {
   return (
     <div className="space-y-4">
       <form onSubmit={changePassword} className="space-y-3 rounded-xl border border-border bg-card p-4">
-        <h2 className="font-semibold">Changer le mot de passe</h2>
-        <PasswordInput label="Mot de passe actuel" value={currentPassword} onChange={setCurrentPassword} />
-        <PasswordInput label="Nouveau mot de passe" value={newPassword} onChange={setNewPassword} minLength={8} />
+        <h2 className="font-semibold">{t("account.security.changePassword")}</h2>
+        <PasswordInput label={t("account.security.currentPassword")} value={currentPassword} onChange={setCurrentPassword} />
+        <PasswordInput label={t("account.security.newPassword")} value={newPassword} onChange={setNewPassword} minLength={8} />
         <button
           type="submit"
           disabled={pending !== null || !currentPassword || newPassword.length < 8}
           className="min-h-11 rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
         >
-          Enregistrer et déconnecter les sessions
+          {t("account.security.saveAndLogout")}
         </button>
       </form>
       <form onSubmit={removeAccount} className="space-y-3 rounded-xl border border-destructive/40 bg-card p-4">
-        <h2 className="font-semibold text-destructive">Supprimer le compte</h2>
+        <h2 className="font-semibold text-destructive">{t("account.security.deleteAccount")}</h2>
         <p className="text-xs text-muted-foreground">
-          Cette action désactive immédiatement le compte et toutes ses sessions.
-          Saisissez DELETE pour confirmer.
+          {t("account.security.deleteDescription")}
         </p>
         <input
           value={confirmation}
           onChange={(event) => setConfirmation(event.target.value)}
           placeholder="DELETE"
-          aria-label="Confirmation de suppression"
+          aria-label={t("account.security.deleteConfirmation")}
           className="min-h-11 w-full rounded-md border border-border bg-secondary px-3 text-sm"
         />
         <button
@@ -72,7 +73,7 @@ export function AccountSecurity() {
           disabled={pending !== null || confirmation !== "DELETE"}
           className="min-h-11 rounded-md bg-destructive px-4 text-sm text-destructive-foreground disabled:opacity-50"
         >
-          Supprimer définitivement mon compte
+          {t("account.security.deletePermanently")}
         </button>
       </form>
     </div>

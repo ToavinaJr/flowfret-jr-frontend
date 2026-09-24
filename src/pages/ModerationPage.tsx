@@ -10,8 +10,10 @@ import {
   setReportStatus,
   type ReportStatus,
 } from "@/services/moderationApi";
+import { useTranslation } from "react-i18next";
 
 export default function ModerationPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const client = useQueryClient();
   const reports = useQuery({
@@ -28,10 +30,10 @@ export default function ModerationPage() {
       status: Exclude<ReportStatus, typeof REPORT_STATUS.OPEN>;
     }) => setReportStatus(id, status),
     onSuccess: () => {
-      toast.success("Signalement mis à jour.");
+      toast.success(t("moderation.updated"));
       void client.invalidateQueries({ queryKey: ["moderation-reports"] });
     },
-    onError: () => toast.error("La modération a échoué."),
+    onError: () => toast.error(t("moderation.failed")),
   });
 
   if (user?.role !== USER_ROLE.ADMIN) return <Navigate to="/" replace />;
@@ -39,14 +41,14 @@ export default function ModerationPage() {
   return (
     <main className={`${PAGE_SHELL} max-w-4xl lg:max-w-4xl`}>
       <h1 className={`${PAGE_TITLE} flex items-center gap-2`}>
-        <ShieldCheck className="h-5 w-5" /> Modération
+        <ShieldCheck className="h-5 w-5" /> {t("moderation.title")}
       </h1>
       {reports.isLoading ? (
-        <p className="text-sm text-muted-foreground">Chargement…</p>
+        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : null}
       {reports.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          Impossible de charger les signalements.
+          {t("moderation.loadFailed")}
         </p>
       ) : null}
       <div className="space-y-3">
@@ -63,16 +65,18 @@ export default function ModerationPage() {
                 to={`/post/${report.post.id}`}
                 className="inline-flex min-h-10 items-center gap-1 text-sm text-primary hover:underline"
               >
-                Voir la publication <ExternalLink className="h-3.5 w-3.5" />
+                {t("notifications.viewPost")} <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </div>
             <p className="mb-2 text-sm font-medium">{report.reason}</p>
             <p className="line-clamp-3 text-sm text-muted-foreground">
-              {report.post.content || "Publication sans texte"}
+              {report.post.content || t("moderation.postWithoutText")}
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              Signalé par @{report.reporter.username} · auteur @
-              {report.post.author.username}
+              {t("moderation.reportedBy", {
+                reporter: report.reporter.username,
+                author: report.post.author.username,
+              })}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button
@@ -85,7 +89,7 @@ export default function ModerationPage() {
                 }
                 className="min-h-10 rounded-md border border-border px-3 text-sm disabled:opacity-50"
               >
-                Examiner
+                {t("moderation.review")}
               </button>
               <button
                 disabled={moderate.isPending}
@@ -98,7 +102,7 @@ export default function ModerationPage() {
                 className="inline-flex min-h-10 items-center gap-1 rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                Résoudre
+                {t("moderation.resolve")}
               </button>
               <button
                 disabled={moderate.isPending}
@@ -111,7 +115,7 @@ export default function ModerationPage() {
                 className="inline-flex min-h-10 items-center gap-1 rounded-md bg-secondary px-3 text-sm disabled:opacity-50"
               >
                 <XCircle className="h-4 w-4" />
-                Rejeter
+                {t("moderation.dismiss")}
               </button>
             </div>
           </article>
@@ -119,7 +123,7 @@ export default function ModerationPage() {
       </div>
       {reports.isSuccess && reports.data.length === 0 ? (
         <p className="py-10 text-center text-sm text-muted-foreground">
-          Aucun signalement.
+          {t("moderation.empty")}
         </p>
       ) : null}
     </main>

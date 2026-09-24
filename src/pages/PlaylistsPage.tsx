@@ -13,8 +13,10 @@ import {
   reorderPlaylist,
 } from "@/services/playlistsApi";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
+import { useTranslation } from "react-i18next";
 
 export default function PlaylistsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [selected, setSelected] = useState<Playlist | null>(null);
@@ -33,10 +35,10 @@ export default function PlaylistsPage() {
         if (rows[0]) await loadItems(rows[0]);
       })
       .catch((error: unknown) =>
-        toast.error(error instanceof Error ? error.message : "Chargement impossible"),
+        toast.error(error instanceof Error ? error.message : t("common.loadFailed")),
       )
       .finally(() => setLoading(false));
-  }, [loadItems]);
+  }, [loadItems, t]);
 
   async function add(name: string) {
     const created = await createPlaylist(name);
@@ -47,7 +49,7 @@ export default function PlaylistsPage() {
     ]);
     setSelected(created);
     setItems([]);
-    toast.success("Playlist créée");
+    toast.success(t("playlists.created"));
   }
 
   async function removePlaylist(playlist: Playlist) {
@@ -62,7 +64,7 @@ export default function PlaylistsPage() {
       setItems([]);
       if (remaining[0]) await loadItems(remaining[0]);
     }
-    toast.success("Playlist supprimée");
+    toast.success(t("playlists.deleted"));
   }
 
   async function removeItem(itemId: string) {
@@ -91,16 +93,16 @@ export default function PlaylistsPage() {
     } catch (error) {
       setItems(previous);
       toast.error(
-        error instanceof Error ? error.message : "Réorganisation impossible",
+        error instanceof Error ? error.message : t("playlists.reorderFailed"),
       );
     }
   }
 
   return (
     <main className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Mes playlists</h1>
+      <h1 className={PAGE_TITLE}>{t("playlists.title")}</h1>
       {loading ? (
-        <p className="text-sm text-muted-foreground">Chargement…</p>
+        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
           <PlaylistList
@@ -119,7 +121,7 @@ export default function PlaylistsPage() {
             />
           ) : (
             <section className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-              Sélectionnez ou créez une playlist.
+              {t("playlists.selectOrCreate")}
             </section>
           )}
         </div>

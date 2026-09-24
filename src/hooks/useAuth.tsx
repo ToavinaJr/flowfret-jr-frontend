@@ -27,6 +27,7 @@ import {
   resendVerificationEmail,
   verifyEmailUser,
 } from "@/services/api";
+import { clearPlaybackSession } from "@/services/playbackSession";
 
 interface AuthContextValue {
   status: AuthStatus;
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       })
       .catch(() => {
         if (!active) return;
+        clearPlaybackSession();
         setUser(null);
         setStatus("unauthenticated");
       });
@@ -111,9 +113,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const logout = useCallback(async () => {
-    await logoutUser();
+    clearPlaybackSession();
     setUser(null);
     setStatus("unauthenticated");
+    await logoutUser();
   }, []);
 
   const value = useMemo(

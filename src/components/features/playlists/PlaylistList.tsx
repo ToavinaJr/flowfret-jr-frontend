@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import type { Playlist } from "@/types/playlist";
+import { useTranslation } from "react-i18next";
 
 interface PlaylistListProps {
   playlists: Playlist[];
@@ -17,6 +18,7 @@ export function PlaylistList({
   onCreate,
   onDelete,
 }: PlaylistListProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -39,14 +41,14 @@ export function PlaylistList({
           value={name}
           onChange={(event) => setName(event.target.value)}
           maxLength={120}
-          placeholder="Nouvelle playlist"
-          aria-label="Nom de la playlist"
+          placeholder={t("playlists.newPlaceholder")}
+          aria-label={t("playlists.nameLabel")}
           className="min-w-0 flex-1 rounded-md border border-border bg-secondary px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
         />
         <button
           type="submit"
           disabled={saving || !name.trim()}
-          aria-label="Créer la playlist"
+          aria-label={t("playlists.create")}
           className="grid min-h-11 min-w-11 place-items-center rounded-md bg-primary text-primary-foreground disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
@@ -68,7 +70,7 @@ export function PlaylistList({
             <button
               type="button"
               onClick={() => void onDelete(playlist)}
-              aria-label={`Supprimer ${playlist.name}`}
+              aria-label={t("playlists.deleteNamed", { name: playlist.name })}
               className="grid min-h-11 min-w-11 place-items-center text-muted-foreground hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
@@ -77,7 +79,7 @@ export function PlaylistList({
         ))}
         {!playlists.length && (
           <p className="p-3 text-sm text-muted-foreground">
-            Créez votre première playlist.
+            {t("playlists.empty")}
           </p>
         )}
       </div>

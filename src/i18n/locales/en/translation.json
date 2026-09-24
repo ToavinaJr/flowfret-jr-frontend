@@ -9,6 +9,10 @@
     "metronome": "Metronome",
     "tuner": "Tuner",
     "more": "More",
+    "playlists": "Playlists",
+    "transcriptions": "Transcriptions",
+    "friends": "Friends",
+    "notifications": "Notifications",
     "profile": "Profile"
   },
   "settings": {
@@ -30,7 +34,9 @@
     "close": "Close",
     "cancel": "Cancel",
     "save": "Save",
-    "retry": "Retry"
+    "retry": "Retry",
+    "loading": "Loading…",
+    "loadFailed": "Unable to load"
   },
   "friends": {
     "title": "Friends",
@@ -137,7 +143,8 @@
     "reportSuccess": "Report sent to moderation.",
     "reportError": "The report could not be sent. It may already exist.",
     "mentionHint": "Type @ to mention a friend.",
-    "noMentionFriends": "No friend matches this search."
+    "noMentionFriends": "No friend matches this search.",
+    "postUnavailable": "This post is no longer available."
   },
   "morePage": {
     "title": "Menu",
@@ -192,7 +199,8 @@
     "searchPlaceholder": "Search chords… (Am, Cmaj7, F#dim)",
     "voicing": "Voicing",
     "strum": "Strum",
-    "selectPrompt": "Select a chord to preview"
+    "selectPrompt": "Select a chord to preview",
+    "diagram": "{{chord}} diagram"
   },
   "metronome": {
     "title": "Metronome",
@@ -264,6 +272,32 @@
     "mode": "Authentication mode",
     "login": "Sign in",
     "register": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "acceptTermsPrefix": "I accept the",
+    "termsLink": "Terms of Use",
+    "sendResetLink": "Send link",
+    "changePassword": "Change password",
+    "fields": {
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password"
+    },
+    "otp": {
+      "instructions": "A verification code was sent to your email address. Enter it below.",
+      "label": "Verification code",
+      "verifying": "Verifying…",
+      "verify": "Verify",
+      "sending": "Sending…",
+      "resend": "Resend code"
+    },
+    "highlights": {
+      "savedProgressions": { "title": "Custom chord charts", "description": "Access your saved progressions and diagrams." },
+      "realtimePractice": { "title": "Real-time practice", "description": "Use synchronized tuning, metronome, and chord analysis." },
+      "clearProgress": { "title": "Clear progress", "description": "Track your sessions and share your riffs." }
+    },
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "backToLogin": "Back to sign in",
@@ -461,7 +495,85 @@
     "audioPlayer": "Audio player",
     "mute": "Mute",
     "unmute": "Unmute",
-    "volume": "Volume"
+    "volume": "Volume",
+    "previous": "Previous track",
+    "next": "Next track",
+    "shuffle": "Shuffle",
+    "youtubePlayer": "YouTube playlist player"
+  },
+  "playlists": {
+    "title": "My playlists",
+    "playlist": "Playlist",
+    "created": "Playlist created",
+    "deleted": "Playlist deleted",
+    "reorderFailed": "Unable to reorder the playlist",
+    "selectOrCreate": "Select or create a playlist.",
+    "newPlaceholder": "New playlist",
+    "nameLabel": "Playlist name",
+    "create": "Create playlist",
+    "deleteNamed": "Delete {{name}}",
+    "empty": "Create your first playlist.",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks",
+    "filterGenre": "Filter by genre",
+    "allGenres": "All genres",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeTrack": "Remove track",
+    "noTracks": "No tracks in this selection.",
+    "trackAdded": "Track added to “{{name}}”",
+    "addFailed": "Unable to add the track to the playlist",
+    "createdWithTrack": "Playlist “{{name}}” created with this track",
+    "createFailed": "Unable to create the playlist",
+    "addNamed": "Add {{title}} to a playlist",
+    "addToPlaylist": "Add to a playlist",
+    "retryLoad": "Retry loading playlists",
+    "noneYet": "You don't have any playlists yet."
+  },
+  "transcriptions": {
+    "title": "My transcriptions",
+    "retried": "Transcription restarted",
+    "unknownArtist": "Unknown artist",
+    "empty": "No transcriptions.",
+    "fallbackTitle": "Transcription",
+    "progress": "Progress: {{progress}}%",
+    "retry": "Retry"
+  },
+  "account": {
+    "sessions": {
+      "title": "Active sessions",
+      "description": "Revoke devices you don't recognize.",
+      "current": "Current session",
+      "other": "Other session",
+      "createdAt": "Created {{date}}",
+      "revoke": "Revoke"
+    },
+    "security": {
+      "passwordChanged": "Password changed. Please sign in again.",
+      "changeFailed": "Unable to change the password",
+      "accountDeleted": "Account deleted",
+      "deleteFailed": "Unable to delete the account",
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "saveAndLogout": "Save and sign out all sessions",
+      "deleteAccount": "Delete account",
+      "deleteDescription": "This immediately disables the account and all its sessions. Enter DELETE to confirm.",
+      "deleteConfirmation": "Deletion confirmation",
+      "deletePermanently": "Permanently delete my account"
+    }
+  },
+  "moderation": {
+    "title": "Moderation",
+    "updated": "Report updated.",
+    "failed": "Moderation failed.",
+    "loadFailed": "Unable to load reports.",
+    "postWithoutText": "Post without text",
+    "reportedBy": "Reported by @{{reporter}} · author @{{author}}",
+    "review": "Review",
+    "resolve": "Resolve",
+    "dismiss": "Dismiss",
+    "empty": "No reports."
   },
   "circleHarmony": {
     "major": "Major chords",

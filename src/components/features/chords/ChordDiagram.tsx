@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ChordPosition } from "@/types/chord";
+import { useTranslation } from "react-i18next";
 
 const STRING_COUNT = 6;
 const FRET_COUNT = 4;
@@ -19,6 +20,7 @@ export function ChordDiagram({
   dimmed = false,
   onStringPress,
 }: ChordDiagramProps) {
+  const { t } = useTranslation();
   const [pressedString, setPressedString] = useState<number | null>(null);
 
   if (!position) return null;
@@ -58,7 +60,7 @@ export function ChordDiagram({
         width={width + offsetX + 10 * scale}
         height={height + 40 * scale}
         className="text-foreground"
-        aria-label={`Diagramme ${chord}`}
+        aria-label={t("chords.diagram", { chord })}
       >
         {baseFret > 1 && (
           <text

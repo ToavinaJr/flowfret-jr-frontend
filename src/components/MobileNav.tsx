@@ -1,9 +1,11 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { MOBILE_TAB_ITEMS } from "@/constants/navigation";
+import { useTranslation } from "react-i18next";
 
 const MobileNav = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/90 md:hidden">
@@ -20,7 +22,7 @@ const MobileNav = () => {
               )}
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              <span className="max-w-full truncate">{item.label}</span>
+              <span className="max-w-full truncate">{t(item.translationKey)}</span>
             </NavLink>
           );
         })}

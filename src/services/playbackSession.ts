@@ -1,6 +1,7 @@
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 
 const SESSION_KEY = "fretflow.playback.session.v1";
+export const PLAYBACK_LOGOUT_EVENT = "fretflow:playback-logout";
 const MAX_QUEUE_LENGTH = 250;
 
 export interface PlaybackSession {
@@ -88,4 +89,13 @@ export function writePlaybackSession(session: PlaybackSession) {
   } catch {
     // Playback must keep working when storage is unavailable or full.
   }
+}
+
+export function clearPlaybackSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    // Logout must continue when storage is unavailable.
+  }
+  window.dispatchEvent(new Event(PLAYBACK_LOGOUT_EVENT));
 }
