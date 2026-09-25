@@ -618,6 +618,33 @@
       "deletePermanently": "Permanently delete my account"
     }
   },
+  "admin": {
+    "title": "Administration",
+    "navigationLabel": "Administration navigation",
+    "openNavigation": "Open administration navigation",
+    "backToApp": "Back to the application",
+    "sectionReady": "Structure ready",
+    "sectionDescription": "Management tools for this section will be added in the next functional batch.",
+    "nav": {
+      "overview": "Overview",
+      "users": "Members",
+      "content": "Content",
+      "media": "Media",
+      "music": "Music",
+      "audit": "Audit log"
+    },
+    "overview": {
+      "title": "Overview",
+      "description": "Monitor activity and access FlowFret management areas.",
+      "loadFailed": "Unable to load administration statistics."
+    },
+    "metrics": {
+      "users": "Members",
+      "posts": "Posts",
+      "comments": "Comments",
+      "openReports": "Open reports"
+    }
+  },
   "moderation": {
     "title": "Moderation",
     "updated": "Report updated.",

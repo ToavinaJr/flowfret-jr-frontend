@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -30,6 +30,10 @@ const PostPage = lazy(() => import("@/pages/PostPage"));
 const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
 const PlaylistsPage = lazy(() => import("@/pages/PlaylistsPage"));
 const TranscriptionsPage = lazy(() => import("@/pages/TranscriptionsPage"));
+const AdminRoute = lazy(() => import("@/admin/AdminRoute"));
+const AdminLayout = lazy(() => import("@/admin/AdminLayout"));
+const AdminOverviewPage = lazy(() => import("@/admin/AdminOverviewPage"));
+const AdminSectionPage = lazy(() => import("@/admin/AdminSectionPage"));
 
 const queryClient = new QueryClient();
 
@@ -72,10 +76,39 @@ const App = () => {
                     <Route path="/notifications" element={<NotificationsPage />} />
                     <Route path="/post/:postId" element={<PostPage />} />
                     <Route path="/help" element={<HelpPage />} />
-                    <Route path="/moderation" element={<ModerationPage />} />
                     <Route path="/verify-email" element={<FeedPage />} />
                     <Route path="/reset-password" element={<FeedPage />} />
                   </Route>
+                  <Route element={<AdminRoute />}>
+                    <Route path="/admin" element={<AdminLayout />}>
+                      <Route index element={<AdminOverviewPage />} />
+                      <Route
+                        path="users"
+                        element={<AdminSectionPage section="users" />}
+                      />
+                      <Route path="content" element={<ModerationPage />} />
+                      <Route
+                        path="media"
+                        element={<AdminSectionPage section="media" />}
+                      />
+                      <Route
+                        path="music"
+                        element={<AdminSectionPage section="music" />}
+                      />
+                      <Route
+                        path="audit"
+                        element={<AdminSectionPage section="audit" />}
+                      />
+                      <Route
+                        path="*"
+                        element={<Navigate to="/admin" replace />}
+                      />
+                    </Route>
+                  </Route>
+                  <Route
+                    path="/moderation"
+                    element={<Navigate to="/admin/content" replace />}
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

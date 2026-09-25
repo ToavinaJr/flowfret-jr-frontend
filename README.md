@@ -7,6 +7,13 @@ session/security controls. Build-time public configuration is centralized in
 
 React + Vite frontend for FlowFret.
 
+## Administration
+
+Administrators can open `/admin`, which uses a dedicated responsive layout and
+role guard. The overview consumes `adminDashboardStatistics`; separate routes
+are prepared for members, content moderation, media, music, and audit logs.
+The legacy `/moderation` URL redirects to `/admin/content`.
+
 ## Setup
 
 ```bash

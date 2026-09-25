@@ -53,10 +53,10 @@ const AppSidebar = () => {
       <div className="space-y-3 border-t border-border p-3">
         {user?.role === USER_ROLE.ADMIN ? (
           <NavLink
-            to="/moderation"
+            to="/admin"
             className="flex min-h-[44px] items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary"
           >
-            <ShieldCheck className="h-4 w-4" /> {t("moderation.title")}
+            <ShieldCheck className="h-4 w-4" /> {t("admin.title")}
           </NavLink>
         ) : null}
         {user && (

@@ -618,6 +618,33 @@
       "deletePermanently": "Supprimer définitivement mon compte"
     }
   },
+  "admin": {
+    "title": "Administration",
+    "navigationLabel": "Navigation de l’administration",
+    "openNavigation": "Ouvrir la navigation de l’administration",
+    "backToApp": "Retour à l’application",
+    "sectionReady": "Structure prête",
+    "sectionDescription": "Cette section recevra ses outils de gestion lors du prochain lot fonctionnel.",
+    "nav": {
+      "overview": "Vue d’ensemble",
+      "users": "Membres",
+      "content": "Contenus",
+      "media": "Médias",
+      "music": "Musique",
+      "audit": "Journal d’audit"
+    },
+    "overview": {
+      "title": "Vue d’ensemble",
+      "description": "Suivez l’activité et accédez aux espaces de gestion de FlowFret.",
+      "loadFailed": "Impossible de charger les statistiques administratives."
+    },
+    "metrics": {
+      "users": "Membres",
+      "posts": "Publications",
+      "comments": "Commentaires",
+      "openReports": "Signalements ouverts"
+    }
+  },
   "moderation": {
     "title": "Modération",
     "updated": "Signalement mis à jour.",

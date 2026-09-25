@@ -84,12 +84,12 @@ const MobileHeader = () => {
           <div className="shrink-0 space-y-2 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {user?.role === USER_ROLE.ADMIN ? (
               <NavLink
-                to="/moderation"
+                to="/admin"
                 onClick={() => setOpen(false)}
                 className="flex min-h-11 items-center gap-2 rounded-md bg-secondary px-3 text-sm hover:text-primary"
               >
                 <ShieldCheck className="h-4 w-4" />
-                {t("moderation.title")}
+                {t("admin.title")}
               </NavLink>
             ) : null}
             <ThemeLanguageControls compact showTheme={false} />
