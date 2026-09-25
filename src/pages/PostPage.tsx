@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import { PAGE_SHELL } from "@/constants/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -9,7 +9,7 @@ import {
   deleteFeedLike,
   fetchFeedPost,
 } from "@/services/api";
-import { FeedCard } from "@/pages/FeedPage";
+import { FeedCard } from "@/components/feed/FeedCard";
 import type { FeedPost } from "@/types/feed";
 import { FeedSkeleton } from "@/components/skeletons/AppSkeletons";
 import { useTranslation } from "react-i18next";
@@ -52,6 +52,34 @@ export default function PostPage() {
         {t("notifications.title")}
       </Link>
       {post.isLoading && <FeedSkeleton count={1} />}
+      {post.isError && (
+        <div
+          role="alert"
+          className="rounded-xl border border-destructive/30 bg-card p-5 text-sm text-muted-foreground"
+        >
+          <div className="flex items-start gap-3">
+            <AlertCircle
+              aria-hidden="true"
+              className="mt-0.5 h-5 w-5 shrink-0 text-destructive"
+            />
+            <div className="min-w-0">
+              <p className="text-foreground">{t("feed.postLoadError")}</p>
+              <button
+                type="button"
+                onClick={() => void post.refetch()}
+                disabled={post.isFetching}
+                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-secondary px-4 font-medium text-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <RefreshCw
+                  aria-hidden="true"
+                  className={`h-4 w-4 ${post.isFetching ? "animate-spin" : ""}`}
+                />
+                {t("common.retry")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {post.data && (
         <FeedCard
           post={post.data}
@@ -60,7 +88,7 @@ export default function PostPage() {
           onToggleLike={toggleLike}
           onChanged={refresh}
         />
-      )}{" "}
+      )}
       {post.isSuccess && !post.data && (
         <p className="rounded-lg border bg-card p-5 text-sm text-muted-foreground">
           {t("feed.postUnavailable")}

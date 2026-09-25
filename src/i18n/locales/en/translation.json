@@ -146,7 +146,8 @@
     "reportError": "The report could not be sent. It may already exist.",
     "mentionHint": "Type @ to mention a friend.",
     "noMentionFriends": "No friend matches this search.",
-    "postUnavailable": "This post is no longer available."
+    "postUnavailable": "This post is no longer available.",
+    "postLoadError": "Unable to load this post. Check your connection and try again."
   },
   "morePage": {
     "title": "Menu",

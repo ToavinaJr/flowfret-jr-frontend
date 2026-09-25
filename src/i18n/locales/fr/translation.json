@@ -146,7 +146,8 @@
     "reportError": "Le signalement n’a pas pu être envoyé. Il est peut-être déjà enregistré.",
     "mentionHint": "Tapez @ pour identifier un ami.",
     "noMentionFriends": "Aucun ami ne correspond à cette recherche.",
-    "postUnavailable": "Cette publication n’est plus disponible."
+    "postUnavailable": "Cette publication n’est plus disponible.",
+    "postLoadError": "Impossible de charger cette publication. Vérifiez votre connexion puis réessayez."
   },
   "morePage": {
     "title": "Menu",

@@ -28,6 +28,7 @@ import {
   verifyEmailUser,
 } from "@/services/api";
 import { clearPlaybackSession } from "@/services/playbackSession";
+import { AUTH_SESSION_CLEARED_EVENT } from "@/services/authToken";
 
 interface AuthContextValue {
   status: AuthStatus;
@@ -52,6 +53,21 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const handleSessionCleared = () => {
+      clearPlaybackSession();
+      setUser(null);
+      setStatus("unauthenticated");
+    };
+    window.addEventListener(AUTH_SESSION_CLEARED_EVENT, handleSessionCleared);
+    return () => {
+      window.removeEventListener(
+        AUTH_SESSION_CLEARED_EVENT,
+        handleSessionCleared,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;

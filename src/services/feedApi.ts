@@ -7,7 +7,23 @@ export async function fetchFeedPosts(after?: string, take = 20): Promise<FeedPos
 }
 
 export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
-  const result = await graphqlRequest<{ post: FeedPost | null }>({ query: `query FeedPost($id: String!) { post(id: $id) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } attachments { id upload { id storagePath } } }`, variables: { id } });
+  const result = await graphqlRequest<{ post: FeedPost | null }>({
+    query: `query FeedPost($id: String!) {
+      post(id: $id) {
+        id
+        content
+        likeCount
+        commentCount
+        viewerHasLiked
+        viewerLikeId
+        createdAt
+        author { id username profile { avatarUrl } }
+        mentionedUsers { id username profile { avatarUrl } }
+        attachments { id upload { id storagePath } }
+      }
+    }`,
+    variables: { id },
+  });
   return result.post;
 }
 

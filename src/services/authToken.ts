@@ -3,6 +3,7 @@ const USER_ID_KEY = "fretflow-user-id";
 const USERNAME_KEY = "fretflow-username";
 const USER_EMAIL_KEY = "fretflow-user-email";
 const LEGACY_REFRESH_TOKEN_KEY = "fretflow-refresh-token";
+export const AUTH_SESSION_CLEARED_EVENT = "flowfret:auth-session-cleared";
 let accessTokenInMemory: string | null = null;
 
 function removeStoredValue(key: string): void {
@@ -41,4 +42,7 @@ export function clearAuthSession(): void {
   removeStoredValue(USER_ID_KEY);
   removeStoredValue(USERNAME_KEY);
   removeStoredValue(USER_EMAIL_KEY);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(AUTH_SESSION_CLEARED_EVENT));
+  }
 }
