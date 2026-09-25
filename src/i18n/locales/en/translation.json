@@ -29,7 +29,8 @@
     "system": "System",
     "english": "English",
     "french": "Français",
-    "logout": "Log out"  },
+    "logout": "Log out"
+  },
   "common": {
     "menu": "Menu",
     "close": "Close",
@@ -303,9 +304,18 @@
       "resend": "Resend code"
     },
     "highlights": {
-      "savedProgressions": { "title": "Custom chord charts", "description": "Access your saved progressions and diagrams." },
-      "realtimePractice": { "title": "Real-time practice", "description": "Use synchronized tuning, metronome, and chord analysis." },
-      "clearProgress": { "title": "Clear progress", "description": "Track your sessions and share your riffs." }
+      "savedProgressions": {
+        "title": "Custom chord charts",
+        "description": "Access your saved progressions and diagrams."
+      },
+      "realtimePractice": {
+        "title": "Real-time practice",
+        "description": "Use synchronized tuning, metronome, and chord analysis."
+      },
+      "clearProgress": {
+        "title": "Clear progress",
+        "description": "Track your sessions and share your riffs."
+      }
     },
     "showPassword": "Show password",
     "hidePassword": "Hide password",
@@ -526,6 +536,17 @@
     "analysisHint": "The first analysis may take a moment. The result is then kept in cache.",
     "unavailable": "No chords could be detected in the shared audio.",
     "error": "Chords cannot be analyzed right now.",
+    "diagnosticId": "Diagnostic: {{id}}",
+    "errors": {
+      "authentication": "Your session has expired. Sign in again and retry.",
+      "rateLimited": "The analysis limit has been reached. Try again in a few minutes.",
+      "extractorConfiguration": "The YouTube extractor or its cookies file is misconfigured on the server.",
+      "youtubeExtraction": "YouTube rejected or interrupted the audio extraction.",
+      "audioStream": "The audio stream was interrupted while downloading.",
+      "audioDecode": "The browser could not decode the received audio format.",
+      "network": "The browser cannot reach the analysis server.",
+      "unknown": "An unexpected analysis error occurred. Check the logs with the diagnostic identifier."
+    },
     "directSourceRequired": "This provider does not expose an authorized direct audio source for chord analysis.",
     "phases": {
       "downloading": "Loading audio…",

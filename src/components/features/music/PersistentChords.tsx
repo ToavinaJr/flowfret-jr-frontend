@@ -30,7 +30,10 @@ export function PersistentChords({
   onOpenChange,
 }: PersistentChordsProps) {
   const { t } = useTranslation();
-  const { analysis, status, progress, phase } = useChordAnalysis(item, open);
+  const { analysis, status, progress, phase, failure } = useChordAnalysis(
+    item,
+    open,
+  );
   const activeIndex = analysis
     ? Math.max(0, getCueIndexAtTime(analysis.cues, currentTime))
     : 0;
@@ -54,7 +57,9 @@ export function PersistentChords({
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-2">
             <div className="min-w-0">
-              <h2 className="text-sm font-semibold">{t("chordPlayer.title")}</h2>
+              <h2 className="text-sm font-semibold">
+                {t("chordPlayer.title")}
+              </h2>
               <p className="truncate text-xs text-muted-foreground">
                 {item.title}
               </p>
@@ -90,15 +95,30 @@ export function PersistentChords({
           ) : null}
 
           {status === "unavailable" ? (
-            <p className="px-4 py-6 text-sm text-muted-foreground" role="status">
+            <p
+              className="px-4 py-6 text-sm text-muted-foreground"
+              role="status"
+            >
               {t("chordPlayer.directSourceRequired")}
             </p>
           ) : null}
 
           {status === "error" ? (
-            <p className="px-4 py-6 text-sm text-destructive" role="alert">
-              {t("chordPlayer.error")}
-            </p>
+            <div className="space-y-1 px-4 py-6 text-sm" role="alert">
+              <p className="font-medium text-destructive">
+                {t("chordPlayer.error")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t(`chordPlayer.errors.${failure?.code ?? "unknown"}`)}
+              </p>
+              {failure?.diagnosticId ? (
+                <p className="break-all font-mono text-[10px] text-muted-foreground">
+                  {t("chordPlayer.diagnosticId", {
+                    id: failure.diagnosticId,
+                  })}
+                </p>
+              ) : null}
+            </div>
           ) : null}
 
           {status === "success" && analysis && activeCue ? (

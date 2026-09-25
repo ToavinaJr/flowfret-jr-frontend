@@ -304,9 +304,18 @@
       "resend": "Renvoyer le code"
     },
     "highlights": {
-      "savedProgressions": { "title": "Grilles personnalisées", "description": "Accédez à vos progressions et diagrammes sauvegardés." },
-      "realtimePractice": { "title": "Pratique en temps réel", "description": "Accordeur, métronome et analyse d’accords synchronisés." },
-      "clearProgress": { "title": "Progression claire", "description": "Suivez vos sessions et partagez vos riffs." }
+      "savedProgressions": {
+        "title": "Grilles personnalisées",
+        "description": "Accédez à vos progressions et diagrammes sauvegardés."
+      },
+      "realtimePractice": {
+        "title": "Pratique en temps réel",
+        "description": "Accordeur, métronome et analyse d’accords synchronisés."
+      },
+      "clearProgress": {
+        "title": "Progression claire",
+        "description": "Suivez vos sessions et partagez vos riffs."
+      }
     },
     "showPassword": "Afficher le mot de passe",
     "hidePassword": "Masquer le mot de passe",
@@ -527,6 +536,17 @@
     "analysisHint": "La première analyse peut prendre un moment. Le résultat reste ensuite en cache.",
     "unavailable": "Aucun accord n’a pu être détecté dans le son partagé.",
     "error": "Les accords ne peuvent pas être analysés pour le moment.",
+    "diagnosticId": "Diagnostic : {{id}}",
+    "errors": {
+      "authentication": "Votre session a expiré. Reconnectez-vous puis réessayez.",
+      "rateLimited": "La limite d’analyse a été atteinte. Réessayez dans quelques minutes.",
+      "extractorConfiguration": "L’extracteur YouTube ou son fichier de cookies est mal configuré sur le serveur.",
+      "youtubeExtraction": "YouTube a refusé ou interrompu l’extraction audio.",
+      "audioStream": "Le flux audio a été interrompu pendant son téléchargement.",
+      "audioDecode": "Le navigateur n’a pas pu décoder le format audio reçu.",
+      "network": "Le navigateur ne parvient pas à joindre le serveur d’analyse.",
+      "unknown": "Une erreur inattendue est survenue pendant l’analyse. Consultez les logs avec l’identifiant de diagnostic."
+    },
     "directSourceRequired": "Ce provider ne fournit pas de source audio directe autorisée pour l’analyse des accords.",
     "phases": {
       "downloading": "Chargement de l’audio…",

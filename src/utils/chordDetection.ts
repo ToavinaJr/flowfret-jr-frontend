@@ -8,14 +8,12 @@ import {
   WINDOW_SECONDS,
 } from "@/utils/chordDetectionMath";
 import type { ChordCue } from "@/types/song";
+import { debugError, debugLog } from "@/utils/debug";
 
 export { classifyChordFromChroma } from "@/utils/chordDetectionMath";
 
 export type AnalysisPhase =
-  | "downloading"
-  | "decoding"
-  | "classifying"
-  | "complete";
+  "downloading" | "decoding" | "classifying" | "complete";
 export type ProgressCallback = (ratio: number, phase: AnalysisPhase) => void;
 export interface AnalysisResult {
   title: string;
@@ -23,6 +21,19 @@ export interface AnalysisResult {
   cues: ChordCue[];
 }
 
+export type AudioAnalysisFailurePhase =
+  "request" | "response" | "stream" | "decode";
+
+export class AudioAnalysisError extends Error {
+  constructor(
+    readonly phase: AudioAnalysisFailurePhase,
+    readonly status: number,
+    readonly diagnosticId?: string,
+  ) {
+    super(`Audio analysis failed during ${phase}`);
+    this.name = "AudioAnalysisError";
+  }
+}
 
 export async function analyzeAudioFile(
   file: File,
@@ -45,11 +56,50 @@ export async function analyzeAudioUrl(
   headers?: HeadersInit,
 ): Promise<AnalysisResult> {
   onProgress(0, "downloading");
-  const response = await fetch(url, { signal, headers });
-  if (!response.ok) throw new Error(`Audio request failed (${response.status})`);
-  const blob = await response.blob();
+  debugLog("chords.audio_request_started", {
+    title,
+    origin: new URL(url, window.location.href).origin,
+  });
+  let response: Response;
+  try {
+    response = await fetch(url, { signal, headers });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    debugError("chords.audio_request_failed", { error });
+    throw new AudioAnalysisError("request", 0);
+  }
+  const diagnosticId =
+    response.headers.get("X-Chord-Diagnostic-Id") ?? undefined;
+  debugLog("chords.audio_response", {
+    status: response.status,
+    diagnosticId,
+    contentType: response.headers.get("content-type"),
+  });
+  if (!response.ok) {
+    throw new AudioAnalysisError("response", response.status, diagnosticId);
+  }
+  let blob: Blob;
+  try {
+    blob = await response.blob();
+  } catch (error) {
+    debugError("chords.audio_stream_failed", { diagnosticId, error });
+    throw new AudioAnalysisError("stream", response.status, diagnosticId);
+  }
+  if (blob.size === 0) {
+    throw new AudioAnalysisError("stream", response.status, diagnosticId);
+  }
+  debugLog("chords.audio_downloaded", { diagnosticId, bytes: blob.size });
   if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-  return analyzeAudioBlob(blob, title, onProgress, signal);
+  try {
+    return await analyzeAudioBlob(blob, title, onProgress, signal);
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    debugError("chords.audio_decode_or_analysis_failed", {
+      diagnosticId,
+      error,
+    });
+    throw new AudioAnalysisError("decode", response.status, diagnosticId);
+  }
 }
 
 async function analyzeAudioBlob(
