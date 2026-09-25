@@ -23,7 +23,7 @@
     "appearance": "Appearance",
     "language": "Language",
     "theme": "Theme",
-    "description": "Choose your preferred language and theme for FretFlow.",
+    "description": "Choose your preferred language and theme for FlowFret.",
     "light": "Light",
     "dark": "Dark",
     "system": "System",
@@ -156,7 +156,7 @@
     "title": "History of the Guitar",
     "origins": "The modern six-string guitar evolved from earlier plucked instruments across Europe and the Middle East. By the 19th century, Spanish makers refined it into the classical form we recognize today.",
     "modern": "Steel-string acoustics and electric pickups in the 20th century opened blues, jazz, rock, and countless hybrids — while the fretboard remained a map of the chromatic scale.",
-    "fretflow": "FretFlow continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing."
+    "flowfret": "FlowFret continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing."
   },
   "profile": {
     "title": "Profile",
@@ -165,7 +165,7 @@
     "guest": "Guest",
     "openMenu": "Open menu",
     "logout": "Log out",
-    "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FretFlow community."
+    "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FlowFret community."
   },
   "profilePage": {
     "avatarUpdated": "Profile picture updated.",
@@ -273,7 +273,7 @@
     },
     "subtitle": {
       "login": "Sign in to keep practicing and sharing.",
-      "register": "Join FretFlow and unlock your guitar workflow.",
+      "register": "Join FlowFret and unlock your guitar workflow.",
       "verify": "Enter the 4-digit code sent to {{email}}.",
       "forgot": "Enter your email address to receive a secure link.",
       "reset": "Choose a new password of at least 8 characters."

@@ -23,7 +23,7 @@
     "appearance": "Apparence",
     "language": "Langue",
     "theme": "Thème",
-    "description": "Choisissez votre langue et votre thème préférés pour FretFlow.",
+    "description": "Choisissez votre langue et votre thème préférés pour FlowFret.",
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système",
@@ -156,7 +156,7 @@
     "title": "Histoire de la guitare",
     "origins": "La guitare moderne à six cordes est issue d’instruments à cordes pincées plus anciens d’Europe et du Moyen-Orient. Au XIXe siècle, les luthiers espagnols lui ont donné la forme classique actuelle.",
     "modern": "Les cordes en acier et les micros électriques du XXe siècle ont ouvert la voie au blues, au jazz, au rock et à d’innombrables styles hybrides, tandis que le manche restait une carte de la gamme chromatique.",
-    "fretflow": "FretFlow poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage."
+    "flowfret": "FlowFret poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage."
   },
   "profile": {
     "title": "Profil",
@@ -165,7 +165,7 @@
     "guest": "Invité",
     "openMenu": "Ouvrir le menu",
     "logout": "Se déconnecter",
-    "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FretFlow."
+    "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FlowFret."
   },
   "profilePage": {
     "avatarUpdated": "Photo de profil mise à jour.",
@@ -273,7 +273,7 @@
     },
     "subtitle": {
       "login": "Connectez-vous pour continuer à pratiquer et partager.",
-      "register": "Rejoignez FretFlow et débloquez votre workflow guitare.",
+      "register": "Rejoignez FlowFret et débloquez votre workflow guitare.",
       "verify": "Saisissez le code à 4 chiffres envoyé à {{email}}.",
       "forgot": "Saisissez votre adresse e-mail pour recevoir un lien sécurisé.",
       "reset": "Choisissez un nouveau mot de passe d’au moins 8 caractères."

@@ -5,7 +5,7 @@ genre filtering and shared queue playback, transcription history, and account
 session/security controls. Build-time public configuration is centralized in
 `src/config/runtime.ts`; never expose backend secrets through `VITE_*` values.
 
-React + Vite frontend for FretFlow.
+React + Vite frontend for FlowFret.
 
 ## Setup
 
@@ -20,7 +20,7 @@ Package manager in use: **bun**.
 ## Production configuration
 
 Set `VITE_GRAPHQL_URL` to the public HTTPS API endpoint at build time, for
-example `https://api.fretflow.app/graphql`. Application initialization fails
+example `https://api.flowfret.app/graphql`. Application initialization fails
 in production when this variable is missing or uses HTTP. Vercel no longer
 proxies API traffic to an unencrypted IP address.
 

@@ -22,17 +22,17 @@ describe("backend URL validation", () => {
 
   it("rejects an unencrypted production endpoint", () => {
     expect(() =>
-      resolveGraphqlUrl("http://api.fretflow.app/graphql", localLocation, true),
+      resolveGraphqlUrl("http://api.flowfret.app/graphql", localLocation, true),
     ).toThrow("must use HTTPS");
   });
 
   it("accepts a secure production endpoint", () => {
     expect(
       resolveGraphqlUrl(
-        "https://api.fretflow.app/graphql",
+        "https://api.flowfret.app/graphql",
         localLocation,
         true,
       ),
-    ).toBe("https://api.fretflow.app/graphql");
+    ).toBe("https://api.flowfret.app/graphql");
   });
 });

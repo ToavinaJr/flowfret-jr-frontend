@@ -34,7 +34,7 @@ export function usePlaybackMediaSession({
       ? new MediaMetadata({
           title: item.title,
           artist: item.artist || item.subtitle,
-          album: item.album || "FretFlow",
+          album: item.album || "FlowFret",
           artwork: item.imageUrl ? [{ src: item.imageUrl }] : undefined,
         })
       : null;
@@ -44,10 +44,9 @@ export function usePlaybackMediaSession({
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
-    const handlers: Array<[
-      MediaSessionAction,
-      MediaSessionActionHandler | null,
-    ]> = [
+    const handlers: Array<
+      [MediaSessionAction, MediaSessionActionHandler | null]
+    > = [
       ["play", () => void play()],
       ["pause", pause],
       ["previoustrack", () => void previous()],
@@ -62,8 +61,7 @@ export function usePlaybackMediaSession({
       ],
       [
         "seekto",
-        (details) =>
-          details.seekTime !== undefined && seek(details.seekTime),
+        (details) => details.seekTime !== undefined && seek(details.seekTime),
       ],
     ];
     for (const [action, handler] of handlers) {

@@ -20,12 +20,15 @@ const AppSidebar = () => {
             <Guitar className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="truncate text-base font-medium tracking-tight text-foreground lg:text-lg">
-            FretFlow
+            FlowFret
           </span>
         </div>
       </div>
 
-      <nav aria-label={t("nav.mainNavigation")} className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4">
+      <nav
+        aria-label={t("nav.mainNavigation")}
+        className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4"
+      >
         {SIDEBAR_NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -40,9 +43,7 @@ const AppSidebar = () => {
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">
-                {t(item.translationKey)}
-              </span>
+              <span className="truncate">{t(item.translationKey)}</span>
               {item.path === "/notifications" ? <NotificationBadge /> : null}
             </NavLink>
           );
