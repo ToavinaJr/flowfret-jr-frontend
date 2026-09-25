@@ -11,8 +11,9 @@ React + Vite frontend for FlowFret.
 
 Administrators can open `/admin`, which uses a dedicated responsive layout and
 role guard. The overview consumes `adminDashboardStatistics`; separate routes
-are prepared for members, content moderation, media, music, and audit logs.
-The legacy `/moderation` URL redirects to `/admin/content`.
+list members, posts, transcriptions, playlists, and audit logs with search and
+cursor pagination. Post reports remain available under
+`/admin/content/reports`. The legacy `/moderation` URL redirects there.
 
 ## Setup
 
