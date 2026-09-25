@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, FileText, Flag, MessageSquare, Users } from "lucide-react";
+import { AlertTriangle, ArrowRight, FileText, Flag, MessageSquare, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { fetchAdminDashboardStatistics } from "@/services/adminApi";
+import { ADMIN_NAV_ITEMS } from "./adminNavigation";
 
 export default function AdminOverviewPage() {
   const { t } = useTranslation();
@@ -66,6 +68,32 @@ export default function AdminOverviewPage() {
             </p>
           </article>
         ))}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold">{t("admin.overview.sectionsTitle")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("admin.overview.sectionsDescription")}
+        </p>
+        <ol className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {ADMIN_NAV_ITEMS.slice(1).map((item, index) => (
+            <li key={item.path}>
+              <Link
+                to={item.path}
+                className="group flex min-h-20 items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                  {index + 1}
+                </span>
+                <item.icon className="h-5 w-5 shrink-0 text-muted-foreground" />
+                <span className="min-w-0 flex-1 font-medium">
+                  {t(item.translationKey)}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

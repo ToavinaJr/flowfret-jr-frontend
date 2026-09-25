@@ -636,13 +636,51 @@
     "overview": {
       "title": "Vue d’ensemble",
       "description": "Suivez l’activité et accédez aux espaces de gestion de FlowFret.",
-      "loadFailed": "Impossible de charger les statistiques administratives."
+      "loadFailed": "Impossible de charger les statistiques administratives.",
+      "sectionsTitle": "Parcours de gestion",
+      "sectionsDescription": "Parcourez les écrans dans cet ordre pour superviser la plateforme."
     },
     "metrics": {
       "users": "Membres",
       "posts": "Publications",
       "comments": "Commentaires",
       "openReports": "Signalements ouverts"
+    },
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher dans cette section…",
+    "total": "{{count}} élément(s)",
+    "loadFailed": "Impossible de charger ces données.",
+    "empty": "Aucun résultat.",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "viewReports": "Voir les signalements",
+    "screens": {
+      "users": { "description": "Consultez les membres, leurs rôles et l’état de leurs comptes." },
+      "content": { "description": "Consultez les publications avant les opérations de modération." },
+      "media": { "description": "Suivez les transcriptions et leur état de traitement." },
+      "music": { "description": "Consultez les playlists créées par les membres." },
+      "audit": { "description": "Contrôlez la chronologie des actions sensibles." }
+    },
+    "columns": {
+      "user": "Membre",
+      "role": "Rôle",
+      "status": "Statut",
+      "createdAt": "Création",
+      "lastLogin": "Dernière connexion",
+      "content": "Publication",
+      "author": "Auteur",
+      "visibility": "Visibilité",
+      "engagement": "J’aime / commentaires",
+      "track": "Morceau",
+      "provider": "Fournisseur",
+      "progress": "Progression",
+      "attempts": "Tentatives",
+      "playlist": "Playlist",
+      "owner": "Propriétaire",
+      "items": "Morceaux",
+      "action": "Action",
+      "actor": "Auteur de l’action",
+      "entity": "Entité"
     }
   },
   "moderation": {

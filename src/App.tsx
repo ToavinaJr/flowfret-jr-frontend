@@ -33,7 +33,11 @@ const TranscriptionsPage = lazy(() => import("@/pages/TranscriptionsPage"));
 const AdminRoute = lazy(() => import("@/admin/AdminRoute"));
 const AdminLayout = lazy(() => import("@/admin/AdminLayout"));
 const AdminOverviewPage = lazy(() => import("@/admin/AdminOverviewPage"));
-const AdminSectionPage = lazy(() => import("@/admin/AdminSectionPage"));
+const AdminUsersPage = lazy(() => import("@/admin/AdminUsersPage"));
+const AdminContentPage = lazy(() => import("@/admin/AdminContentPage"));
+const AdminMediaPage = lazy(() => import("@/admin/AdminMediaPage"));
+const AdminMusicPage = lazy(() => import("@/admin/AdminMusicPage"));
+const AdminAuditPage = lazy(() => import("@/admin/AdminAuditPage"));
 
 const queryClient = new QueryClient();
 
@@ -84,20 +88,21 @@ const App = () => {
                       <Route index element={<AdminOverviewPage />} />
                       <Route
                         path="users"
-                        element={<AdminSectionPage section="users" />}
+                        element={<AdminUsersPage />}
                       />
-                      <Route path="content" element={<ModerationPage />} />
+                      <Route path="content" element={<AdminContentPage />} />
+                      <Route path="content/reports" element={<ModerationPage />} />
                       <Route
                         path="media"
-                        element={<AdminSectionPage section="media" />}
+                        element={<AdminMediaPage />}
                       />
                       <Route
                         path="music"
-                        element={<AdminSectionPage section="music" />}
+                        element={<AdminMusicPage />}
                       />
                       <Route
                         path="audit"
-                        element={<AdminSectionPage section="audit" />}
+                        element={<AdminAuditPage />}
                       />
                       <Route
                         path="*"
@@ -107,7 +112,7 @@ const App = () => {
                   </Route>
                   <Route
                     path="/moderation"
-                    element={<Navigate to="/admin/content" replace />}
+                    element={<Navigate to="/admin/content/reports" replace />}
                   />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

@@ -3,6 +3,7 @@ import { graphqlRequest } from "@/services/graphqlClient";
 import {
   fetchAdminBackendStatus,
   fetchAdminDashboardStatistics,
+  fetchAdminUsers,
 } from "./adminApi";
 
 vi.mock("@/services/graphqlClient", () => ({
@@ -37,5 +38,28 @@ describe("admin API", () => {
     expect(options?.variables).toEqual({ input: { days: 30 } });
     const query = options?.query ?? "";
     expect(query.match(/{/g)?.length).toBe(query.match(/}/g)?.length);
+  });
+
+  it("forwards filters and cursor pagination to the members query", async () => {
+    const page = {
+      nodes: [],
+      totalCount: 0,
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: true,
+        endCursor: null,
+      },
+    };
+    graphqlRequestMock.mockResolvedValue({ adminUsers: page });
+
+    const input = { first: 25, after: "cursor-1", search: "alice" };
+    await expect(fetchAdminUsers(input)).resolves.toEqual(page);
+
+    const options = graphqlRequestMock.mock.calls[0]?.[0];
+    expect(options?.variables).toEqual({ input });
+    expect(options?.query).toContain("adminUsers(input: $input)");
+    expect(options?.query.match(/{/g)?.length).toBe(
+      options?.query.match(/}/g)?.length,
+    );
   });
 });

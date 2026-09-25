@@ -636,13 +636,51 @@
     "overview": {
       "title": "Overview",
       "description": "Monitor activity and access FlowFret management areas.",
-      "loadFailed": "Unable to load administration statistics."
+      "loadFailed": "Unable to load administration statistics.",
+      "sectionsTitle": "Management workflow",
+      "sectionsDescription": "Open these screens in order to supervise the platform."
     },
     "metrics": {
       "users": "Members",
       "posts": "Posts",
       "comments": "Comments",
       "openReports": "Open reports"
+    },
+    "search": "Search",
+    "searchPlaceholder": "Search this section…",
+    "total": "{{count}} item(s)",
+    "loadFailed": "Unable to load this data.",
+    "empty": "No results.",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "viewReports": "View reports",
+    "screens": {
+      "users": { "description": "Review members, their roles, and account status." },
+      "content": { "description": "Review posts before applying moderation actions." },
+      "media": { "description": "Monitor transcriptions and their processing status." },
+      "music": { "description": "Review playlists created by members." },
+      "audit": { "description": "Review the timeline of sensitive actions." }
+    },
+    "columns": {
+      "user": "Member",
+      "role": "Role",
+      "status": "Status",
+      "createdAt": "Created",
+      "lastLogin": "Last login",
+      "content": "Post",
+      "author": "Author",
+      "visibility": "Visibility",
+      "engagement": "Likes / comments",
+      "track": "Track",
+      "provider": "Provider",
+      "progress": "Progress",
+      "attempts": "Attempts",
+      "playlist": "Playlist",
+      "owner": "Owner",
+      "items": "Tracks",
+      "action": "Action",
+      "actor": "Actor",
+      "entity": "Entity"
     }
   },
   "moderation": {

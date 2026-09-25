@@ -49,3 +49,82 @@ export interface AdminBackendStatus {
   databaseReachable: boolean;
   serverTime: string;
 }
+
+export interface AdminPageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  endCursor: string | null;
+}
+
+export interface AdminConnection<T> {
+  nodes: T[];
+  totalCount: number;
+  pageInfo: AdminPageInfo;
+}
+
+export interface AdminListInput {
+  first?: number;
+  after?: string;
+  search?: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string | null;
+  status: string;
+  role: string;
+  lastLoginAt: string | null;
+  createdAt: string;
+  isDeleted: boolean;
+}
+
+export interface AdminPost {
+  id: string;
+  authorId: string;
+  authorUsername: string;
+  content: string | null;
+  visibility: string;
+  status: string;
+  likeCount: number;
+  commentCount: number;
+  createdAt: string;
+  isDeleted: boolean;
+}
+
+export interface AdminTranscription {
+  id: string;
+  provider: string;
+  trackId: string;
+  title: string | null;
+  artist: string | null;
+  status: string;
+  progress: number;
+  attempts: number;
+  createdAt: string;
+  isDeleted: boolean;
+}
+
+export interface AdminPlaylist {
+  id: string;
+  userId: string;
+  username: string;
+  name: string;
+  description: string | null;
+  visibility: string;
+  itemCount: number;
+  createdAt: string;
+  isDeleted: boolean;
+}
+
+export interface AdminAuditLog {
+  id: string;
+  actorId: string;
+  actorUsername: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
