@@ -637,6 +637,15 @@
       "title": "Vue d’ensemble",
       "description": "Suivez l’activité et accédez aux espaces de gestion de FlowFret.",
       "loadFailed": "Impossible de charger les statistiques administratives.",
+      "period": "Période", "days_one": "{{count}} jour", "days_other": "{{count}} jours",
+      "loading": "Chargement des données…", "unavailable": "Donnée indisponible.",
+      "noDistribution": "Aucune donnée pour cette répartition.", "noTrend": "Aucune activité sur cette période.",
+      "database": "Base de données", "checking": "Vérification…", "statusUnknown": "État indisponible",
+      "reachable": "Accessible", "unreachable": "Inaccessible", "serverTime": "Heure serveur : {{time}}",
+      "generatedAt": "Mis à jour le {{time}}", "totalActivity": "Activité totale", "periodActivity": "Activité sur la période",
+      "trendTitle": "Évolution quotidienne", "trendDescription": "Valeurs quotidiennes sur les {{count}} derniers jours.", "series": "Indicateur",
+      "seriesNames": { "users": "Membres", "posts": "Publications", "comments": "Commentaires", "reports": "Signalements", "trackPlays": "Écoutes" },
+      "usersByStatus": "Membres par statut", "transcriptionsByStatus": "Transcriptions par statut", "playsByProvider": "Écoutes par fournisseur",
       "sectionsTitle": "Parcours de gestion",
       "sectionsDescription": "Parcourez les écrans dans cet ordre pour superviser la plateforme."
     },
@@ -644,7 +653,11 @@
       "users": "Membres",
       "posts": "Publications",
       "comments": "Commentaires",
-      "openReports": "Signalements ouverts"
+      "openReports": "Signalements ouverts", "activeUsers": "Membres actifs", "uploads": "Fichiers téléversés",
+      "transcriptions": "Transcriptions", "chordTranscriptions": "Transcriptions d’accords", "playlists": "Playlists",
+      "catalogTracks": "Morceaux du catalogue", "trackPlays": "Écoutes enregistrées", "newUsers": "Nouveaux membres",
+      "newPosts": "Nouvelles publications", "newComments": "Nouveaux commentaires", "newUploads": "Nouveaux fichiers",
+      "newTranscriptions": "Nouvelles transcriptions", "reportsCreated": "Signalements créés", "periodPlays": "Écoutes sur la période"
     },
     "search": "Rechercher",
     "searchPlaceholder": "Rechercher dans cette section…",

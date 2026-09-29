@@ -637,6 +637,15 @@
       "title": "Overview",
       "description": "Monitor activity and access FlowFret management areas.",
       "loadFailed": "Unable to load administration statistics.",
+      "period": "Period", "days_one": "{{count}} day", "days_other": "{{count}} days",
+      "loading": "Loading data…", "unavailable": "Data unavailable.",
+      "noDistribution": "No data for this breakdown.", "noTrend": "No activity in this period.",
+      "database": "Database", "checking": "Checking…", "statusUnknown": "Status unavailable",
+      "reachable": "Reachable", "unreachable": "Unreachable", "serverTime": "Server time: {{time}}",
+      "generatedAt": "Updated {{time}}", "totalActivity": "Total activity", "periodActivity": "Activity during period",
+      "trendTitle": "Daily activity", "trendDescription": "Daily values for the last {{count}} days.", "series": "Metric",
+      "seriesNames": { "users": "Members", "posts": "Posts", "comments": "Comments", "reports": "Reports", "trackPlays": "Plays" },
+      "usersByStatus": "Members by status", "transcriptionsByStatus": "Transcriptions by status", "playsByProvider": "Plays by provider",
       "sectionsTitle": "Management workflow",
       "sectionsDescription": "Open these screens in order to supervise the platform."
     },
@@ -644,7 +653,11 @@
       "users": "Members",
       "posts": "Posts",
       "comments": "Comments",
-      "openReports": "Open reports"
+      "openReports": "Open reports", "activeUsers": "Active members", "uploads": "Uploaded files",
+      "transcriptions": "Transcriptions", "chordTranscriptions": "Chord transcriptions", "playlists": "Playlists",
+      "catalogTracks": "Catalog tracks", "trackPlays": "Recorded plays", "newUsers": "New members",
+      "newPosts": "New posts", "newComments": "New comments", "newUploads": "New uploads",
+      "newTranscriptions": "New transcriptions", "reportsCreated": "Reports created", "periodPlays": "Plays in period"
     },
     "search": "Search",
     "searchPlaceholder": "Search this section…",
