@@ -17,6 +17,10 @@ export interface AppNotification {
     instructorUsername?: string;
     studentUsername?: string;
     status?: string;
+    lessonId?: string;
+    courseTitle?: string;
+    startsAt?: string;
+    timeZone?: string;
   };
   readAt: string | null;
   createdAt: string;

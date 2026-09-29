@@ -78,7 +78,8 @@
       "followedPostActivity": "My friends’ activity on followed posts",
       "courseInvitation": "Course invitations",
       "courseRequest": "Course enrollment requests",
-      "courseUpdate": "Course updates"
+      "courseUpdate": "Course updates",
+      "lessonUpdates": "Lesson schedule and session updates"
     },
     "message": {
       "friendRequest": "{{actor}} sent you a friend request.",
@@ -90,7 +91,11 @@
       "postCommented": "{{actor}} commented on the post{{owner}}.",
       "courseInvitation": "{{actor}} invited you to join a guitar course.",
       "courseRequest": "{{actor}} requested a place in a course.",
-      "courseUpdate": "Your course enrollment changed status: {{status}}."
+      "courseUpdate": "Your course enrollment changed status: {{status}}.",
+      "lessonScheduled": "A session for “{{course}}” has been scheduled.",
+      "lessonRescheduled": "A session for “{{course}}” has been rescheduled.",
+      "lessonCancelled": "A session for “{{course}}” has been cancelled.",
+      "lessonCompleted": "The session for “{{course}}” is complete."
     },
     "preferenceUpdated": "Preference updated.",
     "preferenceError": "Unable to update this preference.",

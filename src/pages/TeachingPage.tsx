@@ -7,14 +7,22 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import {
   archiveTeachingCourse,
+  cancelTeachingLesson,
+  completeTeachingLesson,
   createTeachingCourse,
+  fetchTeachingLessons,
   fetchTeachingWorkspace,
+  markTeachingLessonAttendance,
   requestTeachingEnrollment,
+  rescheduleTeachingLesson,
+  scheduleTeachingLesson,
   respondToTeachingInvitation,
   saveInstructorProfile,
   updateTeachingCourse,
   type InstructorProfile,
   type TeachingCourse,
+  type TeachingLesson,
+  type TeachingLessonInput,
 } from "@/services/teachingApi";
 
 const cardClass = "rounded-xl border border-border bg-card p-4 sm:p-5";
@@ -28,6 +36,7 @@ export default function TeachingPage() {
     Awaited<ReturnType<typeof fetchTeachingWorkspace>>["myTeachingEnrollments"]
   >([]);
   const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
+  const [lessons, setLessons] = useState<TeachingLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [headline, setHeadline] = useState("");
@@ -38,18 +47,40 @@ export default function TeachingPage() {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("EUR");
   const [duration, setDuration] = useState("45");
+  const [lessonCourseId, setLessonCourseId] = useState("");
+  const [lessonStartsAt, setLessonStartsAt] = useState(() =>
+    toLocalInputValue(new Date(Date.now() + 60 * 60 * 1000)),
+  );
+  const [lessonMode, setLessonMode] = useState<"IN_PERSON" | "ONLINE">(
+    "IN_PERSON",
+  );
+  const [lessonLocation, setLessonLocation] = useState("");
+  const [lessonMeetingUrl, setLessonMeetingUrl] = useState("");
 
   const refresh = useCallback(async () => {
     const data = await fetchTeachingWorkspace();
+    const from = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+    const to = new Date(from.getTime() + 45 * 24 * 60 * 60 * 1000);
+    const calendar = await fetchTeachingLessons(
+      from.toISOString(),
+      to.toISOString(),
+    );
     setProfile(data.myInstructorProfile);
     setMyCourses(data.myTeachingCourses);
     setEnrolled(data.myEnrolledTeachingCourses);
     setEnrollments(data.myTeachingEnrollments);
     setCatalog(data.publishedTeachingCourses);
+    setLessons(calendar);
+    if (!lessonCourseId) {
+      const firstPublished = data.myTeachingCourses.find(
+        (course) => course.status === "PUBLISHED",
+      );
+      if (firstPublished) setLessonCourseId(firstPublished.id);
+    }
     setHeadline(data.myInstructorProfile?.headline ?? "");
     setBiography(data.myInstructorProfile?.biography ?? "");
     setExperienceYears(String(data.myInstructorProfile?.experienceYears ?? 0));
-  }, []);
+  }, [lessonCourseId]);
 
   useEffect(() => {
     void refresh()
@@ -185,7 +216,107 @@ export default function TeachingPage() {
     }
   }
 
+  async function addLesson(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const course = myCourses.find((row) => row.id === lessonCourseId);
+    if (!course) return;
+    setBusy(true);
+    try {
+      await scheduleTeachingLesson(
+        course.id,
+        lessonInput(
+          lessonStartsAt,
+          lessonMode,
+          lessonLocation,
+          lessonMeetingUrl,
+        ),
+      );
+      await refresh();
+      toast.success("Séance planifiée et élèves notifiés.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Planification impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function moveLesson(lesson: TeachingLesson, startsAt: string) {
+    setBusy(true);
+    try {
+      await rescheduleTeachingLesson(lesson.id, {
+        startsAt: new Date(startsAt).toISOString(),
+        timeZone: currentTimeZone(),
+        teachingMode: lesson.teachingMode === "ONLINE" ? "ONLINE" : "IN_PERSON",
+        location: lesson.location,
+        meetingUrl: lesson.meetingUrl,
+      });
+      await refresh();
+      toast.success("Séance déplacée et élèves notifiés.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Déplacement impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function cancelLesson(lesson: TeachingLesson) {
+    setBusy(true);
+    try {
+      await cancelTeachingLesson(lesson.id);
+      await refresh();
+      toast.success("Séance annulée et élèves notifiés.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Annulation impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function completeLesson(lesson: TeachingLesson) {
+    setBusy(true);
+    try {
+      await completeTeachingLesson(lesson.id);
+      await refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible de terminer la séance.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function setAttendance(
+    lesson: TeachingLesson,
+    enrollmentId: string,
+    status: "PRESENT" | "ABSENT" | "EXCUSED",
+  ) {
+    setBusy(true);
+    try {
+      await markTeachingLessonAttendance(lesson.id, enrollmentId, status);
+      await refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Mise à jour de présence impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const myEnrollmentIds = new Set(enrolled.map((course) => course.id));
+  const selectedLessonCourse = () =>
+    myCourses.find((course) => course.id === lessonCourseId);
   const visibleCatalog = catalog.filter(
     (course) => course.instructorId !== profile?.id,
   );
@@ -308,6 +439,235 @@ export default function TeachingPage() {
                   : "Enregistrez d’abord votre profil enseignant"}
               </Button>
             </form>
+          </section>
+
+          <section>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="font-semibold">
+                Calendrier — dernières séances et 45 prochains jours
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                {currentTimeZone()}
+              </span>
+            </div>
+            {profile?.status === "APPROVED" &&
+              myCourses.some((course) => course.status === "PUBLISHED") && (
+                <form
+                  onSubmit={addLesson}
+                  className={`${cardClass} mb-4 grid gap-3 sm:grid-cols-2`}
+                >
+                  <select
+                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    required
+                    value={lessonCourseId}
+                    onChange={(event) => {
+                      setLessonCourseId(event.target.value);
+                      const next = myCourses.find(
+                        (course) => course.id === event.target.value,
+                      );
+                      if (next?.teachingMode === "ONLINE")
+                        setLessonMode("ONLINE");
+                      if (next?.teachingMode === "IN_PERSON")
+                        setLessonMode("IN_PERSON");
+                    }}
+                    aria-label="Cours à planifier"
+                  >
+                    {myCourses
+                      .filter((course) => course.status === "PUBLISHED")
+                      .map((course) => (
+                        <option key={course.id} value={course.id}>
+                          {course.title}
+                        </option>
+                      ))}
+                  </select>
+                  <Input
+                    required
+                    type="datetime-local"
+                    value={lessonStartsAt}
+                    onChange={(event) => setLessonStartsAt(event.target.value)}
+                    aria-label="Date et heure de la séance"
+                  />
+                  <select
+                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    value={lessonMode}
+                    onChange={(event) =>
+                      setLessonMode(
+                        event.target.value as "IN_PERSON" | "ONLINE",
+                      )
+                    }
+                    aria-label="Mode de la séance"
+                  >
+                    {selectedLessonCourse()?.teachingMode !== "ONLINE" && (
+                      <option value="IN_PERSON">Présentiel</option>
+                    )}
+                    {selectedLessonCourse()?.teachingMode !== "IN_PERSON" && (
+                      <option value="ONLINE">À distance</option>
+                    )}
+                  </select>
+                  {lessonMode === "IN_PERSON" ? (
+                    <Input
+                      required
+                      value={lessonLocation}
+                      onChange={(event) =>
+                        setLessonLocation(event.target.value)
+                      }
+                      maxLength={500}
+                      placeholder="Lieu"
+                      aria-label="Lieu"
+                    />
+                  ) : (
+                    <Input
+                      required
+                      type="url"
+                      value={lessonMeetingUrl}
+                      onChange={(event) =>
+                        setLessonMeetingUrl(event.target.value)
+                      }
+                      placeholder="Lien HTTPS de la réunion"
+                      aria-label="Lien de réunion"
+                    />
+                  )}
+                  <p className="text-xs text-muted-foreground sm:col-span-2">
+                    La durée est celle du cours. L’horaire sera enregistré avec
+                    le fuseau affiché ci-dessus.
+                  </p>
+                  <Button disabled={busy} className="sm:col-span-2">
+                    Planifier une séance
+                  </Button>
+                </form>
+              )}
+            {lessons.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aucune séance récente ou à venir.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {lessons.map((lesson) => {
+                  const isTeacher = lesson.createdById === user?.id;
+                  return (
+                    <article key={lesson.id} className={cardClass}>
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-medium">{lesson.courseTitle}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {formatLessonDate(lesson.startsAt, lesson.timeZone)}{" "}
+                            ·{" "}
+                            {lesson.teachingMode === "ONLINE"
+                              ? "À distance"
+                              : "Présentiel"}{" "}
+                            · {lesson.status}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {lesson.location ||
+                              (lesson.meetingUrl ? (
+                                <a
+                                  href={lesson.meetingUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-primary underline"
+                                >
+                                  Rejoindre la réunion
+                                </a>
+                              ) : (
+                                ""
+                              ))}
+                          </p>
+                        </div>
+                        {isTeacher && lesson.status === "SCHEDULED" && (
+                          <div className="flex flex-wrap gap-2">
+                            <form
+                              className="flex gap-2"
+                              onSubmit={(event) => {
+                                event.preventDefault();
+                                const value = new FormData(
+                                  event.currentTarget,
+                                ).get("newStart");
+                                if (typeof value === "string" && value)
+                                  void moveLesson(lesson, value);
+                              }}
+                            >
+                              <Input
+                                name="newStart"
+                                type="datetime-local"
+                                required
+                                defaultValue={toLocalInputValue(
+                                  new Date(lesson.startsAt),
+                                )}
+                                aria-label="Nouvel horaire"
+                                className="w-auto"
+                              />
+                              <Button variant="outline" disabled={busy}>
+                                Déplacer
+                              </Button>
+                            </form>
+                            <Button
+                              variant="ghost"
+                              disabled={busy}
+                              onClick={() => void cancelLesson(lesson)}
+                            >
+                              Annuler
+                            </Button>
+                            {new Date(lesson.endsAt).getTime() <=
+                              Date.now() && (
+                              <Button
+                                disabled={busy}
+                                onClick={() => void completeLesson(lesson)}
+                              >
+                                Terminer
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {isTeacher && lesson.attendances.length > 0 && (
+                        <div className="mt-4 border-t border-border pt-3">
+                          <p className="mb-2 text-sm font-medium">Présences</p>
+                          <div className="space-y-2">
+                            {lesson.attendances.map((attendance) => (
+                              <div
+                                key={attendance.id}
+                                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                              >
+                                <span>
+                                  {attendance.studentUsername || "Élève"}
+                                </span>
+                                {lesson.status === "COMPLETED" ? (
+                                  <select
+                                    disabled={busy}
+                                    value={attendance.status}
+                                    onChange={(event) =>
+                                      void setAttendance(
+                                        lesson,
+                                        attendance.enrollmentId,
+                                        event.target.value as
+                                          "PRESENT" | "ABSENT" | "EXCUSED",
+                                      )
+                                    }
+                                    className="h-9 rounded-md border border-input bg-background px-2"
+                                    aria-label={`Présence de ${attendance.studentUsername || "l’élève"}`}
+                                  >
+                                    <option value="EXPECTED" disabled>
+                                      À renseigner
+                                    </option>
+                                    <option value="PRESENT">Présent</option>
+                                    <option value="ABSENT">Absent</option>
+                                    <option value="EXCUSED">Excusé</option>
+                                  </select>
+                                ) : (
+                                  <span className="text-muted-foreground">
+                                    En attente
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           <section>
@@ -452,6 +812,38 @@ export default function TeachingPage() {
       </p>
     </div>
   );
+}
+
+function currentTimeZone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+}
+
+function toLocalInputValue(date: Date) {
+  const shifted = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return shifted.toISOString().slice(0, 16);
+}
+
+function formatLessonDate(value: string, timeZone: string) {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone,
+  }).format(new Date(value));
+}
+
+function lessonInput(
+  startsAt: string,
+  teachingMode: "IN_PERSON" | "ONLINE",
+  location: string,
+  meetingUrl: string,
+): TeachingLessonInput {
+  return {
+    startsAt: new Date(startsAt).toISOString(),
+    timeZone: currentTimeZone(),
+    teachingMode,
+    location: teachingMode === "IN_PERSON" ? location : null,
+    meetingUrl: teachingMode === "ONLINE" ? meetingUrl : null,
+  };
 }
 
 function formatMoney(minorAmount: number, currencyCode: string) {

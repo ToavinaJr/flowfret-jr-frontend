@@ -78,7 +78,8 @@
       "followedPostActivity": "Activité de mes amis sur les publications suivies",
       "courseInvitation": "Invitations aux cours",
       "courseRequest": "Demandes d’inscription aux cours",
-      "courseUpdate": "Mises à jour des cours"
+      "courseUpdate": "Mises à jour des cours",
+      "lessonUpdates": "Horaires et séances"
     },
     "message": {
       "friendRequest": "{{actor}} vous a envoyé une demande d’amitié.",
@@ -90,7 +91,11 @@
       "postCommented": "{{actor}} a commenté la publication{{owner}}.",
       "courseInvitation": "{{actor}} vous invite à rejoindre un cours de guitare.",
       "courseRequest": "{{actor}} a demandé une place dans un cours.",
-      "courseUpdate": "Le statut de votre inscription a changé : {{status}}."
+      "courseUpdate": "Le statut de votre inscription a changé : {{status}}.",
+      "lessonScheduled": "Une séance du cours « {{course}} » a été planifiée.",
+      "lessonRescheduled": "Une séance du cours « {{course}} » a été déplacée.",
+      "lessonCancelled": "Une séance du cours « {{course}} » a été annulée.",
+      "lessonCompleted": "La séance du cours « {{course}} » est terminée."
     },
     "preferenceUpdated": "Préférence mise à jour.",
     "preferenceError": "Impossible de modifier cette préférence.",

@@ -38,6 +38,14 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
     "notifications.preference.courseRequest",
   [NOTIFICATION_KIND.TEACHING_ENROLLMENT_UPDATED]:
     "notifications.preference.courseUpdate",
+  [NOTIFICATION_KIND.TEACHING_LESSON_SCHEDULED]:
+    "notifications.preference.lessonUpdates",
+  [NOTIFICATION_KIND.TEACHING_LESSON_RESCHEDULED]:
+    "notifications.preference.lessonUpdates",
+  [NOTIFICATION_KIND.TEACHING_LESSON_CANCELLED]:
+    "notifications.preference.lessonUpdates",
+  [NOTIFICATION_KIND.TEACHING_LESSON_COMPLETED]:
+    "notifications.preference.lessonUpdates",
 };
 
 function message(
@@ -66,6 +74,22 @@ function message(
   if (row.type === NOTIFICATION_KIND.TEACHING_ENROLLMENT_UPDATED)
     return t("notifications.message.courseUpdate", {
       status: row.payload.status || "updated",
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_SCHEDULED)
+    return t("notifications.message.lessonScheduled", {
+      course: row.payload.courseTitle || "",
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_RESCHEDULED)
+    return t("notifications.message.lessonRescheduled", {
+      course: row.payload.courseTitle || "",
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_CANCELLED)
+    return t("notifications.message.lessonCancelled", {
+      course: row.payload.courseTitle || "",
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_COMPLETED)
+    return t("notifications.message.lessonCompleted", {
+      course: row.payload.courseTitle || "",
     });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
