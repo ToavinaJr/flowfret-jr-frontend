@@ -1,5 +1,6 @@
 import {
   Activity,
+  Database,
   FileText,
   LayoutDashboard,
   Library,
@@ -47,4 +48,5 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     translationKey: "admin.nav.audit",
     icon: ScrollText,
   },
+  { path: "/admin/data", translationKey: "admin.nav.data", icon: Database },
 ];

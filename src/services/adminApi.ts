@@ -15,6 +15,8 @@ import type {
   AdminUpload,
   AdminUser,
   AdminUserSecurityResult,
+  AdminManagedEntity,
+  AdminManagedEntityConnection,
 } from "@/types/admin";
 
 const PAGE_INFO_FIELDS =
@@ -30,6 +32,54 @@ export async function fetchAdminBackendStatus(): Promise<AdminBackendStatus> {
   });
   return result.adminBackendStatus;
 }
+
+export async function fetchAdminManagedEntities(input: {
+  entity: AdminManagedEntity;
+  first?: number;
+  skip?: number;
+  includeDeleted?: boolean;
+}): Promise<AdminManagedEntityConnection> {
+  const result = await graphqlRequest<{
+    adminManagedEntities: AdminManagedEntityConnection;
+  }>({
+    query: `query AdminManagedEntities($input: AdminManagedEntityListInput!) {
+      adminManagedEntities(input: $input) { nodes totalCount }
+    }`,
+    variables: { input },
+  });
+  return result.adminManagedEntities;
+}
+
+async function mutateAdminManagedEntity(
+  field: string,
+  input: {
+    entity: AdminManagedEntity;
+    recordId?: string;
+    data?: Record<string, unknown>;
+    reason: string;
+  },
+): Promise<Record<string, unknown>> {
+  const result = await graphqlRequest<Record<string, Record<string, unknown>>>({
+    query: `mutation AdminManagedEntity($input: AdminManagedEntityMutationInput!) {
+      ${field}(input: $input)
+    }`,
+    variables: { input },
+  });
+  return result[field];
+}
+
+export const createAdminManagedEntity = (
+  input: Parameters<typeof mutateAdminManagedEntity>[1],
+) => mutateAdminManagedEntity("adminCreateManagedEntity", input);
+export const updateAdminManagedEntity = (
+  input: Parameters<typeof mutateAdminManagedEntity>[1],
+) => mutateAdminManagedEntity("adminUpdateManagedEntity", input);
+export const deleteAdminManagedEntity = (
+  input: Parameters<typeof mutateAdminManagedEntity>[1],
+) => mutateAdminManagedEntity("adminDeleteManagedEntity", input);
+export const restoreAdminManagedEntity = (
+  input: Parameters<typeof mutateAdminManagedEntity>[1],
+) => mutateAdminManagedEntity("adminRestoreManagedEntity", input);
 
 export async function fetchAdminDashboardStatistics(
   days = 30,

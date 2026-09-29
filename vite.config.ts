@@ -9,7 +9,7 @@ export default defineConfig(() => ({
     port: 8080,
     strictPort: true,
     hmr: {
-      overlay: false,
+      overlay: true,
     },
   },
   plugins: [react()],

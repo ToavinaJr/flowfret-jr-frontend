@@ -50,6 +50,34 @@ export interface AdminBackendStatus {
   serverTime: string;
 }
 
+export const ADMIN_MANAGED_ENTITIES = [
+  "USER",
+  "PROFILE",
+  "POST",
+  "COMMENT",
+  "FRIENDSHIP",
+  "UPLOAD",
+  "NOTIFICATION",
+  "NOTIFICATION_PREFERENCE",
+  "POST_LIKE",
+  "POST_REPORT",
+  "POST_MENTION",
+  "COMMENT_MENTION",
+  "POST_ATTACHMENT",
+  "TRANSCRIPTION",
+  "CHORD_TRANSCRIPTION",
+  "LISTENING_HISTORY",
+  "CATALOG_TRACK",
+  "PLAYLIST",
+  "PLAYLIST_ITEM",
+  "TRANSCRIPTION_ACCESS",
+] as const;
+export type AdminManagedEntity = (typeof ADMIN_MANAGED_ENTITIES)[number];
+export interface AdminManagedEntityConnection {
+  nodes: Array<Record<string, unknown> & { _adminId: string }>;
+  totalCount: number;
+}
+
 export interface AdminPageInfo {
   hasNextPage: boolean;
   hasPreviousPage: boolean;

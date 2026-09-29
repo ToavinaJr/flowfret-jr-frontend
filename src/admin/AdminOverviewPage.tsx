@@ -48,7 +48,24 @@ export default function AdminOverviewPage() {
     ["periodPlays", data?.period.trackPlays],
   ] as const;
   const seriesKeys: SeriesKey[] = ["users", "posts", "comments", "reports", "trackPlays"];
-  const formatDate = (date: string) => new Intl.DateTimeFormat(i18n.language, { month: "short", day: "numeric" }).format(new Date(`${date}T00:00:00`));
+  const parseDate = (value?: string | null): Date | null => {
+    if (!value) return null;
+    const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? `${value}T00:00:00`
+      : value;
+    const parsed = new Date(normalized);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+  const formatDate = (value?: string | null) => {
+    const date = parseDate(value);
+    return date
+      ? new Intl.DateTimeFormat(i18n.language, { month: "short", day: "numeric" }).format(date)
+      : "—";
+  };
+  const formatDateTime = (value?: string | null) => {
+    const date = parseDate(value);
+    return date ? date.toLocaleString(i18n.language) : "—";
+  };
 
   const distribution = (title: string, entries: AdminCategoryStatistic[] | undefined, loading: boolean, failed: boolean) => {
     const max = Math.max(1, ...(entries ?? []).map(({ count }) => count));
@@ -82,7 +99,7 @@ export default function AdminOverviewPage() {
     <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border bg-card px-4 py-3 text-sm">
       <Database className="h-4 w-4 text-muted-foreground" /><span className="font-medium">{t("admin.overview.database")}</span>
       {backend.isLoading ? <span className="text-muted-foreground">{t("admin.overview.checking")}</span> : backend.isError || !backend.data ? <span className="text-muted-foreground">{t("admin.overview.statusUnknown")}</span> : backend.data.databaseReachable ? <span className="text-emerald-600">{t("admin.overview.reachable")}</span> : <span className="text-destructive">{t("admin.overview.unreachable")}</span>}
-      <span className="ml-auto text-xs text-muted-foreground">{backend.data?.serverTime ? t("admin.overview.serverTime", { time: new Date(backend.data.serverTime).toLocaleString(i18n.language) }) : ""}</span>
+      <span className="ml-auto text-xs text-muted-foreground">{backend.data?.serverTime ? t("admin.overview.serverTime", { time: formatDateTime(backend.data.serverTime) }) : ""}</span>
       {backend.isError && <button type="button" className="min-h-11 rounded-lg px-2 font-medium underline" onClick={() => void backend.refetch()}>{t("common.retry")}</button>}
     </div>
 
@@ -94,7 +111,7 @@ export default function AdminOverviewPage() {
 
     <section className="mt-8 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="text-lg font-semibold">{t("admin.overview.periodActivity")}</h2><p className="mt-1 text-sm text-muted-foreground">{data ? `${formatDate(data.periodStart)} – ${formatDate(data.periodEnd)}` : ""}</p></div>
-        {data?.generatedAt && <p className="text-xs text-muted-foreground">{t("admin.overview.generatedAt", { time: new Date(data.generatedAt).toLocaleString(i18n.language) })}</p>}</div>
+        {data?.generatedAt && <p className="text-xs text-muted-foreground">{t("admin.overview.generatedAt", { time: formatDateTime(data.generatedAt) })}</p>}</div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{periodCards.map(([key, value]) => <div key={key} className="rounded-lg bg-secondary/50 p-3"><p className="text-sm text-muted-foreground">{t(`admin.metrics.${key}`)}</p><p className="mt-1 text-xl font-semibold tabular-nums">{number(value)}</p></div>)}</div>
     </section>
 
