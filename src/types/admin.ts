@@ -74,6 +74,24 @@ export interface AdminListInput {
   provider?: string;
   action?: string;
   entityType?: string;
+  reportStatus?: string;
+}
+
+export interface AdminPostReport {
+  id: string;
+  postId: string;
+  reporterId: string;
+  reporterUsername: string;
+  reason: string;
+  status: string;
+  createdAt: string;
+  reviewedAt: string | null;
+  isDeleted: boolean;
+  postContent: string | null;
+  postAuthorUsername: string;
+  postStatus: string;
+  postVisibility: string;
+  postIsDeleted: boolean;
 }
 
 export interface AdminUser {

@@ -6,6 +6,7 @@ import type {
   AdminDashboardStatistics,
   AdminListInput,
   AdminPlaylist,
+  AdminPostReport,
   AdminPost,
   AdminTranscription,
   AdminUser,
@@ -181,6 +182,40 @@ export async function fetchAdminPosts(
     variables: { input },
   });
   return result.adminPosts;
+}
+
+export async function fetchAdminPostReports(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminPostReport>> {
+  const result = await graphqlRequest<{
+    adminPostReports: AdminConnection<AdminPostReport>;
+  }>({
+    query: `query AdminPostReports($input: AdminContentInput) {
+      adminPostReports(input: $input) {
+        nodes {
+          id postId reporterId reporterUsername reason status createdAt reviewedAt isDeleted
+          postContent postAuthorUsername postStatus postVisibility postIsDeleted
+        }
+        ${PAGE_INFO_FIELDS}
+      }
+    }`,
+    variables: { input },
+  });
+  return result.adminPostReports;
+}
+
+export async function moderateAdminPostReport(input: {
+  reportId: string;
+  status: string;
+  reason: string;
+}): Promise<string> {
+  const result = await graphqlRequest<{ adminModeratePostReport: string }>({
+    query: `mutation AdminModeratePostReport($input: AdminModerateReportInput!) {
+      adminModeratePostReport(input: $input)
+    }`,
+    variables: { input },
+  });
+  return result.adminModeratePostReport;
 }
 
 export async function fetchAdminTranscriptions(
