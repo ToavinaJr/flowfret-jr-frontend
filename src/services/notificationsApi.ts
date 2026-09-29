@@ -1,8 +1,5 @@
 import { graphqlRequest } from "@/services/graphqlClient";
-import {
-  type ActivityAction,
-  type NotificationKind,
-} from "@/constants/domain";
+import { type ActivityAction, type NotificationKind } from "@/constants/domain";
 
 export type { NotificationKind } from "@/constants/domain";
 export interface AppNotification {
@@ -15,6 +12,11 @@ export interface AppNotification {
     postId?: string;
     postAuthorUsername?: string | null;
     action?: ActivityAction;
+    courseId?: string;
+    enrollmentId?: string;
+    instructorUsername?: string;
+    studentUsername?: string;
+    status?: string;
   };
   readAt: string | null;
   createdAt: string;
@@ -65,4 +67,3 @@ export async function setNotificationPreference(
     variables: { type, enabled },
   });
 }
-

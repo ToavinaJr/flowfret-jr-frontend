@@ -75,7 +75,10 @@
       "friendPost": "Posts from my friends",
       "postLike": "Reactions to my posts",
       "postComment": "Comments on my posts",
-      "followedPostActivity": "My friends’ activity on followed posts"
+      "followedPostActivity": "My friends’ activity on followed posts",
+      "courseInvitation": "Course invitations",
+      "courseRequest": "Course enrollment requests",
+      "courseUpdate": "Course updates"
     },
     "message": {
       "friendRequest": "{{actor}} sent you a friend request.",
@@ -84,13 +87,17 @@
       "postComment": "{{actor}} commented on your post.",
       "postLike": "{{actor}} liked your post.",
       "postLiked": "{{actor}} reacted to the post{{owner}}.",
-      "postCommented": "{{actor}} commented on the post{{owner}}."
+      "postCommented": "{{actor}} commented on the post{{owner}}.",
+      "courseInvitation": "{{actor}} invited you to join a guitar course.",
+      "courseRequest": "{{actor}} requested a place in a course.",
+      "courseUpdate": "Your course enrollment changed status: {{status}}."
     },
     "preferenceUpdated": "Preference updated.",
     "preferenceError": "Unable to update this preference.",
     "loadError": "Unable to load notifications. Please try again shortly.",
     "viewPost": "View post",
     "viewProfile": "View profile",
+    "viewCourses": "View courses",
     "empty": "No notifications yet."
   },
   "feed": {

@@ -32,6 +32,12 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
   [NOTIFICATION_KIND.POST_COMMENT]: "notifications.preference.postComment",
   [NOTIFICATION_KIND.FOLLOWED_POST_ACTIVITY]:
     "notifications.preference.followedPostActivity",
+  [NOTIFICATION_KIND.TEACHING_COURSE_INVITATION]:
+    "notifications.preference.courseInvitation",
+  [NOTIFICATION_KIND.TEACHING_ENROLLMENT_REQUEST]:
+    "notifications.preference.courseRequest",
+  [NOTIFICATION_KIND.TEACHING_ENROLLMENT_UPDATED]:
+    "notifications.preference.courseUpdate",
 };
 
 function message(
@@ -49,6 +55,18 @@ function message(
     return t("notifications.message.postComment", { actor });
   if (row.type === NOTIFICATION_KIND.POST_LIKE)
     return t("notifications.message.postLike", { actor });
+  if (row.type === NOTIFICATION_KIND.TEACHING_COURSE_INVITATION)
+    return t("notifications.message.courseInvitation", {
+      actor: row.payload.instructorUsername || actor,
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_ENROLLMENT_REQUEST)
+    return t("notifications.message.courseRequest", {
+      actor: row.payload.studentUsername || actor,
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_ENROLLMENT_UPDATED)
+    return t("notifications.message.courseUpdate", {
+      status: row.payload.status || "updated",
+    });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
@@ -145,9 +163,12 @@ export default function NotificationsPage() {
         </h2>
         <div className="space-y-2">
           {rows.map((row) => {
-            const destination = row.payload.postId
-              ? `/post/${row.payload.postId}`
-              : `/profile/${row.payload.actorId}`;
+            const teachingNotification = row.type.startsWith("TEACHING_");
+            const destination = teachingNotification
+              ? "/teaching"
+              : row.payload.postId
+                ? `/post/${row.payload.postId}`
+                : `/profile/${row.payload.actorId}`;
             return (
               <Link
                 key={row.id}
@@ -178,7 +199,9 @@ export default function NotificationsPage() {
                   <span className="mt-2 block text-xs text-primary">
                     {row.payload.postId
                       ? t("notifications.viewPost")
-                      : t("notifications.viewProfile")}
+                      : teachingNotification
+                        ? t("notifications.viewCourses")
+                        : t("notifications.viewProfile")}
                   </span>
                 </div>
               </Link>

@@ -75,7 +75,10 @@
       "friendPost": "Publications de mes amis",
       "postLike": "Réactions sur mes publications",
       "postComment": "Commentaires sur mes publications",
-      "followedPostActivity": "Activité de mes amis sur les publications suivies"
+      "followedPostActivity": "Activité de mes amis sur les publications suivies",
+      "courseInvitation": "Invitations aux cours",
+      "courseRequest": "Demandes d’inscription aux cours",
+      "courseUpdate": "Mises à jour des cours"
     },
     "message": {
       "friendRequest": "{{actor}} vous a envoyé une demande d’amitié.",
@@ -84,13 +87,17 @@
       "postComment": "{{actor}} a commenté votre publication.",
       "postLike": "{{actor}} a aimé votre publication.",
       "postLiked": "{{actor}} a réagi à la publication{{owner}}.",
-      "postCommented": "{{actor}} a commenté la publication{{owner}}."
+      "postCommented": "{{actor}} a commenté la publication{{owner}}.",
+      "courseInvitation": "{{actor}} vous invite à rejoindre un cours de guitare.",
+      "courseRequest": "{{actor}} a demandé une place dans un cours.",
+      "courseUpdate": "Le statut de votre inscription a changé : {{status}}."
     },
     "preferenceUpdated": "Préférence mise à jour.",
     "preferenceError": "Impossible de modifier cette préférence.",
     "loadError": "Impossible de charger les notifications. Réessayez dans quelques instants.",
     "viewPost": "Voir la publication",
     "viewProfile": "Voir le profil",
+    "viewCourses": "Voir les cours",
     "empty": "Aucune notification pour le moment."
   },
   "feed": {

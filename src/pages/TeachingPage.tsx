@@ -10,6 +10,7 @@ import {
   createTeachingCourse,
   fetchTeachingWorkspace,
   requestTeachingEnrollment,
+  respondToTeachingInvitation,
   saveInstructorProfile,
   updateTeachingCourse,
   type InstructorProfile,
@@ -23,6 +24,9 @@ export default function TeachingPage() {
   const [profile, setProfile] = useState<InstructorProfile | null>(null);
   const [myCourses, setMyCourses] = useState<TeachingCourse[]>([]);
   const [enrolled, setEnrolled] = useState<TeachingCourse[]>([]);
+  const [enrollments, setEnrollments] = useState<
+    Awaited<ReturnType<typeof fetchTeachingWorkspace>>["myTeachingEnrollments"]
+  >([]);
   const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -40,6 +44,7 @@ export default function TeachingPage() {
     setProfile(data.myInstructorProfile);
     setMyCourses(data.myTeachingCourses);
     setEnrolled(data.myEnrolledTeachingCourses);
+    setEnrollments(data.myTeachingEnrollments);
     setCatalog(data.publishedTeachingCourses);
     setHeadline(data.myInstructorProfile?.headline ?? "");
     setBiography(data.myInstructorProfile?.biography ?? "");
@@ -153,6 +158,27 @@ export default function TeachingPage() {
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Demande impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function answerInvitation(enrollmentId: string, accept: boolean) {
+    setBusy(true);
+    try {
+      await respondToTeachingInvitation(enrollmentId, accept);
+      await refresh();
+      toast.success(
+        accept
+          ? "Invitation acceptée. L’enseignant confirmera la place et le paiement."
+          : "Invitation refusée.",
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible de traiter l’invitation.",
       );
     } finally {
       setBusy(false);
@@ -282,6 +308,56 @@ export default function TeachingPage() {
                   : "Enregistrez d’abord votre profil enseignant"}
               </Button>
             </form>
+          </section>
+
+          <section>
+            <h2 className="mb-3 font-semibold">Mes demandes et invitations</h2>
+            {enrollments.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aucune demande ou invitation en cours.
+              </p>
+            ) : (
+              <div className="grid gap-3">
+                {enrollments.map((enrollment) => (
+                  <article
+                    key={enrollment.id}
+                    className={`${cardClass} flex flex-wrap items-center justify-between gap-3`}
+                  >
+                    <div>
+                      <h3 className="font-medium">
+                        {enrollment.courseTitle || "Cours de guitare"}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Enseignant :{" "}
+                        {enrollment.instructorUsername || "FlowFret"} ·{" "}
+                        {enrollment.status}
+                      </p>
+                    </div>
+                    {enrollment.status === "INVITED" && (
+                      <div className="flex gap-2">
+                        <Button
+                          disabled={busy}
+                          onClick={() =>
+                            void answerInvitation(enrollment.id, true)
+                          }
+                        >
+                          Accepter
+                        </Button>
+                        <Button
+                          variant="outline"
+                          disabled={busy}
+                          onClick={() =>
+                            void answerInvitation(enrollment.id, false)
+                          }
+                        >
+                          Refuser
+                        </Button>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section>

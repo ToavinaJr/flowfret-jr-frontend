@@ -27,6 +27,16 @@ export interface InstructorProfile {
   languages: string[];
 }
 
+export interface TeachingEnrollment {
+  id: string;
+  courseId: string;
+  studentId: string;
+  status:
+    "REQUESTED" | "INVITED" | "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+  courseTitle?: string;
+  instructorUsername?: string;
+}
+
 type CourseInput = Omit<TeachingCourse, "id" | "instructorId" | "status">;
 
 const COURSE_FIELDS =
@@ -40,9 +50,23 @@ export async function fetchTeachingWorkspace() {
     myTeachingCourses: TeachingCourse[];
     myEnrolledTeachingCourses: TeachingCourse[];
     publishedTeachingCourses: TeachingCourse[];
+    myTeachingEnrollments: TeachingEnrollment[];
   }>({
-    query: `query TeachingWorkspace { myInstructorProfile { ${INSTRUCTOR_FIELDS} } myTeachingCourses { ${COURSE_FIELDS} } myEnrolledTeachingCourses { ${COURSE_FIELDS} } publishedTeachingCourses(take: 50) { ${COURSE_FIELDS} } }`,
+    query: `query TeachingWorkspace { myInstructorProfile { ${INSTRUCTOR_FIELDS} } myTeachingCourses { ${COURSE_FIELDS} } myEnrolledTeachingCourses { ${COURSE_FIELDS} } publishedTeachingCourses(take: 50) { ${COURSE_FIELDS} } myTeachingEnrollments { id courseId studentId status courseTitle instructorUsername } }`,
   });
+}
+
+export async function respondToTeachingInvitation(
+  enrollmentId: string,
+  accept: boolean,
+) {
+  const result = await graphqlRequest<{
+    respondToTeachingCourseInvitation: TeachingEnrollment;
+  }>({
+    query: `mutation RespondToTeachingInvitation($enrollmentId: String!, $accept: Boolean!) { respondToTeachingCourseInvitation(enrollmentId: $enrollmentId, accept: $accept) { id courseId studentId status } }`,
+    variables: { enrollmentId, accept },
+  });
+  return result.respondToTeachingCourseInvitation;
 }
 
 export async function saveInstructorProfile(input: {
