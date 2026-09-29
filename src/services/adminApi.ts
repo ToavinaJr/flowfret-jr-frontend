@@ -9,6 +9,7 @@ import type {
   AdminPost,
   AdminTranscription,
   AdminUser,
+  AdminUserSecurityResult,
 } from "@/types/admin";
 
 const PAGE_INFO_FIELDS = "pageInfo { hasNextPage hasPreviousPage endCursor } totalCount";
@@ -72,6 +73,94 @@ export async function fetchAdminUsers(
     variables: { input },
   });
   return result.adminUsers;
+}
+
+export async function fetchAdminUser(id: string): Promise<AdminUser> {
+  const result = await graphqlRequest<{ adminUser: AdminUser | null }>({
+    query: `query AdminUser($id: String!) {
+      adminUser(id: $id) {
+        id email username displayName status role lastLoginAt createdAt updatedAt isDeleted deletedAt
+        activity { posts comments playlists uploads }
+      }
+    }`,
+    variables: { id },
+  });
+  if (!result.adminUser) throw new Error("ADMIN_USER_NOT_FOUND");
+  return result.adminUser;
+}
+
+export async function setAdminUserRole(
+  userId: string,
+  role: string,
+  reason: string,
+): Promise<AdminUserSecurityResult> {
+  const result = await graphqlRequest<{
+    adminSetUserRole: AdminUserSecurityResult;
+  }>({
+    query: `mutation AdminSetUserRole($input: AdminSetUserRoleInput!) {
+      adminSetUserRole(input: $input) {
+        user { id email username displayName status role lastLoginAt createdAt updatedAt isDeleted deletedAt }
+        revokedSessionCount auditLogId
+      }
+    }`,
+    variables: { input: { userId, role, reason } },
+  });
+  return result.adminSetUserRole;
+}
+
+export async function setAdminUserStatus(
+  userId: string,
+  status: string,
+  reason: string,
+): Promise<AdminUserSecurityResult> {
+  const result = await graphqlRequest<{
+    adminSetUserStatus: AdminUserSecurityResult;
+  }>({
+    query: `mutation AdminSetUserStatus($input: AdminSetUserStatusInput!) {
+      adminSetUserStatus(input: $input) {
+        user { id email username displayName status role lastLoginAt createdAt updatedAt isDeleted deletedAt }
+        revokedSessionCount auditLogId
+      }
+    }`,
+    variables: { input: { userId, status, reason } },
+  });
+  return result.adminSetUserStatus;
+}
+
+export async function deleteAdminUser(
+  userId: string,
+  reason: string,
+): Promise<AdminUserSecurityResult> {
+  const result = await graphqlRequest<{
+    adminDeleteUser: AdminUserSecurityResult;
+  }>({
+    query: `mutation AdminDeleteUser($input: AdminUserActionInput!) {
+      adminDeleteUser(input: $input) {
+        user { id email username displayName status role lastLoginAt createdAt updatedAt isDeleted deletedAt }
+        revokedSessionCount auditLogId
+      }
+    }`,
+    variables: { input: { userId, reason } },
+  });
+  return result.adminDeleteUser;
+}
+
+export async function revokeAdminUserSessions(
+  userId: string,
+  reason: string,
+): Promise<AdminUserSecurityResult> {
+  const result = await graphqlRequest<{
+    adminRevokeUserSessions: AdminUserSecurityResult;
+  }>({
+    query: `mutation AdminRevokeUserSessions($input: AdminUserActionInput!) {
+      adminRevokeUserSessions(input: $input) {
+        user { id email username displayName status role lastLoginAt createdAt updatedAt isDeleted deletedAt }
+        revokedSessionCount auditLogId
+      }
+    }`,
+    variables: { input: { userId, reason } },
+  });
+  return result.adminRevokeUserSessions;
 }
 
 export async function fetchAdminPosts(

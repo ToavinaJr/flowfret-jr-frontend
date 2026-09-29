@@ -86,6 +86,22 @@ export interface AdminUser {
   lastLoginAt: string | null;
   createdAt: string;
   isDeleted: boolean;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  activity?: AdminUserActivity;
+}
+
+export interface AdminUserActivity {
+  posts: number;
+  comments: number;
+  playlists: number;
+  uploads: number;
+}
+
+export interface AdminUserSecurityResult {
+  user: AdminUser;
+  revokedSessionCount: number;
+  auditLogId: string;
 }
 
 export interface AdminPost {

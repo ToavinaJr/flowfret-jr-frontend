@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { fetchAdminUsers } from "@/services/adminApi";
 import type { AdminUser } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
@@ -13,7 +14,9 @@ export default function AdminUsersPage() {
       labelKey: "admin.columns.user",
       render: (row) => (
         <div className="min-w-48">
-          <p className="font-medium text-foreground">{row.displayName || row.username}</p>
+          <Link to={`/admin/users/${row.id}`} className="font-medium text-primary hover:underline">
+            {row.displayName || row.username}
+          </Link>
           <p className="text-xs text-muted-foreground">@{row.username} · {row.email}</p>
         </div>
       ),
