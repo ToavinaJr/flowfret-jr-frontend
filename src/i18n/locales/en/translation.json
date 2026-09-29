@@ -771,6 +771,37 @@
     }
   },
   "moderation": {
+    "description": "Review reports with their context and record a reason for each decision.",
+    "searchPlaceholder": "Search report reason, member, or post content…",
+    "statusFilter": "Report status",
+    "allStatuses": "All statuses",
+    "pageSize": "{{count}} reports per page",
+    "postBy": "Post by @{{author}}",
+    "postDeleted": "Post deleted",
+    "reportReason": "Report reason",
+    "reviewedAt": "Reviewed {{date}}",
+    "decisionTitle": "Decision: {{status}}",
+    "decisionDescription": "The reason will be stored in the audit log with your administrator account.",
+    "decisionReason": "Decision reason (required)",
+    "confirmDecision": "Save decision",
+    "status": {
+      "OPEN": "Open",
+      "REVIEWED": "Reviewed",
+      "RESOLVED": "Resolved",
+      "DISMISSED": "Dismissed"
+    },
+    "visibility": {
+      "PUBLIC": "Public",
+      "FRIENDS": "Friends",
+      "PRIVATE": "Private"
+    },
+    "errors": {
+      "ADMIN_REPORT_NOT_FOUND": "This report is no longer available.",
+      "ADMIN_REPORT_STATUS_UNCHANGED": "This report already has that status.",
+      "ADMIN_MODERATION_REASON_REQUIRED": "A status and decision reason are required.",
+      "ADMIN_MODERATION_REASON_INVALID": "Enter a reason between 3 and 500 characters.",
+      "ADMIN_MODERATION_STATUS_INVALID": "A report cannot be moved back to open."
+    },
     "title": "Moderation",
     "updated": "Report updated.",
     "failed": "Moderation failed.",

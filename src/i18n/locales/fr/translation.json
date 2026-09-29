@@ -771,6 +771,37 @@
     }
   },
   "moderation": {
+    "description": "Traitez les signalements avec leur contexte et consignez le motif de chaque décision.",
+    "searchPlaceholder": "Rechercher un motif, un membre ou le contenu publié…",
+    "statusFilter": "Statut du signalement",
+    "allStatuses": "Tous les statuts",
+    "pageSize": "{{count}} signalements par page",
+    "postBy": "Publication de @{{author}}",
+    "postDeleted": "Publication supprimée",
+    "reportReason": "Motif du signalement",
+    "reviewedAt": "Examiné le {{date}}",
+    "decisionTitle": "Décision : {{status}}",
+    "decisionDescription": "Le motif sera conservé dans le journal d’audit avec votre compte administrateur.",
+    "decisionReason": "Motif de la décision (obligatoire)",
+    "confirmDecision": "Enregistrer la décision",
+    "status": {
+      "OPEN": "Ouvert",
+      "REVIEWED": "Examiné",
+      "RESOLVED": "Résolu",
+      "DISMISSED": "Rejeté"
+    },
+    "visibility": {
+      "PUBLIC": "Public",
+      "FRIENDS": "Amis",
+      "PRIVATE": "Privé"
+    },
+    "errors": {
+      "ADMIN_REPORT_NOT_FOUND": "Ce signalement n’est plus disponible.",
+      "ADMIN_REPORT_STATUS_UNCHANGED": "Ce signalement a déjà ce statut.",
+      "ADMIN_MODERATION_REASON_REQUIRED": "Un statut et le motif de la décision sont obligatoires.",
+      "ADMIN_MODERATION_REASON_INVALID": "Saisissez un motif de 3 à 500 caractères.",
+      "ADMIN_MODERATION_STATUS_INVALID": "Un signalement ne peut pas revenir au statut ouvert."
+    },
     "title": "Modération",
     "updated": "Signalement mis à jour.",
     "failed": "La modération a échoué.",
