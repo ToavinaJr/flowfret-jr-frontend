@@ -16,6 +16,7 @@ import {
   formatAdminArtists,
   formatAdminDate,
   formatAdminDurationMs,
+  formatAdminNumber,
   truncateAdminText,
 } from "./adminFormat";
 import { ADMIN_PROVIDER_FILTERS } from "./adminFilters";
@@ -109,7 +110,7 @@ export default function AdminMusicPage() {
     {
       key: "playlists",
       labelKey: "admin.resourceColumns.playlistCount",
-      render: (row) => row.playlistCount.toLocaleString(i18n.language),
+      render: (row) => formatAdminNumber(row.playlistCount, i18n.language),
     },
   ];
 
@@ -142,7 +143,7 @@ export default function AdminMusicPage() {
     {
       key: "playCount",
       labelKey: "admin.resourceColumns.playCount",
-      render: (row) => row.playCount.toLocaleString(i18n.language),
+      render: (row) => formatAdminNumber(row.playCount, i18n.language),
     },
     {
       key: "lastPlayedAt",
