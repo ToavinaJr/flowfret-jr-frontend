@@ -80,4 +80,6 @@ export const ADMIN_PROVIDER_FILTERS: AdminFilter[] = [
 export const ADMIN_AUDIT_FILTERS: AdminFilter[] = [
   { key: "action", labelKey: "admin.filters.action", type: "text" },
   { key: "entityType", labelKey: "admin.filters.entityType", type: "text" },
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
 ];

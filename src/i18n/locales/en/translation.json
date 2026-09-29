@@ -723,7 +723,9 @@
       "status": "Status",
       "provider": "Provider",
       "action": "Action",
-      "entityType": "Entity type"
+      "entityType": "Entity type",
+      "from": "From date",
+      "to": "To date"
     },
     "values": {
       "USER": "Member",
@@ -839,8 +841,10 @@
       "items": "Tracks",
       "action": "Action",
       "actor": "Actor",
-      "entity": "Entity"
+      "entity": "Entity",
+      "metadata": "Details"
     }
+    ,"audit": { "details": "Show details", "noDetails": "No details" }
   },
   "moderation": {
     "description": "Review reports with their context and record a reason for each decision.",

@@ -723,7 +723,9 @@
       "status": "Statut",
       "provider": "Fournisseur",
       "action": "Action",
-      "entityType": "Type d’entité"
+      "entityType": "Type d’entité",
+      "from": "À partir du",
+      "to": "Jusqu’au"
     },
     "values": {
       "USER": "Membre",
@@ -843,8 +845,10 @@
       "items": "Morceaux",
       "action": "Action",
       "actor": "Auteur de l’action",
-      "entity": "Entité"
+      "entity": "Entité",
+      "metadata": "Détails"
     }
+    ,"audit": { "details": "Afficher les détails", "noDetails": "Aucun détail" }
   },
   "moderation": {
     "description": "Traitez les signalements avec leur contexte et consignez le motif de chaque décision.",

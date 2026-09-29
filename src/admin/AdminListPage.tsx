@@ -20,9 +20,11 @@ export interface AdminFilter {
     | "uploadStatus"
     | "provider"
     | "action"
-    | "entityType";
+    | "entityType"
+    | "from"
+    | "to";
   labelKey: string;
-  type?: "select" | "text";
+  type?: "select" | "text" | "date";
   options?: Array<{ value: string; labelKey: string }>;
 }
 
@@ -146,8 +148,9 @@ export default function AdminListPage<T extends { id: string }>({
                 className="grid gap-1 text-xs text-muted-foreground"
               >
                 <span>{t(filter.labelKey)}</span>
-                {filter.type === "text" ? (
+                {filter.type === "text" || filter.type === "date" ? (
                   <input
+                    type={filter.type}
                     value={draftFilters[filter.key] ?? ""}
                     onChange={(event) =>
                       setDraftFilters((current) => ({

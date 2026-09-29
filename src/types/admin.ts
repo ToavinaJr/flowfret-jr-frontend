@@ -74,6 +74,8 @@ export interface AdminListInput {
   provider?: string;
   action?: string;
   entityType?: string;
+  from?: string;
+  to?: string;
   reportStatus?: string;
   uploadStatus?: string;
 }
