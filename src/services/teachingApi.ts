@@ -29,8 +29,10 @@ export interface InstructorProfile {
 
 type CourseInput = Omit<TeachingCourse, "id" | "instructorId" | "status">;
 
-const COURSE_FIELDS = "id instructorId title description level format maxStudents teachingMode priceAmount priceCurrency priceUnit durationMinutes status";
-const INSTRUCTOR_FIELDS = "id userId status headline biography experienceYears specialties languages";
+const COURSE_FIELDS =
+  "id instructorId title description level format maxStudents teachingMode priceAmount priceCurrency priceUnit durationMinutes status";
+const INSTRUCTOR_FIELDS =
+  "id userId status headline biography experienceYears specialties languages";
 
 export async function fetchTeachingWorkspace() {
   return graphqlRequest<{
@@ -50,7 +52,9 @@ export async function saveInstructorProfile(input: {
   specialties?: string[];
   languages?: string[];
 }) {
-  const result = await graphqlRequest<{ upsertInstructorProfile: InstructorProfile }>({
+  const result = await graphqlRequest<{
+    upsertInstructorProfile: InstructorProfile;
+  }>({
     query: `mutation SaveInstructorProfile($data: UpsertInstructorProfileInput!) { upsertInstructorProfile(data: $data) { ${INSTRUCTOR_FIELDS} } }`,
     variables: { data: input },
   });
@@ -58,23 +62,32 @@ export async function saveInstructorProfile(input: {
 }
 
 export async function createTeachingCourse(input: CourseInput) {
-  const result = await graphqlRequest<{ createTeachingCourse: TeachingCourse }>({
-    query: `mutation CreateTeachingCourse($data: CreateTeachingCourseInput!) { createTeachingCourse(data: $data) { ${COURSE_FIELDS} } }`,
-    variables: { data: input },
-  });
+  const result = await graphqlRequest<{ createTeachingCourse: TeachingCourse }>(
+    {
+      query: `mutation CreateTeachingCourse($data: CreateTeachingCourseInput!) { createTeachingCourse(data: $data) { ${COURSE_FIELDS} } }`,
+      variables: { data: input },
+    },
+  );
   return result.createTeachingCourse;
 }
 
-export async function updateTeachingCourse(id: string, data: Partial<CourseInput> & { status?: TeachingCourse["status"] }) {
-  const result = await graphqlRequest<{ updateTeachingCourse: TeachingCourse }>({
-    query: `mutation UpdateTeachingCourse($id: String!, $data: UpdateTeachingCourseInput!) { updateTeachingCourse(id: $id, data: $data) { ${COURSE_FIELDS} } }`,
-    variables: { id, data },
-  });
+export async function updateTeachingCourse(
+  id: string,
+  data: Partial<CourseInput> & { status?: TeachingCourse["status"] },
+) {
+  const result = await graphqlRequest<{ updateTeachingCourse: TeachingCourse }>(
+    {
+      query: `mutation UpdateTeachingCourse($id: String!, $data: UpdateTeachingCourseInput!) { updateTeachingCourse(id: $id, data: $data) { ${COURSE_FIELDS} } }`,
+      variables: { id, data },
+    },
+  );
   return result.updateTeachingCourse;
 }
 
 export async function archiveTeachingCourse(id: string) {
-  const result = await graphqlRequest<{ archiveTeachingCourse: TeachingCourse }>({
+  const result = await graphqlRequest<{
+    archiveTeachingCourse: TeachingCourse;
+  }>({
     query: `mutation ArchiveTeachingCourse($id: String!) { archiveTeachingCourse(id: $id) { ${COURSE_FIELDS} } }`,
     variables: { id },
   });
@@ -82,7 +95,9 @@ export async function archiveTeachingCourse(id: string) {
 }
 
 export async function requestTeachingEnrollment(courseId: string) {
-  const result = await graphqlRequest<{ requestTeachingCourseEnrollment: { id: string } }>({
+  const result = await graphqlRequest<{
+    requestTeachingCourseEnrollment: { id: string };
+  }>({
     query: `mutation RequestTeachingEnrollment($courseId: String!) { requestTeachingCourseEnrollment(courseId: $courseId) { id } }`,
     variables: { courseId },
   });

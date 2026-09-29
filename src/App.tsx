@@ -40,6 +40,7 @@ const AdminContentPage = lazy(() => import("@/admin/AdminContentPage"));
 const AdminMediaPage = lazy(() => import("@/admin/AdminMediaPage"));
 const AdminMusicPage = lazy(() => import("@/admin/AdminMusicPage"));
 const AdminAuditPage = lazy(() => import("@/admin/AdminAuditPage"));
+const AdminTeachersPage = lazy(() => import("@/admin/AdminTeachersPage"));
 const AdminEntityManagerPage = lazy(
   () => import("@/admin/AdminEntityManagerPage"),
 );
@@ -125,6 +126,10 @@ const App = () => {
                           <Route path="media" element={<AdminMediaPage />} />
                           <Route path="music" element={<AdminMusicPage />} />
                           <Route path="audit" element={<AdminAuditPage />} />
+                          <Route
+                            path="teachers"
+                            element={<AdminTeachersPage />}
+                          />
                           <Route
                             path="data"
                             element={<AdminEntityManagerPage />}

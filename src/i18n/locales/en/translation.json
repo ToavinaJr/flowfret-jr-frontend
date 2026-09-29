@@ -633,6 +633,7 @@
       "media": "Media",
       "music": "Music",
       "audit": "Audit log",
+      "teachers": "Teachers",
       "data": "Platform data"
     },
     "entities": {

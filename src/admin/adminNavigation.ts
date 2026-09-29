@@ -3,6 +3,7 @@ import {
   Database,
   FileText,
   LayoutDashboard,
+  GraduationCap,
   Library,
   ScrollText,
   Users,
@@ -47,6 +48,11 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     path: "/admin/audit",
     translationKey: "admin.nav.audit",
     icon: ScrollText,
+  },
+  {
+    path: "/admin/teachers",
+    translationKey: "admin.nav.teachers",
+    icon: GraduationCap,
   },
   { path: "/admin/data", translationKey: "admin.nav.data", icon: Database },
 ];

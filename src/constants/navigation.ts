@@ -26,7 +26,11 @@ export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: Home, translationKey: "nav.feed", path: "/" },
   { icon: Search, translationKey: "nav.music", path: "/music" },
   { icon: ListMusic, translationKey: "nav.playlists", path: "/playlists" },
-  { icon: FileText, translationKey: "nav.transcriptions", path: "/transcriptions" },
+  {
+    icon: FileText,
+    translationKey: "nav.transcriptions",
+    path: "/transcriptions",
+  },
   { icon: GraduationCap, translationKey: "nav.courses", path: "/teaching" },
   { icon: Upload, translationKey: "nav.upload", path: "/upload" },
   { icon: Users, translationKey: "nav.friends", path: "/friends" },
