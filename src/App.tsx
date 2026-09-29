@@ -34,6 +34,7 @@ const AdminRoute = lazy(() => import("@/admin/AdminRoute"));
 const AdminLayout = lazy(() => import("@/admin/AdminLayout"));
 const AdminOverviewPage = lazy(() => import("@/admin/AdminOverviewPage"));
 const AdminUsersPage = lazy(() => import("@/admin/AdminUsersPage"));
+const AdminUserDetailPage = lazy(() => import("@/admin/AdminUserDetailPage"));
 const AdminContentPage = lazy(() => import("@/admin/AdminContentPage"));
 const AdminMediaPage = lazy(() => import("@/admin/AdminMediaPage"));
 const AdminMusicPage = lazy(() => import("@/admin/AdminMusicPage"));
@@ -90,6 +91,7 @@ const App = () => {
                         path="users"
                         element={<AdminUsersPage />}
                       />
+                      <Route path="users/:userId" element={<AdminUserDetailPage />} />
                       <Route path="content" element={<AdminContentPage />} />
                       <Route path="content/reports" element={<ModerationPage />} />
                       <Route

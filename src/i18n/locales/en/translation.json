@@ -682,6 +682,65 @@
       "SPOTIFY": "Spotify",
       "YOUTUBE": "YouTube"
     },
+    "userDetail": {
+      "back": "Back to members",
+      "loadFailed": "Unable to load this account.",
+      "accountTitle": "Account",
+      "activityTitle": "Member activity",
+      "activityUnavailable": "Activity statistics are unavailable.",
+      "posts": "Posts",
+      "comments": "Comments",
+      "playlists": "Playlists",
+      "uploads": "Uploads",
+      "createdAt": "Account created",
+      "updatedAt": "Last updated",
+      "deletedAt": "Account deleted",
+      "userId": "User ID",
+      "never": "Never",
+      "role": "New role",
+      "status": "New status",
+      "reason": "Required reason",
+      "changeRole": "Change role",
+      "changeStatus": "Change status",
+      "revokeSessions": "Revoke sessions",
+      "delete": "Delete account",
+      "deletedNotice": "This account is deleted; no actions are available.",
+      "deleteWarning": "The account will be soft-deleted and its sessions will be revoked.",
+      "typeDelete": "Type {{token}} to confirm.",
+      "actionComplete": "Action applied. {{count}} session(s) revoked.",
+      "sessionsRevoked": "{{count}} session(s) revoked.",
+      "actionFailed": "The action could not be applied.",
+      "actions": {
+        "role": {
+          "title": "Change member role",
+          "description": "The reason will be recorded in the audit log and existing sessions will be revoked.",
+          "confirm": "Apply role"
+        },
+        "status": {
+          "title": "Change account status",
+          "description": "The reason will be recorded in the audit log and existing sessions will be revoked.",
+          "confirm": "Apply status"
+        },
+        "sessions": {
+          "title": "Revoke all sessions",
+          "description": "The member will need to sign in again on all devices.",
+          "confirm": "Revoke sessions"
+        },
+        "delete": {
+          "title": "Delete this account",
+          "description": "This operation is recorded in the audit log.",
+          "confirm": "Delete account"
+        }
+      },
+      "errors": {
+        "ADMIN_LAST_ACTIVE_ADMIN": "The last active administrator cannot be demoted, suspended, or deleted.",
+        "ADMIN_USER_NOT_FOUND": "This account is no longer available.",
+        "ADMIN_USER_ROLE_UNCHANGED": "This member already has that role.",
+        "ADMIN_USER_STATUS_UNCHANGED": "This account already has that status.",
+        "ADMIN_REASON_REQUIRED": "Enter a reason with at least three characters.",
+        "ADMIN_DELETE_REQUIRED": "Use the dedicated delete action."
+      }
+    },
     "screens": {
       "users": { "description": "Review members, their roles, and account status." },
       "content": { "description": "Review posts before applying moderation actions." },

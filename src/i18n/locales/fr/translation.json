@@ -682,6 +682,65 @@
       "SPOTIFY": "Spotify",
       "YOUTUBE": "YouTube"
     },
+    "userDetail": {
+      "back": "Retour aux membres",
+      "loadFailed": "Impossible de charger ce compte.",
+      "accountTitle": "Compte",
+      "activityTitle": "Activité du membre",
+      "activityUnavailable": "Les statistiques d’activité ne sont pas disponibles.",
+      "posts": "Publications",
+      "comments": "Commentaires",
+      "playlists": "Playlists",
+      "uploads": "Fichiers",
+      "createdAt": "Compte créé le",
+      "updatedAt": "Dernière modification",
+      "deletedAt": "Compte supprimé le",
+      "userId": "Identifiant",
+      "never": "Jamais",
+      "role": "Nouveau rôle",
+      "status": "Nouveau statut",
+      "reason": "Motif obligatoire",
+      "changeRole": "Modifier le rôle",
+      "changeStatus": "Modifier le statut",
+      "revokeSessions": "Révoquer les sessions",
+      "delete": "Supprimer le compte",
+      "deletedNotice": "Ce compte est supprimé ; aucune action n’est disponible.",
+      "deleteWarning": "Le compte sera supprimé de façon logique et ses sessions seront révoquées.",
+      "typeDelete": "Saisissez {{token}} pour confirmer.",
+      "actionComplete": "Action appliquée. {{count}} session(s) révoquée(s).",
+      "sessionsRevoked": "{{count}} session(s) révoquée(s).",
+      "actionFailed": "L’action n’a pas pu être appliquée.",
+      "actions": {
+        "role": {
+          "title": "Modifier le rôle du membre",
+          "description": "Le motif sera ajouté au journal d’audit et les sessions existantes seront révoquées.",
+          "confirm": "Appliquer le rôle"
+        },
+        "status": {
+          "title": "Modifier le statut du compte",
+          "description": "Le motif sera ajouté au journal d’audit et les sessions existantes seront révoquées.",
+          "confirm": "Appliquer le statut"
+        },
+        "sessions": {
+          "title": "Révoquer toutes les sessions",
+          "description": "Le membre devra se reconnecter sur tous ses appareils.",
+          "confirm": "Révoquer les sessions"
+        },
+        "delete": {
+          "title": "Supprimer ce compte",
+          "description": "Cette opération est enregistrée dans le journal d’audit.",
+          "confirm": "Supprimer le compte"
+        }
+      },
+      "errors": {
+        "ADMIN_LAST_ACTIVE_ADMIN": "Le dernier administrateur actif ne peut pas être rétrogradé, suspendu ou supprimé.",
+        "ADMIN_USER_NOT_FOUND": "Ce compte n’est plus disponible.",
+        "ADMIN_USER_ROLE_UNCHANGED": "Ce membre possède déjà ce rôle.",
+        "ADMIN_USER_STATUS_UNCHANGED": "Ce compte possède déjà ce statut.",
+        "ADMIN_REASON_REQUIRED": "Saisissez un motif d’au moins trois caractères.",
+        "ADMIN_DELETE_REQUIRED": "Utilisez l’action de suppression dédiée."
+      }
+    },
     "screens": {
       "users": { "description": "Consultez les membres, leurs rôles et l’état de leurs comptes." },
       "content": { "description": "Consultez les publications avant les opérations de modération." },
