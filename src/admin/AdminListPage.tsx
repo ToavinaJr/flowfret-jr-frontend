@@ -12,7 +12,15 @@ export interface AdminColumn<T> {
 }
 
 export interface AdminFilter {
-  key: "status" | "role" | "postStatus" | "transcriptionStatus" | "provider" | "action" | "entityType";
+  key:
+    | "status"
+    | "role"
+    | "postStatus"
+    | "transcriptionStatus"
+    | "uploadStatus"
+    | "provider"
+    | "action"
+    | "entityType";
   labelKey: string;
   type?: "select" | "text";
   options?: Array<{ value: string; labelKey: string }>;
@@ -25,6 +33,9 @@ interface AdminListPageProps<T extends { id: string }> {
   columns: AdminColumn<T>[];
   action?: ReactNode;
   filters?: AdminFilter[];
+  titleKey?: string;
+  descriptionKey?: string;
+  showIncludeDeleted?: boolean;
 }
 
 const PAGE_SIZE = 25;
@@ -36,12 +47,17 @@ export default function AdminListPage<T extends { id: string }>({
   columns,
   action,
   filters = [],
+  titleKey,
+  descriptionKey,
+  showIncludeDeleted = true,
 }: AdminListPageProps<T>) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
   const [draftFilters, setDraftFilters] = useState<Record<string, string>>({});
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {},
+  );
   const [includeDeletedDraft, setIncludeDeletedDraft] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [cursors, setCursors] = useState<Array<string | undefined>>([
@@ -49,7 +65,14 @@ export default function AdminListPage<T extends { id: string }>({
   ]);
   const cursor = cursors[cursors.length - 1];
   const query = useQuery({
-    queryKey: ["admin", queryKey, search, cursor],
+    queryKey: [
+      "admin",
+      queryKey,
+      search,
+      activeFilters,
+      includeDeleted,
+      cursor,
+    ],
     queryFn: () =>
       fetchPage({
         first: PAGE_SIZE,
@@ -87,11 +110,14 @@ export default function AdminListPage<T extends { id: string }>({
     <section aria-labelledby={`admin-${section}-title`}>
       <div className="mb-5 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 id={`admin-${section}-title`} className="text-2xl font-semibold sm:text-3xl">
-            {t(`admin.nav.${section}`)}
+          <h1
+            id={`admin-${section}-title`}
+            className="text-2xl font-semibold sm:text-3xl"
+          >
+            {t(titleKey ?? `admin.nav.${section}`)}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {t(`admin.screens.${section}.description`)}
+            {t(descriptionKey ?? `admin.screens.${section}.description`)}
           </p>
         </div>
         {action}
@@ -99,7 +125,10 @@ export default function AdminListPage<T extends { id: string }>({
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-          <form onSubmit={submitSearch} className="flex min-w-0 flex-1 flex-wrap items-end gap-2">
+          <form
+            onSubmit={submitSearch}
+            className="flex min-w-0 flex-1 flex-wrap items-end gap-2"
+          >
             <label className="relative min-w-0 flex-1 sm:max-w-sm">
               <span className="sr-only">{t("admin.search")}</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -112,7 +141,10 @@ export default function AdminListPage<T extends { id: string }>({
               />
             </label>
             {filters.map((filter) => (
-              <label key={filter.key} className="grid gap-1 text-xs text-muted-foreground">
+              <label
+                key={filter.key}
+                className="grid gap-1 text-xs text-muted-foreground"
+              >
                 <span>{t(filter.labelKey)}</span>
                 {filter.type === "text" ? (
                   <input
@@ -147,22 +179,28 @@ export default function AdminListPage<T extends { id: string }>({
                 )}
               </label>
             ))}
-            <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
-              <input
-                type="checkbox"
-                checked={includeDeletedDraft}
-                onChange={(event) => setIncludeDeletedDraft(event.target.checked)}
-                className="h-4 w-4 accent-primary"
-              />
-              {t("admin.filters.includeDeleted")}
-            </label>
+            {showIncludeDeleted ? (
+              <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={includeDeletedDraft}
+                  onChange={(event) =>
+                    setIncludeDeletedDraft(event.target.checked)
+                  }
+                  className="h-4 w-4 accent-primary"
+                />
+                {t("admin.filters.includeDeleted")}
+              </label>
+            ) : null}
             <button
               type="submit"
               className="min-h-11 shrink-0 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
             >
               {t("admin.search")}
             </button>
-            {(search || Object.keys(activeFilters).length > 0 || includeDeleted) && (
+            {(search ||
+              Object.keys(activeFilters).length > 0 ||
+              includeDeleted) && (
               <button
                 type="button"
                 onClick={resetFilters}
@@ -172,7 +210,10 @@ export default function AdminListPage<T extends { id: string }>({
               </button>
             )}
           </form>
-          <p aria-live="polite" className="text-sm tabular-nums text-muted-foreground">
+          <p
+            aria-live="polite"
+            className="text-sm tabular-nums text-muted-foreground"
+          >
             {t("admin.total", { count: query.data?.totalCount ?? 0 })}
           </p>
         </div>
@@ -195,7 +236,11 @@ export default function AdminListPage<T extends { id: string }>({
             <thead className="bg-secondary/50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 {columns.map((column) => (
-                  <th key={column.key} scope="col" className={`px-4 py-3 font-medium ${column.className ?? ""}`}>
+                  <th
+                    key={column.key}
+                    scope="col"
+                    className={`px-4 py-3 font-medium ${column.className ?? ""}`}
+                  >
                     {t(column.labelKey)}
                   </th>
                 ))}
@@ -211,9 +256,15 @@ export default function AdminListPage<T extends { id: string }>({
                     </tr>
                   ))
                 : query.data?.nodes.map((row) => (
-                    <tr key={row.id} className="align-top hover:bg-secondary/30">
+                    <tr
+                      key={row.id}
+                      className="align-top hover:bg-secondary/30"
+                    >
                       {columns.map((column) => (
-                        <td key={column.key} className={`px-4 py-3 ${column.className ?? ""}`}>
+                        <td
+                          key={column.key}
+                          className={`px-4 py-3 ${column.className ?? ""}`}
+                        >
                           {column.render(row)}
                         </td>
                       ))}
@@ -242,7 +293,11 @@ export default function AdminListPage<T extends { id: string }>({
           <button
             type="button"
             aria-label={t("admin.nextPage")}
-            disabled={!query.data?.pageInfo.hasNextPage || !query.data?.pageInfo.endCursor || query.isFetching}
+            disabled={
+              !query.data?.pageInfo.hasNextPage ||
+              !query.data?.pageInfo.endCursor ||
+              query.isFetching
+            }
             onClick={() => {
               const next = query.data?.pageInfo.endCursor;
               if (next) setCursors((current) => [...current, next]);

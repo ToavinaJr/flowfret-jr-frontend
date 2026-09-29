@@ -654,6 +654,53 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "viewReports": "View reports",
+    "resourceNavigation": "Administration resource navigation",
+    "resources": {
+      "transcriptions": {
+        "tab": "Lyrics",
+        "title": "Music transcriptions",
+        "description": "Review the processing state of lyric transcriptions."
+      },
+      "uploads": {
+        "tab": "Uploads",
+        "title": "Uploaded files",
+        "description": "Monitor uploaded files, storage state, and pending cleanup."
+      },
+      "chords": {
+        "tab": "Chord transcriptions",
+        "title": "Chord transcriptions",
+        "description": "Review saved chord analyses by provider."
+      },
+      "playlists": {
+        "tab": "Playlists",
+        "title": "Member playlists",
+        "description": "Review playlists created by members."
+      },
+      "catalog": {
+        "tab": "Catalog",
+        "title": "Music catalog",
+        "description": "Review catalog tracks and their use in playlists."
+      },
+      "history": {
+        "tab": "Listening history",
+        "title": "Listening history",
+        "description": "Review recorded listening by member and provider."
+      },
+      "cleanupPending": "Cleanup pending"
+    },
+    "resourceColumns": {
+      "file": "File",
+      "fileSize": "Size",
+      "source": "Source",
+      "duration": "Duration",
+      "cues": "Chord cues",
+      "engine": "Engine version",
+      "album": "Album",
+      "genre": "Genre",
+      "playlistCount": "Linked playlists",
+      "playCount": "Play count",
+      "lastPlayedAt": "Last played"
+    },
     "filters": {
       "all": "All",
       "includeDeleted": "Include deleted items",
@@ -680,7 +727,13 @@
       "FAILED": "Failed",
       "AUDIUS": "Audius",
       "SPOTIFY": "Spotify",
-      "YOUTUBE": "YouTube"
+      "YOUTUBE": "YouTube",
+      "UPLOADED": "Uploaded",
+      "AVAILABLE": "Available",
+      "POST": "Post",
+      "PROFILE": "Profile",
+      "MESSAGE": "Message",
+      "OTHER": "Other"
     },
     "userDetail": {
       "back": "Back to members",
@@ -742,9 +795,15 @@
       }
     },
     "screens": {
-      "users": { "description": "Review members, their roles, and account status." },
-      "content": { "description": "Review posts before applying moderation actions." },
-      "media": { "description": "Monitor transcriptions and their processing status." },
+      "users": {
+        "description": "Review members, their roles, and account status."
+      },
+      "content": {
+        "description": "Review posts before applying moderation actions."
+      },
+      "media": {
+        "description": "Monitor transcriptions and their processing status."
+      },
       "music": { "description": "Review playlists created by members." },
       "audit": { "description": "Review the timeline of sensitive actions." }
     },

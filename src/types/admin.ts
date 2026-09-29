@@ -75,6 +75,7 @@ export interface AdminListInput {
   action?: string;
   entityType?: string;
   reportStatus?: string;
+  uploadStatus?: string;
 }
 
 export interface AdminPostReport {
@@ -148,6 +149,34 @@ export interface AdminTranscription {
   isDeleted: boolean;
 }
 
+export interface AdminUpload {
+  id: string;
+  userId: string;
+  username: string;
+  fileName: string;
+  fileType: string;
+  fileSize: string;
+  status: string;
+  sourceType: string;
+  cleanupPending: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+}
+
+export interface AdminChordTranscription {
+  id: string;
+  provider: string;
+  providerTrackId: string;
+  title: string | null;
+  artist: string | null;
+  duration: number;
+  cueCount: number;
+  engineVersion: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AdminPlaylist {
   id: string;
   userId: string;
@@ -158,6 +187,32 @@ export interface AdminPlaylist {
   itemCount: number;
   createdAt: string;
   isDeleted: boolean;
+}
+
+export interface AdminCatalogTrack {
+  id: string;
+  provider: string;
+  providerTrackId: string;
+  title: string;
+  artists: unknown;
+  album: string | null;
+  genre: string | null;
+  durationMs: number;
+  playlistCount: number;
+  createdAt: string;
+}
+
+export interface AdminListeningHistory {
+  id: string;
+  userId: string;
+  username: string;
+  provider: string;
+  providerTrackId: string;
+  title: string;
+  artists: unknown;
+  playCount: number;
+  lastPlayedAt: string;
+  createdAt: string;
 }
 
 export interface AdminAuditLog {

@@ -654,6 +654,53 @@
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
     "viewReports": "Voir les signalements",
+    "resourceNavigation": "Navigation des ressources administratives",
+    "resources": {
+      "transcriptions": {
+        "tab": "Paroles",
+        "title": "Transcriptions musicales",
+        "description": "Consultez le traitement des transcriptions de paroles."
+      },
+      "uploads": {
+        "tab": "Fichiers téléversés",
+        "title": "Fichiers téléversés",
+        "description": "Suivez les fichiers déposés, leur stockage et les nettoyages en attente."
+      },
+      "chords": {
+        "tab": "Transcriptions d’accords",
+        "title": "Transcriptions d’accords",
+        "description": "Consultez les analyses d’accords enregistrées par fournisseur."
+      },
+      "playlists": {
+        "tab": "Playlists",
+        "title": "Playlists des membres",
+        "description": "Consultez les playlists créées par les membres."
+      },
+      "catalog": {
+        "tab": "Catalogue",
+        "title": "Catalogue musical",
+        "description": "Consultez les morceaux du catalogue et leur utilisation dans les playlists."
+      },
+      "history": {
+        "tab": "Écoutes",
+        "title": "Historique d’écoute",
+        "description": "Consultez les écoutes enregistrées par membre et fournisseur."
+      },
+      "cleanupPending": "Nettoyage en attente"
+    },
+    "resourceColumns": {
+      "file": "Fichier",
+      "fileSize": "Taille",
+      "source": "Origine",
+      "duration": "Durée",
+      "cues": "Repères d’accords",
+      "engine": "Version du moteur",
+      "album": "Album",
+      "genre": "Genre",
+      "playlistCount": "Playlists liées",
+      "playCount": "Nombre d’écoutes",
+      "lastPlayedAt": "Dernière écoute"
+    },
     "filters": {
       "all": "Tous",
       "includeDeleted": "Inclure les éléments supprimés",
@@ -680,7 +727,13 @@
       "FAILED": "Échec",
       "AUDIUS": "Audius",
       "SPOTIFY": "Spotify",
-      "YOUTUBE": "YouTube"
+      "YOUTUBE": "YouTube",
+      "UPLOADED": "Téléversé",
+      "AVAILABLE": "Disponible",
+      "POST": "Publication",
+      "PROFILE": "Profil",
+      "MESSAGE": "Message",
+      "OTHER": "Autre"
     },
     "userDetail": {
       "back": "Retour aux membres",
@@ -742,11 +795,21 @@
       }
     },
     "screens": {
-      "users": { "description": "Consultez les membres, leurs rôles et l’état de leurs comptes." },
-      "content": { "description": "Consultez les publications avant les opérations de modération." },
-      "media": { "description": "Suivez les transcriptions et leur état de traitement." },
-      "music": { "description": "Consultez les playlists créées par les membres." },
-      "audit": { "description": "Contrôlez la chronologie des actions sensibles." }
+      "users": {
+        "description": "Consultez les membres, leurs rôles et l’état de leurs comptes."
+      },
+      "content": {
+        "description": "Consultez les publications avant les opérations de modération."
+      },
+      "media": {
+        "description": "Suivez les transcriptions et leur état de traitement."
+      },
+      "music": {
+        "description": "Consultez les playlists créées par les membres."
+      },
+      "audit": {
+        "description": "Contrôlez la chronologie des actions sensibles."
+      }
     },
     "columns": {
       "user": "Membre",

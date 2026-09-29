@@ -53,6 +53,30 @@ export const ADMIN_MEDIA_FILTERS: AdminFilter[] = [
   },
 ];
 
+export const ADMIN_UPLOAD_FILTERS: AdminFilter[] = [
+  {
+    key: "uploadStatus",
+    labelKey: "admin.filters.status",
+    options: ["UPLOADED", "PROCESSING", "AVAILABLE", "FAILED", "DELETED"].map(
+      (value) => ({
+        value,
+        labelKey: `admin.values.${value}`,
+      }),
+    ),
+  },
+];
+
+export const ADMIN_PROVIDER_FILTERS: AdminFilter[] = [
+  {
+    key: "provider",
+    labelKey: "admin.filters.provider",
+    options: ["AUDIUS", "SPOTIFY", "YOUTUBE"].map((value) => ({
+      value,
+      labelKey: `admin.values.${value}`,
+    })),
+  },
+];
+
 export const ADMIN_AUDIT_FILTERS: AdminFilter[] = [
   { key: "action", labelKey: "admin.filters.action", type: "text" },
   { key: "entityType", labelKey: "admin.filters.entityType", type: "text" },

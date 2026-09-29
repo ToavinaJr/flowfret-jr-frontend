@@ -3,17 +3,22 @@ import type {
   AdminAuditLog,
   AdminBackendStatus,
   AdminConnection,
+  AdminCatalogTrack,
+  AdminChordTranscription,
   AdminDashboardStatistics,
+  AdminListeningHistory,
   AdminListInput,
   AdminPlaylist,
   AdminPostReport,
   AdminPost,
   AdminTranscription,
+  AdminUpload,
   AdminUser,
   AdminUserSecurityResult,
 } from "@/types/admin";
 
-const PAGE_INFO_FIELDS = "pageInfo { hasNextPage hasPreviousPage endCursor } totalCount";
+const PAGE_INFO_FIELDS =
+  "pageInfo { hasNextPage hasPreviousPage endCursor } totalCount";
 
 export async function fetchAdminBackendStatus(): Promise<AdminBackendStatus> {
   const result = await graphqlRequest<{
@@ -237,6 +242,40 @@ export async function fetchAdminTranscriptions(
   return result.adminTranscriptions;
 }
 
+export async function fetchAdminUploads(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminUpload>> {
+  const result = await graphqlRequest<{
+    adminUploads: AdminConnection<AdminUpload>;
+  }>({
+    query: `query AdminUploads($input: AdminMediaInput) {
+      adminUploads(input: $input) {
+        nodes { id userId username fileName fileType fileSize status sourceType cleanupPending createdAt updatedAt isDeleted }
+        ${PAGE_INFO_FIELDS}
+      }
+    }`,
+    variables: { input },
+  });
+  return result.adminUploads;
+}
+
+export async function fetchAdminChordTranscriptions(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminChordTranscription>> {
+  const result = await graphqlRequest<{
+    adminChordTranscriptions: AdminConnection<AdminChordTranscription>;
+  }>({
+    query: `query AdminChordTranscriptions($input: AdminMediaInput) {
+      adminChordTranscriptions(input: $input) {
+        nodes { id provider providerTrackId title artist duration cueCount engineVersion createdAt updatedAt }
+        ${PAGE_INFO_FIELDS}
+      }
+    }`,
+    variables: { input },
+  });
+  return result.adminChordTranscriptions;
+}
+
 export async function fetchAdminPlaylists(
   input: AdminListInput,
 ): Promise<AdminConnection<AdminPlaylist>> {
@@ -254,6 +293,40 @@ export async function fetchAdminPlaylists(
     variables: { input },
   });
   return result.adminPlaylists;
+}
+
+export async function fetchAdminCatalogTracks(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminCatalogTrack>> {
+  const result = await graphqlRequest<{
+    adminCatalogTracks: AdminConnection<AdminCatalogTrack>;
+  }>({
+    query: `query AdminCatalogTracks($input: AdminMusicInput) {
+      adminCatalogTracks(input: $input) {
+        nodes { id provider providerTrackId title artists album genre durationMs playlistCount createdAt }
+        ${PAGE_INFO_FIELDS}
+      }
+    }`,
+    variables: { input },
+  });
+  return result.adminCatalogTracks;
+}
+
+export async function fetchAdminListeningHistory(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminListeningHistory>> {
+  const result = await graphqlRequest<{
+    adminListeningHistory: AdminConnection<AdminListeningHistory>;
+  }>({
+    query: `query AdminListeningHistory($input: AdminMusicInput) {
+      adminListeningHistory(input: $input) {
+        nodes { id userId username provider providerTrackId title artists playCount lastPlayedAt createdAt }
+        ${PAGE_INFO_FIELDS}
+      }
+    }`,
+    variables: { input },
+  });
+  return result.adminListeningHistory;
 }
 
 export async function fetchAdminAuditLogs(
