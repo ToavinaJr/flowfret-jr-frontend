@@ -3,6 +3,7 @@ import { fetchAdminAuditLogs } from "@/services/adminApi";
 import type { AdminAuditLog } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
 import { formatAdminDate } from "./adminFormat";
+import { ADMIN_AUDIT_FILTERS } from "./adminFilters";
 
 export default function AdminAuditPage() {
   const { i18n } = useTranslation();
@@ -12,5 +13,5 @@ export default function AdminAuditPage() {
     { key: "entity", labelKey: "admin.columns.entity", render: (row) => <div><p>{row.entityType}</p><p className="max-w-52 truncate text-xs text-muted-foreground">{row.entityId || "—"}</p></div> },
     { key: "createdAt", labelKey: "admin.columns.createdAt", render: (row) => formatAdminDate(row.createdAt, i18n.language) },
   ];
-  return <AdminListPage section="audit" queryKey="audit" fetchPage={fetchAdminAuditLogs} columns={columns} />;
+  return <AdminListPage section="audit" queryKey="audit" fetchPage={fetchAdminAuditLogs} columns={columns} filters={ADMIN_AUDIT_FILTERS} />;
 }

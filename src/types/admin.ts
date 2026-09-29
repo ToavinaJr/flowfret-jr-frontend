@@ -66,6 +66,14 @@ export interface AdminListInput {
   first?: number;
   after?: string;
   search?: string;
+  includeDeleted?: boolean;
+  status?: string;
+  role?: string;
+  postStatus?: string;
+  transcriptionStatus?: string;
+  provider?: string;
+  action?: string;
+  entityType?: string;
 }
 
 export interface AdminUser {

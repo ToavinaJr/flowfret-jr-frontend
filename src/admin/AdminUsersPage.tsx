@@ -3,6 +3,7 @@ import { fetchAdminUsers } from "@/services/adminApi";
 import type { AdminUser } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
 import { formatAdminDate } from "./adminFormat";
+import { ADMIN_USER_FILTERS } from "./adminFilters";
 
 export default function AdminUsersPage() {
   const { i18n } = useTranslation();
@@ -22,5 +23,5 @@ export default function AdminUsersPage() {
     { key: "createdAt", labelKey: "admin.columns.createdAt", render: (row) => formatAdminDate(row.createdAt, i18n.language) },
     { key: "lastLogin", labelKey: "admin.columns.lastLogin", render: (row) => row.lastLoginAt ? formatAdminDate(row.lastLoginAt, i18n.language) : "—" },
   ];
-  return <AdminListPage section="users" queryKey="users" fetchPage={fetchAdminUsers} columns={columns} />;
+  return <AdminListPage section="users" queryKey="users" fetchPage={fetchAdminUsers} columns={columns} filters={ADMIN_USER_FILTERS} />;
 }

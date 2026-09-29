@@ -3,6 +3,7 @@ import { fetchAdminTranscriptions } from "@/services/adminApi";
 import type { AdminTranscription } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
 import { formatAdminDate } from "./adminFormat";
+import { ADMIN_MEDIA_FILTERS } from "./adminFilters";
 
 export default function AdminMediaPage() {
   const { i18n } = useTranslation();
@@ -14,5 +15,5 @@ export default function AdminMediaPage() {
     { key: "attempts", labelKey: "admin.columns.attempts", render: (row) => row.attempts },
     { key: "createdAt", labelKey: "admin.columns.createdAt", render: (row) => formatAdminDate(row.createdAt, i18n.language) },
   ];
-  return <AdminListPage section="media" queryKey="transcriptions" fetchPage={fetchAdminTranscriptions} columns={columns} />;
+  return <AdminListPage section="media" queryKey="transcriptions" fetchPage={fetchAdminTranscriptions} columns={columns} filters={ADMIN_MEDIA_FILTERS} />;
 }

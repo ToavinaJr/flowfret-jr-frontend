@@ -11,12 +11,20 @@ export interface AdminColumn<T> {
   render: (row: T) => ReactNode;
 }
 
+export interface AdminFilter {
+  key: "status" | "role" | "postStatus" | "transcriptionStatus" | "provider" | "action" | "entityType";
+  labelKey: string;
+  type?: "select" | "text";
+  options?: Array<{ value: string; labelKey: string }>;
+}
+
 interface AdminListPageProps<T extends { id: string }> {
   section: "users" | "content" | "media" | "music" | "audit";
   queryKey: string;
   fetchPage: (input: AdminListInput) => Promise<AdminConnection<T>>;
   columns: AdminColumn<T>[];
   action?: ReactNode;
+  filters?: AdminFilter[];
 }
 
 const PAGE_SIZE = 25;
@@ -27,10 +35,15 @@ export default function AdminListPage<T extends { id: string }>({
   fetchPage,
   columns,
   action,
+  filters = [],
 }: AdminListPageProps<T>) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
+  const [draftFilters, setDraftFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [includeDeletedDraft, setIncludeDeletedDraft] = useState(false);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
   const [cursors, setCursors] = useState<Array<string | undefined>>([
     undefined,
   ]);
@@ -42,6 +55,8 @@ export default function AdminListPage<T extends { id: string }>({
         first: PAGE_SIZE,
         ...(cursor ? { after: cursor } : {}),
         ...(search ? { search } : {}),
+        ...activeFilters,
+        ...(includeDeleted ? { includeDeleted: true } : {}),
       }),
     placeholderData: (previous) => previous,
   });
@@ -49,6 +64,22 @@ export default function AdminListPage<T extends { id: string }>({
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSearch(draft.trim());
+    setActiveFilters(
+      Object.fromEntries(
+        Object.entries(draftFilters).filter(([, value]) => value !== ""),
+      ),
+    );
+    setIncludeDeleted(includeDeletedDraft);
+    setCursors([undefined]);
+  }
+
+  function resetFilters() {
+    setDraft("");
+    setSearch("");
+    setDraftFilters({});
+    setActiveFilters({});
+    setIncludeDeletedDraft(false);
+    setIncludeDeleted(false);
     setCursors([undefined]);
   }
 
@@ -68,7 +99,7 @@ export default function AdminListPage<T extends { id: string }>({
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-          <form onSubmit={submitSearch} className="flex min-w-0 flex-1 gap-2">
+          <form onSubmit={submitSearch} className="flex min-w-0 flex-1 flex-wrap items-end gap-2">
             <label className="relative min-w-0 flex-1 sm:max-w-sm">
               <span className="sr-only">{t("admin.search")}</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -80,14 +111,68 @@ export default function AdminListPage<T extends { id: string }>({
                 className="min-h-11 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
             </label>
+            {filters.map((filter) => (
+              <label key={filter.key} className="grid gap-1 text-xs text-muted-foreground">
+                <span>{t(filter.labelKey)}</span>
+                {filter.type === "text" ? (
+                  <input
+                    value={draftFilters[filter.key] ?? ""}
+                    onChange={(event) =>
+                      setDraftFilters((current) => ({
+                        ...current,
+                        [filter.key]: event.target.value,
+                      }))
+                    }
+                    placeholder={t("admin.filters.value")}
+                    className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                  />
+                ) : (
+                  <select
+                    value={draftFilters[filter.key] ?? ""}
+                    onChange={(event) =>
+                      setDraftFilters((current) => ({
+                        ...current,
+                        [filter.key]: event.target.value,
+                      }))
+                    }
+                    className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">{t("admin.filters.all")}</option>
+                    {(filter.options ?? []).map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(option.labelKey)}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </label>
+            ))}
+            <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
+              <input
+                type="checkbox"
+                checked={includeDeletedDraft}
+                onChange={(event) => setIncludeDeletedDraft(event.target.checked)}
+                className="h-4 w-4 accent-primary"
+              />
+              {t("admin.filters.includeDeleted")}
+            </label>
             <button
               type="submit"
               className="min-h-11 shrink-0 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
             >
               {t("admin.search")}
             </button>
+            {(search || Object.keys(activeFilters).length > 0 || includeDeleted) && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="min-h-11 rounded-lg px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                {t("admin.filters.reset")}
+              </button>
+            )}
           </form>
-          <p className="text-sm tabular-nums text-muted-foreground">
+          <p aria-live="polite" className="text-sm tabular-nums text-muted-foreground">
             {t("admin.total", { count: query.data?.totalCount ?? 0 })}
           </p>
         </div>
@@ -173,9 +258,10 @@ export default function AdminListPage<T extends { id: string }>({
 }
 
 export function AdminStatus({ value }: { value: string }) {
+  const { t } = useTranslation();
   return (
     <span className="inline-flex rounded-full bg-secondary px-2 py-1 text-xs font-medium text-foreground">
-      {value}
+      {t(`admin.values.${value}`, { defaultValue: value })}
     </span>
   );
 }

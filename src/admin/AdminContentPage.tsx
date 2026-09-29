@@ -4,6 +4,7 @@ import { fetchAdminPosts } from "@/services/adminApi";
 import type { AdminPost } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
 import { formatAdminDate, truncateAdminText } from "./adminFormat";
+import { ADMIN_CONTENT_FILTERS } from "./adminFilters";
 
 export default function AdminContentPage() {
   const { i18n, t } = useTranslation();
@@ -15,5 +16,5 @@ export default function AdminContentPage() {
     { key: "engagement", labelKey: "admin.columns.engagement", render: (row) => `${row.likeCount} / ${row.commentCount}` },
     { key: "createdAt", labelKey: "admin.columns.createdAt", render: (row) => formatAdminDate(row.createdAt, i18n.language) },
   ];
-  return <AdminListPage section="content" queryKey="posts" fetchPage={fetchAdminPosts} columns={columns} action={<Link to="/admin/content/reports" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-secondary px-4 text-sm font-medium hover:text-primary">{t("admin.viewReports")}</Link>} />;
+  return <AdminListPage section="content" queryKey="posts" fetchPage={fetchAdminPosts} columns={columns} filters={ADMIN_CONTENT_FILTERS} action={<Link to="/admin/content/reports" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-secondary px-4 text-sm font-medium hover:text-primary">{t("admin.viewReports")}</Link>} />;
 }
