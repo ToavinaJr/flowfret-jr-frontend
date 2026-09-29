@@ -30,6 +30,7 @@ const PostPage = lazy(() => import("@/pages/PostPage"));
 const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
 const PlaylistsPage = lazy(() => import("@/pages/PlaylistsPage"));
 const TranscriptionsPage = lazy(() => import("@/pages/TranscriptionsPage"));
+const TeachingPage = lazy(() => import("@/pages/TeachingPage"));
 const AdminRoute = lazy(() => import("@/admin/AdminRoute"));
 const AdminLayout = lazy(() => import("@/admin/AdminLayout"));
 const AdminOverviewPage = lazy(() => import("@/admin/AdminOverviewPage"));
@@ -80,6 +81,7 @@ const App = () => {
                           path="/transcriptions"
                           element={<TranscriptionsPage />}
                         />
+                        <Route path="/teaching" element={<TeachingPage />} />
                         <Route path="/metronome" element={<MetronomePage />} />
                         <Route path="/scales" element={<ScalesPage />} />
                         <Route path="/menu" element={<MenuPage />} />
