@@ -5,13 +5,13 @@ import type { FeedPost } from "@/types/feed";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-export function useFeed() {
+export function useFeed(searchQuery = "") {
   const { user, status } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const postsQuery = useInfiniteQuery<FeedPost[]>({
-    queryKey: ["feed-posts"],
-    queryFn: ({ pageParam }) => fetchFeedPosts(typeof pageParam === "string" ? pageParam : undefined, 20),
+    queryKey: ["feed-posts", searchQuery],
+    queryFn: ({ pageParam }) => fetchFeedPosts(typeof pageParam === "string" ? pageParam : undefined, 20, searchQuery),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.length === 20 ? lastPage[lastPage.length - 1]?.id : undefined,
     enabled: status === "authenticated",

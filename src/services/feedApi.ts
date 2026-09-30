@@ -1,8 +1,9 @@
 import type { CreateCommentInput, CreatePostInput, FeedComment, FeedPost } from "@/types/feed";
 import { graphqlRequest } from "@/services/graphqlClient";
 
-export async function fetchFeedPosts(after?: string, take = 20): Promise<FeedPost[]> {
-  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!) { posts(after: $after, take: $take) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), take } });
+export async function fetchFeedPosts(after?: string, take = 20, query?: string): Promise<FeedPost[]> {
+  const normalizedQuery = query?.trim();
+  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!, $query: String) { posts(after: $after, take: $take, query: $query) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), ...(normalizedQuery ? { query: normalizedQuery } : {}), take } });
   return result.posts;
 }
 
