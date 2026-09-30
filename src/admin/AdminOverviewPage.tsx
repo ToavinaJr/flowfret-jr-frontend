@@ -69,16 +69,16 @@ export default function AdminOverviewPage() {
 
   const distribution = (title: string, entries: AdminCategoryStatistic[] | undefined, loading: boolean, failed: boolean) => {
     const max = Math.max(1, ...(entries ?? []).map(({ count }) => count));
-    return <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+    return <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5">
       <h3 className="font-semibold">{title}</h3>
       {loading ? <p className="mt-4 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : failed ? <p className="mt-4 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : entries?.length ? <ul className="mt-4 space-y-3">{entries.map((entry) => <li key={entry.key}>
-        <div className="mb-1 flex justify-between gap-3 text-sm"><span className="truncate">{t(`admin.values.${entry.key}`, { defaultValue: entry.key })}</span><span className="tabular-nums">{entry.count.toLocaleString(i18n.language)}</span></div>
-        <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(1, entry.count / max * 100)}%` }} /></div>
+        <div className="mb-1 flex min-w-0 justify-between gap-3 text-sm"><span className="min-w-0 flex-1 truncate">{t(`admin.values.${entry.key}`, { defaultValue: entry.key })}</span><span className="shrink-0 tabular-nums">{entry.count.toLocaleString(i18n.language)}</span></div>
+        <div className="h-2 max-w-full overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(1, entry.count / max * 100)}%` }} /></div>
       </li>)}</ul> : <p className="mt-4 text-sm text-muted-foreground">{t("admin.overview.noDistribution")}</p>}
     </section>;
   };
 
-  return <section aria-labelledby="admin-overview-title">
+  return <section aria-labelledby="admin-overview-title" className="min-w-0">
     <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 id="admin-overview-title" className="text-2xl font-semibold sm:text-3xl">{t("admin.overview.title")}</h1>
@@ -115,8 +115,8 @@ export default function AdminOverviewPage() {
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{periodCards.map(([key, value]) => <div key={key} className="rounded-lg bg-secondary/50 p-3"><p className="text-sm text-muted-foreground">{t(`admin.metrics.${key}`)}</p><p className="mt-1 text-xl font-semibold tabular-nums">{number(value)}</p></div>)}</div>
     </section>
 
-    <div className="mt-8 grid gap-4 xl:grid-cols-3">
-      <section className="rounded-xl border border-border bg-card p-4 sm:col-span-2 sm:p-5">
+    <div className="mt-8 grid min-w-0 gap-4 xl:grid-cols-3">
+      <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card p-4 xl:col-span-2 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="font-semibold">{t("admin.overview.trendTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("admin.overview.trendDescription", { count: days })}</p></div>
           <label className="sr-only" htmlFor="admin-trend-series">{t("admin.overview.series")}</label><select id="admin-trend-series" className="min-h-11 rounded-lg border border-border bg-card px-3 text-sm" value={series} onChange={(event) => setSeries(event.target.value as SeriesKey)}>{seriesKeys.map((key) => <option key={key} value={key}>{t(`admin.overview.seriesNames.${key}`)}</option>)}</select></div>
         {statistics.isLoading ? <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : statistics.isError ? <p className="mt-6 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : data?.daily.length ? <div className="mt-6 overflow-x-auto pb-2">
@@ -131,9 +131,9 @@ export default function AdminOverviewPage() {
     </div>
 
     <div className="mt-8"><h2 className="text-lg font-semibold">{t("admin.overview.sectionsTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("admin.overview.sectionsDescription")}</p>
-      <ol className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{ADMIN_NAV_ITEMS.slice(1).map((item, index) => <li key={item.path}><Link to={item.path} className="group flex min-h-20 items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">{index + 1}</span><item.icon className="h-5 w-5 shrink-0 text-muted-foreground" /><span className="min-w-0 flex-1 font-medium">{t(item.translationKey)}</span><ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-      </Link></li>)}</ol>
+      <ul className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{ADMIN_NAV_ITEMS.slice(1).map((item) => <li key={item.path}><Link to={item.path} className="group flex min-h-20 min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        <item.icon className="h-5 w-5 shrink-0 text-muted-foreground" /><span className="min-w-0 flex-1 truncate font-medium">{t(item.translationKey)}</span><ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </Link></li>)}</ul>
     </div>
   </section>;
 }
