@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { graphqlRequest } from "@/services/graphqlClient";
 
@@ -13,10 +14,11 @@ type TeacherApplication = {
   experienceYears: number | null;
   specialties: string[];
   languages: string[];
+  storageQuotaBytes: string;
 };
 
 const fields =
-  "id userId status headline biography experienceYears specialties languages";
+  "id userId status headline biography experienceYears specialties languages storageQuotaBytes";
 
 export default function AdminTeachersPage() {
   const [applications, setApplications] = useState<TeacherApplication[]>([]);
@@ -61,6 +63,26 @@ export default function AdminTeachersPage() {
     } finally {
       setBusyId(null);
     }
+  }
+
+  async function setStorageQuota(application: TeacherApplication, event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = Number(new FormData(event.currentTarget).get("quotaMiB"));
+    if (!Number.isFinite(value) || value < 50 || value > 1024 * 1024) {
+      toast.error("Le quota doit être compris entre 50 Mio et 1 Tio.");
+      return;
+    }
+    setBusyId(application.id);
+    try {
+      await graphqlRequest({
+        query: `mutation SetInstructorStorageQuota($id: String!, $storageQuotaBytes: String!) { setInstructorStorageQuota(id: $id, storageQuotaBytes: $storageQuotaBytes) { id storageQuotaBytes } }`,
+        variables: { id: application.id, storageQuotaBytes: String(Math.round(value * 1024 * 1024)) },
+      });
+      await load();
+      toast.success("Quota de supports mis à jour.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Modification impossible.");
+    } finally { setBusyId(null); }
   }
 
   return (
@@ -141,6 +163,12 @@ export default function AdminTeachersPage() {
                   Langues : {application.languages.join(", ")}
                 </p>
               )}
+              <form onSubmit={(event) => void setStorageQuota(application, event)} className="mt-4 flex flex-wrap items-end gap-2 border-t border-border pt-3">
+                <label className="text-sm">Quota supports (Mio)
+                  <Input name="quotaMiB" type="number" min={50} max={1024 * 1024} step="1" required defaultValue={Math.round(Number(application.storageQuotaBytes) / (1024 * 1024)) || 512} className="mt-1 w-40" />
+                </label>
+                <Button size="sm" variant="outline" disabled={busyId === application.id}>Enregistrer le quota</Button>
+              </form>
             </article>
           ))}
         </div>

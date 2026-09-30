@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { BookOpen, GraduationCap, Plus } from "lucide-react";
+import { BookOpen, Download, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import {
   archiveTeachingCourse,
+  deleteTeachingMaterial,
+  downloadTeachingMaterial,
   cancelTeachingLesson,
   completeTeachingLesson,
   createTeachingCourse,
   fetchTeachingLessons,
+  fetchTeachingMaterialsForCourses,
   fetchTeachingWorkspace,
   markTeachingLessonAttendance,
   requestTeachingEnrollment,
@@ -19,10 +22,12 @@ import {
   respondToTeachingInvitation,
   saveInstructorProfile,
   updateTeachingCourse,
+  uploadTeachingMaterial,
   type InstructorProfile,
   type TeachingCourse,
   type TeachingLesson,
   type TeachingLessonInput,
+  type TeachingMaterial,
 } from "@/services/teachingApi";
 
 const cardClass = "rounded-xl border border-border bg-card p-4 sm:p-5";
@@ -37,6 +42,7 @@ export default function TeachingPage() {
   >([]);
   const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
   const [lessons, setLessons] = useState<TeachingLesson[]>([]);
+  const [materials, setMaterials] = useState<Record<string, TeachingMaterial[]>>({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [headline, setHeadline] = useState("");
@@ -65,12 +71,20 @@ export default function TeachingPage() {
       from.toISOString(),
       to.toISOString(),
     );
+    const activeStudentCourses = data.myEnrolledTeachingCourses.filter((course) =>
+      data.myTeachingEnrollments.some((enrollment) => enrollment.courseId === course.id && enrollment.status === "ACTIVE"),
+    );
+    const coursesForMaterials = [...new Map([...data.myTeachingCourses, ...activeStudentCourses].map((course) => [course.id, course])).values()];
+    const courseMaterials = await fetchTeachingMaterialsForCourses(coursesForMaterials.map((course) => course.id));
+    const materialMap: Record<string, TeachingMaterial[]> = {};
+    for (const course of coursesForMaterials) materialMap[course.id] = courseMaterials.filter((material) => material.courseId === course.id);
     setProfile(data.myInstructorProfile);
     setMyCourses(data.myTeachingCourses);
     setEnrolled(data.myEnrolledTeachingCourses);
     setEnrollments(data.myTeachingEnrollments);
     setCatalog(data.publishedTeachingCourses);
     setLessons(calendar);
+    setMaterials(materialMap);
     if (!lessonCourseId) {
       const firstPublished = data.myTeachingCourses.find(
         (course) => course.status === "PUBLISHED",
@@ -314,12 +328,46 @@ export default function TeachingPage() {
     }
   }
 
+  async function addMaterial(courseId: string, event: React.FormEvent<HTMLFormElement>, lessonId?: string) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const file = form.get("file");
+    if (!(file instanceof File) || !file.size) return;
+    setBusy(true);
+    try {
+      await uploadTeachingMaterial(courseId, file, String(form.get("title") || file.name), lessonId);
+      toast.success("Document pédagogique ajouté.");
+      await refresh();
+      formElement.reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Dépôt impossible.");
+    } finally { setBusy(false); }
+  }
+
+  async function removeMaterial(material: TeachingMaterial) {
+    setBusy(true);
+    try { await deleteTeachingMaterial(material.id); toast.success("Document supprimé."); await refresh(); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Suppression impossible."); }
+    finally { setBusy(false); }
+  }
+
+  async function getMaterial(material: TeachingMaterial) {
+    try { await downloadTeachingMaterial(material); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Téléchargement impossible."); }
+  }
+
   const myEnrollmentIds = new Set(enrolled.map((course) => course.id));
+  const activeEnrolled = enrolled.filter((course) =>
+    enrollments.some((enrollment) => enrollment.courseId === course.id && enrollment.status === "ACTIVE"),
+  );
   const selectedLessonCourse = () =>
     myCourses.find((course) => course.id === lessonCourseId);
   const visibleCatalog = catalog.filter(
     (course) => course.instructorId !== profile?.id,
   );
+  const courseLevelMaterials = (courseId: string) =>
+    (materials[courseId] ?? []).filter((material) => material.lessonId === null);
 
   return (
     <div className={PAGE_SHELL}>
@@ -544,6 +592,7 @@ export default function TeachingPage() {
               <div className="space-y-3">
                 {lessons.map((lesson) => {
                   const isTeacher = lesson.createdById === user?.id;
+                  const lessonMaterials = (materials[lesson.courseId] ?? []).filter((material) => material.lessonId === lesson.id || material.lessonId === null);
                   return (
                     <article key={lesson.id} className={cardClass}>
                       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -618,6 +667,11 @@ export default function TeachingPage() {
                             )}
                           </div>
                         )}
+                      </div>
+                      <div className="mt-4 border-t border-border pt-3">
+                        <p className="mb-2 text-sm font-medium">Supports de cette séance</p>
+                        {lessonMaterials.length === 0 ? <p className="text-xs text-muted-foreground">Aucun support spécifique à cette séance.</p> : <ul className="space-y-2">{lessonMaterials.map((material) => <li key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} · {formatFileSize(material.fileSize)}</span><span className="flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Télécharger</Button>{isTeacher && <Button type="button" size="sm" variant="ghost" disabled={busy} aria-label={`Supprimer ${material.title}`} onClick={() => void removeMaterial(material)}><Trash2 className="h-4 w-4"/></Button>}</span></li>)}</ul>}
+                        {isTeacher && <form className="mt-3 flex flex-wrap gap-2" onSubmit={(event) => void addMaterial(lesson.courseId, event, lesson.id)}><Input name="title" maxLength={160} placeholder="Titre du support" className="min-w-40 flex-1"/><Input name="file" type="file" required accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" className="min-w-52 flex-1"/><Button size="sm" disabled={busy}>Joindre à la séance</Button></form>}
                       </div>
                       {isTeacher && lesson.attendances.length > 0 && (
                         <div className="mt-4 border-t border-border pt-3">
@@ -721,6 +775,14 @@ export default function TeachingPage() {
           </section>
 
           <section>
+            <h2 className="mb-3 font-semibold">Mes supports de cours</h2>
+            {activeEnrolled.length === 0 ? <p className="text-sm text-muted-foreground">Les supports apparaîtront après confirmation de votre inscription.</p> : <div className="grid gap-3">{activeEnrolled.map((course) => <article key={course.id} className={cardClass}>
+              <h3 className="font-medium">{course.title}</h3>
+              {courseLevelMaterials(course.id).length === 0 ? <p className="mt-2 text-sm text-muted-foreground">Aucun document partagé pour le moment.</p> : <ul className="mt-2 space-y-2">{courseLevelMaterials(course.id).map((material) => <li key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} <span className="text-muted-foreground">· {formatFileSize(material.fileSize)}</span></span><Button size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Télécharger</Button></li>)}</ul>}
+            </article>)}</div>}
+          </section>
+
+          <section>
             <h2 className="mb-3 font-semibold">Mes cours</h2>
             {myCourses.length === 0 ? (
               <p className="text-sm text-muted-foreground">Aucun cours créé.</p>
@@ -739,6 +801,12 @@ export default function TeachingPage() {
                         {course.status}
                       </p>
                     </div>
+                    <form onSubmit={(event) => void addMaterial(course.id, event)} className="w-full space-y-2 border-t border-border pt-3">
+                      <p className="text-sm font-medium">Documents pédagogiques</p>
+                      {courseLevelMaterials(course.id).map((material) => <div key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} · {formatFileSize(material.fileSize)}</span><span className="flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Ouvrir</Button><Button type="button" size="sm" variant="ghost" disabled={busy} aria-label={`Supprimer ${material.title}`} onClick={() => void removeMaterial(material)}><Trash2 className="h-4 w-4"/></Button></span></div>)}
+                      <div className="flex flex-wrap gap-2"><Input name="title" maxLength={160} placeholder="Titre du document" className="min-w-48 flex-1"/><Input name="file" type="file" required accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" className="min-w-56 flex-1"/><Button disabled={busy}>Ajouter un document</Button></div>
+                      <p className="text-xs text-muted-foreground">PDF, image ou vidéo · 50 Mio maximum par fichier. Seuls les élèves inscrits activement peuvent consulter les supports.</p>
+                    </form>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
@@ -851,4 +919,10 @@ function formatMoney(minorAmount: number, currencyCode: string) {
     style: "currency",
     currency: currencyCode,
   }).format(minorAmount / 100);
+}
+
+function formatFileSize(value: string) {
+  const bytes = Number(value);
+  if (!Number.isFinite(bytes) || bytes < 0) return "Taille inconnue";
+  return new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(bytes / (1024 * 1024)) + " Mio";
 }
