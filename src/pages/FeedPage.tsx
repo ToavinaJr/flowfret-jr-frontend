@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Search } from "lucide-react";
+import { Link } from "react-router-dom";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
@@ -7,6 +7,7 @@ import { PostComposer } from "@/components/feed/PostComposer";
 import { FeedCard } from "@/components/feed/FeedCard";
 import { FeedSkeleton } from "@/components/skeletons/AppSkeletons";
 import type { FeedPost } from "@/types/feed";
+import { TrendingMusicRail } from "@/components/feed/TrendingMusicRail";
 
 export { FeedCard } from "@/components/feed/FeedCard";
 export type { FeedCardProps } from "@/components/feed/FeedCard";
@@ -15,27 +16,25 @@ const FeedPage = () => {
   const { t } = useTranslation();
   const { user, postsQuery, createPost, comment, toggleLike, refresh } =
     useFeed();
-  const [composerOpen, setComposerOpen] = useState(false);
   const posts = postsQuery.data?.pages.flat() ?? [];
   return (
     <div className={`${PAGE_SHELL} max-w-xl lg:max-w-xl`}>
       <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
         <h1 className={`${PAGE_TITLE} mb-0`}>{t("feed.title")}</h1>
-        <button
-          type="button"
-          onClick={() => setComposerOpen((value) => !value)}
+        <Link
+          to="/music"
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground"
-          aria-label={t("feed.newPost")}
+          aria-label={t("feed.searchMusic")}
         >
-          <Plus className="h-4 w-4" />
-        </button>
+          <Search className="h-4 w-4" />
+        </Link>
       </div>
-      {composerOpen && user && (
+      <TrendingMusicRail />
+      {user && (
         <PostComposer
           pending={createPost.isPending}
           onSubmit={async (content, images) => {
             await createPost.mutateAsync({ content, images });
-            setComposerOpen(false);
           }}
         />
       )}

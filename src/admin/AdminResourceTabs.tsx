@@ -10,15 +10,17 @@ export function AdminResourceTabs({
   basePath,
   active,
   tabs,
+  navigationLabelKey = "admin.resourceNavigation",
 }: {
   basePath: string;
   active: string;
   tabs: AdminResourceTab[];
+  navigationLabelKey?: string;
 }) {
   const { t } = useTranslation();
   return (
     <nav
-      aria-label={t("admin.resourceNavigation")}
+      aria-label={t(navigationLabelKey)}
       className="flex gap-2 overflow-x-auto border-b border-border pb-2"
     >
       {tabs.map((tab) => (

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { BookOpen, Download, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -6,6 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { TeachingWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
+import { AdminResourceTabs } from "@/admin/AdminResourceTabs";
+
+const TEACHING_VIEWS = [
+  { value: "courses", labelKey: "teaching.views.courses" },
+  { value: "calendar", labelKey: "teaching.views.calendar" },
+  { value: "enrollments", labelKey: "teaching.views.enrollments" },
+  { value: "materials", labelKey: "teaching.views.materials" },
+  { value: "catalog", labelKey: "teaching.views.catalog" },
+];
 import {
   archiveTeachingCourse,
   deleteTeachingMaterial,
@@ -36,6 +46,11 @@ const cardClass = "rounded-xl border border-border bg-card p-4 sm:p-5";
 
 export default function TeachingPage() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const requestedView = searchParams.get("view");
+  const view = TEACHING_VIEWS.some((tab) => tab.value === requestedView)
+    ? requestedView!
+    : "courses";
   const [profile, setProfile] = useState<InstructorProfile | null>(null);
   const [myCourses, setMyCourses] = useState<TeachingCourse[]>([]);
   const [enrolled, setEnrolled] = useState<TeachingCourse[]>([]);
@@ -443,11 +458,19 @@ export default function TeachingPage() {
       <p className="mb-6 text-sm text-muted-foreground">
         Trouvez un enseignant, gérez vos cours ou proposez vos leçons payantes.
       </p>
+      <div className="mb-6">
+        <AdminResourceTabs
+          basePath="/teaching"
+          active={view}
+          tabs={TEACHING_VIEWS}
+          navigationLabelKey="teaching.viewNavigation"
+        />
+      </div>
       {loading ? (
         <TeachingWorkspaceSkeleton />
       ) : (
         <div className="space-y-8">
-          <section className={cardClass}>
+          <section hidden={view !== "courses"} className={cardClass}>
             <div className="mb-4 flex items-center gap-2">
               <GraduationCap className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">Mon profil enseignant</h2>
@@ -495,7 +518,7 @@ export default function TeachingPage() {
             </form>
           </section>
 
-          <section className={cardClass}>
+          <section hidden={view !== "courses"} className={cardClass}>
             <div className="mb-4 flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">
@@ -601,7 +624,7 @@ export default function TeachingPage() {
             </form>
           </section>
 
-          <section>
+          <section hidden={view !== "calendar"}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="font-semibold">
                 Calendrier — dernières séances et 45 prochains jours
@@ -941,7 +964,7 @@ export default function TeachingPage() {
             )}
           </section>
 
-          <section>
+          <section hidden={view !== "enrollments"}>
             <h2 className="mb-3 font-semibold">Mes demandes et invitations</h2>
             {enrollments.length === 0 ? (
               <p className="text-sm text-muted-foreground">
@@ -991,7 +1014,7 @@ export default function TeachingPage() {
             )}
           </section>
 
-          <section>
+          <section hidden={view !== "materials"}>
             <h2 className="mb-3 font-semibold">Mes supports de cours</h2>
             {activeEnrolled.length === 0 ? (
               <p className="text-sm text-muted-foreground">
@@ -1038,7 +1061,7 @@ export default function TeachingPage() {
             )}
           </section>
 
-          <section>
+          <section hidden={view !== "courses"}>
             <h2 className="mb-3 font-semibold">Mes cours</h2>
             {myCourses.length === 0 ? (
               <p className="text-sm text-muted-foreground">Aucun cours créé.</p>
@@ -1152,7 +1175,7 @@ export default function TeachingPage() {
             )}
           </section>
 
-          <section>
+          <section hidden={view !== "catalog"}>
             <div className="mb-3 flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">Cours disponibles</h2>

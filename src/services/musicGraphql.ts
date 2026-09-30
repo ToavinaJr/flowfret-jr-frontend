@@ -1,6 +1,7 @@
 import { graphqlRequest } from "@/services/graphqlClient";
 import type {
   MusicSearchResult,
+  MusicTrack,
   SearchMusicQueryData,
   SearchMusicQueryVariables,
 } from "@/types/music";
@@ -36,6 +37,29 @@ export const SEARCH_MUSIC_QUERY = `
   }
 `;
 
+export const TRENDING_MUSIC_QUERY = `
+  query TrendingMusic {
+    trendingMusic {
+      provider
+      id
+      providerTrackId
+      audiusId
+      title
+      imageUrl
+      audiusUrl
+      externalUrl
+      album
+      isrc
+      streamUrl
+      genre
+      geniusUrl
+      geniusMatchScore
+      durationMs
+      artists { id name }
+    }
+  }
+`;
+
 const DEFAULT_SEARCH_LIMIT = 10;
 
 export async function searchMusic(
@@ -58,4 +82,11 @@ export async function searchMusic(
   });
 
   return data.searchMusic;
+}
+
+export async function fetchTrendingMusic(): Promise<MusicTrack[]> {
+  const data = await graphqlRequest<{ trendingMusic: MusicTrack[] }>({
+    query: TRENDING_MUSIC_QUERY,
+  });
+  return data.trendingMusic;
 }

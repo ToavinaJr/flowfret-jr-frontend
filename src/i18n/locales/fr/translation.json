@@ -54,6 +54,16 @@
     "teachingLoading": "Chargement de l’espace de cours",
     "adminLoading": "Chargement des données d’administration"
   },
+  "teaching": {
+    "viewNavigation": "Vues de l’espace de cours",
+    "views": {
+      "courses": "Mes cours",
+      "calendar": "Calendrier",
+      "enrollments": "Inscriptions",
+      "materials": "Supports pédagogiques",
+      "catalog": "Catalogue des cours"
+    }
+  },
   "friends": {
     "title": "Amis",
     "myFriends": "Mes amis",
@@ -123,6 +133,14 @@
   "feed": {
     "title": "Fil d’actualité",
     "newPost": "Nouvelle publication",
+    "searchMusic": "Rechercher de la musique",
+    "trendingTitle": "Tendances musicales",
+    "trendingDescription": "Les titres les plus écoutés sur FlowFret",
+    "trendingLoading": "Chargement des titres populaires",
+    "trendingError": "Impossible de charger les titres populaires.",
+    "trendingEmpty": "Les tendances d’écoute ne sont pas encore disponibles.",
+    "playTrendingTrack": "Lire {{title}}",
+    "pauseTrendingTrack": "Mettre {{title}} en pause",
     "composerPlaceholder": "Partagez une progression, une astuce ou une note de pratique…",
     "publish": "Publier",
     "publishing": "Publication…",

@@ -54,6 +54,16 @@
     "teachingLoading": "Loading the lessons workspace",
     "adminLoading": "Loading administration data"
   },
+  "teaching": {
+    "viewNavigation": "Lessons workspace views",
+    "views": {
+      "courses": "My courses",
+      "calendar": "Schedule",
+      "enrollments": "Enrollments",
+      "materials": "Learning materials",
+      "catalog": "Course catalog"
+    }
+  },
   "friends": {
     "title": "Friends",
     "myFriends": "My friends",
@@ -123,6 +133,14 @@
   "feed": {
     "title": "Feed",
     "newPost": "New post",
+    "searchMusic": "Search music",
+    "trendingTitle": "Music trends",
+    "trendingDescription": "The most played tracks on FlowFret",
+    "trendingLoading": "Loading popular tracks",
+    "trendingError": "Popular tracks could not be loaded.",
+    "trendingEmpty": "There are no listening trends yet.",
+    "playTrendingTrack": "Play {{title}}",
+    "pauseTrendingTrack": "Pause {{title}}",
     "composerPlaceholder": "Share a progression, tip, or practice note…",
     "publish": "Publish",
     "publishing": "Publishing…",
