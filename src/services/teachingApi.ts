@@ -3,12 +3,20 @@ import { GRAPHQL_URL } from "@/services/backend";
 import { getAccessToken } from "@/services/authToken";
 
 export interface TeachingMaterial {
-  id: string; courseId: string; lessonId: string | null; title: string;
-  fileName: string; fileType: string; fileSize: string; createdAt: string;
+  id: string;
+  courseId: string;
+  lessonId: string | null;
+  title: string;
+  fileName: string;
+  fileType: string;
+  fileSize: string;
+  createdAt: string;
 }
 
 export async function fetchTeachingCourseMaterials(courseId: string) {
-  const result = await graphqlRequest<{ teachingCourseMaterials: TeachingMaterial[] }>({
+  const result = await graphqlRequest<{
+    teachingCourseMaterials: TeachingMaterial[];
+  }>({
     query: `query CourseMaterials($courseId: String!) { teachingCourseMaterials(courseId: $courseId) { id courseId lessonId title fileName fileType fileSize createdAt } }`,
     variables: { courseId },
   });
@@ -16,7 +24,9 @@ export async function fetchTeachingCourseMaterials(courseId: string) {
 }
 
 export async function fetchTeachingLessonMaterials(lessonId: string) {
-  const result = await graphqlRequest<{ teachingLessonMaterials: TeachingMaterial[] }>({
+  const result = await graphqlRequest<{
+    teachingLessonMaterials: TeachingMaterial[];
+  }>({
     query: `query LessonMaterials($lessonId: String!) { teachingLessonMaterials(lessonId: $lessonId) { id courseId lessonId title fileName fileType fileSize createdAt } }`,
     variables: { lessonId },
   });
@@ -25,44 +35,78 @@ export async function fetchTeachingLessonMaterials(lessonId: string) {
 
 export async function fetchTeachingMaterialsForCourses(courseIds: string[]) {
   if (!courseIds.length) return [] as TeachingMaterial[];
-  const result = await graphqlRequest<{ teachingMaterialsForCourses: TeachingMaterial[] }>({
+  const result = await graphqlRequest<{
+    teachingMaterialsForCourses: TeachingMaterial[];
+  }>({
     query: `query TeachingMaterials($courseIds: [String!]!) { teachingMaterialsForCourses(courseIds: $courseIds) { id courseId lessonId title fileName fileType fileSize createdAt } }`,
     variables: { courseIds },
   });
   return result.teachingMaterialsForCourses;
 }
 
-export async function uploadTeachingMaterial(courseId: string, file: File, title: string, lessonId?: string) {
+export async function uploadTeachingMaterial(
+  courseId: string,
+  file: File,
+  title: string,
+  lessonId?: string,
+) {
   const token = getAccessToken();
   if (!token) throw new Error("Authentication required.");
-  const url = GRAPHQL_URL.replace(/\/graphql\/?$/, "/uploads/teaching-materials");
+  const url = GRAPHQL_URL.replace(
+    /\/graphql\/?$/,
+    "/uploads/teaching-materials",
+  );
   if (url === GRAPHQL_URL) throw new Error("Invalid backend upload URL.");
-  const form = new FormData(); form.append("courseId", courseId); form.append("title", title || file.name);
-  if (lessonId) form.append("lessonId", lessonId); form.append("file", file);
-  const response = await fetch(url, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+  const form = new FormData();
+  form.append("courseId", courseId);
+  form.append("title", title || file.name);
+  if (lessonId) form.append("lessonId", lessonId);
+  form.append("file", file);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
   if (!response.ok) {
-    const payload = await response.json().catch(() => null) as { message?: string | string[] } | null;
-    throw new Error(Array.isArray(payload?.message) ? payload.message.join(" ") : payload?.message || `Upload failed (${response.status}).`);
+    const payload = (await response.json().catch(() => null)) as {
+      message?: string | string[];
+    } | null;
+    throw new Error(
+      Array.isArray(payload?.message)
+        ? payload.message.join(" ")
+        : payload?.message || `Upload failed (${response.status}).`,
+    );
   }
-  return await response.json() as TeachingMaterial;
+  return (await response.json()) as TeachingMaterial;
 }
 
 export async function downloadTeachingMaterial(material: TeachingMaterial) {
   const token = getAccessToken();
   if (!token) throw new Error("Authentication required.");
-  const url = GRAPHQL_URL.replace(/\/graphql\/?$/, `/uploads/teaching-materials/${encodeURIComponent(material.id)}/content`);
-  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const url = GRAPHQL_URL.replace(
+    /\/graphql\/?$/,
+    `/uploads/teaching-materials/${encodeURIComponent(material.id)}/content`,
+  );
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!response.ok) throw new Error(`Download failed (${response.status}).`);
-  const blob = await response.blob(); const objectUrl = URL.createObjectURL(blob);
-  const anchor = document.createElement("a"); anchor.href = objectUrl;
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
   if (material.fileType.startsWith("video/")) anchor.target = "_blank";
   else anchor.download = material.fileName;
-  document.body.append(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
 }
 
 export async function deleteTeachingMaterial(id: string) {
   const result = await graphqlRequest<{ deleteTeachingMaterial: boolean }>({
-    query: `mutation DeleteTeachingMaterial($id: String!) { deleteTeachingMaterial(id: $id) }`, variables: { id },
+    query: `mutation DeleteTeachingMaterial($id: String!) { deleteTeachingMaterial(id: $id) }`,
+    variables: { id },
   });
   return result.deleteTeachingMaterial;
 }
@@ -246,6 +290,20 @@ export async function scheduleTeachingLesson(
     variables: { courseId, data },
   });
   return result.scheduleTeachingLesson;
+}
+
+export async function scheduleTeachingLessonSeries(
+  courseId: string,
+  data: TeachingLessonInput,
+  occurrences: number,
+) {
+  const result = await graphqlRequest<{
+    scheduleTeachingLessonSeries: TeachingLesson[];
+  }>({
+    query: `mutation ScheduleTeachingLessonSeries($courseId: String!, $data: TeachingLessonInput!, $occurrences: Int!) { scheduleTeachingLessonSeries(courseId: $courseId, data: $data, occurrences: $occurrences) { ${LESSON_FIELDS} } }`,
+    variables: { courseId, data, occurrences },
+  });
+  return result.scheduleTeachingLessonSeries;
 }
 
 export async function rescheduleTeachingLesson(

@@ -19,6 +19,7 @@ import {
   requestTeachingEnrollment,
   rescheduleTeachingLesson,
   scheduleTeachingLesson,
+  scheduleTeachingLessonSeries,
   respondToTeachingInvitation,
   saveInstructorProfile,
   updateTeachingCourse,
@@ -42,7 +43,9 @@ export default function TeachingPage() {
   >([]);
   const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
   const [lessons, setLessons] = useState<TeachingLesson[]>([]);
-  const [materials, setMaterials] = useState<Record<string, TeachingMaterial[]>>({});
+  const [materials, setMaterials] = useState<
+    Record<string, TeachingMaterial[]>
+  >({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [headline, setHeadline] = useState("");
@@ -53,6 +56,15 @@ export default function TeachingPage() {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("EUR");
   const [duration, setDuration] = useState("45");
+  const [courseFormat, setCourseFormat] = useState<"INDIVIDUAL" | "GROUP">(
+    "INDIVIDUAL",
+  );
+  const [courseCapacity, setCourseCapacity] = useState("6");
+  const [priceUnit, setPriceUnit] = useState<"PER_LESSON" | "PER_COURSE">(
+    "PER_LESSON",
+  );
+  const [repeatWeekly, setRepeatWeekly] = useState(false);
+  const [repeatOccurrences, setRepeatOccurrences] = useState("4");
   const [lessonCourseId, setLessonCourseId] = useState("");
   const [lessonStartsAt, setLessonStartsAt] = useState(() =>
     toLocalInputValue(new Date(Date.now() + 60 * 60 * 1000)),
@@ -71,13 +83,29 @@ export default function TeachingPage() {
       from.toISOString(),
       to.toISOString(),
     );
-    const activeStudentCourses = data.myEnrolledTeachingCourses.filter((course) =>
-      data.myTeachingEnrollments.some((enrollment) => enrollment.courseId === course.id && enrollment.status === "ACTIVE"),
+    const activeStudentCourses = data.myEnrolledTeachingCourses.filter(
+      (course) =>
+        data.myTeachingEnrollments.some(
+          (enrollment) =>
+            enrollment.courseId === course.id && enrollment.status === "ACTIVE",
+        ),
     );
-    const coursesForMaterials = [...new Map([...data.myTeachingCourses, ...activeStudentCourses].map((course) => [course.id, course])).values()];
-    const courseMaterials = await fetchTeachingMaterialsForCourses(coursesForMaterials.map((course) => course.id));
+    const coursesForMaterials = [
+      ...new Map(
+        [...data.myTeachingCourses, ...activeStudentCourses].map((course) => [
+          course.id,
+          course,
+        ]),
+      ).values(),
+    ];
+    const courseMaterials = await fetchTeachingMaterialsForCourses(
+      coursesForMaterials.map((course) => course.id),
+    );
     const materialMap: Record<string, TeachingMaterial[]> = {};
-    for (const course of coursesForMaterials) materialMap[course.id] = courseMaterials.filter((material) => material.courseId === course.id);
+    for (const course of coursesForMaterials)
+      materialMap[course.id] = courseMaterials.filter(
+        (material) => material.courseId === course.id,
+      );
     setProfile(data.myInstructorProfile);
     setMyCourses(data.myTeachingCourses);
     setEnrolled(data.myEnrolledTeachingCourses);
@@ -140,12 +168,12 @@ export default function TeachingPage() {
         title,
         description,
         level: "Tous niveaux",
-        format: "INDIVIDUAL",
-        maxStudents: 1,
+        format: courseFormat,
+        maxStudents: courseFormat === "INDIVIDUAL" ? 1 : Number(courseCapacity),
         teachingMode: "HYBRID",
         priceAmount: Math.round(Number(price) * 100),
         priceCurrency: currency.toUpperCase(),
-        priceUnit: "PER_LESSON",
+        priceUnit,
         durationMinutes: Number(duration),
       });
       setTitle("");
@@ -236,17 +264,27 @@ export default function TeachingPage() {
     if (!course) return;
     setBusy(true);
     try {
-      await scheduleTeachingLesson(
-        course.id,
-        lessonInput(
-          lessonStartsAt,
-          lessonMode,
-          lessonLocation,
-          lessonMeetingUrl,
-        ),
+      const input = lessonInput(
+        lessonStartsAt,
+        lessonMode,
+        lessonLocation,
+        lessonMeetingUrl,
       );
+      if (repeatWeekly) {
+        await scheduleTeachingLessonSeries(
+          course.id,
+          input,
+          Number(repeatOccurrences),
+        );
+      } else {
+        await scheduleTeachingLesson(course.id, input);
+      }
       await refresh();
-      toast.success("Séance planifiée et élèves notifiés.");
+      toast.success(
+        repeatWeekly
+          ? "Série de séances planifiée et élèves notifiés."
+          : "Séance planifiée et élèves notifiés.",
+      );
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Planification impossible.",
@@ -328,7 +366,11 @@ export default function TeachingPage() {
     }
   }
 
-  async function addMaterial(courseId: string, event: React.FormEvent<HTMLFormElement>, lessonId?: string) {
+  async function addMaterial(
+    courseId: string,
+    event: React.FormEvent<HTMLFormElement>,
+    lessonId?: string,
+  ) {
     event.preventDefault();
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
@@ -336,30 +378,53 @@ export default function TeachingPage() {
     if (!(file instanceof File) || !file.size) return;
     setBusy(true);
     try {
-      await uploadTeachingMaterial(courseId, file, String(form.get("title") || file.name), lessonId);
+      await uploadTeachingMaterial(
+        courseId,
+        file,
+        String(form.get("title") || file.name),
+        lessonId,
+      );
       toast.success("Document pédagogique ajouté.");
       await refresh();
       formElement.reset();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Dépôt impossible.");
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function removeMaterial(material: TeachingMaterial) {
     setBusy(true);
-    try { await deleteTeachingMaterial(material.id); toast.success("Document supprimé."); await refresh(); }
-    catch (error) { toast.error(error instanceof Error ? error.message : "Suppression impossible."); }
-    finally { setBusy(false); }
+    try {
+      await deleteTeachingMaterial(material.id);
+      toast.success("Document supprimé.");
+      await refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Suppression impossible.",
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function getMaterial(material: TeachingMaterial) {
-    try { await downloadTeachingMaterial(material); }
-    catch (error) { toast.error(error instanceof Error ? error.message : "Téléchargement impossible."); }
+    try {
+      await downloadTeachingMaterial(material);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Téléchargement impossible.",
+      );
+    }
   }
 
   const myEnrollmentIds = new Set(enrolled.map((course) => course.id));
   const activeEnrolled = enrolled.filter((course) =>
-    enrollments.some((enrollment) => enrollment.courseId === course.id && enrollment.status === "ACTIVE"),
+    enrollments.some(
+      (enrollment) =>
+        enrollment.courseId === course.id && enrollment.status === "ACTIVE",
+    ),
   );
   const selectedLessonCourse = () =>
     myCourses.find((course) => course.id === lessonCourseId);
@@ -367,7 +432,9 @@ export default function TeachingPage() {
     (course) => course.instructorId !== profile?.id,
   );
   const courseLevelMaterials = (courseId: string) =>
-    (materials[courseId] ?? []).filter((material) => material.lessonId === null);
+    (materials[courseId] ?? []).filter(
+      (material) => material.lessonId === null,
+    );
 
   return (
     <div className={PAGE_SHELL}>
@@ -431,10 +498,46 @@ export default function TeachingPage() {
             <div className="mb-4 flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">
-                Créer un cours individuel payant
+                Créer un cours payant
               </h2>
             </div>
             <form className="grid gap-3 sm:grid-cols-2" onSubmit={addCourse}>
+              <select
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                value={courseFormat}
+                onChange={(event) =>
+                  setCourseFormat(event.target.value as "INDIVIDUAL" | "GROUP")
+                }
+                aria-label="Format du cours"
+              >
+                <option value="INDIVIDUAL">Cours individuel</option>
+                <option value="GROUP">Cours collectif</option>
+              </select>
+              <select
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                value={priceUnit}
+                onChange={(event) =>
+                  setPriceUnit(
+                    event.target.value as "PER_LESSON" | "PER_COURSE",
+                  )
+                }
+                aria-label="Mode de tarification"
+              >
+                <option value="PER_LESSON">Prix par séance</option>
+                <option value="PER_COURSE">Prix pour le cours complet</option>
+              </select>
+              {courseFormat === "GROUP" && (
+                <Input
+                  required
+                  type="number"
+                  min="2"
+                  max="100"
+                  value={courseCapacity}
+                  onChange={(event) => setCourseCapacity(event.target.value)}
+                  placeholder="Nombre maximum d’élèves"
+                  aria-label="Nombre maximum d’élèves"
+                />
+              )}
               <Input
                 required
                 minLength={3}
@@ -451,8 +554,16 @@ export default function TeachingPage() {
                 step="0.01"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                placeholder="Prix par séance"
-                aria-label="Prix par séance"
+                placeholder={
+                  priceUnit === "PER_COURSE"
+                    ? "Prix pour le cours complet"
+                    : "Prix par séance"
+                }
+                aria-label={
+                  priceUnit === "PER_COURSE"
+                    ? "Prix pour le cours complet"
+                    : "Prix par séance"
+                }
               />
               <Input
                 required
@@ -575,6 +686,32 @@ export default function TeachingPage() {
                       aria-label="Lien de réunion"
                     />
                   )}
+                  <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={repeatWeekly}
+                      onChange={(event) =>
+                        setRepeatWeekly(event.target.checked)
+                      }
+                    />
+                    Répéter chaque semaine
+                  </label>
+                  {repeatWeekly && (
+                    <label className="flex items-center gap-2 text-sm">
+                      Nombre de séances
+                      <Input
+                        required
+                        type="number"
+                        min="2"
+                        max="24"
+                        value={repeatOccurrences}
+                        onChange={(event) =>
+                          setRepeatOccurrences(event.target.value)
+                        }
+                        aria-label="Nombre de séances hebdomadaires"
+                      />
+                    </label>
+                  )}
                   <p className="text-xs text-muted-foreground sm:col-span-2">
                     La durée est celle du cours. L’horaire sera enregistré avec
                     le fuseau affiché ci-dessus.
@@ -592,7 +729,13 @@ export default function TeachingPage() {
               <div className="space-y-3">
                 {lessons.map((lesson) => {
                   const isTeacher = lesson.createdById === user?.id;
-                  const lessonMaterials = (materials[lesson.courseId] ?? []).filter((material) => material.lessonId === lesson.id || material.lessonId === null);
+                  const lessonMaterials = (
+                    materials[lesson.courseId] ?? []
+                  ).filter(
+                    (material) =>
+                      material.lessonId === lesson.id ||
+                      material.lessonId === null,
+                  );
                   return (
                     <article key={lesson.id} className={cardClass}>
                       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -669,9 +812,82 @@ export default function TeachingPage() {
                         )}
                       </div>
                       <div className="mt-4 border-t border-border pt-3">
-                        <p className="mb-2 text-sm font-medium">Supports de cette séance</p>
-                        {lessonMaterials.length === 0 ? <p className="text-xs text-muted-foreground">Aucun support spécifique à cette séance.</p> : <ul className="space-y-2">{lessonMaterials.map((material) => <li key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} · {formatFileSize(material.fileSize)}</span><span className="flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Télécharger</Button>{isTeacher && <Button type="button" size="sm" variant="ghost" disabled={busy} aria-label={`Supprimer ${material.title}`} onClick={() => void removeMaterial(material)}><Trash2 className="h-4 w-4"/></Button>}</span></li>)}</ul>}
-                        {isTeacher && <form className="mt-3 flex flex-wrap gap-2" onSubmit={(event) => void addMaterial(lesson.courseId, event, lesson.id)}><Input name="title" maxLength={160} placeholder="Titre du support" className="min-w-40 flex-1"/><Input name="file" type="file" required accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" className="min-w-52 flex-1"/><Button size="sm" disabled={busy}>Joindre à la séance</Button></form>}
+                        <p className="mb-2 text-sm font-medium">
+                          Supports de cette séance
+                        </p>
+                        {lessonMaterials.length === 0 ? (
+                          <p className="text-xs text-muted-foreground">
+                            Aucun support spécifique à cette séance.
+                          </p>
+                        ) : (
+                          <ul className="space-y-2">
+                            {lessonMaterials.map((material) => (
+                              <li
+                                key={material.id}
+                                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                              >
+                                <span>
+                                  {material.title} ·{" "}
+                                  {formatFileSize(material.fileSize)}
+                                </span>
+                                <span className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => void getMaterial(material)}
+                                  >
+                                    <Download className="mr-1 h-4 w-4" />
+                                    Télécharger
+                                  </Button>
+                                  {isTeacher && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      disabled={busy}
+                                      aria-label={`Supprimer ${material.title}`}
+                                      onClick={() =>
+                                        void removeMaterial(material)
+                                      }
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {isTeacher && (
+                          <form
+                            className="mt-3 flex flex-wrap gap-2"
+                            onSubmit={(event) =>
+                              void addMaterial(
+                                lesson.courseId,
+                                event,
+                                lesson.id,
+                              )
+                            }
+                          >
+                            <Input
+                              name="title"
+                              maxLength={160}
+                              placeholder="Titre du support"
+                              className="min-w-40 flex-1"
+                            />
+                            <Input
+                              name="file"
+                              type="file"
+                              required
+                              accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+                              className="min-w-52 flex-1"
+                            />
+                            <Button size="sm" disabled={busy}>
+                              Joindre à la séance
+                            </Button>
+                          </form>
+                        )}
                       </div>
                       {isTeacher && lesson.attendances.length > 0 && (
                         <div className="mt-4 border-t border-border pt-3">
@@ -776,10 +992,49 @@ export default function TeachingPage() {
 
           <section>
             <h2 className="mb-3 font-semibold">Mes supports de cours</h2>
-            {activeEnrolled.length === 0 ? <p className="text-sm text-muted-foreground">Les supports apparaîtront après confirmation de votre inscription.</p> : <div className="grid gap-3">{activeEnrolled.map((course) => <article key={course.id} className={cardClass}>
-              <h3 className="font-medium">{course.title}</h3>
-              {courseLevelMaterials(course.id).length === 0 ? <p className="mt-2 text-sm text-muted-foreground">Aucun document partagé pour le moment.</p> : <ul className="mt-2 space-y-2">{courseLevelMaterials(course.id).map((material) => <li key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} <span className="text-muted-foreground">· {formatFileSize(material.fileSize)}</span></span><Button size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Télécharger</Button></li>)}</ul>}
-            </article>)}</div>}
+            {activeEnrolled.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Les supports apparaîtront après confirmation de votre
+                inscription.
+              </p>
+            ) : (
+              <div className="grid gap-3">
+                {activeEnrolled.map((course) => (
+                  <article key={course.id} className={cardClass}>
+                    <h3 className="font-medium">{course.title}</h3>
+                    {courseLevelMaterials(course.id).length === 0 ? (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        Aucun document partagé pour le moment.
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-2">
+                        {courseLevelMaterials(course.id).map((material) => (
+                          <li
+                            key={material.id}
+                            className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                          >
+                            <span>
+                              {material.title}{" "}
+                              <span className="text-muted-foreground">
+                                · {formatFileSize(material.fileSize)}
+                              </span>
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => void getMaterial(material)}
+                            >
+                              <Download className="mr-1 h-4 w-4" />
+                              Télécharger
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section>
@@ -797,15 +1052,76 @@ export default function TeachingPage() {
                       <h3 className="font-medium">{course.title}</h3>
                       <p className="text-sm text-muted-foreground">
                         {formatMoney(course.priceAmount, course.priceCurrency)}{" "}
-                        par séance · {course.durationMinutes} min ·{" "}
-                        {course.status}
+                        {course.priceUnit === "PER_COURSE"
+                          ? "pour le cours complet"
+                          : "par séance"}{" "}
+                        ·{" "}
+                        {course.format === "GROUP"
+                          ? `collectif · ${course.maxStudents} places`
+                          : "individuel"}{" "}
+                        · {course.durationMinutes} min · {course.status}
                       </p>
                     </div>
-                    <form onSubmit={(event) => void addMaterial(course.id, event)} className="w-full space-y-2 border-t border-border pt-3">
-                      <p className="text-sm font-medium">Documents pédagogiques</p>
-                      {courseLevelMaterials(course.id).map((material) => <div key={material.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{material.title} · {formatFileSize(material.fileSize)}</span><span className="flex gap-2"><Button type="button" size="sm" variant="outline" onClick={() => void getMaterial(material)}><Download className="mr-1 h-4 w-4"/>Ouvrir</Button><Button type="button" size="sm" variant="ghost" disabled={busy} aria-label={`Supprimer ${material.title}`} onClick={() => void removeMaterial(material)}><Trash2 className="h-4 w-4"/></Button></span></div>)}
-                      <div className="flex flex-wrap gap-2"><Input name="title" maxLength={160} placeholder="Titre du document" className="min-w-48 flex-1"/><Input name="file" type="file" required accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" className="min-w-56 flex-1"/><Button disabled={busy}>Ajouter un document</Button></div>
-                      <p className="text-xs text-muted-foreground">PDF, image ou vidéo · 50 Mio maximum par fichier. Seuls les élèves inscrits activement peuvent consulter les supports.</p>
+                    <form
+                      onSubmit={(event) => void addMaterial(course.id, event)}
+                      className="w-full space-y-2 border-t border-border pt-3"
+                    >
+                      <p className="text-sm font-medium">
+                        Documents pédagogiques
+                      </p>
+                      {courseLevelMaterials(course.id).map((material) => (
+                        <div
+                          key={material.id}
+                          className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                        >
+                          <span>
+                            {material.title} ·{" "}
+                            {formatFileSize(material.fileSize)}
+                          </span>
+                          <span className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => void getMaterial(material)}
+                            >
+                              <Download className="mr-1 h-4 w-4" />
+                              Ouvrir
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              disabled={busy}
+                              aria-label={`Supprimer ${material.title}`}
+                              onClick={() => void removeMaterial(material)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </span>
+                        </div>
+                      ))}
+                      <div className="flex flex-wrap gap-2">
+                        <Input
+                          name="title"
+                          maxLength={160}
+                          placeholder="Titre du document"
+                          className="min-w-48 flex-1"
+                        />
+                        <Input
+                          name="file"
+                          type="file"
+                          required
+                          accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+                          className="min-w-56 flex-1"
+                        />
+                        <Button disabled={busy}>Ajouter un document</Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        PDF, image ou vidéo · 50 Mio maximum par fichier. Seuls
+                        les élèves inscrits activement peuvent consulter les
+                        supports.
+                      </p>
                     </form>
                     <div className="flex gap-2">
                       <Button
@@ -856,6 +1172,14 @@ export default function TeachingPage() {
                       <p className="text-sm text-muted-foreground">
                         {course.description || "Cours de guitare"} ·{" "}
                         {formatMoney(course.priceAmount, course.priceCurrency)}{" "}
+                        ·{" "}
+                        {course.priceUnit === "PER_COURSE"
+                          ? "cours complet"
+                          : "par séance"}{" "}
+                        ·{" "}
+                        {course.format === "GROUP"
+                          ? `collectif · ${course.maxStudents} places`
+                          : "individuel"}{" "}
                         · {course.durationMinutes} min
                       </p>
                     </div>
@@ -924,5 +1248,9 @@ function formatMoney(minorAmount: number, currencyCode: string) {
 function formatFileSize(value: string) {
   const bytes = Number(value);
   if (!Number.isFinite(bytes) || bytes < 0) return "Taille inconnue";
-  return new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(bytes / (1024 * 1024)) + " Mio";
+  return (
+    new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(
+      bytes / (1024 * 1024),
+    ) + " Mio"
+  );
 }
