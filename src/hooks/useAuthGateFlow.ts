@@ -108,7 +108,7 @@ export function useAuthGateFlow() {
         toast.success(t("auth.toasts.googleConnected"));
       } else {
         await auth.registerWithGoogle(accessToken);
-        toast.success(t("auth.toasts.googleAccountCreated"));
+        toast.success(t("auth.toasts.googleConnected"));
       }
     } catch (cause) {
       setError(googleError(cause, t));
