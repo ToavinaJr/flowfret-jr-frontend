@@ -1,3 +1,5 @@
+import { runtimeConfig } from "@/config/runtime";
+
 const GIS_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 
 interface GoogleTokenClient {
@@ -48,7 +50,7 @@ function loadGoogleIdentityScript(): Promise<void> {
     return scriptPromise;
   }
 
-  scriptPromise = new Promise<void>((resolve, reject) => {
+  const pendingScript = new Promise<void>((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>(
       `script[src="${GIS_SCRIPT_SRC}"]`,
     );
@@ -72,14 +74,18 @@ function loadGoogleIdentityScript(): Promise<void> {
     document.head.appendChild(script);
   });
 
-  return scriptPromise;
+  scriptPromise = pendingScript;
+  void pendingScript.catch(() => {
+    if (scriptPromise === pendingScript) scriptPromise = null;
+  });
+  return pendingScript;
 }
 
 export function getGoogleClientId(): string {
   return runtimeConfig.googleClientId;
 }
 
-export async function requestGoogleAccessToken(): Promise<string> {
+export async function prepareGoogleIdentity(): Promise<void> {
   const clientId = getGoogleClientId();
   if (!clientId) {
     throw new Error('Google Client ID is not configured.');
@@ -89,6 +95,16 @@ export async function requestGoogleAccessToken(): Promise<string> {
 
   if (!window.google?.accounts?.oauth2) {
     throw new Error('Google Identity Services unavailable.');
+  }
+}
+
+export function requestGoogleAccessToken(): Promise<string> {
+  const clientId = getGoogleClientId();
+  if (!clientId) {
+    return Promise.reject(new Error('Google Client ID is not configured.'));
+  }
+  if (!window.google?.accounts?.oauth2) {
+    return Promise.reject(new Error('Google Identity Services unavailable.'));
   }
 
   return new Promise<string>((resolve, reject) => {
@@ -118,4 +134,3 @@ export async function requestGoogleAccessToken(): Promise<string> {
     client.requestAccessToken({ prompt: 'select_account' });
   });
 }
-import { runtimeConfig } from "@/config/runtime";

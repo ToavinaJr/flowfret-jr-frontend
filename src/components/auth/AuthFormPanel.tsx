@@ -21,6 +21,8 @@ export function AuthFormPanel({ flow }: { flow: AuthFlow }) {
     formState,
     setField,
     pendingAction,
+    googleReady,
+    googleLoading,
     acceptedTerms,
     setAcceptedTerms,
     pendingEmail,
@@ -117,6 +119,8 @@ export function AuthFormPanel({ flow }: { flow: AuthFlow }) {
                 <GoogleAuthButton
                   mode={mode}
                   pending={pendingAction !== null}
+                  ready={googleReady}
+                  loading={googleLoading}
                   onClick={() => void handleGoogleClick()}
                 />
               </>

@@ -379,9 +379,13 @@
     "or": "or",
     "continueWithGoogle": "Continue with Google",
     "signUpWithGoogle": "Sign up with Google",
+    "googleLoading": "Loading Google sign-in…",
     "errors": {
       "acceptTermsBeforeRegister": "You must accept the terms before signing up.",
       "googleNotConfigured": "Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID.",
+      "googleLoadFailed": "Google sign-in could not load. Check your connection and reload the page.",
+      "googleLoading": "Google sign-in is still loading. Try again in a moment.",
+      "googlePopupBlocked": "Your browser blocked the Google sign-in window. Allow pop-ups for FlowFret and try again.",
       "googleCancelled": "Google sign-in cancelled.",
       "googleLoginFailed": "Unable to sign in with Google. Try again.",
       "resetLinkMissing": "Reset link is missing.",

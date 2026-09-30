@@ -379,9 +379,13 @@
     "or": "ou",
     "continueWithGoogle": "Continuer avec Google",
     "signUpWithGoogle": "S’inscrire avec Google",
+    "googleLoading": "Chargement de la connexion Google…",
     "errors": {
       "acceptTermsBeforeRegister": "Vous devez accepter les conditions avant de vous inscrire.",
       "googleNotConfigured": "La connexion Google n’est pas configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
+      "googleLoadFailed": "La connexion Google n’a pas pu se charger. Vérifiez votre connexion puis rechargez la page.",
+      "googleLoading": "La connexion Google est en cours de chargement. Réessayez dans un instant.",
+      "googlePopupBlocked": "Votre navigateur a bloqué la fenêtre Google. Autorisez les fenêtres pop-up pour FlowFret puis réessayez.",
       "googleCancelled": "Connexion Google annulée.",
       "googleLoginFailed": "Impossible de se connecter avec Google. Réessayez.",
       "resetLinkMissing": "Le lien de réinitialisation est manquant.",

@@ -19,6 +19,10 @@ export function assertPasswords(
 export function googleError(cause: unknown, translate: Translate): string {
   if (cause instanceof ApiClientError) return cause.message;
   if (cause instanceof Error) {
+    if (/popup_failed_to_open|failed to open popup|popup.*blocked/i.test(cause.message))
+      return translate("auth.errors.googlePopupBlocked");
+    if (/Google Identity script failed|Google Identity Services unavailable/i.test(cause.message))
+      return translate("auth.errors.googleLoadFailed");
     return /popup_closed|user.*cancel|access_denied|timed.?out/i.test(
       cause.message,
     )

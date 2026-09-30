@@ -6,6 +6,7 @@ import { useAuth } from "./useAuth";
 import { useAuthForm } from "./useAuthForm";
 import {
   getGoogleClientId,
+  prepareGoogleIdentity,
   requestGoogleAccessToken,
 } from "@/services/googleAuth";
 import { ApiClientError } from "@/types/api";
@@ -28,7 +29,28 @@ export function useAuthGateFlow() {
   const [passwordResetToken, setPasswordResetToken] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [googleReady, setGoogleReady] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const actionInFlight = useRef(false);
+
+  useEffect(() => {
+    if (!getGoogleClientId()) return;
+    let active = true;
+    setGoogleLoading(true);
+    void prepareGoogleIdentity()
+      .then(() => {
+        if (active) setGoogleReady(true);
+      })
+      .catch((cause: unknown) => {
+        if (active) setError(googleError(cause, t));
+      })
+      .finally(() => {
+        if (active) setGoogleLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [t]);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -70,6 +92,10 @@ export function useAuthGateFlow() {
     }
     if (!getGoogleClientId()) {
       setError(t("auth.errors.googleNotConfigured"));
+      return;
+    }
+    if (!googleReady) {
+      setError(t("auth.errors.googleLoading"));
       return;
     }
     actionInFlight.current = true;
@@ -191,6 +217,8 @@ export function useAuthGateFlow() {
     setAcceptedTerms,
     pendingEmail,
     error,
+    googleReady: googleReady || !getGoogleClientId(),
+    googleLoading,
     switchMode,
     handleGoogleClick,
     handleSubmit,

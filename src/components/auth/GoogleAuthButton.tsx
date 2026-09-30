@@ -5,26 +5,32 @@ import type { AuthMode } from "@/types/auth";
 export function GoogleAuthButton({
   mode,
   pending,
+  ready,
+  loading,
   onClick,
 }: {
   mode: AuthMode;
   pending: boolean;
+  ready: boolean;
+  loading: boolean;
   onClick: () => void;
 }) {
   const { t } = useTranslation();
   return (
     <button
       type="button"
-      disabled={pending}
+      disabled={pending || loading || !ready}
       onClick={onClick}
       className="inline-flex min-h-[44px] w-full items-center justify-center gap-3 rounded-md border border-border bg-card text-sm text-foreground transition-colors hover:bg-surface-hover disabled:opacity-50"
     >
-      {pending ? (
+      {pending || loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
         <GoogleLogo className="h-5 w-5" />
       )}
-      {mode === "login"
+      {loading
+        ? t("auth.googleLoading")
+        : mode === "login"
         ? t("auth.continueWithGoogle")
         : t("auth.signUpWithGoogle")}
     </button>
