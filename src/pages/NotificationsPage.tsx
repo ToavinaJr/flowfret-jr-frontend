@@ -46,6 +46,8 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
     "notifications.preference.lessonUpdates",
   [NOTIFICATION_KIND.TEACHING_LESSON_COMPLETED]:
     "notifications.preference.lessonUpdates",
+  [NOTIFICATION_KIND.TEACHING_LESSON_REMINDER]:
+    "notifications.preference.lessonReminders",
 };
 
 function message(
@@ -90,6 +92,11 @@ function message(
   if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_COMPLETED)
     return t("notifications.message.lessonCompleted", {
       course: row.payload.courseTitle || "",
+    });
+  if (row.type === NOTIFICATION_KIND.TEACHING_LESSON_REMINDER)
+    return t("notifications.message.lessonReminder", {
+      course: row.payload.courseTitle || "",
+      hours: Number(row.payload.minutesBefore) === 1440 ? 24 : 1,
     });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })

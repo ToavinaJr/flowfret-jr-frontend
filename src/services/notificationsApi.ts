@@ -21,6 +21,7 @@ export interface AppNotification {
     courseTitle?: string;
     startsAt?: string;
     timeZone?: string;
+    minutesBefore?: number;
   };
   readAt: string | null;
   createdAt: string;

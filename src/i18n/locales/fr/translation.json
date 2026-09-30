@@ -79,7 +79,8 @@
       "courseInvitation": "Invitations aux cours",
       "courseRequest": "Demandes d’inscription aux cours",
       "courseUpdate": "Mises à jour des cours",
-      "lessonUpdates": "Horaires et séances"
+      "lessonUpdates": "Horaires et séances",
+      "lessonReminders": "Rappels avant les séances"
     },
     "message": {
       "friendRequest": "{{actor}} vous a envoyé une demande d’amitié.",
@@ -95,7 +96,8 @@
       "lessonScheduled": "Une séance du cours « {{course}} » a été planifiée.",
       "lessonRescheduled": "Une séance du cours « {{course}} » a été déplacée.",
       "lessonCancelled": "Une séance du cours « {{course}} » a été annulée.",
-      "lessonCompleted": "La séance du cours « {{course}} » est terminée."
+      "lessonCompleted": "La séance du cours « {{course}} » est terminée.",
+      "lessonReminder": "Votre séance du cours « {{course}} » commence dans {{hours}} h."
     },
     "preferenceUpdated": "Préférence mise à jour.",
     "preferenceError": "Impossible de modifier cette préférence.",
@@ -937,7 +939,10 @@
       "entity": "Entité",
       "metadata": "Détails"
     },
-    "audit": { "details": "Afficher les détails", "noDetails": "Aucun détail" }
+    "audit": {
+      "details": "Afficher les détails",
+      "noDetails": "Aucun détail"
+    }
   },
   "moderation": {
     "description": "Traitez les signalements avec leur contexte et consignez le motif de chaque décision.",

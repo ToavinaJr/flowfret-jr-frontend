@@ -79,7 +79,8 @@
       "courseInvitation": "Course invitations",
       "courseRequest": "Course enrollment requests",
       "courseUpdate": "Course updates",
-      "lessonUpdates": "Lesson schedule and session updates"
+      "lessonUpdates": "Lesson schedule and session updates",
+      "lessonReminders": "Reminders before lessons"
     },
     "message": {
       "friendRequest": "{{actor}} sent you a friend request.",
@@ -95,7 +96,8 @@
       "lessonScheduled": "A session for “{{course}}” has been scheduled.",
       "lessonRescheduled": "A session for “{{course}}” has been rescheduled.",
       "lessonCancelled": "A session for “{{course}}” has been cancelled.",
-      "lessonCompleted": "The session for “{{course}}” is complete."
+      "lessonCompleted": "The session for “{{course}}” is complete.",
+      "lessonReminder": "Your session for “{{course}}” starts in {{hours}} h."
     },
     "preferenceUpdated": "Preference updated.",
     "preferenceError": "Unable to update this preference.",
@@ -908,8 +910,12 @@
       "media": {
         "description": "Monitor transcriptions and their processing status."
       },
-      "music": { "description": "Review playlists created by members." },
-      "audit": { "description": "Review the timeline of sensitive actions." }
+      "music": {
+        "description": "Review playlists created by members."
+      },
+      "audit": {
+        "description": "Review the timeline of sensitive actions."
+      }
     },
     "columns": {
       "user": "Member",
@@ -933,7 +939,10 @@
       "entity": "Entity",
       "metadata": "Details"
     },
-    "audit": { "details": "Show details", "noDetails": "No details" }
+    "audit": {
+      "details": "Show details",
+      "noDetails": "No details"
+    }
   },
   "moderation": {
     "description": "Review reports with their context and record a reason for each decision.",
