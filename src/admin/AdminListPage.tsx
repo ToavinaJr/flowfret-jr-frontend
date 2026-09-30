@@ -245,7 +245,7 @@ export default function AdminListPage<T extends { id: string }>({
         ) : null}
 
         <div className="w-full overflow-x-auto">
-          <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+          <table className="w-full min-w-[760px] table-fixed border-collapse text-left text-sm">
             <thead className="bg-secondary/50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 {columns.map((column) => (
@@ -276,7 +276,7 @@ export default function AdminListPage<T extends { id: string }>({
                       {columns.map((column) => (
                         <td
                           key={column.key}
-                          className={`px-4 py-3 ${column.className ?? ""}`}
+                          className={`min-w-0 whitespace-normal px-4 py-3 [overflow-wrap:anywhere] ${column.className ?? ""}`}
                         >
                           {column.render(row)}
                         </td>

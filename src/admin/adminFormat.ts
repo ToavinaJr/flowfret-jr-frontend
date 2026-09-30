@@ -1,8 +1,14 @@
-export function formatAdminDate(value: string, locale: string): string {
+export function formatAdminDate(
+  value: string | null | undefined,
+  locale: string,
+): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "—";
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 export function truncateAdminText(value: string | null, length = 80): string {
@@ -30,6 +36,15 @@ export function formatAdminNumber(
 ): string {
   return typeof value === "number" && Number.isFinite(value)
     ? value.toLocaleString(locale)
+    : "—";
+}
+
+export function formatAdminDurationSeconds(
+  value: number | null | undefined,
+  locale: string,
+): string {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? `${value.toLocaleString(locale)} s`
     : "—";
 }
 

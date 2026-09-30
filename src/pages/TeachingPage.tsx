@@ -5,6 +5,7 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { TeachingWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
 import {
   archiveTeachingCourse,
   deleteTeachingMaterial,
@@ -443,7 +444,7 @@ export default function TeachingPage() {
         Trouvez un enseignant, gérez vos cours ou proposez vos leçons payantes.
       </p>
       {loading ? (
-        <p className="text-sm text-muted-foreground">Chargement…</p>
+        <TeachingWorkspaceSkeleton />
       ) : (
         <div className="space-y-8">
           <section className={cardClass}>

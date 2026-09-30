@@ -41,6 +41,19 @@
     "loading": "Chargement…",
     "loadFailed": "Chargement impossible"
   },
+  "skeletons": {
+    "appLoading": "Chargement de l’application",
+    "postsLoading": "Chargement des publications",
+    "profileLoading": "Chargement du profil",
+    "peopleLoading": "Chargement des membres",
+    "notificationsLoading": "Chargement des notifications",
+    "chordAnalysisLoading": "Chargement de l’analyse des accords",
+    "commentsLoading": "Chargement des commentaires",
+    "playlistsLoading": "Chargement des playlists",
+    "transcriptionsLoading": "Chargement des transcriptions",
+    "teachingLoading": "Chargement de l’espace de cours",
+    "adminLoading": "Chargement des données d’administration"
+  },
   "friends": {
     "title": "Amis",
     "myFriends": "Mes amis",
@@ -243,10 +256,8 @@
   },
   "player": {
     "importedSubtitle": "Morceau importé · Lecteur guitare",
-    "demoSubtitle": "Démo · Lecteur guitare",
     "chordCount": "{{count}} accords",
     "importedSuffix": " · Importé",
-    "demoSuffix": " · Morceau de démonstration",
     "restart": "Recommencer",
     "syncPrompt": "Lancez la lecture pour synchroniser les accords",
     "play": "Lire",
@@ -368,7 +379,7 @@
     },
     "terms": {
       "title": "Conditions d’utilisation",
-      "description": "Les conditions complètes seront bientôt disponibles."
+      "description": "Le texte des conditions d’utilisation est en cours de préparation."
     },
     "hero": {
       "title": "Libérez le potentiel de votre guitare",

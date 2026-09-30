@@ -200,11 +200,11 @@ export interface AdminChordTranscription {
   providerTrackId: string;
   title: string | null;
   artist: string | null;
-  duration: number;
-  cueCount: number;
-  engineVersion: string;
-  createdAt: string;
-  updatedAt: string;
+  duration: number | null;
+  cueCount: number | null;
+  engineVersion: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface AdminPlaylist {

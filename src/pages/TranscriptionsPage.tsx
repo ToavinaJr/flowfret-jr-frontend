@@ -9,6 +9,7 @@ import {
 } from "@/services/transcriptionsApi";
 import type { TranscriptionResponse } from "@/types/transcription";
 import { useTranslation } from "react-i18next";
+import { TranscriptionsWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
 
 export default function TranscriptionsPage() {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ export default function TranscriptionsPage() {
     <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("transcriptions.title")}</h1>
       {loading ? (
-        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+        <TranscriptionsWorkspaceSkeleton />
       ) : (
         <div className="grid min-w-0 gap-4 md:grid-cols-[18rem_minmax(0,1fr)]">
           <aside className="max-h-[48dvh] min-w-0 space-y-2 overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-card p-3 md:max-h-none">

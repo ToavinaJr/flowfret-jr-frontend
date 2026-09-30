@@ -39,10 +39,10 @@ export default function AdminMusicPage() {
     {
       key: "name",
       labelKey: "admin.columns.playlist",
-      className: "max-w-sm",
+      className: "w-[32%] max-w-sm",
       render: (row) => (
         <div>
-          <p className="font-medium text-foreground">{row.name}</p>
+          <p className="line-clamp-2 font-medium text-foreground [overflow-wrap:anywhere]" title={row.name}>{row.name}</p>
           <p className="text-xs text-muted-foreground">
             {truncateAdminText(row.description, 60)}
           </p>

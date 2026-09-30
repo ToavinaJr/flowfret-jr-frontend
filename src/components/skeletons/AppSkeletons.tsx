@@ -190,3 +190,49 @@ export function CommentsSkeleton() {
     </div>
   );
 }
+
+export function PlaylistWorkspaceSkeleton() {
+  const { t } = useTranslation();
+  return (
+    <div role="status" aria-label={t("skeletons.playlistsLoading")} className="grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
+      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+        <Skeleton className="h-10 w-full" />
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+      </section>
+      <section className="space-y-4 rounded-xl border border-border bg-card p-4">
+        <Skeleton className="h-7 w-2/5" />
+        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex items-center gap-3"><Skeleton className="h-12 w-12 rounded-md" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-3/5" /><Skeleton className="h-3 w-2/5" /></div></div>)}
+      </section>
+    </div>
+  );
+}
+
+export function TranscriptionsWorkspaceSkeleton() {
+  const { t } = useTranslation();
+  return (
+    <div role="status" aria-label={t("skeletons.transcriptionsLoading")} className="grid min-w-0 gap-4 md:grid-cols-[18rem_minmax(0,1fr)]">
+      <aside className="space-y-2 rounded-xl border border-border bg-card p-3">
+        {Array.from({ length: 5 }).map((_, i) => <div key={i} className="space-y-2 rounded-md p-3"><Skeleton className="h-4 w-4/5" /><Skeleton className="h-3 w-2/5" /></div>)}
+      </aside>
+      <section className="space-y-4 rounded-xl border border-border bg-card p-4"><Skeleton className="h-6 w-1/2" /><Skeleton className="h-2 w-full rounded-full" />{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</section>
+    </div>
+  );
+}
+
+export function TeachingWorkspaceSkeleton() {
+  const { t } = useTranslation();
+  return (
+    <div role="status" aria-label={t("skeletons.teachingLoading")} className="space-y-8">
+      {Array.from({ length: 4 }).map((_, i) => <section key={i} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-5"><Skeleton className="h-6 w-2/5" /><div className="grid gap-3 sm:grid-cols-2">{Array.from({ length: i === 2 ? 4 : 6 }).map((__, j) => <Skeleton key={j} className={`h-11 w-full ${j === 5 ? "sm:col-span-2" : ""}`} />)}</div></section>)}
+    </div>
+  );
+}
+
+export function AdminCardsSkeleton({ count = 4 }: { count?: number }) {
+  const { t } = useTranslation();
+  return (
+    <div role="status" aria-label={t("skeletons.adminLoading")} className="space-y-3">
+      {Array.from({ length: count }).map((_, i) => <article key={i} className="space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5"><div className="flex items-start justify-between gap-4"><div className="flex-1 space-y-2"><Skeleton className="h-5 w-2/5" /><Skeleton className="h-3 w-3/5" /></div><Skeleton className="h-9 w-24" /></div><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-4/5" /><Skeleton className="h-10 w-44" /></article>)}
+    </div>
+  );
+}

@@ -2,13 +2,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { useTranslation } from "react-i18next";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import AppLayout from "@/components/AppLayout";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
+import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
@@ -48,7 +48,6 @@ const AdminEntityManagerPage = lazy(
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { t } = useTranslation();
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
@@ -64,11 +63,7 @@ const App = () => {
               <PlaybackProvider>
                 <AuthGate>
                   <Suspense
-                    fallback={
-                      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-                        {t("common.loading")}
-                      </div>
-                    }
+                    fallback={<AppShellSkeleton />}
                   >
                     <Routes>
                       <Route element={<AppLayout />}>

@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AdminCardsSkeleton } from "@/components/skeletons/AppSkeletons";
 import { useSearchParams } from "react-router-dom";
 import {
   createAdminManagedEntity,
@@ -466,9 +467,7 @@ export default function AdminEntityManagerPage() {
       ) : (
         <div className="overflow-hidden rounded-xl border border-border bg-card">
           {query.isLoading ? (
-            <p className="p-6 text-sm text-muted-foreground">
-              {t("common.loading")}
-            </p>
+            <div className="p-4"><AdminCardsSkeleton count={3} /></div>
           ) : rows.length ? (
             <div className="divide-y divide-border">
               {rows.map((row) => (

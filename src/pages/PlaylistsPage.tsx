@@ -14,6 +14,7 @@ import {
 } from "@/services/playlistsApi";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
+import { PlaylistWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
 
 export default function PlaylistsPage() {
   const { t } = useTranslation();
@@ -102,7 +103,7 @@ export default function PlaylistsPage() {
     <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("playlists.title")}</h1>
       {loading ? (
-        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+        <PlaylistWorkspaceSkeleton />
       ) : (
         <div className="grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
           <PlaylistList

@@ -12,7 +12,12 @@ import type {
 } from "@/types/admin";
 import AdminListPage, { AdminStatus, type AdminColumn } from "./AdminListPage";
 import { AdminResourceTabs } from "./AdminResourceTabs";
-import { formatAdminBytes, formatAdminDate } from "./adminFormat";
+import {
+  formatAdminBytes,
+  formatAdminDate,
+  formatAdminDurationSeconds,
+  formatAdminNumber,
+} from "./adminFormat";
 import {
   ADMIN_MEDIA_FILTERS,
   ADMIN_PROVIDER_FILTERS,
@@ -130,13 +135,13 @@ export default function AdminMediaPage() {
     {
       key: "track",
       labelKey: "admin.columns.track",
-      className: "max-w-sm",
+      className: "w-[34%] max-w-sm",
       render: (row) => (
         <div>
-          <p className="font-medium text-foreground">
+          <p className="font-medium text-foreground [overflow-wrap:anywhere]">
             {row.title || row.providerTrackId}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground [overflow-wrap:anywhere]">
             {row.artist || row.providerTrackId}
           </p>
         </div>
@@ -150,12 +155,12 @@ export default function AdminMediaPage() {
     {
       key: "duration",
       labelKey: "admin.resourceColumns.duration",
-      render: (row) => `${row.duration.toLocaleString(i18n.language)} s`,
+      render: (row) => formatAdminDurationSeconds(row.duration, i18n.language),
     },
     {
       key: "cues",
       labelKey: "admin.resourceColumns.cues",
-      render: (row) => row.cueCount.toLocaleString(i18n.language),
+      render: (row) => formatAdminNumber(row.cueCount, i18n.language),
     },
     {
       key: "engine",

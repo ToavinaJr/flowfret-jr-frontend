@@ -41,6 +41,19 @@
     "loading": "Loading…",
     "loadFailed": "Unable to load"
   },
+  "skeletons": {
+    "appLoading": "Loading the application",
+    "postsLoading": "Loading posts",
+    "profileLoading": "Loading profile",
+    "peopleLoading": "Loading members",
+    "notificationsLoading": "Loading notifications",
+    "chordAnalysisLoading": "Loading chord analysis",
+    "commentsLoading": "Loading comments",
+    "playlistsLoading": "Loading playlists",
+    "transcriptionsLoading": "Loading transcriptions",
+    "teachingLoading": "Loading the lessons workspace",
+    "adminLoading": "Loading administration data"
+  },
   "friends": {
     "title": "Friends",
     "myFriends": "My friends",
@@ -243,10 +256,8 @@
   },
   "player": {
     "importedSubtitle": "Imported track · Guitar Player",
-    "demoSubtitle": "Demo · Guitar Player",
     "chordCount": "{{count}} chords",
     "importedSuffix": " · Imported",
-    "demoSuffix": " · Demo track",
     "restart": "Restart",
     "syncPrompt": "Play to sync chords",
     "play": "Play",
@@ -368,7 +379,7 @@
     },
     "terms": {
       "title": "Terms of use",
-      "description": "The complete terms will be available soon."
+      "description": "The terms of use are being prepared."
     },
     "hero": {
       "title": "Unlock your guitar’s potential",

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { graphqlRequest } from "@/services/graphqlClient";
+import { AdminCardsSkeleton } from "@/components/skeletons/AppSkeletons";
 
 type TeacherApplication = {
   id: string;
@@ -93,7 +94,7 @@ export default function AdminTeachersPage() {
         cours.
       </p>
       {loading ? (
-        <p className="text-sm text-muted-foreground">Chargement…</p>
+        <AdminCardsSkeleton />
       ) : applications.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Aucun profil enseignant.
