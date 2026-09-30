@@ -29,7 +29,10 @@ const statistics = {
     newUsers: 1, newPosts: 2, newComments: 2, newUploads: 1,
     newTranscriptions: 1, reportsCreated: 1, trackPlays: 10,
   },
-  daily: [{ date: "2026-09-01", users: 1, posts: 1, comments: 1, reports: 1, trackPlays: 1 }],
+  daily: [
+    { date: "2026-09-01", users: 1, posts: 1, comments: 1, reports: 1, trackPlays: 1 },
+    { date: "2026-09-02", users: 0, posts: 0, comments: 0, reports: 0, trackPlays: 0 },
+  ],
   usersByStatus: [{ key: "ACTIVE", count: 8 }, { key: "PENDING", count: 2 }],
   transcriptionsByStatus: [{ key: "FAILED", count: 1 }],
   playsByProvider: [{ key: "YOUTUBE", count: 1 }],
@@ -113,6 +116,14 @@ test("overview fits narrow screens and section cards have no numeric badges", as
   await expect(sectionCards.locator("span.rounded-full")).toHaveCount(0);
   const dayCount = page.getByRole("link", { name: /open 1 members for/i });
   await expect(dayCount).toHaveText("1");
+  const bar = dayCount.locator("div.flex > div");
+  const label = dayCount.locator(":scope > span");
+  const [barBox, labelBox] = await Promise.all([bar.boundingBox(), label.boundingBox()]);
+  expect(barBox).not.toBeNull();
+  expect(labelBox).not.toBeNull();
+  expect(labelBox!.y).toBeGreaterThanOrEqual(barBox!.y + barBox!.height - 1);
+  const zeroCount = page.locator("div[style*='grid-template-columns']").getByRole("link").nth(1);
+  await expect(zeroCount).toBeEmpty();
   await dayCount.click();
   await expect(page).toHaveURL(/\/admin\/users\?from=2026-09-01&to=2026-09-01/);
   await expect(page.locator("input[type='date']").first()).toHaveValue("2026-09-01");
