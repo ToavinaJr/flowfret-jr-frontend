@@ -48,6 +48,7 @@ export default function AdminOverviewPage() {
     ["periodPlays", data?.period.trackPlays],
   ] as const;
   const seriesKeys: SeriesKey[] = ["users", "posts", "comments", "reports", "trackPlays"];
+  const dailyMax = Math.max(1, ...(data?.daily ?? []).map((point) => point[series]));
   const parseDate = (value?: string | null): Date | null => {
     if (!value) return null;
     const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -119,10 +120,10 @@ export default function AdminOverviewPage() {
       <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card p-4 xl:col-span-2 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="font-semibold">{t("admin.overview.trendTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("admin.overview.trendDescription", { count: days })}</p></div>
           <label className="sr-only" htmlFor="admin-trend-series">{t("admin.overview.series")}</label><select id="admin-trend-series" className="min-h-11 rounded-lg border border-border bg-card px-3 text-sm" value={series} onChange={(event) => setSeries(event.target.value as SeriesKey)}>{seriesKeys.map((key) => <option key={key} value={key}>{t(`admin.overview.seriesNames.${key}`)}</option>)}</select></div>
-        {statistics.isLoading ? <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : statistics.isError ? <p className="mt-6 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : data?.daily.length ? <div className="mt-6 overflow-x-auto pb-2">
-          <div className="flex h-48 min-w-max items-end gap-1 border-b border-border px-1" role="img" aria-label={t("admin.overview.trendTitle")}>
-            {data.daily.map((point: AdminDailyStatistic) => { const max = Math.max(1, ...data.daily.map((row) => row[series])); const value = point[series]; return <div key={point.date} className="flex h-full w-7 flex-col items-center justify-end gap-1" title={`${formatDate(point.date)}: ${value.toLocaleString(i18n.language)}`}><span className="sr-only">{`${formatDate(point.date)}: ${value}`}</span><div className="w-4 rounded-t bg-primary" style={{ height: `${Math.max(value > 0 ? 3 : 0, value / max * 82)}%` }} /></div>; })}
-          </div><div className="mt-2 flex min-w-max justify-between text-xs text-muted-foreground"><span>{data.daily[0] ? formatDate(data.daily[0].date) : ""}</span><span>{data.daily[data.daily.length - 1] ? formatDate(data.daily[data.daily.length - 1].date) : ""}</span></div>
+        {statistics.isLoading ? <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : statistics.isError ? <p className="mt-6 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : data?.daily.length ? <div className="mt-6 min-w-0 pb-2">
+          <div className="grid h-48 w-full min-w-0 items-end gap-1 border-b border-border px-1" style={{ gridTemplateColumns: `repeat(${data.daily.length}, minmax(0, 1fr))` }} role="img" aria-label={t("admin.overview.trendTitle")}>
+            {data.daily.map((point: AdminDailyStatistic) => { const value = point[series]; return <div key={point.date} className="flex h-full min-w-0 flex-col items-center justify-end gap-1" title={`${formatDate(point.date)}: ${value.toLocaleString(i18n.language)}`}><span className="sr-only">{`${formatDate(point.date)}: ${value}`}</span><div className="mx-auto w-full max-w-4 rounded-t bg-primary" style={{ height: `${Math.max(value > 0 ? 3 : 0, value / dailyMax * 82)}%` }} /></div>; })}
+          </div><div className="mt-2 flex w-full min-w-0 justify-between text-xs text-muted-foreground"><span>{data.daily[0] ? formatDate(data.daily[0].date) : ""}</span><span>{data.daily[data.daily.length - 1] ? formatDate(data.daily[data.daily.length - 1].date) : ""}</span></div>
         </div> : <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.noTrend")}</p>}
       </section>
       {distribution(t("admin.overview.usersByStatus"), data?.usersByStatus, statistics.isLoading, statistics.isError)}

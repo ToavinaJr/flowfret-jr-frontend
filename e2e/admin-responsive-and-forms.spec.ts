@@ -105,6 +105,8 @@ test("overview fits narrow screens and section cards have no numeric badges", as
   for (const width of [320, 360, 375, 390, 640, 768, 1024]) {
     await page.setViewportSize({ width, height: 850 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    const chart = page.locator("[role='img']");
+    await expect.poll(() => chart.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   }
   const sectionCards = page.locator("ul.mt-4 a[href^='/admin/']");
   await expect(sectionCards).toHaveCount(7);
