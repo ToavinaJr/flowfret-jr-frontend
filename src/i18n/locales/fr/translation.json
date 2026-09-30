@@ -385,7 +385,7 @@
       "googleNotConfigured": "La connexion Google n’est pas configurée. Ajoutez VITE_GOOGLE_CLIENT_ID.",
       "googleLoadFailed": "La connexion Google n’a pas pu se charger. Vérifiez votre connexion puis rechargez la page.",
       "googleLoading": "La connexion Google est en cours de chargement. Réessayez dans un instant.",
-      "googlePopupBlocked": "Votre navigateur a bloqué la fenêtre Google. Autorisez les fenêtres pop-up pour FlowFret puis réessayez.",
+      "googlePopupBlocked": "La fenêtre de connexion Google n’a pas pu s’ouvrir. Vérifiez que les fenêtres pop-up sont autorisées pour FlowFret, puis rechargez la page.",
       "googleCancelled": "Connexion Google annulée.",
       "googleLoginFailed": "Impossible de se connecter avec Google. Réessayez.",
       "resetLinkMissing": "Le lien de réinitialisation est manquant.",
