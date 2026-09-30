@@ -5,7 +5,7 @@ import { lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import AppLayout from "@/components/AppLayout";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
