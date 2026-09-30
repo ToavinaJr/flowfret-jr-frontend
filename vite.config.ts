@@ -8,6 +8,9 @@ export default defineConfig(() => ({
     host: "localhost",
     port: 8080,
     strictPort: true,
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
     hmr: {
       overlay: true,
     },
