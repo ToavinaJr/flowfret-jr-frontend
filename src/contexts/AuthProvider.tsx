@@ -44,7 +44,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
     window.addEventListener(AUTH_SESSION_CLEARED_EVENT, handleSessionCleared);
     return () => {
-      window.removeEventListener(AUTH_SESSION_CLEARED_EVENT, handleSessionCleared);
+      window.removeEventListener(
+        AUTH_SESSION_CLEARED_EVENT,
+        handleSessionCleared,
+      );
     };
   }, []);
 
@@ -79,7 +82,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setStatus("authenticated");
   }, []);
 
-  const register = useCallback(async (data: RegisterInput) => registerUser(data), []);
+  const register = useCallback(
+    async (data: RegisterInput) => registerUser(data),
+    [],
+  );
 
   const verifyEmail = useCallback(async (data: VerifyEmailInput) => {
     const session = await verifyEmailUser(data);
@@ -87,7 +93,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setStatus("authenticated");
   }, []);
 
-  const resendVerification = useCallback(async (token: string) => resendVerificationEmail(token), []);
+  const resendVerification = useCallback(
+    async (token: string) => resendVerificationEmail(token),
+    [],
+  );
 
   const registerWithGoogle = useCallback(async (accessToken: string) => {
     const session = await registerWithGoogleUser(accessToken);
