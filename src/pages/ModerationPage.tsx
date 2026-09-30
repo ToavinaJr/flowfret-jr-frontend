@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Search, ShieldCheck, XCircle } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,11 +36,17 @@ const REPORT_STATUSES = [
 export default function ModerationPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const [draftSearch, setDraftSearch] = useState("");
   const [search, setSearch] = useState("");
-  const [draftStatus, setDraftStatus] = useState<string>(REPORT_STATUS.OPEN);
-  const [status, setStatus] = useState<string>(REPORT_STATUS.OPEN);
+  const initialStatus = searchParams.get("status") ?? (searchParams.has("from") || searchParams.has("to") ? "" : REPORT_STATUS.OPEN);
+  const [draftStatus, setDraftStatus] = useState<string>(initialStatus);
+  const [status, setStatus] = useState<string>(initialStatus);
+  const [draftFrom, setDraftFrom] = useState(() => searchParams.get("from") ?? "");
+  const [draftTo, setDraftTo] = useState(() => searchParams.get("to") ?? "");
+  const [from, setFrom] = useState(() => searchParams.get("from") ?? "");
+  const [to, setTo] = useState(() => searchParams.get("to") ?? "");
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined]);
   const [decision, setDecision] = useState<Decision | null>(null);
   const [reason, setReason] = useState("");
@@ -54,6 +60,8 @@ export default function ModerationPage() {
         ...(cursor ? { after: cursor } : {}),
         ...(search ? { search } : {}),
         ...(status ? { reportStatus: status } : {}),
+        ...(from ? { from } : {}),
+        ...(to ? { to } : {}),
       }),
     enabled: user?.role === USER_ROLE.ADMIN,
     placeholderData: (previous) => previous,
@@ -97,6 +105,8 @@ export default function ModerationPage() {
     event.preventDefault();
     setSearch(draftSearch.trim());
     setStatus(draftStatus);
+    setFrom(draftFrom);
+    setTo(draftTo);
     setCursors([undefined]);
   }
 
@@ -105,6 +115,10 @@ export default function ModerationPage() {
     setSearch("");
     setDraftStatus("");
     setStatus("");
+    setDraftFrom("");
+    setDraftTo("");
+    setFrom("");
+    setTo("");
     setCursors([undefined]);
   }
 
@@ -155,11 +169,19 @@ export default function ModerationPage() {
               ))}
             </select>
           </label>
+          <label className="grid gap-1 text-xs text-muted-foreground">
+            <span>{t("admin.filters.from")}</span>
+            <input type="date" value={draftFrom} onChange={(event) => setDraftFrom(event.target.value)} className="min-h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground" />
+          </label>
+          <label className="grid gap-1 text-xs text-muted-foreground">
+            <span>{t("admin.filters.to")}</span>
+            <input type="date" value={draftTo} onChange={(event) => setDraftTo(event.target.value)} className="min-h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground" />
+          </label>
           <div className="flex gap-2">
             <button type="submit" className="min-h-11 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground">
               {t("admin.search")}
             </button>
-            {(search || status !== "") && (
+            {(search || status !== "" || from || to) && (
               <button type="button" onClick={resetFilters} className="min-h-11 rounded-lg px-3 text-sm underline-offset-4 hover:underline">
                 {t("admin.filters.reset")}
               </button>

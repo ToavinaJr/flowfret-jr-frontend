@@ -716,6 +716,9 @@
       "periodActivity": "Activity during period",
       "trendTitle": "Daily activity",
       "trendDescription": "Daily values for the last {{count}} days.",
+      "showItems": "Show matching items",
+      "openItemsFor": "Open {{value}} items for {{label}}",
+      "openDailyItems": "Open {{value}} {{series}} for {{date}}",
       "series": "Metric",
       "seriesNames": {
         "users": "Members",

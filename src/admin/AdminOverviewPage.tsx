@@ -9,6 +9,15 @@ import { ADMIN_NAV_ITEMS } from "./adminNavigation";
 
 type SeriesKey = "users" | "posts" | "comments" | "reports" | "trackPlays";
 
+function withQuery(path: string, values: Record<string, string | undefined>) {
+  const query = new URLSearchParams();
+  Object.entries(values).forEach(([key, value]) => {
+    if (value) query.set(key, value);
+  });
+  const serialized = query.toString();
+  return serialized ? `${path}?${serialized}` : path;
+}
+
 export default function AdminOverviewPage() {
   const { t, i18n } = useTranslation();
   const [days, setDays] = useState(30);
@@ -49,6 +58,38 @@ export default function AdminOverviewPage() {
   ] as const;
   const seriesKeys: SeriesKey[] = ["users", "posts", "comments", "reports", "trackPlays"];
   const dailyMax = Math.max(1, ...(data?.daily ?? []).map((point) => point[series]));
+  const periodFrom = data?.periodStart.slice(0, 10);
+  const periodTo = data?.periodEnd.slice(0, 10);
+  const dailyDestination = (point: AdminDailyStatistic) => {
+    const dates = { from: point.date, to: point.date };
+    switch (series) {
+      case "users": return withQuery("/admin/users", dates);
+      case "posts": return withQuery("/admin/content", dates);
+      case "comments": return withQuery("/admin/data", { entity: "COMMENT", ...dates });
+      case "reports": return withQuery("/admin/content/reports", dates);
+      case "trackPlays": return withQuery("/admin/audit", { action: "MUTATION_RECORDTRACKLISTEN", ...dates });
+    }
+  };
+  const metricDestinations: Record<string, string> = {
+    users: "/admin/users",
+    activeUsers: withQuery("/admin/users", { status: "ACTIVE" }),
+    posts: "/admin/content",
+    comments: withQuery("/admin/data", { entity: "COMMENT" }),
+    openReports: withQuery("/admin/content/reports", { status: "OPEN" }),
+    uploads: withQuery("/admin/media", { view: "uploads" }),
+    transcriptions: withQuery("/admin/media", { view: "transcriptions" }),
+    chordTranscriptions: withQuery("/admin/media", { view: "chords" }),
+    playlists: withQuery("/admin/music", { view: "playlists" }),
+    catalogTracks: withQuery("/admin/music", { view: "catalog" }),
+    trackPlays: withQuery("/admin/music", { view: "history" }),
+    newUsers: withQuery("/admin/users", { from: periodFrom, to: periodTo }),
+    newPosts: withQuery("/admin/content", { from: periodFrom, to: periodTo }),
+    newComments: withQuery("/admin/data", { entity: "COMMENT", from: periodFrom, to: periodTo }),
+    newUploads: withQuery("/admin/media", { view: "uploads", from: periodFrom, to: periodTo }),
+    newTranscriptions: withQuery("/admin/media", { view: "transcriptions", from: periodFrom, to: periodTo }),
+    reportsCreated: withQuery("/admin/content/reports", { from: periodFrom, to: periodTo }),
+    periodPlays: withQuery("/admin/audit", { action: "MUTATION_RECORDTRACKLISTEN", from: periodFrom, to: periodTo }),
+  };
   const parseDate = (value?: string | null): Date | null => {
     if (!value) return null;
     const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -68,12 +109,12 @@ export default function AdminOverviewPage() {
     return date ? date.toLocaleString(i18n.language) : "—";
   };
 
-  const distribution = (title: string, entries: AdminCategoryStatistic[] | undefined, loading: boolean, failed: boolean) => {
+  const distribution = (title: string, entries: AdminCategoryStatistic[] | undefined, loading: boolean, failed: boolean, getDestination: (key: string) => string) => {
     const max = Math.max(1, ...(entries ?? []).map(({ count }) => count));
     return <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5">
       <h3 className="font-semibold">{title}</h3>
       {loading ? <p className="mt-4 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : failed ? <p className="mt-4 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : entries?.length ? <ul className="mt-4 space-y-3">{entries.map((entry) => <li key={entry.key}>
-        <div className="mb-1 flex min-w-0 justify-between gap-3 text-sm"><span className="min-w-0 flex-1 truncate">{t(`admin.values.${entry.key}`, { defaultValue: entry.key })}</span><span className="shrink-0 tabular-nums">{entry.count.toLocaleString(i18n.language)}</span></div>
+        <div className="mb-1 flex min-w-0 justify-between gap-3 text-sm"><span className="min-w-0 flex-1 truncate">{t(`admin.values.${entry.key}`, { defaultValue: entry.key })}</span><Link className="shrink-0 rounded-sm font-medium tabular-nums text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" to={getDestination(entry.key)} aria-label={t("admin.overview.openItemsFor", { value: entry.count, label: t(`admin.values.${entry.key}`, { defaultValue: entry.key }) })}>{entry.count.toLocaleString(i18n.language)}</Link></div>
         <div className="h-2 max-w-full overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(1, entry.count / max * 100)}%` }} /></div>
       </li>)}</ul> : <p className="mt-4 text-sm text-muted-foreground">{t("admin.overview.noDistribution")}</p>}
     </section>;
@@ -107,13 +148,13 @@ export default function AdminOverviewPage() {
     <h2 className="mb-3 text-lg font-semibold">{t("admin.overview.totalActivity")}</h2>
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{cards.map((card) => <article key={card.key} className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3"><p className="truncate text-sm text-muted-foreground">{t(`admin.metrics.${card.key}`)}</p><card.icon className="h-4 w-4 shrink-0 text-primary" /></div>
-      <p className="mt-3 text-2xl font-semibold tabular-nums">{number(card.value)}</p>
+      {card.value !== undefined && !unavailable ? <Link to={metricDestinations[card.key]} className="mt-3 inline-flex rounded-sm text-2xl font-semibold tabular-nums text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={t("admin.overview.openItemsFor", { value: number(card.value), label: t(`admin.metrics.${card.key}`) })}>{number(card.value)}</Link> : <p className="mt-3 text-2xl font-semibold tabular-nums">{number(card.value)}</p>}
     </article>)}</div>
 
     <section className="mt-8 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="text-lg font-semibold">{t("admin.overview.periodActivity")}</h2><p className="mt-1 text-sm text-muted-foreground">{data ? `${formatDate(data.periodStart)} – ${formatDate(data.periodEnd)}` : ""}</p></div>
         {data?.generatedAt && <p className="text-xs text-muted-foreground">{t("admin.overview.generatedAt", { time: formatDateTime(data.generatedAt) })}</p>}</div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{periodCards.map(([key, value]) => <div key={key} className="rounded-lg bg-secondary/50 p-3"><p className="text-sm text-muted-foreground">{t(`admin.metrics.${key}`)}</p><p className="mt-1 text-xl font-semibold tabular-nums">{number(value)}</p></div>)}</div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{periodCards.map(([key, value]) => <div key={key} className="rounded-lg bg-secondary/50 p-3"><p className="text-sm text-muted-foreground">{t(`admin.metrics.${key}`)}</p><Link to={metricDestinations[key]} className="mt-1 inline-flex rounded-sm text-xl font-semibold tabular-nums text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={t("admin.overview.openItemsFor", { value: number(value), label: t(`admin.metrics.${key}`) })}>{number(value)}</Link></div>)}</div>
     </section>
 
     <div className="mt-8 grid min-w-0 gap-4 xl:grid-cols-3">
@@ -121,14 +162,14 @@ export default function AdminOverviewPage() {
         <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="font-semibold">{t("admin.overview.trendTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("admin.overview.trendDescription", { count: days })}</p></div>
           <label className="sr-only" htmlFor="admin-trend-series">{t("admin.overview.series")}</label><select id="admin-trend-series" className="min-h-11 rounded-lg border border-border bg-card px-3 text-sm" value={series} onChange={(event) => setSeries(event.target.value as SeriesKey)}>{seriesKeys.map((key) => <option key={key} value={key}>{t(`admin.overview.seriesNames.${key}`)}</option>)}</select></div>
         {statistics.isLoading ? <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.loading")}</p> : statistics.isError ? <p className="mt-6 text-sm text-destructive">{t("admin.overview.unavailable")}</p> : data?.daily.length ? <div className="mt-6 min-w-0 pb-2">
-          <div className="grid h-48 w-full min-w-0 items-end gap-1 border-b border-border px-1" style={{ gridTemplateColumns: `repeat(${data.daily.length}, minmax(0, 1fr))` }} role="img" aria-label={t("admin.overview.trendTitle")}>
-            {data.daily.map((point: AdminDailyStatistic) => { const value = point[series]; return <div key={point.date} className="flex h-full min-w-0 flex-col items-center justify-end gap-1" title={`${formatDate(point.date)}: ${value.toLocaleString(i18n.language)}`}><span className="sr-only">{`${formatDate(point.date)}: ${value}`}</span><div className="mx-auto w-full max-w-4 rounded-t bg-primary" style={{ height: `${Math.max(value > 0 ? 3 : 0, value / dailyMax * 82)}%` }} /></div>; })}
+          <div className="grid h-48 w-full min-w-0 items-end gap-1 border-b border-border px-1" style={{ gridTemplateColumns: `repeat(${data.daily.length}, minmax(0, 1fr))` }} aria-label={t("admin.overview.trendTitle")}>
+            {data.daily.map((point: AdminDailyStatistic) => { const value = point[series]; return <Link key={point.date} to={dailyDestination(point)} className="flex h-full min-w-0 flex-col justify-end rounded-t text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" title={`${formatDate(point.date)}: ${value.toLocaleString(i18n.language)} — ${t("admin.overview.showItems")}`} aria-label={t("admin.overview.openDailyItems", { date: formatDate(point.date), value: value.toLocaleString(i18n.language), series: t(`admin.overview.seriesNames.${series}`) })}><span className="truncate text-[10px] leading-3 text-primary">{value.toLocaleString(i18n.language)}</span><div className="flex min-h-0 flex-1 items-end"><div className="mx-auto w-full max-w-4 rounded-t bg-primary" style={{ height: `${value ? Math.max(3, value / dailyMax * 82) : 0}%` }} /></div></Link>; })}
           </div><div className="mt-2 flex w-full min-w-0 justify-between text-xs text-muted-foreground"><span>{data.daily[0] ? formatDate(data.daily[0].date) : ""}</span><span>{data.daily[data.daily.length - 1] ? formatDate(data.daily[data.daily.length - 1].date) : ""}</span></div>
         </div> : <p className="mt-6 text-sm text-muted-foreground">{t("admin.overview.noTrend")}</p>}
       </section>
-      {distribution(t("admin.overview.usersByStatus"), data?.usersByStatus, statistics.isLoading, statistics.isError)}
-      {distribution(t("admin.overview.transcriptionsByStatus"), data?.transcriptionsByStatus, statistics.isLoading, statistics.isError)}
-      {distribution(t("admin.overview.playsByProvider"), data?.playsByProvider, statistics.isLoading, statistics.isError)}
+      {distribution(t("admin.overview.usersByStatus"), data?.usersByStatus, statistics.isLoading, statistics.isError, (key) => withQuery("/admin/users", { status: key }))}
+      {distribution(t("admin.overview.transcriptionsByStatus"), data?.transcriptionsByStatus, statistics.isLoading, statistics.isError, (key) => withQuery("/admin/media", { view: "transcriptions", transcriptionStatus: key }))}
+      {distribution(t("admin.overview.playsByProvider"), data?.playsByProvider, statistics.isLoading, statistics.isError, (key) => withQuery("/admin/music", { view: "history", provider: key }))}
     </div>
 
     <div className="mt-8"><h2 className="text-lg font-semibold">{t("admin.overview.sectionsTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("admin.overview.sectionsDescription")}</p>

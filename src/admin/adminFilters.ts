@@ -1,6 +1,8 @@
 import type { AdminFilter } from "./AdminListPage";
 
 export const ADMIN_USER_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
   {
     key: "role",
     labelKey: "admin.filters.role",
@@ -20,6 +22,8 @@ export const ADMIN_USER_FILTERS: AdminFilter[] = [
 ];
 
 export const ADMIN_CONTENT_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
   {
     key: "postStatus",
     labelKey: "admin.filters.status",
@@ -31,6 +35,8 @@ export const ADMIN_CONTENT_FILTERS: AdminFilter[] = [
 ];
 
 export const ADMIN_MEDIA_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
   {
     key: "transcriptionStatus",
     labelKey: "admin.filters.status",

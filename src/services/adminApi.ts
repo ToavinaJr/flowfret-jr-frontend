@@ -38,6 +38,8 @@ export async function fetchAdminManagedEntities(input: {
   first?: number;
   skip?: number;
   includeDeleted?: boolean;
+  from?: string;
+  to?: string;
 }): Promise<AdminManagedEntityConnection> {
   const result = await graphqlRequest<{
     adminManagedEntities: AdminManagedEntityConnection;

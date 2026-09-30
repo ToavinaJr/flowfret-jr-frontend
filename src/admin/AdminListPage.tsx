@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import type { AdminConnection, AdminListInput } from "@/types/admin";
 
 export interface AdminColumn<T> {
@@ -54,11 +55,20 @@ export default function AdminListPage<T extends { id: string }>({
   showIncludeDeleted = true,
 }: AdminListPageProps<T>) {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const initialFilters = Object.fromEntries(
+    filters.flatMap(({ key }) => {
+      const value = searchParams.get(key);
+      return value ? [[key, value]] : [];
+    }),
+  );
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
-  const [draftFilters, setDraftFilters] = useState<Record<string, string>>({});
+  const [draftFilters, setDraftFilters] = useState<Record<string, string>>(
+    initialFilters,
+  );
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {},
+    initialFilters,
   );
   const [includeDeletedDraft, setIncludeDeletedDraft] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);

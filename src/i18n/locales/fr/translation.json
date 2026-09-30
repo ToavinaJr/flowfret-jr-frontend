@@ -716,6 +716,9 @@
       "periodActivity": "Activité sur la période",
       "trendTitle": "Évolution quotidienne",
       "trendDescription": "Valeurs quotidiennes sur les {{count}} derniers jours.",
+      "showItems": "Afficher les éléments correspondants",
+      "openItemsFor": "Afficher les {{value}} éléments : {{label}}",
+      "openDailyItems": "Afficher {{value}} {{series}} du {{date}}",
       "series": "Indicateur",
       "seriesNames": {
         "users": "Membres",

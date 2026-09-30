@@ -17,8 +17,8 @@ const user = {
 
 const statistics = {
   generatedAt: "2026-09-30T00:00:00.000Z",
-  periodStart: "2026-09-01",
-  periodEnd: "2026-09-30",
+  periodStart: "2026-09-01T00:00:00.000Z",
+  periodEnd: "2026-09-30T23:59:59.999Z",
   days: 30,
   totals: {
     users: 10, activeUsers: 8, posts: 4, comments: 4, openReports: 1,
@@ -29,7 +29,7 @@ const statistics = {
     newUsers: 1, newPosts: 2, newComments: 2, newUploads: 1,
     newTranscriptions: 1, reportsCreated: 1, trackPlays: 10,
   },
-  daily: [{ date: "2026-09-01", users: 1, posts: 1, comments: 1, reports: 0, trackPlays: 1 }],
+  daily: [{ date: "2026-09-01", users: 1, posts: 1, comments: 1, reports: 1, trackPlays: 1 }],
   usersByStatus: [{ key: "ACTIVE", count: 8 }, { key: "PENDING", count: 2 }],
   transcriptionsByStatus: [{ key: "FAILED", count: 1 }],
   playsByProvider: [{ key: "YOUTUBE", count: 1 }],
@@ -105,12 +105,58 @@ test("overview fits narrow screens and section cards have no numeric badges", as
   for (const width of [320, 360, 375, 390, 640, 768, 1024]) {
     await page.setViewportSize({ width, height: 850 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    const chart = page.locator("[role='img']");
+    const chart = page.locator("div[style*='grid-template-columns']");
     await expect.poll(() => chart.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   }
-  const sectionCards = page.locator("ul.mt-4 a[href^='/admin/']");
+  const sectionCards = page.locator("div.mt-8").filter({ has: page.getByRole("heading", { name: /management workflow/i }) }).locator("ul a[href^='/admin/']");
   await expect(sectionCards).toHaveCount(7);
   await expect(sectionCards.locator("span.rounded-full")).toHaveCount(0);
+  const dayCount = page.getByRole("link", { name: /open 1 members for/i });
+  await expect(dayCount).toHaveText("1");
+  await dayCount.click();
+  await expect(page).toHaveURL(/\/admin\/users\?from=2026-09-01&to=2026-09-01/);
+  await expect(page.locator("input[type='date']").first()).toHaveValue("2026-09-01");
+});
+
+test("each daily chart value opens the filtered items for its metric", async ({ page }) => {
+  const destinations = [
+    { label: "Members", url: /\/admin\/users\?from=2026-09-01&to=2026-09-01/ },
+    { label: "Posts", url: /\/admin\/content\?from=2026-09-01&to=2026-09-01/ },
+    { label: "Comments", url: /\/admin\/data\?entity=COMMENT&from=2026-09-01&to=2026-09-01/ },
+    { label: "Reports", url: /\/admin\/content\/reports\?from=2026-09-01&to=2026-09-01/ },
+    { label: "Plays", url: /\/admin\/audit\?action=MUTATION_RECORDTRACKLISTEN&from=2026-09-01&to=2026-09-01/ },
+  ];
+  for (const destination of destinations) {
+    await page.goto("/admin");
+    await page.locator("#admin-trend-series").selectOption({ label: destination.label });
+    const chart = page.locator("div[style*='grid-template-columns']");
+    const dayCount = chart.getByRole("link").first();
+    await expect(dayCount).toHaveText("1");
+    await dayCount.click();
+    await expect(page).toHaveURL(destination.url);
+  }
+});
+
+test("dashboard metric and breakdown counts open their matching lists", async ({ page }) => {
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Open 10 items for Members" }).click();
+  await expect(page).toHaveURL(/\/admin\/users$/);
+
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Open 2 items for New posts" }).click();
+  await expect(page).toHaveURL(/\/admin\/content\?from=2026-09-01&to=2026-09-30/);
+
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Open 8 items for Active", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/users\?status=ACTIVE/);
+
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Open 1 items for Failed" }).click();
+  await expect(page).toHaveURL(/\/admin\/media\?view=transcriptions&transcriptionStatus=FAILED/);
+
+  await page.goto("/admin");
+  await page.getByRole("link", { name: "Open 1 items for YouTube" }).click();
+  await expect(page).toHaveURL(/\/admin\/music\?view=history&provider=YOUTUBE/);
 });
 
 test("search forms across admin lists keep focus and caret while typing", async ({ page }) => {

@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import {
   createAdminManagedEntity,
   deleteAdminManagedEntity,
@@ -148,20 +149,26 @@ const IMMUTABLE_KEYS: Partial<Record<AdminManagedEntity, string[]>> = {
 
 export default function AdminEntityManagerPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const [entity, setEntity] = useState<AdminManagedEntity>("PROFILE");
+  const [entity, setEntity] = useState<AdminManagedEntity>(() => {
+    const requested = searchParams.get("entity");
+    return ADMIN_MANAGED_ENTITIES.find((candidate) => candidate === requested) ?? "PROFILE";
+  });
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [skip, setSkip] = useState(0);
   const [search, setSearch] = useState("");
+  const [from, setFrom] = useState(() => searchParams.get("from") ?? "");
+  const [to, setTo] = useState(() => searchParams.get("to") ?? "");
   const [recordId, setRecordId] = useState<string | null>(null);
   const [draft, setDraft] = useState("{}");
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
   const query = useQuery({
-    queryKey: ["admin", "managed-entities", entity, includeDeleted, skip],
+    queryKey: ["admin", "managed-entities", entity, includeDeleted, from, to, skip],
     queryFn: () =>
-      fetchAdminManagedEntities({ entity, first: 50, skip, includeDeleted }),
+      fetchAdminManagedEntities({ entity, first: 50, skip, includeDeleted, ...(from ? { from } : {}), ...(to ? { to } : {}) }),
     staleTime: 15_000,
   });
   const mutation = useMutation({
@@ -332,6 +339,14 @@ export default function AdminEntityManagerPage() {
             placeholder={t("admin.searchPlaceholder")}
             className="min-h-11 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm"
           />
+        </label>
+        <label className="grid gap-1 text-xs text-muted-foreground">
+          <span>{t("admin.filters.from")}</span>
+          <input type="date" value={from} onChange={(event) => { setFrom(event.target.value); setSkip(0); }} className="min-h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground" />
+        </label>
+        <label className="grid gap-1 text-xs text-muted-foreground">
+          <span>{t("admin.filters.to")}</span>
+          <input type="date" value={to} onChange={(event) => { setTo(event.target.value); setSkip(0); }} className="min-h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground" />
         </label>
         {RESTORABLE.has(entity) && (
           <label className="flex min-h-11 items-center gap-2 text-sm">
