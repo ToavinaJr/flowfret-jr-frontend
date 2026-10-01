@@ -103,13 +103,8 @@ export function useAuthGateFlow() {
     setError(null);
     try {
       const accessToken = await requestGoogleAccessToken();
-      if (form.mode === "login") {
-        await auth.loginWithGoogle(accessToken);
-        toast.success(t("auth.toasts.googleConnected"));
-      } else {
-        await auth.registerWithGoogle(accessToken);
-        toast.success(t("auth.toasts.googleConnected"));
-      }
+      await auth.registerWithGoogle(accessToken);
+      toast.success(t("auth.toasts.googleConnected"));
     } catch (cause) {
       setError(googleError(cause, t));
     } finally {
