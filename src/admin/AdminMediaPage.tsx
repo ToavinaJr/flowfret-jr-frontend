@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import AdminTranscriptionLrcEditor from "./AdminTranscriptionLrcEditor";
 import { useTranslation } from "react-i18next";
 import {
   fetchAdminChordTranscriptions,
@@ -73,6 +74,11 @@ export default function AdminMediaPage() {
       key: "attempts",
       labelKey: "admin.columns.attempts",
       render: (row) => row.attempts,
+    },
+    {
+      key: "lrc",
+      labelKey: "admin.resources.transcriptions.lrcColumn",
+      render: (row) => <AdminTranscriptionLrcEditor transcription={row} />,
     },
     {
       key: "createdAt",

@@ -37,6 +37,7 @@
     "close": "Close",
     "cancel": "Cancel",
     "save": "Save",
+    "saving": "Saving…",
     "retry": "Retry",
     "loading": "Loading…",
     "loadFailed": "Unable to load"
@@ -708,6 +709,8 @@
     "preparing": "Preparing…",
     "prepareFailed": "Unable to prepare the transcription.",
     "retryFailed": "Unable to retry the transcription.",
+    "audioTooLong": "The video exceeds the 5-minute limit.",
+    "youtubeExtractionFailed": "Unable to extract YouTube audio. Check that the video is accessible and try again.",
     "downloadFailed": "Unable to download the LRC file.",
     "downloadLrc": "Download LRC"
   },
@@ -952,7 +955,16 @@
       "transcriptions": {
         "tab": "Lyrics",
         "title": "Music transcriptions",
-        "description": "Review the processing state of lyric transcriptions."
+        "description": "Review the processing state of lyric transcriptions.",
+        "lrcColumn": "LRC lyrics",
+        "editLrc": "Edit LRC",
+        "editorTitle": "Edit LRC file",
+        "lrcLabel": "LRC file content",
+        "loadingLrc": "Loading LRC file…",
+        "loadLrcFailed": "Unable to load the LRC file.",
+        "saveLrcFailed": "Unable to save the LRC file.",
+        "lrcSaved": "LRC file saved.",
+        "lrcCharacters": "{{count}} / {{max}} characters"
       },
       "uploads": {
         "tab": "Uploads",

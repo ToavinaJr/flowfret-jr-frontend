@@ -37,6 +37,7 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "save": "Enregistrer",
+    "saving": "Enregistrement…",
     "retry": "Réessayer",
     "loading": "Chargement…",
     "loadFailed": "Chargement impossible"
@@ -708,6 +709,8 @@
     "preparing": "Préparation…",
     "prepareFailed": "Impossible de préparer la transcription.",
     "retryFailed": "Impossible de relancer la transcription.",
+    "audioTooLong": "La vidéo dépasse la durée maximale de 5 minutes.",
+    "youtubeExtractionFailed": "Impossible d’extraire l’audio YouTube. Vérifiez que la vidéo est accessible puis réessayez.",
     "downloadFailed": "Impossible de télécharger le fichier LRC.",
     "downloadLrc": "Télécharger le LRC"
   },
@@ -952,7 +955,16 @@
       "transcriptions": {
         "tab": "Paroles",
         "title": "Transcriptions musicales",
-        "description": "Consultez le traitement des transcriptions de paroles."
+        "description": "Consultez le traitement des transcriptions de paroles.",
+        "lrcColumn": "Paroles LRC",
+        "editLrc": "Modifier le LRC",
+        "editorTitle": "Modifier le fichier LRC",
+        "lrcLabel": "Contenu du fichier LRC",
+        "loadingLrc": "Chargement du fichier LRC…",
+        "loadLrcFailed": "Impossible de charger le fichier LRC.",
+        "saveLrcFailed": "Impossible d’enregistrer le fichier LRC.",
+        "lrcSaved": "Fichier LRC enregistré.",
+        "lrcCharacters": "{{count}} / {{max}} caractères"
       },
       "uploads": {
         "tab": "Fichiers téléversés",

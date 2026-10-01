@@ -150,6 +150,21 @@ export async function downloadTranscriptionLrc(id: string): Promise<void> {
   const link = document.createElement("a"); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url);
 }
 
+export async function getAdminTranscriptionLrc(id: string): Promise<string> {
+  const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}/lrc/admin`, { headers: headers() });
+  if (!response.ok) throw new Error('Unable to load LRC');
+  const result: unknown = await response.json();
+  if (!result || typeof result !== 'object' || !('content' in result) || typeof result.content !== 'string') throw new Error('Invalid LRC response');
+  return result.content;
+}
+
+export async function saveAdminTranscriptionLrc(id: string, content: string): Promise<void> {
+  const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}/lrc/admin`, {
+    method: 'PUT', headers: headers(true), body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new Error('Unable to save LRC');
+}
+
 export async function streamTranscriptionEvents(id: string, signal: AbortSignal, onEvent: (event: TranscriptionEvent) => void): Promise<void> {
   const response = await fetch(`${BASE_URL}/${encodeURIComponent(id)}/events`, { headers: { ...headers(), Accept: "text/event-stream" }, signal });
   if (!response.ok || !response.body) {

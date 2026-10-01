@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { TRANSCRIPTION_PHASE, TRANSCRIPTION_STATUS } from "@/constants/domain";
 import { toMusicPlaybackItem } from "./music-playback";
 
-export function AudiusMediaPlayer({
+export function TranscriptionMediaPlayer({
   track,
   playbackQueue = [],
   queueIndex = 0,
@@ -175,7 +175,13 @@ export function AudiusMediaPlayer({
               role="alert"
               className="mb-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
-              {actionError ?? error ?? transcription?.error?.message}
+              {actionError ??
+                error ??
+                (transcription?.error?.code === "AUDIO_TOO_LONG"
+                  ? t("lyrics.audioTooLong")
+                  : transcription?.error?.code === "YOUTUBE_AUDIO_EXTRACTION_FAILED"
+                    ? t("lyrics.youtubeExtractionFailed")
+                    : transcription?.error?.message)}
             </p>
           ) : null}
           <SynchronizedLyrics
@@ -186,5 +192,23 @@ export function AudiusMediaPlayer({
         </section>
       ) : null}
     </>
+  );
+}
+
+export function AudiusMediaPlayer({
+  track,
+  playbackQueue,
+  queueIndex,
+}: {
+  track: MusicTrack;
+  playbackQueue?: PlaybackItem[];
+  queueIndex?: number;
+}) {
+  return (
+    <TranscriptionMediaPlayer
+      track={track}
+      playbackQueue={playbackQueue}
+      queueIndex={queueIndex}
+    />
   );
 }

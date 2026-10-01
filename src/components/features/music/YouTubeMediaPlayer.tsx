@@ -1,5 +1,5 @@
 import type { MusicTrack } from "@/types/music";
-import { RemoteMediaPlayer } from "./RemoteMediaPlayer";
+import { TranscriptionMediaPlayer } from "./AudiusMediaPlayer";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 
 export function YouTubeMediaPlayer({
@@ -12,7 +12,7 @@ export function YouTubeMediaPlayer({
   queueIndex: number;
 }) {
   return (
-    <RemoteMediaPlayer
+    <TranscriptionMediaPlayer
       track={track}
       playbackQueue={playbackQueue}
       queueIndex={queueIndex}
