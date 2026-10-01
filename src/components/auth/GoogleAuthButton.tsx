@@ -5,12 +5,14 @@ import type { AuthMode } from "@/types/auth";
 export function GoogleAuthButton({
   mode,
   pending,
+  disabled,
   ready,
   loading,
   onClick,
 }: {
   mode: AuthMode;
   pending: boolean;
+  disabled: boolean;
   ready: boolean;
   loading: boolean;
   onClick: () => void;
@@ -19,7 +21,7 @@ export function GoogleAuthButton({
   return (
     <button
       type="button"
-      disabled={pending || loading || !ready}
+      disabled={pending || disabled || loading || !ready}
       onClick={onClick}
       className="inline-flex min-h-[44px] w-full items-center justify-center gap-3 rounded-md border border-border bg-card text-sm text-foreground transition-colors hover:bg-surface-hover disabled:opacity-50"
     >

@@ -20,6 +20,7 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { FRIENDSHIP_STATUS } from "@/constants/domain";
 import {
   fetchFriendships,
+  removeFriend,
   respondFriendRequest,
   searchUsers,
   sendFriendRequest,
@@ -36,6 +37,15 @@ export default function FriendsPage() {
   const { user } = useAuth();
   const client = useQueryClient();
   const [query, setQuery] = useState("");
+  const [pendingUserIds, setPendingUserIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [cancelingRequestIds, setCancelingRequestIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [requestedUserIds, setRequestedUserIds] = useState<Set<string>>(
+    () => new Set(),
+  );
   const normalizedQuery = query.trim();
   const debouncedQuery = useDebouncedValue(normalizedQuery, 300);
   const friendships = useQuery<Friendship[]>({
@@ -54,12 +64,22 @@ export default function FriendsPage() {
   const refresh = () => client.invalidateQueries({ queryKey: ["friendships"] });
   const add = useMutation({
     mutationFn: sendFriendRequest,
-    onSuccess: () => {
+    onMutate: (receiverId) => {
+      setPendingUserIds((current) => new Set(current).add(receiverId));
+    },
+    onSuccess: (_, receiverId) => {
+      setRequestedUserIds((current) => new Set(current).add(receiverId));
       toast.success(t("friends.requestSent"));
       void refresh();
-      void results.refetch();
     },
     onError: (error: Error) => toast.error(error.message),
+    onSettled: (_, __, receiverId) => {
+      setPendingUserIds((current) => {
+        const next = new Set(current);
+        next.delete(receiverId);
+        return next;
+      });
+    },
   });
   const respond = useMutation({
     mutationFn: ({ id, accept }: { id: string; accept: boolean }) =>
@@ -67,6 +87,30 @@ export default function FriendsPage() {
     onSuccess: () => {
       toast.success(t("friends.requestHandled"));
       void refresh();
+    },
+  });
+  const cancelRequest = useMutation({
+    mutationFn: ({ id }: { id: string; receiverId: string }) =>
+      removeFriend(id),
+    onMutate: ({ id }) => {
+      setCancelingRequestIds((current) => new Set(current).add(id));
+    },
+    onSuccess: (_, { receiverId }) => {
+      setRequestedUserIds((current) => {
+        const next = new Set(current);
+        next.delete(receiverId);
+        return next;
+      });
+      toast.success(t("friends.requestCanceled"));
+      void refresh();
+    },
+    onError: (error: Error) => toast.error(error.message),
+    onSettled: (_, __, { id }) => {
+      setCancelingRequestIds((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
     },
   });
   if (friendships.isLoading)
@@ -81,6 +125,18 @@ export default function FriendsPage() {
       </div>
     );
   const rows = friendships.data ?? [];
+  const unavailableUserIds = new Set([
+    ...requestedUserIds,
+    ...rows
+      .filter(
+        (row) =>
+          row.status === FRIENDSHIP_STATUS.PENDING ||
+          row.status === FRIENDSHIP_STATUS.ACCEPTED,
+      )
+      .map((row) =>
+        row.requesterId === user?.id ? row.receiverId : row.requesterId,
+      ),
+  ]);
   const incoming = rows.filter(
     (row) =>
       row.status === FRIENDSHIP_STATUS.PENDING && row.receiverId === user?.id,
@@ -160,7 +216,27 @@ export default function FriendsPage() {
                 person={row.receiver}
                 note={t("friends.requestSent")}
                 action={
-                  <Clock3 className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  <div className="flex shrink-0 items-center gap-1">
+                    <Clock3 className="h-5 w-5 text-muted-foreground" />
+                    <button
+                      type="button"
+                      aria-label={t("friends.cancelRequest")}
+                      disabled={cancelingRequestIds.has(row.id)}
+                      onClick={() =>
+                        cancelRequest.mutate({
+                          id: row.id,
+                          receiverId: row.receiverId,
+                        })
+                      }
+                      className="rounded-md bg-secondary p-2 disabled:opacity-50"
+                    >
+                      {cancelingRequestIds.has(row.id) ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <X className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 }
               />
             ))}
@@ -189,18 +265,24 @@ export default function FriendsPage() {
           )}
         </label>
         <div className="space-y-3" aria-busy={searchPending}>
-          {(results.data ?? []).map((person) => (
+          {(results.data ?? [])
+            .filter((person) => !unavailableUserIds.has(person.id))
+            .map((person) => (
             <PersonCard
               key={person.id}
               person={person}
               action={
                 <button
                   type="button"
-                  disabled={add.isPending}
+                  disabled={pendingUserIds.has(person.id)}
                   onClick={() => add.mutate(person.id)}
                   className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md bg-primary px-3 text-primary-foreground disabled:opacity-50"
                 >
-                  <UserPlus className="h-4 w-4" />
+                  {pendingUserIds.has(person.id) ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <UserPlus className="h-4 w-4" />
+                  )}
                   <span className="hidden sm:inline">{t("friends.add")}</span>
                 </button>
               }

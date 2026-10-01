@@ -118,7 +118,8 @@ export function AuthFormPanel({ flow }: { flow: AuthFlow }) {
                 <AuthDivider />
                 <GoogleAuthButton
                   mode={mode}
-                  pending={pendingAction !== null}
+                  pending={pendingAction === "google"}
+                  disabled={pendingAction !== null}
                   ready={googleReady}
                   loading={googleLoading}
                   onClick={() => void handleGoogleClick()}
