@@ -40,14 +40,14 @@ export function CircleOfFifths() {
 
   return <div>
     <svg viewBox="0 0 500 500" className="mx-auto aspect-square w-full max-w-xl drop-shadow-lg" aria-label={t("help.circle.title")}>
-      <circle cx={CENTER} cy={CENTER} r="234" fill="hsl(205 78% 18%)" />
+      <circle cx={CENTER} cy={CENTER} r="234" fill="hsl(240 5% 15%)" />
       {major.map((note, index) => {
         const start = index * 30 - 15;
         const labelPoint = point(197, index * 30);
         const degree = majorDegrees.get(index);
         const isDiminished = index === diminished;
         const label = isDiminished ? `${note}°` : note;
-        const fill = isDiminished ? "hsl(36 100% 50%)" : degree ? "hsl(212 88% 58%)" : "hsl(205 78% 18%)";
+        const fill = isDiminished ? "hsl(36 100% 50%)" : degree ? "hsl(346 77% 49%)" : "hsl(240 5% 15%)";
         return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: note })} className="group cursor-pointer outline-none">
           <path d={sectorPath(162, 232, start, start + 30)} fill={fill} stroke="white" strokeWidth={index === selected ? 4 : 2.5} className="transition-[fill,filter] hover:brightness-110 group-focus:brightness-125" />
           <text x={labelPoint.x} y={labelPoint.y - (degree || isDiminished ? 8 : 0)} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20" fontWeight={degree || isDiminished ? 700 : 500} className="pointer-events-none select-none">{label}</text>
@@ -59,7 +59,7 @@ export function CircleOfFifths() {
         const labelPoint = point(127, index * 30);
         const degree = minorDegrees.get(index);
         return <g key={note} role="button" tabIndex={0} onClick={() => setSelected(index)} onKeyDown={(event) => chooseWithKeyboard(event, index)} aria-label={t("circleHarmony.selectKey", { key: major[index] })} className="group cursor-pointer outline-none">
-          <path d={sectorPath(92, 162, start, start + 30)} fill={degree ? "hsl(105 58% 48%)" : "hsl(205 78% 18%)"} stroke="white" strokeWidth="2.5" className="transition-[fill,filter] hover:brightness-110 group-focus:brightness-125" />
+          <path d={sectorPath(92, 162, start, start + 30)} fill={degree ? "hsl(346 77% 65%)" : "hsl(240 5% 15%)"} stroke="white" strokeWidth="2.5" className="transition-[fill,filter] hover:brightness-110 group-focus:brightness-125" />
           <text x={labelPoint.x} y={labelPoint.y - (degree ? 7 : 0)} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="15" fontWeight={degree ? 700 : 500} className="pointer-events-none select-none">{note}</text>
           {degree && <text x={labelPoint.x} y={labelPoint.y + 15} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="12" fontWeight="700" className="pointer-events-none select-none">{degree}</text>}
         </g>;
@@ -69,8 +69,8 @@ export function CircleOfFifths() {
       <text x={CENTER} y={270} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="12">{t("circleHarmony.selectedKey")}</text>
     </svg>
     <div className="mt-5 flex flex-wrap justify-center gap-5 text-sm">
-      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-blue-500" />{t("circleHarmony.major")}</span>
-      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-violet-500" />{t("circleHarmony.minor")}</span>
+      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-red-700" />{t("circleHarmony.major")}</span>
+      <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-rose-400" />{t("circleHarmony.minor")}</span>
       <span className="flex items-center gap-2"><i className="h-4 w-4 rounded-sm bg-orange-500" />{t("circleHarmony.diminished")}</span>
     </div>
     <div className="mt-5 rounded-lg bg-secondary p-4 text-center text-sm">

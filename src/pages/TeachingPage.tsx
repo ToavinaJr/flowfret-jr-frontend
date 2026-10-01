@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { BookOpen, Download, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -45,6 +46,8 @@ import {
 const cardClass = "rounded-xl border border-border bg-card p-4 sm:p-5";
 
 export default function TeachingPage() {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language;
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const requestedView = searchParams.get("view");
@@ -146,11 +149,11 @@ export default function TeachingPage() {
         toast.error(
           error instanceof Error
             ? error.message
-            : "Impossible de charger les cours.",
+            : t("teaching.feedback.loadFailed"),
         ),
       )
       .finally(() => setLoading(false));
-  }, [refresh]);
+  }, [refresh, t]);
 
   async function saveTeacher(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -164,12 +167,12 @@ export default function TeachingPage() {
         }),
       );
       toast.success(
-        "Profil enseignant enregistré. Il sera validé par l’équipe FlowFret.",
+        t("teaching.feedback.profileSaved"),
       );
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Enregistrement impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.saveFailed"),
       );
     } finally {
       setBusy(false);
@@ -183,7 +186,7 @@ export default function TeachingPage() {
       await createTeachingCourse({
         title,
         description,
-        level: "Tous niveaux",
+        level: t("teaching.fields.allLevels"),
         format: courseFormat,
         maxStudents: courseFormat === "INDIVIDUAL" ? 1 : Number(courseCapacity),
         teachingMode: "HYBRID",
@@ -196,12 +199,12 @@ export default function TeachingPage() {
       setDescription("");
       setPrice("");
       await refresh();
-      toast.success("Cours créé en brouillon.");
+      toast.success(t("teaching.feedback.courseDraftCreated"));
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Création du cours impossible.",
+          : t("teaching.feedback.courseCreateFailed"),
       );
     } finally {
       setBusy(false);
@@ -217,7 +220,7 @@ export default function TeachingPage() {
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Modification impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.updateFailed"),
       );
     } finally {
       setBusy(false);
@@ -231,7 +234,7 @@ export default function TeachingPage() {
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Archivage impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.archiveFailed"),
       );
     } finally {
       setBusy(false);
@@ -243,10 +246,10 @@ export default function TeachingPage() {
     try {
       await requestTeachingEnrollment(course.id);
       await refresh();
-      toast.success("Demande envoyée à l’enseignant.");
+      toast.success(t("teaching.feedback.enrollmentRequested"));
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Demande impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.requestFailed"),
       );
     } finally {
       setBusy(false);
@@ -260,14 +263,14 @@ export default function TeachingPage() {
       await refresh();
       toast.success(
         accept
-          ? "Invitation acceptée. L’enseignant confirmera la place et le paiement."
-          : "Invitation refusée.",
+          ? t("teaching.feedback.invitationAccepted")
+          : t("teaching.feedback.invitationDeclined"),
       );
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Impossible de traiter l’invitation.",
+          : t("teaching.feedback.invitationFailed"),
       );
     } finally {
       setBusy(false);
@@ -298,12 +301,12 @@ export default function TeachingPage() {
       await refresh();
       toast.success(
         repeatWeekly
-          ? "Série de séances planifiée et élèves notifiés."
-          : "Séance planifiée et élèves notifiés.",
+          ? t("teaching.feedback.lessonSeriesScheduled")
+          : t("teaching.feedback.lessonScheduled"),
       );
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Planification impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.scheduleFailed"),
       );
     } finally {
       setBusy(false);
@@ -321,10 +324,10 @@ export default function TeachingPage() {
         meetingUrl: lesson.meetingUrl,
       });
       await refresh();
-      toast.success("Séance déplacée et élèves notifiés.");
+      toast.success(t("teaching.feedback.lessonRescheduled"));
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Déplacement impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.rescheduleFailed"),
       );
     } finally {
       setBusy(false);
@@ -336,10 +339,10 @@ export default function TeachingPage() {
     try {
       await cancelTeachingLesson(lesson.id);
       await refresh();
-      toast.success("Séance annulée et élèves notifiés.");
+      toast.success(t("teaching.feedback.lessonCanceled"));
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Annulation impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.cancelFailed"),
       );
     } finally {
       setBusy(false);
@@ -355,7 +358,7 @@ export default function TeachingPage() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Impossible de terminer la séance.",
+          : t("teaching.feedback.completeFailed"),
       );
     } finally {
       setBusy(false);
@@ -375,7 +378,7 @@ export default function TeachingPage() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Mise à jour de présence impossible.",
+          : t("teaching.feedback.attendanceFailed"),
       );
     } finally {
       setBusy(false);
@@ -400,11 +403,11 @@ export default function TeachingPage() {
         String(form.get("title") || file.name),
         lessonId,
       );
-      toast.success("Document pédagogique ajouté.");
+      toast.success(t("teaching.feedback.materialAdded"));
       await refresh();
       formElement.reset();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Dépôt impossible.");
+      toast.error(error instanceof Error ? error.message : t("teaching.feedback.uploadFailed"));
     } finally {
       setBusy(false);
     }
@@ -414,11 +417,11 @@ export default function TeachingPage() {
     setBusy(true);
     try {
       await deleteTeachingMaterial(material.id);
-      toast.success("Document supprimé.");
+      toast.success(t("teaching.feedback.materialDeleted"));
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Suppression impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.deleteFailed"),
       );
     } finally {
       setBusy(false);
@@ -430,7 +433,7 @@ export default function TeachingPage() {
       await downloadTeachingMaterial(material);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Téléchargement impossible.",
+        error instanceof Error ? error.message : t("teaching.feedback.downloadFailed"),
       );
     }
   }
@@ -451,12 +454,14 @@ export default function TeachingPage() {
     (materials[courseId] ?? []).filter(
       (material) => material.lessonId === null,
     );
+  const statusLabel = (status: string) =>
+    t(`teaching.status.${status.toLowerCase()}`, { defaultValue: status });
 
   return (
     <div className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>Cours de guitare</h1>
+      <h1 className={PAGE_TITLE}>{t("teaching.pageTitle")}</h1>
       <p className="mb-6 text-sm text-muted-foreground">
-        Trouvez un enseignant, gérez vos cours ou proposez vos leçons payantes.
+        {t("teaching.pageDescription")}
       </p>
       <div className="mb-6">
         <AdminResourceTabs
@@ -473,17 +478,13 @@ export default function TeachingPage() {
           <section hidden={view !== "courses"} className={cardClass}>
             <div className="mb-4 flex items-center gap-2">
               <GraduationCap className="h-5 w-5 text-primary" />
-              <h2 className="font-semibold">Mon profil enseignant</h2>
+              <h2 className="font-semibold">{t("teaching.fields.instructorProfile")}</h2>
             </div>
             {profile && (
               <p className="mb-3 text-sm text-muted-foreground">
-                Statut :{" "}
+                {t("teaching.fields.statusLabel")}{" "}
                 <strong>
-                  {profile.status === "APPROVED"
-                    ? "Approuvé"
-                    : profile.status === "PENDING"
-                      ? "En attente de validation"
-                      : profile.status}
+                  {statusLabel(profile.status)}
                 </strong>
               </p>
             )}
@@ -492,8 +493,8 @@ export default function TeachingPage() {
                 value={headline}
                 onChange={(event) => setHeadline(event.target.value)}
                 maxLength={160}
-                placeholder="Présentation courte"
-                aria-label="Présentation courte"
+                placeholder={t("teaching.fields.shortIntroduction")}
+                aria-label={t("teaching.fields.shortIntroduction")}
               />
               <Input
                 type="number"
@@ -501,19 +502,19 @@ export default function TeachingPage() {
                 max="60"
                 value={experienceYears}
                 onChange={(event) => setExperienceYears(event.target.value)}
-                aria-label="Années d’expérience"
-                placeholder="Années d’expérience"
+                aria-label={t("teaching.fields.experienceYears")}
+                placeholder={t("teaching.fields.experienceYears")}
               />
               <textarea
                 className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm sm:col-span-2"
                 value={biography}
                 onChange={(event) => setBiography(event.target.value)}
                 maxLength={3000}
-                placeholder="Votre expérience et votre approche pédagogique"
-                aria-label="Biographie enseignant"
+                placeholder={t("teaching.fields.instructorBiographyPlaceholder")}
+                aria-label={t("teaching.fields.instructorBiography")}
               />
               <Button disabled={busy} className="sm:col-span-2">
-                Enregistrer le profil
+                {t("teaching.actions.saveProfile")}
               </Button>
             </form>
           </section>
@@ -522,7 +523,7 @@ export default function TeachingPage() {
             <div className="mb-4 flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" />
               <h2 className="font-semibold">
-                Créer un cours payant
+                {t("teaching.fields.createPaidCourse")}
               </h2>
             </div>
             <form className="grid gap-3 sm:grid-cols-2" onSubmit={addCourse}>
@@ -532,10 +533,10 @@ export default function TeachingPage() {
                 onChange={(event) =>
                   setCourseFormat(event.target.value as "INDIVIDUAL" | "GROUP")
                 }
-                aria-label="Format du cours"
+                aria-label={t("teaching.fields.courseFormat")}
               >
-                <option value="INDIVIDUAL">Cours individuel</option>
-                <option value="GROUP">Cours collectif</option>
+                <option value="INDIVIDUAL">{t("teaching.fields.individualCourse")}</option>
+                <option value="GROUP">{t("teaching.fields.groupCourse")}</option>
               </select>
               <select
                 className="h-10 rounded-md border border-input bg-background px-3 text-sm"
@@ -545,10 +546,10 @@ export default function TeachingPage() {
                     event.target.value as "PER_LESSON" | "PER_COURSE",
                   )
                 }
-                aria-label="Mode de tarification"
+                aria-label={t("teaching.fields.pricingMode")}
               >
-                <option value="PER_LESSON">Prix par séance</option>
-                <option value="PER_COURSE">Prix pour le cours complet</option>
+                <option value="PER_LESSON">{t("teaching.fields.pricePerLesson")}</option>
+                <option value="PER_COURSE">{t("teaching.fields.fullCoursePrice")}</option>
               </select>
               {courseFormat === "GROUP" && (
                 <Input
@@ -558,8 +559,8 @@ export default function TeachingPage() {
                   max="100"
                   value={courseCapacity}
                   onChange={(event) => setCourseCapacity(event.target.value)}
-                  placeholder="Nombre maximum d’élèves"
-                  aria-label="Nombre maximum d’élèves"
+                  placeholder={t("teaching.fields.maximumStudents")}
+                  aria-label={t("teaching.fields.maximumStudents")}
                 />
               )}
               <Input
@@ -568,8 +569,8 @@ export default function TeachingPage() {
                 maxLength={160}
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="Titre du cours"
-                aria-label="Titre du cours"
+                placeholder={t("teaching.fields.courseTitle")}
+                aria-label={t("teaching.fields.courseTitle")}
               />
               <Input
                 required
@@ -580,13 +581,13 @@ export default function TeachingPage() {
                 onChange={(event) => setPrice(event.target.value)}
                 placeholder={
                   priceUnit === "PER_COURSE"
-                    ? "Prix pour le cours complet"
-                    : "Prix par séance"
+                    ? t("teaching.fields.fullCoursePrice")
+                    : t("teaching.fields.pricePerLesson")
                 }
                 aria-label={
                   priceUnit === "PER_COURSE"
-                    ? "Prix pour le cours complet"
-                    : "Prix par séance"
+                    ? t("teaching.fields.fullCoursePrice")
+                    : t("teaching.fields.pricePerLesson")
                 }
               />
               <Input
@@ -595,8 +596,8 @@ export default function TeachingPage() {
                 maxLength={3}
                 value={currency}
                 onChange={(event) => setCurrency(event.target.value)}
-                placeholder="Devise (EUR)"
-                aria-label="Devise"
+                placeholder={t("teaching.fields.currencyPlaceholder")}
+                aria-label={t("teaching.fields.currency")}
               />
               <Input
                 required
@@ -605,21 +606,21 @@ export default function TeachingPage() {
                 max="480"
                 value={duration}
                 onChange={(event) => setDuration(event.target.value)}
-                placeholder="Durée en minutes"
-                aria-label="Durée en minutes"
+                placeholder={t("teaching.fields.durationMinutes")}
+                aria-label={t("teaching.fields.durationMinutes")}
               />
               <textarea
                 className="min-h-20 rounded-md border border-input bg-background px-3 py-2 text-sm sm:col-span-2"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 maxLength={5000}
-                placeholder="Description du cours"
-                aria-label="Description du cours"
+                placeholder={t("teaching.fields.courseDescription")}
+                aria-label={t("teaching.fields.courseDescription")}
               />
               <Button disabled={busy || !profile} className="sm:col-span-2">
                 {profile
-                  ? "Créer le brouillon"
-                  : "Enregistrez d’abord votre profil enseignant"}
+                  ? t("teaching.actions.createDraft")
+                  : t("teaching.feedback.createCourseNeedsProfile")}
               </Button>
             </form>
           </section>
@@ -627,7 +628,7 @@ export default function TeachingPage() {
           <section hidden={view !== "calendar"}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="font-semibold">
-                Calendrier — dernières séances et 45 prochains jours
+                {t("teaching.fields.calendarTitle")}
               </h2>
               <span className="text-xs text-muted-foreground">
                 {currentTimeZone()}
@@ -653,7 +654,7 @@ export default function TeachingPage() {
                       if (next?.teachingMode === "IN_PERSON")
                         setLessonMode("IN_PERSON");
                     }}
-                    aria-label="Cours à planifier"
+                    aria-label={t("teaching.fields.courseToSchedule")}
                   >
                     {myCourses
                       .filter((course) => course.status === "PUBLISHED")
@@ -668,7 +669,7 @@ export default function TeachingPage() {
                     type="datetime-local"
                     value={lessonStartsAt}
                     onChange={(event) => setLessonStartsAt(event.target.value)}
-                    aria-label="Date et heure de la séance"
+                    aria-label={t("teaching.fields.lessonDateTime")}
                   />
                   <select
                     className="h-10 rounded-md border border-input bg-background px-3 text-sm"
@@ -678,13 +679,13 @@ export default function TeachingPage() {
                         event.target.value as "IN_PERSON" | "ONLINE",
                       )
                     }
-                    aria-label="Mode de la séance"
+                    aria-label={t("teaching.fields.lessonMode")}
                   >
                     {selectedLessonCourse()?.teachingMode !== "ONLINE" && (
-                      <option value="IN_PERSON">Présentiel</option>
+                      <option value="IN_PERSON">{t("teaching.fields.inPerson")}</option>
                     )}
                     {selectedLessonCourse()?.teachingMode !== "IN_PERSON" && (
-                      <option value="ONLINE">À distance</option>
+                      <option value="ONLINE">{t("teaching.fields.online")}</option>
                     )}
                   </select>
                   {lessonMode === "IN_PERSON" ? (
@@ -695,8 +696,8 @@ export default function TeachingPage() {
                         setLessonLocation(event.target.value)
                       }
                       maxLength={500}
-                      placeholder="Lieu"
-                      aria-label="Lieu"
+                      placeholder={t("teaching.fields.location")}
+                      aria-label={t("teaching.fields.location")}
                     />
                   ) : (
                     <Input
@@ -706,8 +707,8 @@ export default function TeachingPage() {
                       onChange={(event) =>
                         setLessonMeetingUrl(event.target.value)
                       }
-                      placeholder="Lien HTTPS de la réunion"
-                      aria-label="Lien de réunion"
+                      placeholder={t("teaching.fields.meetingUrlPlaceholder")}
+                      aria-label={t("teaching.fields.meetingUrl")}
                     />
                   )}
                   <label className="flex items-center gap-2 text-sm sm:col-span-2">
@@ -718,11 +719,11 @@ export default function TeachingPage() {
                         setRepeatWeekly(event.target.checked)
                       }
                     />
-                    Répéter chaque semaine
+                    {t("teaching.fields.repeatWeekly")}
                   </label>
                   {repeatWeekly && (
                     <label className="flex items-center gap-2 text-sm">
-                      Nombre de séances
+                      {t("teaching.fields.numberOfLessons")}
                       <Input
                         required
                         type="number"
@@ -732,22 +733,21 @@ export default function TeachingPage() {
                         onChange={(event) =>
                           setRepeatOccurrences(event.target.value)
                         }
-                        aria-label="Nombre de séances hebdomadaires"
+                        aria-label={t("teaching.fields.weeklyLessonCount")}
                       />
                     </label>
                   )}
                   <p className="text-xs text-muted-foreground sm:col-span-2">
-                    La durée est celle du cours. L’horaire sera enregistré avec
-                    le fuseau affiché ci-dessus.
+                    {t("teaching.fields.lessonDurationTimezone")}
                   </p>
                   <Button disabled={busy} className="sm:col-span-2">
-                    Planifier une séance
+                    {t("teaching.actions.scheduleLesson")}
                   </Button>
                 </form>
               )}
             {lessons.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Aucune séance récente ou à venir.
+                {t("teaching.empty.noRecentLessons")}
               </p>
             ) : (
               <div className="space-y-3">
@@ -766,12 +766,12 @@ export default function TeachingPage() {
                         <div>
                           <h3 className="font-medium">{lesson.courseTitle}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {formatLessonDate(lesson.startsAt, lesson.timeZone)}{" "}
+                            {formatLessonDate(lesson.startsAt, lesson.timeZone, locale)}{" "}
                             ·{" "}
                             {lesson.teachingMode === "ONLINE"
-                              ? "À distance"
-                              : "Présentiel"}{" "}
-                            · {lesson.status}
+                              ? t("teaching.fields.online")
+                              : t("teaching.fields.inPerson")}{" "}
+                            · {statusLabel(lesson.status)}
                           </p>
                           <p className="mt-1 text-xs text-muted-foreground">
                             {lesson.location ||
@@ -782,7 +782,7 @@ export default function TeachingPage() {
                                   rel="noreferrer"
                                   className="text-primary underline"
                                 >
-                                  Rejoindre la réunion
+                                  {t("teaching.actions.joinMeeting")}
                                 </a>
                               ) : (
                                 ""
@@ -809,11 +809,11 @@ export default function TeachingPage() {
                                 defaultValue={toLocalInputValue(
                                   new Date(lesson.startsAt),
                                 )}
-                                aria-label="Nouvel horaire"
+                                aria-label={t("teaching.fields.newSchedule")}
                                 className="w-auto"
                               />
                               <Button variant="outline" disabled={busy}>
-                                Déplacer
+                                {t("teaching.actions.reschedule")}
                               </Button>
                             </form>
                             <Button
@@ -821,7 +821,7 @@ export default function TeachingPage() {
                               disabled={busy}
                               onClick={() => void cancelLesson(lesson)}
                             >
-                              Annuler
+                              {t("teaching.actions.cancelLesson")}
                             </Button>
                             {new Date(lesson.endsAt).getTime() <=
                               Date.now() && (
@@ -829,7 +829,7 @@ export default function TeachingPage() {
                                 disabled={busy}
                                 onClick={() => void completeLesson(lesson)}
                               >
-                                Terminer
+                                {t("teaching.actions.completeLesson")}
                               </Button>
                             )}
                           </div>
@@ -837,11 +837,11 @@ export default function TeachingPage() {
                       </div>
                       <div className="mt-4 border-t border-border pt-3">
                         <p className="mb-2 text-sm font-medium">
-                          Supports de cette séance
+                          {t("teaching.fields.lessonMaterials")}
                         </p>
                         {lessonMaterials.length === 0 ? (
                           <p className="text-xs text-muted-foreground">
-                            Aucun support spécifique à cette séance.
+                            {t("teaching.empty.noLessonMaterials")}
                           </p>
                         ) : (
                           <ul className="space-y-2">
@@ -852,7 +852,7 @@ export default function TeachingPage() {
                               >
                                 <span>
                                   {material.title} ·{" "}
-                                  {formatFileSize(material.fileSize)}
+                                  {formatFileSize(material.fileSize, t("teaching.feedback.unknownFileSize"), t("teaching.fields.mebibytes"), locale)}
                                 </span>
                                 <span className="flex gap-2">
                                   <Button
@@ -862,7 +862,7 @@ export default function TeachingPage() {
                                     onClick={() => void getMaterial(material)}
                                   >
                                     <Download className="mr-1 h-4 w-4" />
-                                    Télécharger
+                                    {t("teaching.actions.download")}
                                   </Button>
                                   {isTeacher && (
                                     <Button
@@ -870,7 +870,7 @@ export default function TeachingPage() {
                                       size="sm"
                                       variant="ghost"
                                       disabled={busy}
-                                      aria-label={`Supprimer ${material.title}`}
+                                      aria-label={t("teaching.actions.deleteMaterial", { title: material.title })}
                                       onClick={() =>
                                         void removeMaterial(material)
                                       }
@@ -897,7 +897,7 @@ export default function TeachingPage() {
                             <Input
                               name="title"
                               maxLength={160}
-                              placeholder="Titre du support"
+                              placeholder={t("teaching.fields.materialTitle")}
                               className="min-w-40 flex-1"
                             />
                             <Input
@@ -908,14 +908,14 @@ export default function TeachingPage() {
                               className="min-w-52 flex-1"
                             />
                             <Button size="sm" disabled={busy}>
-                              Joindre à la séance
+                              {t("teaching.actions.attachToLesson")}
                             </Button>
                           </form>
                         )}
                       </div>
                       {isTeacher && lesson.attendances.length > 0 && (
                         <div className="mt-4 border-t border-border pt-3">
-                          <p className="mb-2 text-sm font-medium">Présences</p>
+                          <p className="mb-2 text-sm font-medium">{t("teaching.fields.attendance")}</p>
                           <div className="space-y-2">
                             {lesson.attendances.map((attendance) => (
                               <div
@@ -923,7 +923,7 @@ export default function TeachingPage() {
                                 className="flex flex-wrap items-center justify-between gap-2 text-sm"
                               >
                                 <span>
-                                  {attendance.studentUsername || "Élève"}
+                                  {attendance.studentUsername || t("teaching.fields.studentFallback")}
                                 </span>
                                 {lesson.status === "COMPLETED" ? (
                                   <select
@@ -938,18 +938,18 @@ export default function TeachingPage() {
                                       )
                                     }
                                     className="h-9 rounded-md border border-input bg-background px-2"
-                                    aria-label={`Présence de ${attendance.studentUsername || "l’élève"}`}
+                                    aria-label={t("teaching.fields.attendanceFor", { student: attendance.studentUsername || t("teaching.fields.studentFallback") })}
                                   >
                                     <option value="EXPECTED" disabled>
-                                      À renseigner
+                                      {t("teaching.status.expected")}
                                     </option>
-                                    <option value="PRESENT">Présent</option>
-                                    <option value="ABSENT">Absent</option>
-                                    <option value="EXCUSED">Excusé</option>
+                                    <option value="PRESENT">{statusLabel("PRESENT")}</option>
+                                    <option value="ABSENT">{statusLabel("ABSENT")}</option>
+                                    <option value="EXCUSED">{statusLabel("EXCUSED")}</option>
                                   </select>
                                 ) : (
                                   <span className="text-muted-foreground">
-                                    En attente
+                                    {t("teaching.status.waiting")}
                                   </span>
                                 )}
                               </div>
@@ -965,10 +965,10 @@ export default function TeachingPage() {
           </section>
 
           <section hidden={view !== "enrollments"}>
-            <h2 className="mb-3 font-semibold">Mes demandes et invitations</h2>
+            <h2 className="mb-3 font-semibold">{t("teaching.fields.myRequestsAndInvitations")}</h2>
             {enrollments.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Aucune demande ou invitation en cours.
+                {t("teaching.empty.noRequests")}
               </p>
             ) : (
               <div className="grid gap-3">
@@ -979,12 +979,12 @@ export default function TeachingPage() {
                   >
                     <div>
                       <h3 className="font-medium">
-                        {enrollment.courseTitle || "Cours de guitare"}
+                        {enrollment.courseTitle || t("teaching.fields.courseFallback")}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Enseignant :{" "}
-                        {enrollment.instructorUsername || "FlowFret"} ·{" "}
-                        {enrollment.status}
+                        {t("teaching.fields.instructorLabel")}{" "}
+                        {enrollment.instructorUsername || t("teaching.fields.platformName")} ·{" "}
+                        {statusLabel(enrollment.status)}
                       </p>
                     </div>
                     {enrollment.status === "INVITED" && (
@@ -995,7 +995,7 @@ export default function TeachingPage() {
                             void answerInvitation(enrollment.id, true)
                           }
                         >
-                          Accepter
+                          {t("teaching.actions.acceptInvitation")}
                         </Button>
                         <Button
                           variant="outline"
@@ -1004,7 +1004,7 @@ export default function TeachingPage() {
                             void answerInvitation(enrollment.id, false)
                           }
                         >
-                          Refuser
+                          {t("teaching.actions.declineInvitation")}
                         </Button>
                       </div>
                     )}
@@ -1015,11 +1015,10 @@ export default function TeachingPage() {
           </section>
 
           <section hidden={view !== "materials"}>
-            <h2 className="mb-3 font-semibold">Mes supports de cours</h2>
+            <h2 className="mb-3 font-semibold">{t("teaching.fields.myCourseMaterials")}</h2>
             {activeEnrolled.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Les supports apparaîtront après confirmation de votre
-                inscription.
+                {t("teaching.empty.materialsAfterEnrollment")}
               </p>
             ) : (
               <div className="grid gap-3">
@@ -1028,7 +1027,7 @@ export default function TeachingPage() {
                     <h3 className="font-medium">{course.title}</h3>
                     {courseLevelMaterials(course.id).length === 0 ? (
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Aucun document partagé pour le moment.
+                        {t("teaching.empty.noSharedMaterials")}
                       </p>
                     ) : (
                       <ul className="mt-2 space-y-2">
@@ -1040,7 +1039,7 @@ export default function TeachingPage() {
                             <span>
                               {material.title}{" "}
                               <span className="text-muted-foreground">
-                                · {formatFileSize(material.fileSize)}
+                                · {formatFileSize(material.fileSize, t("teaching.feedback.unknownFileSize"), t("teaching.fields.mebibytes"), locale)}
                               </span>
                             </span>
                             <Button
@@ -1049,7 +1048,7 @@ export default function TeachingPage() {
                               onClick={() => void getMaterial(material)}
                             >
                               <Download className="mr-1 h-4 w-4" />
-                              Télécharger
+                              {t("teaching.actions.download")}
                             </Button>
                           </li>
                         ))}
@@ -1062,9 +1061,9 @@ export default function TeachingPage() {
           </section>
 
           <section hidden={view !== "courses"}>
-            <h2 className="mb-3 font-semibold">Mes cours</h2>
+            <h2 className="mb-3 font-semibold">{t("teaching.fields.myCourses")}</h2>
             {myCourses.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Aucun cours créé.</p>
+              <p className="text-sm text-muted-foreground">{t("teaching.empty.noCreatedCourses")}</p>
             ) : (
               <div className="grid gap-3">
                 {myCourses.map((course) => (
@@ -1075,15 +1074,15 @@ export default function TeachingPage() {
                     <div>
                       <h3 className="font-medium">{course.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {formatMoney(course.priceAmount, course.priceCurrency)}{" "}
+                        {formatMoney(course.priceAmount, course.priceCurrency, locale)}{" "}
                         {course.priceUnit === "PER_COURSE"
-                          ? "pour le cours complet"
-                          : "par séance"}{" "}
+                          ? t("teaching.fields.fullCourse")
+                          : t("teaching.fields.perLesson")}{" "}
                         ·{" "}
                         {course.format === "GROUP"
-                          ? `collectif · ${course.maxStudents} places`
-                          : "individuel"}{" "}
-                        · {course.durationMinutes} min · {course.status}
+                          ? t("teaching.fields.groupPlaces", { count: course.maxStudents })
+                          : t("teaching.fields.individualCourse")}{" "}
+                        · {t("teaching.fields.minutes", { count: course.durationMinutes })} · {statusLabel(course.status)}
                       </p>
                     </div>
                     <form
@@ -1091,16 +1090,16 @@ export default function TeachingPage() {
                       className="w-full space-y-2 border-t border-border pt-3"
                     >
                       <p className="text-sm font-medium">
-                        Documents pédagogiques
+                        {t("teaching.fields.teachingMaterials")}
                       </p>
                       {courseLevelMaterials(course.id).map((material) => (
                         <div
                           key={material.id}
                           className="flex flex-wrap items-center justify-between gap-2 text-sm"
                         >
-                          <span>
-                            {material.title} ·{" "}
-                            {formatFileSize(material.fileSize)}
+                            <span>
+                              {material.title} ·{" "}
+                              {formatFileSize(material.fileSize, t("teaching.feedback.unknownFileSize"), t("teaching.fields.mebibytes"), locale)}
                           </span>
                           <span className="flex gap-2">
                             <Button
@@ -1110,14 +1109,14 @@ export default function TeachingPage() {
                               onClick={() => void getMaterial(material)}
                             >
                               <Download className="mr-1 h-4 w-4" />
-                              Ouvrir
+                              {t("teaching.actions.open")}
                             </Button>
                             <Button
                               type="button"
                               size="sm"
                               variant="ghost"
                               disabled={busy}
-                              aria-label={`Supprimer ${material.title}`}
+                              aria-label={t("teaching.actions.deleteMaterial", { title: material.title })}
                               onClick={() => void removeMaterial(material)}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -1129,7 +1128,7 @@ export default function TeachingPage() {
                         <Input
                           name="title"
                           maxLength={160}
-                          placeholder="Titre du document"
+                          placeholder={t("teaching.fields.documentTitle")}
                           className="min-w-48 flex-1"
                         />
                         <Input
@@ -1139,12 +1138,10 @@ export default function TeachingPage() {
                           accept=".pdf,image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
                           className="min-w-56 flex-1"
                         />
-                        <Button disabled={busy}>Ajouter un document</Button>
+                        <Button disabled={busy}>{t("teaching.actions.addDocument")}</Button>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        PDF, image ou vidéo · 50 Mio maximum par fichier. Seuls
-                        les élèves inscrits activement peuvent consulter les
-                        supports.
+                        {t("teaching.fields.materialUploadRules")}
                       </p>
                     </form>
                     <div className="flex gap-2">
@@ -1158,15 +1155,15 @@ export default function TeachingPage() {
                         onClick={() => void setPublished(course)}
                       >
                         {course.status === "PUBLISHED"
-                          ? "Dépublier"
-                          : "Publier"}
+                          ? t("teaching.actions.unpublish")
+                          : t("teaching.actions.publish")}
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="destructive"
                         disabled={busy}
                         onClick={() => void archive(course)}
                       >
-                        Archiver
+                        {t("teaching.actions.archive")}
                       </Button>
                     </div>
                   </article>
@@ -1178,11 +1175,11 @@ export default function TeachingPage() {
           <section hidden={view !== "catalog"}>
             <div className="mb-3 flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-primary" />
-              <h2 className="font-semibold">Cours disponibles</h2>
+              <h2 className="font-semibold">{t("teaching.fields.availableCourses")}</h2>
             </div>
             {visibleCatalog.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Aucun cours publié pour le moment.
+                {t("teaching.empty.noPublishedCourses")}
               </p>
             ) : (
               <div className="grid gap-3">
@@ -1194,17 +1191,17 @@ export default function TeachingPage() {
                     <div>
                       <h3 className="font-medium">{course.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {course.description || "Cours de guitare"} ·{" "}
-                        {formatMoney(course.priceAmount, course.priceCurrency)}{" "}
+                        {course.description || t("teaching.fields.courseFallback")} ·{" "}
+                        {formatMoney(course.priceAmount, course.priceCurrency, locale)}{" "}
                         ·{" "}
                         {course.priceUnit === "PER_COURSE"
-                          ? "cours complet"
-                          : "par séance"}{" "}
+                          ? t("teaching.fields.fullCourse")
+                          : t("teaching.fields.perLesson")}{" "}
                         ·{" "}
                         {course.format === "GROUP"
-                          ? `collectif · ${course.maxStudents} places`
-                          : "individuel"}{" "}
-                        · {course.durationMinutes} min
+                          ? t("teaching.fields.groupPlaces", { count: course.maxStudents })
+                          : t("teaching.fields.individualCourse")}{" "}
+                        · {t("teaching.fields.minutes", { count: course.durationMinutes })}
                       </p>
                     </div>
                     <Button
@@ -1212,8 +1209,8 @@ export default function TeachingPage() {
                       onClick={() => void enroll(course)}
                     >
                       {myEnrollmentIds.has(course.id)
-                        ? "Demande envoyée"
-                        : "Demander une place"}
+                        ? t("teaching.actions.enrollmentSent")
+                        : t("teaching.actions.requestSeat")}
                     </Button>
                   </article>
                 ))}
@@ -1223,8 +1220,7 @@ export default function TeachingPage() {
         </div>
       )}
       <p className="mt-6 text-xs text-muted-foreground">
-        Votre compte FlowFret : {user?.username}. Les inscriptions actives sont
-        confirmées par l’enseignant après accord de paiement.
+        {t("teaching.fields.accountNotice", { username: user?.username })}
       </p>
     </div>
   );
@@ -1239,8 +1235,8 @@ function toLocalInputValue(date: Date) {
   return shifted.toISOString().slice(0, 16);
 }
 
-function formatLessonDate(value: string, timeZone: string) {
-  return new Intl.DateTimeFormat(undefined, {
+function formatLessonDate(value: string, timeZone: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone,
@@ -1262,19 +1258,24 @@ function lessonInput(
   };
 }
 
-function formatMoney(minorAmount: number, currencyCode: string) {
-  return new Intl.NumberFormat(undefined, {
+function formatMoney(minorAmount: number, currencyCode: string, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currencyCode,
   }).format(minorAmount / 100);
 }
 
-function formatFileSize(value: string) {
+function formatFileSize(
+  value: string,
+  unknownSizeLabel: string,
+  unitLabel: string,
+  locale: string,
+) {
   const bytes = Number(value);
-  if (!Number.isFinite(bytes) || bytes < 0) return "Taille inconnue";
+  if (!Number.isFinite(bytes) || bytes < 0) return unknownSizeLabel;
   return (
-    new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(
+    new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
       bytes / (1024 * 1024),
-    ) + " Mio"
+    ) + ` ${unitLabel}`
   );
 }
