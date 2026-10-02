@@ -119,7 +119,7 @@ function mapPlayerState(state: number): PlayState {
 function listen(frame: HTMLIFrameElement) {
   frame.contentWindow?.postMessage(
     JSON.stringify({ event: "listening", id: "flowfret-player" }),
-    "https://www.youtube.com",
+    "*",
   );
 }
 
@@ -130,6 +130,6 @@ function command(
 ) {
   frame.contentWindow?.postMessage(
     JSON.stringify({ event: "command", func, args }),
-    "https://www.youtube.com",
+    "*",
   );
 }
