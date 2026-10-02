@@ -181,6 +181,8 @@ export function TranscriptionMediaPlayer({
                   ? t("lyrics.audioTooLong")
                   : transcription?.error?.code === "YOUTUBE_AUDIO_EXTRACTION_FAILED"
                     ? t("lyrics.youtubeExtractionFailed")
+                    : transcription?.error?.code === "TRANSCRIPTION_PENDING_TIMEOUT"
+                      ? t("lyrics.pendingTimeout")
                     : transcription?.error?.message)}
             </p>
           ) : null}

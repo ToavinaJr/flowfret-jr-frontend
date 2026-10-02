@@ -710,6 +710,7 @@
     "prepareFailed": "Unable to prepare the transcription.",
     "retryFailed": "Unable to retry the transcription.",
     "audioTooLong": "The video exceeds the 5-minute limit.",
+    "pendingTimeout": "No worker started this transcription within 5 minutes. Please try again later.",
     "youtubeExtractionFailed": "Unable to extract YouTube audio. Check that the video is accessible and try again.",
     "downloadFailed": "Unable to download the LRC file.",
     "downloadLrc": "Download LRC"

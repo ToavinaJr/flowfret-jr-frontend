@@ -90,7 +90,7 @@ function TranscriptionDetails({
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
         <div className="h-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
       </div>
-      {item.error && <p className="mt-3 break-words rounded-md bg-destructive/10 p-3 text-sm text-destructive">{item.error.message}</p>}
+      {item.error && <p className="mt-3 break-words rounded-md bg-destructive/10 p-3 text-sm text-destructive">{item.error.code === "TRANSCRIPTION_PENDING_TIMEOUT" ? t("lyrics.pendingTimeout") : item.error.message}</p>}
       <div className="mt-4 max-h-[55vh] space-y-2 overflow-y-auto">
         {item.segments.map((segment) => (
           <p key={segment.id} className="break-words rounded-md bg-secondary p-3 text-sm">
