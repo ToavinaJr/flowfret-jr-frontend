@@ -35,7 +35,7 @@ export function PlaylistList({
   }
 
   return (
-    <aside className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <aside className="min-w-0 space-y-3 rounded-xl border border-border bg-card p-4">
       <form onSubmit={submit} className="flex gap-2">
         <input
           id="new-playlist-name"
@@ -60,7 +60,7 @@ export function PlaylistList({
         {playlists.map((playlist) => (
           <div
             key={playlist.id}
-            className={`flex items-center rounded-md ${playlist.id === selectedId ? "bg-primary/10 text-primary" : "hover:bg-secondary"}`}
+            className={`flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-primary/10 text-primary" : "hover:bg-secondary"}`}
           >
             <button
               type="button"

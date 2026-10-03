@@ -40,17 +40,17 @@ const FeedPage = () => {
   return (
     <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-4 pb-24 sm:px-6 sm:py-6 md:pb-8 xl:grid-cols-[minmax(0,48rem)_18rem] xl:justify-center">
       <section className="min-w-0" aria-label={t("feed.title")}>
-        <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
-          <h1 className={`${PAGE_TITLE} mb-0`}>{t("feed.title")}</h1>
+        <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6 flex-wrap">
+          <h1 className={`${PAGE_TITLE} mb-0 min-w-0 flex-1`}>{t("feed.title")}</h1>
           <button
             type="button"
             onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}
             aria-expanded={searchOpen}
             aria-label={t(searchOpen ? "feed.closeSearch" : "feed.openSearch")}
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-card px-3 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-card px-0 text-sm text-muted-foreground hover:text-foreground sm:px-3"
           >
             {searchOpen ? <X className="h-4 w-4" aria-hidden="true" /> : <Search className="h-4 w-4" aria-hidden="true" />}
-            <span>{t(searchOpen ? "feed.closeSearch" : "feed.searchPosts")}</span>
+            <span className="hidden sm:inline">{t(searchOpen ? "feed.closeSearch" : "feed.searchPosts")}</span>
           </button>
         </div>
         {searchOpen && (

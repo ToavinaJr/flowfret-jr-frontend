@@ -105,7 +105,7 @@ export default function PlaylistsPage() {
       {loading ? (
         <PlaylistWorkspaceSkeleton />
       ) : (
-        <div className="grid gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
           <PlaylistList
             playlists={playlists}
             selectedId={selected?.id ?? null}
