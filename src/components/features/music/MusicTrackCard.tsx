@@ -85,12 +85,14 @@ export function MusicTrackCard({
           </div>
         </div>
 
-        <MusicMediaPlayer
-          track={track}
-          playbackQueue={playbackQueue}
-          queueIndex={queueIndex}
-        />
-        <AddToPlaylistButton track={track} />
+        <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-3">
+          <MusicMediaPlayer
+            track={track}
+            playbackQueue={playbackQueue}
+            queueIndex={queueIndex}
+          />
+          <AddToPlaylistButton track={track} />
+        </div>
         {track.provider === MUSIC_PROVIDER.SPOTIFY ? (
           <TrackLyrics track={track} />
         ) : null}
