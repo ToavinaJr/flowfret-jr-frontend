@@ -28,10 +28,10 @@ export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
   if (status === "error") return <PanelMessage text={t("lyrics.error")} />;
   if (status === "not-found" || !lyrics) return <PanelMessage text={t("lyrics.unavailable")} />;
   if (lyrics.instrumental) return <PanelMessage text={t("lyrics.instrumental")} />;
-  if (!lyrics.synced) return <div className="max-h-64 overflow-y-auto whitespace-pre-wrap px-4 py-5 text-sm leading-7 text-foreground">{lyrics.plainLyrics}</div>;
+  if (!lyrics.synced) return <div className="h-full max-h-64 overflow-y-auto whitespace-pre-wrap px-4 py-5 text-sm leading-7 text-foreground">{lyrics.plainLyrics}</div>;
 
   return (
-    <div className="max-h-64 overflow-y-auto px-3 py-24" aria-live="polite" aria-label={t("lyrics.title")}>
+    <div className="h-full max-h-64 overflow-y-auto px-3 py-24" aria-live="polite" aria-label={t("lyrics.title")}>
       {lyrics.lines.map((line, index) => (
         <button
           key={`${line.startTimeMs}-${index}`}
@@ -49,5 +49,5 @@ export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
 }
 
 function PanelMessage({ text }: { text: string }) {
-  return <div className="flex h-40 items-center justify-center px-4 text-center text-sm text-muted-foreground">{text}</div>;
+  return <div className="flex h-full min-h-40 items-center justify-center px-4 text-center text-sm text-muted-foreground">{text}</div>;
 }

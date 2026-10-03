@@ -29,7 +29,7 @@ export function TrackLyrics({ track }: { track: MusicTrack }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-border bg-secondary px-3 text-sm font-medium text-foreground hover:bg-secondary/80"
+        className="order-1 inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-border bg-secondary px-3 text-sm font-medium text-foreground hover:bg-secondary/80"
         aria-expanded={open}
         aria-controls={`lyrics-${track.provider}-${track.id}`}
       >
@@ -40,7 +40,7 @@ export function TrackLyrics({ track }: { track: MusicTrack }) {
       {open ? (
         <section
           id={`lyrics-${track.provider}-${track.id}`}
-          className="basis-full overflow-hidden rounded-lg border border-border bg-background/60"
+          className="order-last h-64 w-full basis-full overflow-hidden rounded-lg border border-border bg-background/60 sm:h-auto"
           aria-label={`${t("lyrics.title")} — ${track.title}`}
         >
           <LyricsPanel

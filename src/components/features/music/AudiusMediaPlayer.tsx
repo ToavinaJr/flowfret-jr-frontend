@@ -117,7 +117,7 @@ export function TranscriptionMediaPlayer({
 
       {lyricsOpen ? (
         <section
-          className="basis-full pt-3"
+          className="order-last w-full basis-full pt-3"
           aria-label={t("lyrics.transcriptionFor", { title: track.title })}
         >
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
