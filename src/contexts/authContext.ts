@@ -14,7 +14,7 @@ export interface AuthContextValue {
   login: (data: LoginInput) => Promise<void>;
   loginWithGoogle: (accessToken: string) => Promise<void>;
   registerWithGoogle: (accessToken: string) => Promise<void>;
-  register: (data: RegisterInput) => Promise<void>;
+  register: (data: RegisterInput) => Promise<RegisterPendingResult>;
   verifyEmail: (data: VerifyEmailInput) => Promise<void>;
   resendVerification: (token: string) => Promise<RegisterPendingResult>;
   requestPasswordReset: (email: string) => Promise<void>;

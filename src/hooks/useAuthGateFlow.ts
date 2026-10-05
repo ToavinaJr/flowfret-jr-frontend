@@ -166,12 +166,15 @@ export function useAuthGateFlow() {
     assertPasswords(state.password, state.confirmPassword, t);
     if (!acceptedTerms)
       throw new LocalAuthError(t("auth.errors.acceptTerms"));
-    await auth.register({
+    const pending = await auth.register({
       email: state.email,
       password: state.password,
       username: state.username,
     });
-    toast.success(t("auth.toasts.accountCreated"));
+    setPendingEmail(pending.email);
+    setVerificationToken(pending.verificationToken);
+    setMode("verify");
+    toast.success(t("auth.toasts.otpSent"), { description: pending.message });
   }
 
   async function handleResendOtp() {

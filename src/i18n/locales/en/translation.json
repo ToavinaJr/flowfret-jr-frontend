@@ -549,7 +549,6 @@
       "resetRequestDescription": "If an account matches this address, a link has been sent.",
       "passwordChanged": "Password changed",
       "passwordChangedDescription": "You can now sign in.",
-      "accountCreated": "Account created. Welcome to FlowFret!",
       "accountVerified": "Account verified. Welcome!",
       "otpSent": "OTP code sent",
       "newOtpSent": "New code sent"

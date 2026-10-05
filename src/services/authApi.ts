@@ -37,15 +37,12 @@ export async function loginUser(data: LoginInput): Promise<AuthSession> {
 
 export async function registerUser(
   data: RegisterInput,
-): Promise<AuthSession> {
-  const result = await graphqlRequest<{ register: AuthPayload }>({
-    query: `mutation RegisterUser($data: RegisterInput!) { register(data: $data) { accessToken user { id username email role } } }`,
+): Promise<RegisterPendingResult> {
+  const result = await graphqlRequest<{ register: RegisterPendingResult }>({
+    query: `mutation RegisterUser($data: RegisterInput!) { register(data: $data) { email verificationToken expiresAt message } }`,
     variables: { data },
   });
-  return persistSession({
-    accessToken: result.register.accessToken,
-    user: result.register.user,
-  });
+  return result.register;
 }
 
 export async function verifyEmailUser(
