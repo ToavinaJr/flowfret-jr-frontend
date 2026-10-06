@@ -83,7 +83,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const register = useCallback(
-    async (data: RegisterInput) => registerUser(data),
+    async (data: RegisterInput) => {
+      const session = await registerUser(data);
+      setUser(session.user);
+      setStatus("authenticated");
+    },
     [],
   );
 
