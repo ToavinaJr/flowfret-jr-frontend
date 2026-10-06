@@ -182,8 +182,8 @@ export default function ProfilePage() {
         own={own}
         avatar={avatar}
         username={profile?.user.username ?? user?.username}
-        displayName={profile?.displayName || displayName}
-        bio={profile?.bio ?? bio}
+        displayName={displayName}
+        bio={bio}
         visibility={visibility}
         saving={saving}
         onDisplayNameChange={setDisplayName}
