@@ -1,5 +1,5 @@
 import { Moon, Sun, Monitor, Globe2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -22,27 +22,18 @@ interface ThemeLanguageControlsProps {
 const ThemeLanguageControls = ({ compact = false, showTheme = true }: ThemeLanguageControlsProps) => {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const [language, setLanguage] = useState<LanguageOption>("en");
-
-  useEffect(() => {
-    const savedLanguage = window.localStorage.getItem("fretflow-language") as LanguageOption | null;
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
-
-  useEffect(() => {
-    const activeLanguage = i18n.resolvedLanguage ?? i18n.language ?? language;
-    document.documentElement.lang = language;
-    window.localStorage.setItem("fretflow-language", language);
-
-    if (activeLanguage !== language) {
-      void i18n.changeLanguage(language);
-    }
-  }, [i18n, language]);
+  const activeLanguage = i18n.resolvedLanguage ?? i18n.language;
+  const language: LanguageOption = activeLanguage.startsWith("fr") ? "fr" : "en";
 
   const currentTheme = (theme as ThemeMode | undefined) ?? "system";
   const Icon = useMemo(() => themeIcons[currentTheme], [currentTheme]);
+
+  const changeLanguage = (value: string) => {
+    if (value !== "en" && value !== "fr") return;
+    document.documentElement.lang = value;
+    window.localStorage.setItem("fretflow-language", value);
+    void i18n.changeLanguage(value);
+  };
 
   return (
     <div className={`space-y-3 rounded-lg border border-border bg-card ${compact ? "p-2" : "p-3 sm:p-4"}`}>
@@ -58,7 +49,7 @@ const ThemeLanguageControls = ({ compact = false, showTheme = true }: ThemeLangu
           <Globe2 className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-foreground">{t("settings.language")}</span>
         </div>
-        <Select name="language" value={language} onValueChange={(value) => setLanguage(value as LanguageOption)}>
+        <Select name="language" value={language} onValueChange={changeLanguage}>
           <SelectTrigger id="language-select" aria-label={t("settings.language")} className="w-full border-border bg-background text-foreground hover:border-primary/60 focus:ring-primary">
             <SelectValue placeholder={t("settings.language")} />
           </SelectTrigger>
