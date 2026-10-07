@@ -136,6 +136,12 @@ export function useTranscriptionEvents(track: MusicTrack) {
 
   const retry = useCallback(async () => {
     if (!state) return;
+    if (
+      state.provider !== track.provider ||
+      state.trackId !== track.providerTrackId
+    ) {
+      return prepare();
+    }
     try {
       const response = await retryTranscription(
         state.transcriptionId,
@@ -155,7 +161,7 @@ export function useTranscriptionEvents(track: MusicTrack) {
       setError(friendlyError);
       throw retryError;
     }
-  }, [connect, scheduleRateLimitRetry, state, track.streamUrl]);
+  }, [connect, prepare, scheduleRateLimitRetry, state, track]);
 
   useEffect(
     () => () => {
@@ -169,6 +175,6 @@ export function useTranscriptionEvents(track: MusicTrack) {
     activeIdRef.current = null;
     setState(null);
     setError(null);
-  }, [track.providerTrackId]);
+  }, [track.provider, track.providerTrackId]);
   return { transcription: state, error, prepare, retry };
 }
