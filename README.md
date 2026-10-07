@@ -31,6 +31,9 @@ Set `VITE_GRAPHQL_URL` to the public HTTPS API endpoint at build time, for
 example `https://api.flowfret.app/graphql`. Application initialization fails
 in production when this variable is missing or uses HTTP. Vercel no longer
 proxies API traffic to an unencrypted IP address.
+When changing the production API host, add its HTTPS origin to the
+`connect-src` directive in `vercel.json` and redeploy the frontend so the
+Content Security Policy permits browser requests to that API.
 
 ## Music search
 
