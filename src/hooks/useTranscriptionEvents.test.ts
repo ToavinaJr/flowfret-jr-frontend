@@ -38,6 +38,11 @@ const youtubeTrack: MusicTrack = {
   durationMs: 60_000,
 };
 
+const audiusTrack: MusicTrack = {
+  ...youtubeTrack,
+  provider: "AUDIUS",
+};
+
 function response(
   provider: TranscriptionResponse["provider"],
 ): TranscriptionResponse {
@@ -101,11 +106,7 @@ describe("useTranscriptionEvents provider-aware retries", () => {
     vi.mocked(createTranscription).mockResolvedValue(response("AUDIUS"));
     const { result, rerender } = renderHook(
       ({ track }: { track: MusicTrack }) => useTranscriptionEvents(track),
-      {
-        initialProps: {
-          track: { ...youtubeTrack, provider: "AUDIUS" as const },
-        },
-      },
+      { initialProps: { track: audiusTrack } },
     );
 
     await act(async () => {
