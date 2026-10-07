@@ -1,4 +1,4 @@
-import type { TranscriptionSegment } from "@/types/transcription";
+import type { TranscriptionSegment, TranscriptionWord } from "@/types/transcription";
 
 export function findActiveSegment(segments: readonly TranscriptionSegment[], currentTime: number): number {
   let low = 0;
@@ -8,6 +8,19 @@ export function findActiveSegment(segments: readonly TranscriptionSegment[], cur
     const segment = segments[middle];
     if (currentTime < segment.start) high = middle - 1;
     else if (currentTime >= segment.end) low = middle + 1;
+    else return middle;
+  }
+  return -1;
+}
+
+export function findActiveWord(words: readonly TranscriptionWord[], currentTime: number): number {
+  let low = 0;
+  let high = words.length - 1;
+  while (low <= high) {
+    const middle = Math.floor((low + high) / 2);
+    const word = words[middle];
+    if (currentTime < word.start) high = middle - 1;
+    else if (currentTime >= word.end) low = middle + 1;
     else return middle;
   }
   return -1;

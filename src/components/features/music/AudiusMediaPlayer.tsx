@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Download,
   FileText,
@@ -62,6 +62,35 @@ export function TranscriptionMediaPlayer({
     }
   }
 
+  // Opening lyrics first waits for the transcription instead of starting
+  // playback right away, so the song and its synchronized lyrics begin
+  // together rather than playback racing ahead of a not-yet-ready transcript.
+  async function showLyricsThenPlay() {
+    setLyricsOpen(true);
+    if (transcription || preparing) return;
+    setPreparing(true);
+    setActionError(null);
+    try {
+      await prepare();
+    } catch (cause) {
+      setPreparing(false);
+      setActionError(
+        cause instanceof Error ? cause.message : t("lyrics.prepareFailed"),
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (!preparing || !transcription) return;
+    if (transcription.status === TRANSCRIPTION_STATUS.COMPLETED) {
+      setPreparing(false);
+      if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
+      void toggle(playbackItem);
+    } else if (transcription.status === TRANSCRIPTION_STATUS.FAILED) {
+      setPreparing(false);
+    }
+  }, [preparing, transcription, playbackItem, playbackQueue, queueIndex, setQueue, toggle]);
+
   async function retryTranscription() {
     setPreparing(true);
     setActionError(null);
@@ -96,8 +125,12 @@ export function TranscriptionMediaPlayer({
         <button
           type="button"
           onClick={() => {
-            setLyricsOpen((open) => !open);
-            if (!transcription && !preparing) void startPlayback();
+            if (lyricsOpen) {
+              setLyricsOpen(false);
+              return;
+            }
+            if (!transcription && !preparing) void showLyricsThenPlay();
+            else setLyricsOpen(true);
           }}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary text-foreground"
           aria-label={t(
@@ -190,6 +223,7 @@ export function TranscriptionMediaPlayer({
             segments={transcription?.segments ?? []}
             activeIndex={activeIndex}
             onSeek={seek}
+            currentTime={isActive ? currentTime : undefined}
           />
         </section>
       ) : null}

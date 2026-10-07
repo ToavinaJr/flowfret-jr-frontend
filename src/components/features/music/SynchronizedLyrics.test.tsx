@@ -11,4 +11,23 @@ describe("SynchronizedLyrics", () => {
     fireEvent.click(line);
     expect(onSeek).toHaveBeenCalledWith(3.5);
   });
+
+  it("highlights the active word within the active line when currentTime is provided", () => {
+    const segments = [
+      {
+        id: "one",
+        start: 3.5,
+        end: 5,
+        text: "First line",
+        words: [
+          { start: 3.5, end: 4, text: "First" },
+          { start: 4, end: 5, text: " line" },
+        ],
+      },
+    ];
+    render(<SynchronizedLyrics segments={segments} activeIndex={0} onSeek={vi.fn()} currentTime={4.2} />);
+    const line = screen.getByRole("button", { name: "First line" });
+    const activeWord = line.querySelector(".text-primary");
+    expect(activeWord?.textContent).toBe("line");
+  });
 });

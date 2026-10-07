@@ -1,19 +1,45 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { I18nextProvider } from "react-i18next";
 import i18n from "@/i18n";
 import { AudiusMediaPlayer } from "./AudiusMediaPlayer";
 
-const mocks = vi.hoisted(() => ({ prepare: vi.fn(), retry: vi.fn() }));
+const mocks = vi.hoisted(() => {
+  let transcription: unknown = null;
+  const listeners = new Set<() => void>();
+  return {
+    prepare: vi.fn(),
+    retry: vi.fn(),
+    setTranscription: (value: unknown) => {
+      transcription = value;
+      listeners.forEach((listener) => listener());
+    },
+    getTranscription: () => transcription,
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+});
 vi.mock("@/hooks/useTranscriptionEvents", () => ({
-  useTranscriptionEvents: () => ({
-    transcription: null,
-    error: null,
-    prepare: mocks.prepare,
-    retry: mocks.retry,
-  }),
+  useTranscriptionEvents: () => {
+    const [, forceRender] = useState(0);
+    useEffect(() => {
+      const unsubscribe = mocks.subscribe(() => forceRender((n) => n + 1));
+      return unsubscribe;
+    }, []);
+    return {
+      transcription: mocks.getTranscription(),
+      error: null,
+      prepare: mocks.prepare,
+      retry: mocks.retry,
+    };
+  },
 }));
 
 const track = {
@@ -39,6 +65,7 @@ describe("AudiusMediaPlayer transcription", () => {
   beforeEach(async () => {
     await i18n.changeLanguage("fr");
     mocks.prepare.mockReset();
+    mocks.setTranscription(null);
     Object.defineProperty(HTMLMediaElement.prototype, "play", {
       configurable: true,
       value: vi.fn().mockResolvedValue(undefined),
@@ -73,5 +100,34 @@ describe("AudiusMediaPlayer transcription", () => {
     );
     expect(mocks.prepare).toHaveBeenCalledOnce();
     expect(screen.getByLabelText("Transcription de Song")).toBeInTheDocument();
+  });
+
+  it("waits for the transcription to complete before playing when lyrics are opened first", async () => {
+    mocks.prepare.mockImplementation(async () => {
+      mocks.setTranscription({ status: "PENDING", segments: [] });
+      return { transcriptionId: "t1", status: "PENDING", cached: false };
+    });
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <PlaybackProvider>
+            <AudiusMediaPlayer track={track} />
+          </PlaybackProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Afficher la transcription" }),
+    );
+    await waitFor(() => expect(mocks.prepare).toHaveBeenCalledOnce());
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+
+    mocks.setTranscription({ status: "COMPLETED", segments: [] });
+    await waitFor(() =>
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
+    );
   });
 });
