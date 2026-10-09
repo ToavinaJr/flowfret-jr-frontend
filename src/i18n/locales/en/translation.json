@@ -368,7 +368,11 @@
       "contact": "Contact",
       "contactDescription": "Get in touch",
       "tuner": "Tuner",
-      "tunerDescription": "Pitch reference"
+      "tunerDescription": "Pitch reference",
+      "help": {
+        "menuLabel": "Help",
+        "menuDescription": "Music notation and theory guide"
+      }
     }
   },
   "history": {

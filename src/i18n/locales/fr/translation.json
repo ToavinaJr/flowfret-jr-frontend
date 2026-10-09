@@ -368,7 +368,11 @@
       "contact": "Contact",
       "contactDescription": "Nous contacter",
       "tuner": "Accordeur",
-      "tunerDescription": "Référence de hauteur"
+      "tunerDescription": "Référence de hauteur",
+      "help": {
+        "menuLabel": "Aide",
+        "menuDescription": "Guide de notation et de théorie musicale"
+      }
     }
   },
   "history": {
