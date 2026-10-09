@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MusicTrack } from "@/types/music";
 import { YouTubeMediaPlayer } from "./YouTubeMediaPlayer";
 
@@ -51,12 +52,17 @@ describe("YouTubeMediaPlayer", () => {
         subtitle: "Artist",
       },
     ];
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     render(
-      <YouTubeMediaPlayer
-        track={track}
-        playbackQueue={queue}
-        queueIndex={0}
-      />,
+      <QueryClientProvider client={queryClient}>
+        <YouTubeMediaPlayer
+          track={track}
+          playbackQueue={queue}
+          queueIndex={0}
+        />
+      </QueryClientProvider>,
     );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

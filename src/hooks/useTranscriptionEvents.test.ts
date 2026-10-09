@@ -5,6 +5,7 @@ import type { TranscriptionResponse } from "@/types/transcription";
 import {
   createTranscription,
   retryTranscription,
+  streamTranscriptionEvents,
 } from "@/services/transcriptionsApi";
 import { useTranscriptionEvents } from "./useTranscriptionEvents";
 
@@ -73,6 +74,8 @@ describe("useTranscriptionEvents provider-aware retries", () => {
   beforeEach(() => {
     vi.mocked(createTranscription).mockReset();
     vi.mocked(retryTranscription).mockReset();
+    vi.mocked(streamTranscriptionEvents).mockReset();
+    vi.mocked(streamTranscriptionEvents).mockResolvedValue(undefined);
   });
 
   it("creates a transcription for the selected provider instead of retrying a stale provider", async () => {
