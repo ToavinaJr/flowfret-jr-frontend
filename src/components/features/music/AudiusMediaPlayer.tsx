@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Download,
   FileText,
@@ -9,10 +9,13 @@ import {
 } from "lucide-react";
 import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
 import { useTranscriptionEvents } from "@/hooks/useTranscriptionEvents";
+import { useLyrics } from "@/hooks/useLyrics";
 import { downloadTranscriptionLrc } from "@/services/transcriptionsApi";
 import type { MusicTrack } from "@/types/music";
+import type { LyricsTrack } from "@/types/lyrics";
 import { findActiveSegment } from "@/utils/transcription";
 import { SynchronizedLyrics } from "./SynchronizedLyrics";
+import { LyricsPanel } from "./LyricsPanel";
 import { useTranslation } from "react-i18next";
 import { TRANSCRIPTION_PHASE, TRANSCRIPTION_STATUS } from "@/constants/domain";
 import { toMusicPlaybackItem } from "./music-playback";
@@ -33,9 +36,27 @@ export function TranscriptionMediaPlayer({
   const [lyricsOpen, setLyricsOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [awaitingLyricsDecision, setAwaitingLyricsDecision] = useState(false);
   const playbackItem = toMusicPlaybackItem(track);
   const isActive = item?.id === playbackItem.id;
   const isPlaying = isActive && playState === "playing";
+  // A pre-synced lyrics database (LRCLIB) is tried before the heavier
+  // YouTube-extraction + Whisper pipeline: most known tracks resolve
+  // instantly from it, with no audio download or transcription needed at
+  // all. Built the same way PersistentLyrics.tsx gates its own lookup -
+  // artist must be present, or the underlying query never starts.
+  const lyricsTrack: LyricsTrack | null = track.artists[0]?.name
+    ? {
+        id: track.providerTrackId,
+        provider: track.provider,
+        title: track.title,
+        artist: track.artists[0].name,
+        album: track.album ?? undefined,
+        duration: track.durationMs ? track.durationMs / 1000 : undefined,
+      }
+    : null;
+  const { lyrics, status: lyricsStatus } = useLyrics(lyricsTrack, lyricsOpen);
+  const usingLrclib = lyrics?.synced === true;
   const activeIndex = useMemo(
     () =>
       findActiveSegment(
@@ -65,7 +86,7 @@ export function TranscriptionMediaPlayer({
   // Opening lyrics first waits for the transcription instead of starting
   // playback right away, so the song and its synchronized lyrics begin
   // together rather than playback racing ahead of a not-yet-ready transcript.
-  async function showLyricsThenPlay() {
+  const showLyricsThenPlay = useCallback(async () => {
     setLyricsOpen(true);
     if (transcription || preparing) return;
     setPreparing(true);
@@ -78,7 +99,7 @@ export function TranscriptionMediaPlayer({
         cause instanceof Error ? cause.message : t("lyrics.prepareFailed"),
       );
     }
-  }
+  }, [transcription, preparing, prepare, t]);
 
   useEffect(() => {
     if (!preparing || !transcription) return;
@@ -90,6 +111,21 @@ export function TranscriptionMediaPlayer({
       setPreparing(false);
     }
   }, [preparing, transcription, playbackItem, playbackQueue, queueIndex, setQueue, toggle]);
+
+  // Resolves the lyrics-first-click decision once the LRCLIB lookup settles:
+  // a synced match plays immediately (no YouTube extraction or Whisper
+  // involved at all); anything else (no match, unsynced-only, no artist to
+  // search) falls back to the existing wait-for-Whisper-transcription flow.
+  useEffect(() => {
+    if (!awaitingLyricsDecision || lyricsStatus === "loading") return;
+    setAwaitingLyricsDecision(false);
+    if (lyrics?.synced) {
+      if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
+      void toggle(playbackItem);
+      return;
+    }
+    void showLyricsThenPlay();
+  }, [awaitingLyricsDecision, lyricsStatus, lyrics, playbackItem, playbackQueue, queueIndex, setQueue, toggle, showLyricsThenPlay]);
 
   async function retryTranscription() {
     setPreparing(true);
@@ -129,8 +165,9 @@ export function TranscriptionMediaPlayer({
               setLyricsOpen(false);
               return;
             }
-            if (!transcription && !preparing) void showLyricsThenPlay();
-            else setLyricsOpen(true);
+            setLyricsOpen(true);
+            if (usingLrclib || transcription || preparing) return;
+            setAwaitingLyricsDecision(true);
           }}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary text-foreground"
           aria-label={t(
@@ -148,7 +185,24 @@ export function TranscriptionMediaPlayer({
         </button>
       </div>
 
-      {lyricsOpen ? (
+      {lyricsOpen && usingLrclib ? (
+        <section
+          className="order-last w-full basis-full pt-3"
+          aria-label={t("lyrics.transcriptionFor", { title: track.title })}
+        >
+          <div className="mb-2 text-xs text-muted-foreground">
+            {t("lyrics.synchronized")}
+          </div>
+          <LyricsPanel
+            lyrics={lyrics}
+            status={lyricsStatus}
+            currentTime={isActive ? currentTime : 0}
+            onSeek={seek}
+          />
+        </section>
+      ) : null}
+
+      {lyricsOpen && !usingLrclib ? (
         <section
           className="order-last w-full basis-full pt-3"
           aria-label={t("lyrics.transcriptionFor", { title: track.title })}

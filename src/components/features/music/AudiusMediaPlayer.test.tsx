@@ -24,6 +24,12 @@ const mocks = vi.hoisted(() => {
         listeners.delete(listener);
       };
     },
+    // No LRCLIB match by default, so existing tests exercise the Whisper
+    // fallback path deterministically instead of racing a real network call.
+    lyricsResult: { lyrics: null, status: "not-found" } as {
+      lyrics: { synced: boolean; lines: { startTimeMs: number | null; text: string }[] } | null;
+      status: string;
+    },
   };
 });
 vi.mock("@/hooks/useTranscriptionEvents", () => ({
@@ -40,6 +46,13 @@ vi.mock("@/hooks/useTranscriptionEvents", () => ({
       retry: mocks.retry,
     };
   },
+}));
+vi.mock("@/hooks/useLyrics", () => ({
+  // Mirrors the real hook's gating: nothing resolves before the caller
+  // passes `enabled: true` (i.e. before lyrics are actually opened), so
+  // tests can't accidentally observe an LRCLIB match before the UI does.
+  useLyrics: (_track: unknown, enabled: boolean) =>
+    enabled ? mocks.lyricsResult : { lyrics: null, status: "idle" },
 }));
 
 const track = {
@@ -66,6 +79,7 @@ describe("AudiusMediaPlayer transcription", () => {
     await i18n.changeLanguage("fr");
     mocks.prepare.mockReset();
     mocks.setTranscription(null);
+    mocks.lyricsResult = { lyrics: null, status: "not-found" };
     Object.defineProperty(HTMLMediaElement.prototype, "play", {
       configurable: true,
       value: vi.fn().mockResolvedValue(undefined),
@@ -129,5 +143,31 @@ describe("AudiusMediaPlayer transcription", () => {
     await waitFor(() =>
       expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
     );
+  });
+
+  it("plays immediately from a synced LRCLIB match without transcribing", async () => {
+    mocks.lyricsResult = {
+      lyrics: { synced: true, lines: [{ startTimeMs: 0, text: "La la la" }] },
+      status: "success",
+    };
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <PlaybackProvider>
+            <AudiusMediaPlayer track={track} />
+          </PlaybackProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Afficher la transcription" }),
+    );
+    await waitFor(() =>
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
+    );
+    expect(mocks.prepare).not.toHaveBeenCalled();
   });
 });
