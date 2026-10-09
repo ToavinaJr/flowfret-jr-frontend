@@ -1,6 +1,7 @@
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import type { MusicTrack } from "@/types/music";
 import { graphqlRequest } from "@/services/graphqlClient";
+import { getAccessToken } from "@/services/authToken";
 
 const TRACK_FIELDS = `
   provider id providerTrackId audiusId title imageUrl audiusUrl externalUrl
@@ -16,6 +17,8 @@ export async function fetchListeningHistory(): Promise<MusicTrack[]> {
 }
 
 export async function recordTrackListen(item: PlaybackItem): Promise<void> {
+  if (!getAccessToken()) return;
+
   if (
     !item.provider ||
     !item.providerTrackId ||

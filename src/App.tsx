@@ -6,9 +6,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
-import AppLayout from "@/components/AppLayout";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
+
+const AppLayout = lazy(() => import("@/components/AppLayout"));
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
