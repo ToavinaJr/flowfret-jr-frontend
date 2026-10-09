@@ -8,8 +8,7 @@ import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
-
-const AppLayout = lazy(() => import("@/components/AppLayout"));
+import AppLayout from "@/components/AppLayout";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
