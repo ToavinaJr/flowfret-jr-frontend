@@ -36,7 +36,7 @@ export function FeedCardHeader({
             {post.author.profile?.avatarUrl ? (
               <img
                 src={post.author.profile.avatarUrl}
-                alt={`Avatar de ${post.author.username}`}
+                alt={t("friends.avatarAlt", { name: post.author.username })}
                 className="h-full w-full object-cover"
                 loading="lazy"
               />

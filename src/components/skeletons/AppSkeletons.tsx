@@ -7,6 +7,7 @@ export function AppShellSkeleton() {
     <div
       className="flex min-h-screen bg-background"
       role="status"
+      aria-busy="true"
       aria-label={t("skeletons.appLoading")}
     >
       <aside className="hidden w-64 shrink-0 border-r border-border p-5 md:block lg:w-72">
