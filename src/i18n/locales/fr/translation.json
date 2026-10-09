@@ -454,6 +454,9 @@
     "pause": "Pause",
     "seek": "Position de lecture",
     "audioError": "Impossible de lire cette source audio.",
+    "providerError": "Ce fournisseur musical est momentanément indisponible.",
+    "playbackBlocked": "Le navigateur a bloqué la lecture. Appuyez de nouveau sur lecture.",
+    "retryPlayback": "Réessayer",
     "timeline": "Chronologie des accords"
   },
   "upload": {

@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, Play, Shuffle, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { usePlayback } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 import { toPlaybackItem } from "./playlist-playback";
 import { useTranslation } from "react-i18next";

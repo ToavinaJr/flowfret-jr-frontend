@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
-import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
+import type { PlaybackItem } from "@/contexts/playback-context";
 import type { ImportedSong } from "@/types/song";
 import { getChordPosition } from "@/utils/chords";
 import { getCueIndexAtTime, normaliseKey } from "@/utils/songCues";

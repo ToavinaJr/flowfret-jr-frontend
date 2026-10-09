@@ -21,6 +21,12 @@ export function toMusicPlaybackItem(track: MusicTrack): PlaybackItem {
     artist: track.artists[0]?.name ?? "",
     album: track.album,
   };
+  if (
+    track.provider === MUSIC_PROVIDER.SPOTIFY &&
+    track.streamUrl !== track.externalUrl
+  ) {
+    return { ...common, engine: "audio", src: track.streamUrl };
+  }
   if (track.provider === MUSIC_PROVIDER.SPOTIFY)
     return {
       ...common,

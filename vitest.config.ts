@@ -9,7 +9,7 @@ export default defineConfig({
     globals: true,
     pool: "threads",
     maxWorkers: 2,
-    isolate: false,
+    isolate: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },

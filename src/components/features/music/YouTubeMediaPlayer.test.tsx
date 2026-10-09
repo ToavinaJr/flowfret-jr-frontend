@@ -5,7 +5,7 @@ import type { MusicTrack } from "@/types/music";
 import { YouTubeMediaPlayer } from "./YouTubeMediaPlayer";
 
 const playback = vi.hoisted(() => ({ toggle: vi.fn(), setQueue: vi.fn() }));
-vi.mock("@/contexts/PlaybackContext", () => ({
+vi.mock("@/contexts/usePlayback", () => ({
   usePlayback: () => ({
     item: null,
     playState: "paused",

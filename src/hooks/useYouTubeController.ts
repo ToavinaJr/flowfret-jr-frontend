@@ -6,6 +6,7 @@ interface YouTubeControllerOptions {
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   onEnded: () => void;
+  onError: () => void;
 }
 
 export function useYouTubeController({
@@ -13,6 +14,7 @@ export function useYouTubeController({
   setCurrentTime,
   setDuration,
   onEnded,
+  onError,
 }: YouTubeControllerOptions) {
   const hostRef = useRef<HTMLIFrameElement | null>(null);
   const videoIdRef = useRef<string | null>(null);
@@ -28,7 +30,15 @@ export function useYouTubeController({
       )
         return;
       const message = parseMessage(event.data);
+      if (message?.event === "onError") {
+        onError();
+        return;
+      }
       if (message?.event !== "infoDelivery" || !message.info) return;
+      if (message.info.error) {
+        onError();
+        return;
+      }
       const { currentTime, duration, playerState } = message.info;
       if (typeof currentTime === "number") setCurrentTime(currentTime);
       if (typeof duration === "number" && duration > 0) setDuration(duration);
@@ -39,7 +49,7 @@ export function useYouTubeController({
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
-  }, [onEnded, setCurrentTime, setDuration, setPlayState]);
+  }, [onEnded, onError, setCurrentTime, setDuration, setPlayState]);
 
   const play = useCallback((videoId: string, startAt = 0) => {
     const host = hostRef.current;
@@ -95,7 +105,12 @@ export function useYouTubeController({
 
 interface YouTubeMessage {
   event?: string;
-  info?: { currentTime?: number; duration?: number; playerState?: number };
+  info?: {
+    currentTime?: number;
+    duration?: number;
+    playerState?: number;
+    error?: number;
+  };
 }
 
 function parseMessage(value: unknown): YouTubeMessage | null {

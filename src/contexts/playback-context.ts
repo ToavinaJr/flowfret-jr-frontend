@@ -1,0 +1,56 @@
+import { createContext } from "react";
+import type { ChordCue, PlaybackErrorCode, PlayState } from "@/types/song";
+import type { MusicProvider } from "@/constants/domain";
+
+export interface PlaybackArtist {
+  id: string;
+  name: string;
+}
+
+export interface PlaybackItem {
+  id: string;
+  src: string;
+  engine?: "audio" | "spotify" | "youtube";
+  title: string;
+  subtitle: string;
+  imageUrl?: string | null;
+  duration?: number;
+  destination?: string;
+  trackActivity?: boolean;
+  provider?: MusicProvider;
+  providerTrackId?: string;
+  artists?: PlaybackArtist[];
+  externalUrl?: string;
+  streamUrl?: string;
+  genre?: string | null;
+  isrc?: string | null;
+  artist?: string;
+  album?: string | null;
+  chordCues?: ChordCue[];
+  revokeSourceOnRelease?: boolean;
+}
+
+export interface PlaybackContextValue {
+  item: PlaybackItem | null;
+  playState: PlayState;
+  playbackError: PlaybackErrorCode | null;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  queue: PlaybackItem[];
+  currentIndex: number;
+  shuffle: boolean;
+  select: (item: PlaybackItem) => void;
+  play: (item?: PlaybackItem) => Promise<void>;
+  pause: () => void;
+  toggle: (item?: PlaybackItem) => Promise<void>;
+  retry: () => Promise<void>;
+  seek: (time: number) => void;
+  setVolume: (volume: number) => void;
+  setQueue: (items: PlaybackItem[], startIndex?: number) => void;
+  setShuffle: (enabled: boolean) => void;
+  next: () => Promise<void>;
+  previous: () => Promise<void>;
+}
+
+export const PlaybackContext = createContext<PlaybackContextValue | null>(null);

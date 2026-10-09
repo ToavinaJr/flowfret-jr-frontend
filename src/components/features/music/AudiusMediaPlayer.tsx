@@ -7,7 +7,8 @@ import {
   Play,
   RefreshCw,
 } from "lucide-react";
-import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
+import type { PlaybackItem } from "@/contexts/playback-context";
 import { useTranscriptionEvents } from "@/hooks/useTranscriptionEvents";
 import { useLyrics } from "@/hooks/useLyrics";
 import { downloadTranscriptionLrc } from "@/services/transcriptionsApi";

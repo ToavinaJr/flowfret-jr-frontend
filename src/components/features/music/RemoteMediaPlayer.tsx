@@ -1,5 +1,6 @@
 import { Pause, Play } from "lucide-react";
-import { usePlayback, type PlaybackItem } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
+import type { PlaybackItem } from "@/contexts/playback-context";
 import type { MusicTrack } from "@/types/music";
 import { toMusicPlaybackItem } from "./music-playback";
 import { useTranslation } from "react-i18next";

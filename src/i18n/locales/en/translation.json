@@ -454,6 +454,9 @@
     "pause": "Pause",
     "seek": "Seek",
     "audioError": "Unable to play this audio source.",
+    "providerError": "This music provider is currently unavailable.",
+    "playbackBlocked": "The browser blocked playback. Press play again to continue.",
+    "retryPlayback": "Retry",
     "timeline": "Chord timeline"
   },
   "upload": {

@@ -18,3 +18,8 @@ export interface ImportedSong {
 }
 
 export type PlayState = "idle" | "loading" | "playing" | "paused" | "error";
+
+export type PlaybackErrorCode =
+  | "AUDIO_UNAVAILABLE"
+  | "PROVIDER_UNAVAILABLE"
+  | "PLAYBACK_BLOCKED";

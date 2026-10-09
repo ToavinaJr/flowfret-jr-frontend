@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { usePlayback } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
 import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 import { PersistentChords } from "@/components/features/music/PersistentChords";
 
@@ -29,6 +29,7 @@ export default function PersistentMediaPlayer() {
   const {
     item,
     playState,
+    playbackError,
     currentTime,
     duration,
     volume,
@@ -40,10 +41,11 @@ export default function PersistentMediaPlayer() {
     setShuffle,
     next,
     previous,
+    retry,
   } = usePlayback();
   useEffect(() => setActivePanel(null), [item?.id]);
   if (!item) return null;
-  const isSpotify = item.engine === "spotify" || item.id.startsWith("spotify:");
+  const isSpotify = item.engine === "spotify";
 
   const content = (
     <>
@@ -236,6 +238,27 @@ export default function PersistentMediaPlayer() {
           </>
         ) : null}
       </div>
+      {playState === "error" ? (
+        <div
+          className="flex items-center justify-between gap-3 border-t border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive sm:px-5"
+          role="alert"
+        >
+          <span>
+            {playbackError === "AUDIO_UNAVAILABLE"
+              ? t("player.audioError")
+              : playbackError === "PLAYBACK_BLOCKED"
+                ? t("player.playbackBlocked")
+                : t("player.providerError")}
+          </span>
+          <button
+            type="button"
+            onClick={() => void retry()}
+            className="shrink-0 rounded-md bg-destructive/15 px-2.5 py-1 font-medium hover:bg-destructive/25"
+          >
+            {t("player.retryPlayback")}
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

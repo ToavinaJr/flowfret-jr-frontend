@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useMemo,
   useRef,
   useState,
@@ -17,61 +15,18 @@ import {
   PLAYBACK_LOGOUT_EVENT,
   readPlaybackSession,
 } from "@/services/playbackSession";
-import type { PlayState } from "@/types/song";
 import { useTranslation } from "react-i18next";
-import type { ChordCue } from "@/types/song";
-import type { MusicProvider } from "@/constants/domain";
+import {
+  PlaybackContext,
+  type PlaybackContextValue,
+  type PlaybackItem,
+} from "./playback-context";
 
-export interface PlaybackArtist {
-  id: string;
-  name: string;
-}
-
-export interface PlaybackItem {
-  id: string;
-  src: string;
-  engine?: "audio" | "spotify" | "youtube";
-  title: string;
-  subtitle: string;
-  imageUrl?: string | null;
-  duration?: number;
-  destination?: string;
-  trackActivity?: boolean;
-  provider?: MusicProvider;
-  providerTrackId?: string;
-  artists?: PlaybackArtist[];
-  externalUrl?: string;
-  streamUrl?: string;
-  genre?: string | null;
-  isrc?: string | null;
-  artist?: string;
-  album?: string | null;
-  chordCues?: ChordCue[];
-  revokeSourceOnRelease?: boolean;
-}
-
-interface PlaybackContextValue {
-  item: PlaybackItem | null;
-  playState: PlayState;
-  currentTime: number;
-  duration: number;
-  volume: number;
-  queue: PlaybackItem[];
-  currentIndex: number;
-  shuffle: boolean;
-  select: (item: PlaybackItem) => void;
-  play: (item?: PlaybackItem) => Promise<void>;
-  pause: () => void;
-  toggle: (item?: PlaybackItem) => Promise<void>;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  setQueue: (items: PlaybackItem[], startIndex?: number) => void;
-  setShuffle: (enabled: boolean) => void;
-  next: () => Promise<void>;
-  previous: () => Promise<void>;
-}
-
-const PlaybackContext = createContext<PlaybackContextValue | null>(null);
+export type {
+  PlaybackArtist,
+  PlaybackContextValue,
+  PlaybackItem,
+} from "./playback-context";
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -172,6 +127,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     () => ({
       item: engine.item,
       playState: engine.playState,
+      playbackError: engine.playbackError,
       currentTime: engine.currentTime,
       duration: engine.duration,
       volume: engine.volume,
@@ -182,6 +138,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       play,
       pause: engine.pause,
       toggle,
+      retry: engine.retry,
       seek: engine.seek,
       setVolume: engine.setVolume,
       setQueue,
@@ -209,11 +166,4 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       />
     </PlaybackContext.Provider>
   );
-}
-
-export function usePlayback(): PlaybackContextValue {
-  const context = useContext(PlaybackContext);
-  if (!context)
-    throw new Error("usePlayback must be used inside PlaybackProvider");
-  return context;
 }

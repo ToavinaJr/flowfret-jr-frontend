@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pause, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usePlayback } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
 import { fetchTrendingMusic } from "@/services/musicGraphql";
 import { toMusicPlaybackItem } from "@/components/features/music/music-playback";
 

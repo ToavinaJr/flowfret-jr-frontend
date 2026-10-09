@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FileText, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usePlayback } from "@/contexts/PlaybackContext";
+import { usePlayback } from "@/contexts/usePlayback";
 import { useLyrics } from "@/hooks/useLyrics";
 import type { MusicTrack } from "@/types/music";
 import { LyricsPanel } from "./LyricsPanel";

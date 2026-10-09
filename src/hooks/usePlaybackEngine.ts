@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { recordTrackListen } from "@/services/listeningHistoryApi";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
-import type { PlayState } from "@/types/song";
+import type { PlaybackErrorCode, PlayState } from "@/types/song";
 import { useSpotifyController } from "./useSpotifyController";
 import { useYouTubeController } from "./useYouTubeController";
 
@@ -32,9 +32,16 @@ export function usePlaybackEngine(
   const [currentTime, setCurrentTime] = useState(initial?.currentTime ?? 0);
   const [duration, setDuration] = useState(initial?.item?.duration ?? 0);
   const [volume, setVolumeState] = useState(initial?.volume ?? 1);
+  const [playbackError, setPlaybackError] = useState<PlaybackErrorCode | null>(
+    null,
+  );
   const updateCurrentTime = useCallback((time: number) => {
     resumeAtRef.current = time;
     setCurrentTime(time);
+  }, []);
+  const handleYouTubeError = useCallback(() => {
+    setPlaybackError("PROVIDER_UNAVAILABLE");
+    setPlayState("error");
   }, []);
   const spotify = useSpotifyController({
     setPlayState,
@@ -46,6 +53,7 @@ export function usePlaybackEngine(
     setCurrentTime: updateCurrentTime,
     setDuration,
     onEnded: handleYouTubeEnded,
+    onError: handleYouTubeError,
   });
 
   const releaseSource = useCallback((releasedItem: PlaybackItem | null) => {
@@ -71,16 +79,26 @@ export function usePlaybackEngine(
         audio.currentTime = Math.min(resumeAtRef.current, audio.duration || resumeAtRef.current);
     };
     const onPlay = () => setPlayState("playing");
+    const onWaiting = () => setPlayState("loading");
+    const onCanPlay = () => {
+      if (!audio.paused) setPlayState("playing");
+    };
     const onPause = () =>
       setPlayState((state) => (state === "error" ? state : "paused"));
     const handleEnded = () => {
       setPlayState("paused");
       onEndedRef.current?.();
     };
-    const onError = () => setPlayState("error");
+    const onError = () => {
+      setPlaybackError("AUDIO_UNAVAILABLE");
+      setPlayState("error");
+    };
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onMetadata);
     audio.addEventListener("play", onPlay);
+    audio.addEventListener("waiting", onWaiting);
+    audio.addEventListener("stalled", onWaiting);
+    audio.addEventListener("canplay", onCanPlay);
     audio.addEventListener("pause", onPause);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", onError);
@@ -94,6 +112,9 @@ export function usePlaybackEngine(
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("loadedmetadata", onMetadata);
       audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("waiting", onWaiting);
+      audio.removeEventListener("stalled", onWaiting);
+      audio.removeEventListener("canplay", onCanPlay);
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", onError);
@@ -109,6 +130,7 @@ export function usePlaybackEngine(
       if (itemRef.current?.id === next.id && itemRef.current.src === next.src)
         return;
       const previous = itemRef.current;
+      generationRef.current += 1;
       if (previous?.engine === "spotify") spotify.pause();
       else if (previous?.engine === "youtube") youtube.pause();
       else audioRef.current?.pause();
@@ -118,12 +140,12 @@ export function usePlaybackEngine(
       setItem(next);
       setCurrentTime(0);
       setDuration(next.duration || 0);
+      setPlaybackError(null);
       setPlayState("loading");
       if ((next.engine ?? "audio") === "audio" && audioRef.current) {
         audioRef.current.src = next.src;
         audioRef.current.load();
       }
-      setPlayState("paused");
     },
     [releaseSource, spotify, youtube],
   );
@@ -137,6 +159,8 @@ export function usePlaybackEngine(
       const active = next ?? itemRef.current;
       if (!active) return;
       const generation = generationRef.current;
+      setPlaybackError(null);
+      setPlayState("loading");
       recordListen(active, loggedItemRef, () =>
         queryClient.invalidateQueries({ queryKey: ["listening-history"] }),
       );
@@ -149,17 +173,35 @@ export function usePlaybackEngine(
           else controller.play();
         } else if (active.engine === "youtube") {
           youtube.play(active.src, resumeAtRef.current);
-          setPlayState("playing");
         } else {
           await audioRef.current?.play();
           if (generation === generationRef.current) setPlayState("playing");
         }
-      } catch {
-        if (generation === generationRef.current) setPlayState("error");
+      } catch (error) {
+        if (generation !== generationRef.current) return;
+        setPlaybackError(
+          error instanceof DOMException && error.name === "NotAllowedError"
+            ? "PLAYBACK_BLOCKED"
+            : "PROVIDER_UNAVAILABLE",
+        );
+        setPlayState("error");
       }
     },
     [queryClient, select, spotify, youtube],
   );
+
+  const retry = useCallback(async () => {
+    const active = itemRef.current;
+    if (!active) return;
+    if (active.engine === "audio" && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.load();
+    } else if (active.engine === "youtube") {
+      youtube.reset();
+    }
+    await play(active);
+  }, [play, youtube]);
 
   const pause = useCallback(() => {
     if (itemRef.current?.engine === "spotify") spotify.pause();
@@ -184,6 +226,7 @@ export function usePlaybackEngine(
     loggedItemRef.current = null;
     setItem(null);
     setPlayState("idle");
+    setPlaybackError(null);
     setCurrentTime(0);
     setDuration(0);
   }, [releaseSource, spotify, youtube]);
@@ -230,8 +273,10 @@ export function usePlaybackEngine(
     play,
     pause,
     clear,
+    retry,
     seek,
     setVolume,
+    playbackError,
   };
 }
 
