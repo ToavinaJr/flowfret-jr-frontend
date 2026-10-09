@@ -68,7 +68,7 @@ export default function PersistentMediaPlayer() {
   return (
     <section
       aria-label={t("mediaPlayer.audioPlayer")}
-      className="fixed bottom-[65px] left-0 right-0 z-40 border-t border-border bg-card/95 shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur md:bottom-0 md:left-64 lg:left-72"
+      className="fixed bottom-[var(--mobile-nav-offset)] left-0 right-0 z-40 border-t border-border bg-card/95 shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur md:bottom-0 md:left-64 lg:left-72"
     >
       <div className="mx-auto flex h-[68px] max-w-5xl items-center gap-1.5 px-2 sm:h-[76px] sm:gap-3 sm:px-5">
         {item.destination ? (

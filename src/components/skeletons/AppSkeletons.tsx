@@ -5,7 +5,7 @@ export function AppShellSkeleton() {
   const { t } = useTranslation();
   return (
     <div
-      className="flex min-h-screen bg-background"
+      className="flex min-h-dvh bg-background"
       role="status"
       aria-busy="true"
       aria-label={t("skeletons.appLoading")}

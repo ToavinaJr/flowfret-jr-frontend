@@ -50,6 +50,7 @@
     --glow-primary: 0 0 20px -5px hsla(346, 77%, 49%, 0.2);
     --glow-accent: 0 0 20px -5px hsla(346, 77%, 56%, 0.2);
     --tuner-in-tune: 346 77% 49%;
+    --mobile-nav-offset: calc(3.75rem + env(safe-area-inset-bottom));
   }
 
   .dark {
