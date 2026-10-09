@@ -24,7 +24,7 @@ export function useAuthGateFlow() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const form = useAuthForm();
-  const { setMode } = form;
+  const { resetForm, setMode } = form;
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [verificationToken, setVerificationToken] = useState("");
   const [passwordResetToken, setPasswordResetToken] = useState("");
@@ -38,6 +38,14 @@ export function useAuthGateFlow() {
     if (location.pathname === "/register") setMode("register");
     if (location.pathname === "/login") setMode("login");
   }, [location.pathname, setMode]);
+
+  useEffect(() => {
+    if (auth.status !== "unauthenticated") return;
+    resetForm();
+    setAcceptedTerms(false);
+    setError(null);
+    setPendingEmail("");
+  }, [auth.status, resetForm]);
 
   useEffect(() => {
     if (!getGoogleClientId()) return;
@@ -110,6 +118,8 @@ export function useAuthGateFlow() {
     try {
       const accessToken = await requestGoogleAccessToken();
       await auth.registerWithGoogle(accessToken);
+      form.resetForm();
+      setAcceptedTerms(false);
       toast.success(t("auth.toasts.googleConnected"));
     } catch (cause) {
       setError(googleError(cause, t));
@@ -158,6 +168,7 @@ export function useAuthGateFlow() {
     }
     if (form.mode === "login") {
       await auth.login({ email: state.email, password: state.password });
+      form.resetForm();
       return;
     }
     if (form.mode === "verify") {
@@ -166,6 +177,8 @@ export function useAuthGateFlow() {
       if (!/^\d{4}$/.test(state.otp))
         throw new LocalAuthError(t("auth.errors.otpInvalid"));
       await auth.verifyEmail({ token: verificationToken, code: state.otp });
+      form.resetForm();
+      setAcceptedTerms(false);
       toast.success(t("auth.toasts.accountVerified"));
       return;
     }
@@ -177,6 +190,8 @@ export function useAuthGateFlow() {
       password: state.password,
       username: state.username,
     });
+    form.resetForm();
+    setAcceptedTerms(false);
     toast.success(t("auth.toasts.accountCreated"));
   }
 

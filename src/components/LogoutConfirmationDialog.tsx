@@ -46,7 +46,7 @@ export function LogoutConfirmationDialog({ trigger }: LogoutConfirmationDialogPr
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
         <AlertDialogHeader>
-          <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <LogOut className="h-5 w-5" aria-hidden="true" />
           </div>
           <AlertDialogTitle>{t("settings.logoutConfirmationTitle")}</AlertDialogTitle>
@@ -55,10 +55,17 @@ export function LogoutConfirmationDialog({ trigger }: LogoutConfirmationDialogPr
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>
+          <AlertDialogCancel
+            disabled={pending}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+          >
             {t("settings.logoutCancel")}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={confirm} disabled={pending} className="gap-2">
+          <AlertDialogAction
+            onClick={confirm}
+            disabled={pending}
+            className="gap-2 border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
+          >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {t("settings.logoutConfirm")}
           </AlertDialogAction>
