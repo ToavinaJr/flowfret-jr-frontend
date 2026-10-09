@@ -47,7 +47,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-card/60 backdrop-blur-xl lg:flex">
-        <div className="flex h-20 items-center gap-3 border-b border-border px-5">
+        <Link to="/" className="flex h-20 items-center gap-3 border-b border-border px-5" aria-label={t("landing.brand")}>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Guitar aria-hidden="true" className="h-5 w-5" />
           </div>
@@ -57,7 +57,7 @@ export default function AdminLayout() {
               {t("admin.title")}
             </div>
           </div>
-        </div>
+        </Link>
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           <AdminNav />
         </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Guitar, LogOut, Menu, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -25,14 +25,14 @@ const MobileHeader = () => {
 
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
-      <div className="flex min-w-0 items-center gap-2">
+      <Link to="/" className="flex min-w-0 items-center gap-2" aria-label={t("landing.brand")}>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Guitar className="h-4 w-4 text-primary-foreground" />
+          <Guitar className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
         </div>
         <span className="truncate text-base font-medium tracking-tight text-foreground">
           FlowFret
         </span>
-      </div>
+      </Link>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>

@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
 import { useAuthGateFlow } from "@/hooks/useAuthGateFlow";
 
@@ -20,7 +20,12 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   if (flow.status === "loading") return <AppShellSkeleton />;
-  if (flow.status === "authenticated") return <>{children}</>;
+  if (flow.status === "authenticated") {
+    if (location.pathname === "/login" || location.pathname === "/register") {
+      return <Navigate to="/" replace />;
+    }
+    return <>{children}</>;
+  }
 
   if (location.pathname === "/") {
     return (
@@ -28,6 +33,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
         <LandingPage />
       </Suspense>
     );
+  }
+
+  if (
+    !["/login", "/register", "/verify-email", "/reset-password"].includes(
+      location.pathname,
+    )
+  ) {
+    return <Navigate to="/login" replace />;
   }
 
   return (

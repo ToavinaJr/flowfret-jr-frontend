@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Guitar, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,14 +16,14 @@ const AppSidebar = () => {
   return (
     <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar lg:w-72">
       <div className="border-b border-border px-4 py-4 lg:px-6 lg:py-5">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2" aria-label={t("landing.brand")}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Guitar className="h-4 w-4 text-primary-foreground" />
+            <Guitar className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
           </div>
           <span className="truncate text-base font-medium tracking-tight text-foreground lg:text-lg">
             FlowFret
           </span>
-        </div>
+        </Link>
       </div>
 
       <nav

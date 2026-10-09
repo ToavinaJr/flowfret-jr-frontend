@@ -32,8 +32,8 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-xl">
+    <main className="min-h-screen overflow-x-hidden bg-background pt-16 text-foreground lg:pt-20">
+      <header className="fixed inset-x-0 top-0 z-[60] border-b border-border/70 bg-background/90 shadow-sm shadow-black/5 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-20 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5" aria-label={t("landing.brand") }>
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
@@ -93,7 +93,7 @@ export default function LandingPage() {
         ) : null}
       </header>
 
-      <section className="relative isolate overflow-hidden">
+      <section className="relative isolate overflow-hidden border-b border-border/60">
         <div className="absolute -left-24 top-10 -z-10 h-72 w-72 rounded-full bg-primary/15 blur-3xl sm:h-96 sm:w-96" />
         <div className="absolute -right-32 top-40 -z-10 h-80 w-80 rounded-full bg-accent/10 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
         <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:px-8 lg:pb-28 lg:pt-28">
@@ -233,11 +233,13 @@ export default function LandingPage() {
       </section>
 
       <section className="px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-primary px-6 py-12 text-center text-primary-foreground shadow-2xl shadow-primary/20 sm:px-10 sm:py-16">
-          <div className="mx-auto max-w-2xl">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-primary/30 bg-[#17151b] px-6 py-12 text-center text-white shadow-2xl shadow-primary/10 sm:px-10 sm:py-16">
+          <div className="pointer-events-none absolute -left-24 -top-28 h-72 w-72 rounded-full bg-primary/25 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -right-20 h-80 w-80 rounded-full bg-accent/15 blur-3xl" />
+          <div className="relative mx-auto max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t("landing.final.title")}</h2>
-            <p className="mt-4 text-sm leading-6 text-primary-foreground/80 sm:text-base">{t("landing.final.description")}</p>
-            <Link to="/register" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-primary shadow-lg transition-transform hover:-translate-y-0.5">{t("landing.final.cta")}<ArrowRight className="h-4 w-4" /></Link>
+            <p className="mt-4 text-sm leading-6 text-white/65 sm:text-base">{t("landing.final.description")}</p>
+            <Link to="/register" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5">{t("landing.final.cta")}<ArrowRight className="h-4 w-4" /></Link>
           </div>
         </div>
       </section>
