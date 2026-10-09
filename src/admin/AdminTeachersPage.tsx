@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { graphqlRequest } from "@/services/graphqlClient";
-import { AdminCardsSkeleton } from "@/components/skeletons/AppSkeletons";
+import { AdminCardsSkeleton } from "@/components/skeletons/AdminCardsSkeleton";
 
 type TeacherApplication = {
   id: string;

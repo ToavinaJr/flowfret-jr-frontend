@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AdminCardsSkeleton } from "@/components/skeletons/AppSkeletons";
+import { AdminCardsSkeleton } from "@/components/skeletons/AdminCardsSkeleton";
 import { useSearchParams } from "react-router-dom";
 import {
   createAdminManagedEntity,

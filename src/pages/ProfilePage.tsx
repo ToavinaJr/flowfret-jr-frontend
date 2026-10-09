@@ -17,7 +17,7 @@ import {
 import { FeedCard } from "@/pages/FeedPage";
 import type { FeedPost } from "@/types/feed";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
-import { ProfileSkeleton } from "@/components/skeletons/AppSkeletons";
+import { ProfileSkeleton } from "@/components/skeletons/ProfileSkeleton";
 
 export default function ProfilePage() {
   const { t } = useTranslation();

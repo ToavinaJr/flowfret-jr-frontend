@@ -9,7 +9,7 @@ import {
 } from "@/services/transcriptionsApi";
 import type { TranscriptionResponse } from "@/types/transcription";
 import { useTranslation } from "react-i18next";
-import { TranscriptionsWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
+import { TranscriptionsWorkspaceSkeleton } from "@/components/skeletons/TranscriptionsWorkspaceSkeleton";
 
 export default function TranscriptionsPage() {
   const { t } = useTranslation();

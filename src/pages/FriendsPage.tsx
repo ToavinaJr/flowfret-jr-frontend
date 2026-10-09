@@ -28,7 +28,7 @@ import {
 import type { Friendship } from "@/services/friendsApi";
 import type { SocialUser } from "@/services/profileApi";
 import { useAuth } from "@/hooks/useAuth";
-import { PersonListSkeleton } from "@/components/skeletons/AppSkeletons";
+import { PersonListSkeleton } from "@/components/skeletons/PersonListSkeleton";
 import { PersonCard } from "@/components/friends/PersonCard";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 

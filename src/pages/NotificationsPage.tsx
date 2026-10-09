@@ -19,7 +19,7 @@ import {
   type NotificationKind,
 } from "@/services/api";
 import { Switch } from "@/components/ui/switch";
-import { NotificationsSkeleton } from "@/components/skeletons/AppSkeletons";
+import { NotificationsSkeleton } from "@/components/skeletons/NotificationsSkeleton";
 
 type ConfigurableKind = Exclude<
   NotificationKind,

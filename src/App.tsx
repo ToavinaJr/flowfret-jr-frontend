@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
-import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
+import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import AppLayout from "@/components/AppLayout";
 import ScrollToTop from "@/components/ScrollToTop";
 

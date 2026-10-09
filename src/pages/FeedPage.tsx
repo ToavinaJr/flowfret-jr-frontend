@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useFeed } from "@/hooks/useFeed";
 import { PostComposer } from "@/components/feed/PostComposer";
 import { FeedCard } from "@/components/feed/FeedCard";
-import { FeedSkeleton } from "@/components/skeletons/AppSkeletons";
+import { FeedSkeleton } from "@/components/skeletons/FeedSkeleton";
 import type { FeedPost } from "@/types/feed";
 import { TrendingMusicRail } from "@/components/feed/TrendingMusicRail";
 import { DiscoverMembersPanel } from "@/components/feed/DiscoverMembersPanel";

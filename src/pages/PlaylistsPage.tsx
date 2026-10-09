@@ -14,7 +14,7 @@ import {
 } from "@/services/playlistsApi";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
-import { PlaylistWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
+import { PlaylistWorkspaceSkeleton } from "@/components/skeletons/PlaylistWorkspaceSkeleton";
 
 export default function PlaylistsPage() {
   const { t } = useTranslation();

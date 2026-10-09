@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { ImportedSong } from "@/types/song";
 import { ImportedSongPlayer } from "@/components/features/music/ImportedSongPlayer";
-import { ChordAnalysisSkeleton } from "@/components/skeletons/AppSkeletons";
+import { ChordAnalysisSkeleton } from "@/components/skeletons/ChordAnalysisSkeleton";
 
 type UploadStatus = "idle" | "analyzing" | "error";
 
