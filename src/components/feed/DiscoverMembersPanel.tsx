@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { searchUsers, sendFriendRequest } from "@/services/friendsApi";
 import type { SocialUser } from "@/services/profileApi";
-import { PersonListSkeleton } from "@/components/skeletons/AppSkeletons";
+import { PersonListSkeleton } from "@/components/skeletons/PersonListSkeleton";
 
 const DISCOVERY_LIMIT = 4;
 

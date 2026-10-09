@@ -4,7 +4,7 @@ import AppSidebar from "./AppSidebar";
 import MobileHeader from "./MobileHeader";
 import MobileNav from "./MobileNav";
 import PersistentMediaPlayer from "./PersistentMediaPlayer";
-import { RouteContentSkeleton } from "./skeletons/AppSkeletons";
+import { RouteContentSkeleton } from "./skeletons/RouteContentSkeleton";
 
 const AppLayout = () => {
   return (

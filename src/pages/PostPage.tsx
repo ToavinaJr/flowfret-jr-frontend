@@ -11,7 +11,7 @@ import {
 } from "@/services/api";
 import { FeedCard } from "@/components/feed/FeedCard";
 import type { FeedPost } from "@/types/feed";
-import { FeedSkeleton } from "@/components/skeletons/AppSkeletons";
+import { FeedSkeleton } from "@/components/skeletons/FeedSkeleton";
 import { useTranslation } from "react-i18next";
 
 export default function PostPage() {

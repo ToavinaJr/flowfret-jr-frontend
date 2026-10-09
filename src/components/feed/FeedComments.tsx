@@ -8,7 +8,7 @@ import { MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchPostComments } from "@/services/api";
 import type { FeedComment, FeedPost } from "@/types/feed";
-import { CommentsSkeleton } from "@/components/skeletons/AppSkeletons";
+import { CommentsSkeleton } from "@/components/skeletons/CommentsSkeleton";
 import {
   Dialog,
   DialogContent,

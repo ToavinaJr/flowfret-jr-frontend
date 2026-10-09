@@ -1,6 +1,6 @@
 import { lazy, Suspense, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
+import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import { useAuthGateFlow } from "@/hooks/useAuthGateFlow";
 
 const AuthFormPanel = lazy(() =>

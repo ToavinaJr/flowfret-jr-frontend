@@ -7,7 +7,7 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { TeachingWorkspaceSkeleton } from "@/components/skeletons/AppSkeletons";
+import { TeachingWorkspaceSkeleton } from "@/components/skeletons/TeachingWorkspaceSkeleton";
 import { AdminResourceTabs } from "@/admin/AdminResourceTabs";
 
 const TEACHING_VIEWS = [
