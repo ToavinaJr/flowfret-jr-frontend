@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useAuth } from "./useAuth";
@@ -22,6 +22,7 @@ export function useAuthGateFlow() {
   const { t } = useTranslation();
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const form = useAuthForm();
   const { setMode } = form;
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -32,6 +33,11 @@ export function useAuthGateFlow() {
   const [googleReady, setGoogleReady] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const actionInFlight = useRef(false);
+
+  useEffect(() => {
+    if (location.pathname === "/register") setMode("register");
+    if (location.pathname === "/login") setMode("login");
+  }, [location.pathname, setMode]);
 
   useEffect(() => {
     if (!getGoogleClientId()) return;

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MusicTrack } from "@/types/music";
@@ -34,7 +34,7 @@ const track: MusicTrack = {
 };
 
 describe("YouTubeMediaPlayer", () => {
-  it("uses the shared audio-style player without rendering a video", () => {
+  it("uses the shared audio-style player without rendering a video", async () => {
     playback.toggle.mockResolvedValue(undefined);
     const queue = [
       {
@@ -69,14 +69,16 @@ describe("YouTubeMediaPlayer", () => {
     expect(document.querySelector("iframe")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Play Song" }));
 
-    expect(playback.setQueue).toHaveBeenCalledWith(queue, 0);
-    expect(playback.toggle).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: "youtube:video-1",
-        src: "video-1",
-        engine: "youtube",
-        title: "Song",
-      }),
-    );
+    await waitFor(() => {
+      expect(playback.setQueue).toHaveBeenCalledWith(queue, 0);
+      expect(playback.toggle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "youtube:video-1",
+          src: "video-1",
+          engine: "youtube",
+          title: "Song",
+        }),
+      );
+    });
   });
 });

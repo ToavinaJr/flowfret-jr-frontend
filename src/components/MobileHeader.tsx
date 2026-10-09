@@ -8,6 +8,7 @@ import ThemeLanguageControls from "./ThemeLanguageControls";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
 import { useAuth } from "@/hooks/useAuth";
 import { USER_ROLE } from "@/constants/domain";
+import { LogoutConfirmationDialog } from "@/components/LogoutConfirmationDialog";
 import {
   Sheet,
   SheetContent,
@@ -19,7 +20,7 @@ import {
 const MobileHeader = () => {
   const location = useLocation();
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
@@ -94,19 +95,20 @@ const MobileHeader = () => {
             ) : null}
             <ThemeLanguageControls compact showTheme={false} />
             {user ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  void logout();
-                }}
-                className="flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-md bg-secondary px-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <LogOut className="h-4 w-4 shrink-0" />
-                <span className="truncate">
-                  {t("settings.logout")} ({user.username})
-                </span>
-              </button>
+              <LogoutConfirmationDialog
+                onOpen={() => setOpen(false)}
+                trigger={
+                  <button
+                    type="button"
+                    className="flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-md bg-secondary px-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate">
+                      {t("settings.logout")} ({user.username})
+                    </span>
+                  </button>
+                }
+              />
             ) : null}
           </div>
         </SheetContent>

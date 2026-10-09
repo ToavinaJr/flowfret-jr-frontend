@@ -30,7 +30,11 @@
     "system": "Système",
     "english": "English",
     "french": "Français",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "logoutConfirmationTitle": "Se déconnecter de FlowFret ?",
+    "logoutConfirmationDescription": "Votre session actuelle sera fermée sur cet appareil.",
+    "logoutConfirm": "Se déconnecter",
+    "logoutCancel": "Rester connecté"
   },
   "common": {
     "menu": "Menu",
@@ -486,6 +490,83 @@
       "review": "Vérifiez les accords détectés",
       "preview": "Visualisez les doigtés sur le manche"
     }
+  },
+  "landing": {
+    "brand": "Accueil FlowFret",
+    "navigation": "Navigation de la page d’accueil",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "login": "Se connecter",
+    "getStarted": "Commencer",
+    "nav": {
+      "features": "Fonctionnalités",
+      "howItWorks": "Comment ça marche",
+      "faq": "FAQ"
+    },
+    "hero": {
+      "eyebrow": "Une façon plus claire d’apprendre la guitare",
+      "title": "Chaque session de pratique",
+      "titleAccent": "compte.",
+      "description": "FlowFret réunit accords, gammes, rythme, découverte musicale et progression dans un espace pensé pour les guitaristes.",
+      "primaryCta": "Commencer gratuitement",
+      "secondaryCta": "Voir comment ça marche",
+      "noCard": "Sans carte bancaire",
+      "allLevels": "Tous les niveaux",
+      "yourPace": "À votre rythme"
+    },
+    "mockup": {
+      "session": "Session de pratique",
+      "nowPlaying": "En lecture",
+      "song": "Midnight Shapes",
+      "artist": "Votre sélection de pratique",
+      "chord": "Accords",
+      "scale": "Gammes",
+      "rhythm": "Rythme",
+      "level1": "Échauffement",
+      "level2": "Explorer",
+      "level3": "Garder le tempo"
+    },
+    "proof": {
+      "practice": { "title": "Pratiquer avec intention", "description": "Transformez des exercices dispersés en une session que vous pouvez vraiment suivre." },
+      "clarity": { "title": "Voir quoi jouer", "description": "Profitez de diagrammes clairs, de repères synchronisés et d’un contexte musical utile." },
+      "momentum": { "title": "Créer votre élan", "description": "Gardez vos découvertes, votre historique et votre progression à portée de main." }
+    },
+    "features": {
+      "eyebrow": "Tout au même endroit",
+      "title": "Moins chercher. Plus jouer.",
+      "description": "FlowFret vous aide à passer de la curiosité à une pratique assurée, sans perdre le fil.",
+      "items": {
+        "practice": { "title": "Un espace de pratique ciblé", "description": "Explorez accords, gammes, accordeur, métronome et outils audio sans passer d’une application à l’autre.", "detail": "Vos outils essentiels, prêts quand vous l’êtes" },
+        "music": { "title": "Découvrir des musiques qui vous apprennent quelque chose", "description": "Recherchez, écoutez, suivez les repères d’accords et de paroles, puis transformez vos morceaux préférés en matière pratique.", "detail": "Écouter avec plus d’intention" },
+        "community": { "title": "Apprendre avec votre entourage", "description": "Partagez vos progrès, échangez avec d’autres guitaristes et rendez votre parcours plus motivant.", "detail": "La progression est meilleure ensemble" }
+      }
+    },
+    "steps": {
+      "eyebrow": "Un rythme simple",
+      "title": "Commencez là où vous êtes.",
+      "description": "Vous n’avez pas besoin d’un plan parfait. FlowFret vous donne la prochaine étape utile et vous laisse construire la suite.",
+      "cta": "Créer un compte gratuit",
+      "items": {
+        "discover": { "title": "Découvrir", "description": "Trouvez un morceau, une position d’accord ou une nouvelle idée à explorer." },
+        "practice": { "title": "Pratiquer", "description": "Utilisez des outils ciblés et des repères visuels pour créer des automatismes." },
+        "progress": { "title": "Progresser", "description": "Gardez ce qui fonctionne, suivez votre historique et revenez avec confiance." }
+      }
+    },
+    "faq": {
+      "eyebrow": "Vos questions, nos réponses",
+      "title": "Un meilleur point de départ",
+      "items": {
+        "first": { "question": "Qu’est-ce que FlowFret ?", "answer": "FlowFret est un espace d’apprentissage de la guitare qui réunit découverte musicale, outils de pratique, références d’accords et de gammes, et suivi de progression." },
+        "level": { "question": "Est-ce adapté aux débutants ?", "answer": "Oui. FlowFret s’adresse aux débutants, aux guitaristes qui reprennent et aux joueurs expérimentés qui souhaitent explorer avec plus de structure." },
+        "free": { "question": "Puis-je commencer gratuitement ?", "answer": "Oui. Créez un compte pour découvrir l’espace principal et commencer à construire votre rythme de pratique." }
+      }
+    },
+    "final": {
+      "title": "Votre prochaine session commence ici.",
+      "description": "Créez un compte FlowFret gratuit et donnez à votre apprentissage de la guitare un espace où s’exprimer.",
+      "cta": "Commencer avec FlowFret"
+    },
+    "footer": "Une façon plus calme et plus claire d’apprendre et de jouer de la guitare."
   },
   "auth": {
     "title": {

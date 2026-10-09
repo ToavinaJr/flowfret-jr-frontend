@@ -6,10 +6,11 @@ import { USER_ROLE } from "@/constants/domain";
 import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
+import { LogoutConfirmationDialog } from "@/components/LogoutConfirmationDialog";
 
 const AppSidebar = () => {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -59,15 +60,18 @@ const AppSidebar = () => {
             <ShieldCheck className="h-4 w-4" /> {t("admin.title")}
           </NavLink>
         ) : null}
-        {user && (
-          <button
-            type="button"
-            onClick={logout}
-            className="w-full min-h-[44px] truncate rounded-md bg-secondary px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {t("settings.logout")} ({user.username})
-          </button>
-        )}
+        {user ? (
+          <LogoutConfirmationDialog
+            trigger={
+              <button
+                type="button"
+                className="w-full min-h-[44px] truncate rounded-md bg-secondary px-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("settings.logout")} ({user.username})
+              </button>
+            }
+          />
+        ) : null}
       </div>
     </aside>
   );

@@ -1,4 +1,5 @@
 import { lazy, Suspense, type ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
 import { useAuthGateFlow } from "@/hooks/useAuthGateFlow";
 
@@ -12,12 +13,22 @@ const AuthHero = lazy(() =>
     default: module.AuthHero,
   })),
 );
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const flow = useAuthGateFlow();
+  const location = useLocation();
 
   if (flow.status === "loading") return <AppShellSkeleton />;
   if (flow.status === "authenticated") return <>{children}</>;
+
+  if (location.pathname === "/") {
+    return (
+      <Suspense fallback={<AppShellSkeleton />}>
+        <LandingPage />
+      </Suspense>
+    );
+  }
 
   return (
     <Suspense fallback={<AppShellSkeleton />}>

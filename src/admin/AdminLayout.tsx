@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { ArrowLeft, Guitar, LogOut, Menu, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
+import { LogoutConfirmationDialog } from "@/components/LogoutConfirmationDialog";
 import { AdminNav } from "./AdminNav";
 import {
   Sheet,
@@ -14,7 +15,7 @@ import {
 
 export default function AdminLayout() {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const accountActions = (
@@ -26,16 +27,20 @@ export default function AdminLayout() {
         <ArrowLeft aria-hidden="true" className="h-4 w-4" />
         {t("admin.backToApp")}
       </Link>
-      <button
-        type="button"
-        onClick={() => void logout()}
-        className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-3 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
-      >
-        <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" />
-        <span className="truncate">
-          {t("settings.logout")} ({user?.username})
-        </span>
-      </button>
+      <LogoutConfirmationDialog
+        onOpen={() => setMenuOpen(false)}
+        trigger={
+          <button
+            type="button"
+            className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-3 text-left text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+          >
+            <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              {t("settings.logout")} ({user?.username})
+            </span>
+          </button>
+        }
+      />
     </div>
   );
 
