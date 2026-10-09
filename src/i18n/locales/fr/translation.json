@@ -351,7 +351,25 @@
   },
   "morePage": {
     "title": "Menu",
-    "subtitle": "Outils et pages au-delà de la navigation principale."
+    "subtitle": "Outils et pages au-delà de la navigation principale.",
+    "items": {
+      "music": "Musique",
+      "musicDescription": "Recherche Spotify et Genius",
+      "scales": "Gammes",
+      "scalesDescription": "Modes sur le manche",
+      "metronome": "Métronome",
+      "metronomeDescription": "BPM et tap tempo",
+      "upload": "Importer",
+      "uploadDescription": "Analyser des fichiers audio",
+      "history": "Histoire",
+      "historyDescription": "Histoire de la guitare",
+      "settings": "Paramètres",
+      "settingsDescription": "Préférences",
+      "contact": "Contact",
+      "contactDescription": "Nous contacter",
+      "tuner": "Accordeur",
+      "tunerDescription": "Référence de hauteur"
+    }
   },
   "history": {
     "title": "Histoire de la guitare",

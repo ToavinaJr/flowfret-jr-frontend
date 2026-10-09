@@ -351,7 +351,25 @@
   },
   "morePage": {
     "title": "Menu",
-    "subtitle": "Tools and pages beyond the main navigation."
+    "subtitle": "Tools and pages beyond the main navigation.",
+    "items": {
+      "music": "Music",
+      "musicDescription": "Spotify and Genius search",
+      "scales": "Scales",
+      "scalesDescription": "Modes on the fretboard",
+      "metronome": "Metronome",
+      "metronomeDescription": "BPM and tap tempo",
+      "upload": "Import",
+      "uploadDescription": "Analyze audio files",
+      "history": "History",
+      "historyDescription": "Story of the guitar",
+      "settings": "Settings",
+      "settingsDescription": "Preferences",
+      "contact": "Contact",
+      "contactDescription": "Get in touch",
+      "tuner": "Tuner",
+      "tunerDescription": "Pitch reference"
+    }
   },
   "history": {
     "title": "History of the Guitar",
