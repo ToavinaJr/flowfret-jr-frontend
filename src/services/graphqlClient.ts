@@ -134,7 +134,13 @@ export async function graphqlRequest<TData>(
 
   if (!response.ok) {
     const raw = body.errors?.[0]?.message ?? "request failed";
-    if (!hasRetriedAfterRefresh && operation !== "RefreshSession" && isAuthenticationError(raw) && await refreshAccessToken()) {
+    if (
+      token &&
+      !hasRetriedAfterRefresh &&
+      operation !== "RefreshSession" &&
+      isAuthenticationError(raw) &&
+      (await refreshAccessToken())
+    ) {
       return graphqlRequest<TData>(options, true);
     }
     throw toSafeApiError(raw, response.status, body.errors ?? []);
@@ -143,6 +149,7 @@ export async function graphqlRequest<TData>(
   if (body.errors && body.errors.length > 0) {
     if (
       operation !== "RefreshSession" &&
+      token &&
       !hasRetriedAfterRefresh &&
       isAuthenticationError(body.errors[0].message) &&
       await refreshAccessToken()
