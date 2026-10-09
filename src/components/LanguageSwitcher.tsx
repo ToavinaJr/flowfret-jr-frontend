@@ -32,7 +32,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         >
           <SelectValue placeholder={t("settings.language")} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="z-[70]">
           <SelectItem value="en">{t("settings.english")}</SelectItem>
           <SelectItem value="fr">{t("settings.french")}</SelectItem>
         </SelectContent>
