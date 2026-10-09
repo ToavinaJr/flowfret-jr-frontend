@@ -28,7 +28,6 @@ export default function AdminLayout() {
         {t("admin.backToApp")}
       </Link>
       <LogoutConfirmationDialog
-        onOpen={() => setMenuOpen(false)}
         trigger={
           <button
             type="button"

@@ -16,13 +16,9 @@ import {
 
 interface LogoutConfirmationDialogProps {
   trigger: ReactNode;
-  onOpen?: () => void;
 }
 
-export function LogoutConfirmationDialog({
-  trigger,
-  onOpen,
-}: LogoutConfirmationDialogProps) {
+export function LogoutConfirmationDialog({ trigger }: LogoutConfirmationDialogProps) {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
@@ -45,7 +41,6 @@ export function LogoutConfirmationDialog({
       onOpenChange={(next) => {
         if (pending) return;
         setOpen(next);
-        if (next) onOpen?.();
       }}
     >
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>

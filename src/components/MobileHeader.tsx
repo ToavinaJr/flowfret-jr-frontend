@@ -96,7 +96,6 @@ const MobileHeader = () => {
             <ThemeLanguageControls compact showTheme={false} />
             {user ? (
               <LogoutConfirmationDialog
-                onOpen={() => setOpen(false)}
                 trigger={
                   <button
                     type="button"
