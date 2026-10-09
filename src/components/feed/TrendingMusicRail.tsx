@@ -24,7 +24,13 @@ export function TrendingMusicRail() {
       </div>
       {query.isLoading ? (
         <div className="flex gap-3 overflow-hidden" aria-label={t("feed.trendingLoading")}>
-          {Array.from({ length: 5 }, (_, index) => <div key={index} className="h-36 w-28 shrink-0 animate-pulse rounded-lg bg-secondary" />)}
+          {Array.from({ length: 5 }, (_, index) => (
+            <div key={index} className="w-28 shrink-0" aria-hidden="true">
+              <div className="mb-2 aspect-square w-full animate-pulse rounded-lg bg-secondary" />
+              <div className="h-4 w-5/6 animate-pulse rounded bg-secondary" />
+              <div className="mt-1 h-3 w-2/3 animate-pulse rounded bg-secondary" />
+            </div>
+          ))}
         </div>
       ) : query.isError ? (
         <p role="status" className="text-sm text-muted-foreground">{t("feed.trendingError")}</p>

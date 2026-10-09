@@ -87,7 +87,7 @@ export function FeedSkeleton({ count = 3 }: { count?: number }) {
           <Skeleton className="mb-2 h-4 w-full" />
           <Skeleton className="mb-4 h-4 w-3/4" />
           {i !== count - 1 ? (
-            <Skeleton className="h-48 w-full rounded-lg" />
+            <Skeleton className="h-64 w-full rounded-lg" />
           ) : null}
           <div className="mt-4 flex gap-5">
             <Skeleton className="h-8 w-16" />
