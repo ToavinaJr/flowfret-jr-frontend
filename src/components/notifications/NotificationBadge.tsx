@@ -1,16 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
 import { fetchUnreadNotificationCount } from "@/services/notificationsApi";
 
 const NOTIFICATION_REFRESH_INTERVAL_MS = 15_000;
 
 export function NotificationBadge() {
   const { t } = useTranslation();
+  const { status } = useAuth();
+  const isAuthenticated = status === "authenticated";
   const unread = useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: fetchUnreadNotificationCount,
+    enabled: isAuthenticated,
     refetchInterval: NOTIFICATION_REFRESH_INTERVAL_MS,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: isAuthenticated,
+    retry: false,
   });
 
   const count = unread.data ?? 0;

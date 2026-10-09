@@ -9,6 +9,7 @@ import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppSkeletons";
 import AppLayout from "@/components/AppLayout";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
@@ -60,6 +61,7 @@ const App = () => {
           <Sonner />
           <AuthProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <PlaybackProvider>
                 <AuthGate>
                   <Suspense
