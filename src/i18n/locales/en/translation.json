@@ -820,7 +820,16 @@
     "pendingTimeout": "No worker started this transcription within 5 minutes. Please try again later.",
     "youtubeExtractionFailed": "Unable to extract YouTube audio. Check that the video is accessible and try again.",
     "downloadFailed": "Unable to download the LRC file.",
-    "downloadLrc": "Download LRC"
+    "downloadLrc": "Download LRC",
+    "reportLyrics": "Report these lyrics",
+    "reportReason": "Report reason",
+    "reportPlaceholder": "Explain what's wrong with these lyrics…",
+    "proposedLyricsLabel": "Proposed lyrics (optional)",
+    "proposedLyricsPlaceholder": "Paste the correct lyrics here, if you know them…",
+    "submitReport": "Submit report",
+    "reporting": "Submitting…",
+    "reportSuccess": "Report sent to moderation.",
+    "reportError": "The report could not be sent."
   },
   "scaleFretboard": {
     "label": "Scale fretboard",
@@ -1073,6 +1082,24 @@
         "saveLrcFailed": "Unable to save the LRC file.",
         "lrcSaved": "LRC file saved.",
         "lrcCharacters": "{{count}} / {{max}} characters"
+      },
+      "lyricsReports": {
+        "tab": "Lyrics reports",
+        "title": "Lyrics reports",
+        "description": "Review lyrics flagged by members and correct them.",
+        "reasonColumn": "Reason",
+        "reporterColumn": "Reported by",
+        "editLyrics": "Fix lyrics",
+        "editorTitle": "Fix lyrics",
+        "lyricsLabel": "Lyrics content",
+        "loadingLyrics": "Loading lyrics…",
+        "loadLyricsFailed": "Unable to load the lyrics.",
+        "saveLyricsFailed": "Unable to save the lyrics.",
+        "lyricsSaved": "Lyrics saved.",
+        "markReviewed": "Mark as reviewed",
+        "dismiss": "Dismiss",
+        "userProposal": "Reporter's proposal",
+        "useProposal": "Use this proposal"
       },
       "uploads": {
         "tab": "Uploads",

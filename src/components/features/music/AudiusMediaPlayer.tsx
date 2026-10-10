@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Download,
+  Flag,
   Loader2,
   Mic2,
   Pause,
@@ -17,6 +18,7 @@ import type { LyricsTrack } from "@/types/lyrics";
 import { findActiveSegment } from "@/utils/transcription";
 import { SynchronizedLyrics } from "./SynchronizedLyrics";
 import { LyricsPanel } from "./LyricsPanel";
+import { ReportLyricsDialog } from "./ReportLyricsDialog";
 import { useTranslation } from "react-i18next";
 import { TRANSCRIPTION_PHASE, TRANSCRIPTION_STATUS } from "@/constants/domain";
 import { toMusicPlaybackItem } from "./music-playback";
@@ -38,6 +40,7 @@ export function TranscriptionMediaPlayer({
   const [preparing, setPreparing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [awaitingLyricsDecision, setAwaitingLyricsDecision] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const playbackItem = toMusicPlaybackItem(track);
   const isActive = item?.id === playbackItem.id;
   const isPlaying = isActive && playState === "playing";
@@ -195,8 +198,21 @@ export function TranscriptionMediaPlayer({
           className="order-last w-full basis-full pt-3"
           aria-label={t("lyrics.transcriptionFor", { title: track.title })}
         >
-          <div className="mb-2 text-xs text-muted-foreground">
-            {t(lyrics?.synced ? "lyrics.synchronized" : "lyrics.title")}
+          <div className="mb-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span>
+              {t(lyrics?.synced ? "lyrics.synchronized" : "lyrics.title")}
+            </span>
+            {lyrics && !lyrics.instrumental && lyricsTrack ? (
+              <button
+                type="button"
+                onClick={() => setReportOpen(true)}
+                aria-label={t("lyrics.reportLyrics")}
+                title={t("lyrics.reportLyrics")}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <Flag aria-hidden="true" className="h-3.5 w-3.5" />
+              </button>
+            ) : null}
           </div>
           <LyricsPanel
             lyrics={lyrics}
@@ -204,6 +220,16 @@ export function TranscriptionMediaPlayer({
             currentTime={isActive ? currentTime : 0}
             onSeek={seek}
           />
+          {lyricsTrack ? (
+            <ReportLyricsDialog
+              provider={lyricsTrack.provider}
+              trackId={lyricsTrack.id}
+              title={lyricsTrack.title}
+              artist={lyricsTrack.artist}
+              open={reportOpen}
+              onOpenChange={setReportOpen}
+            />
+          ) : null}
         </section>
       ) : null}
 

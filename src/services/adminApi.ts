@@ -1,4 +1,6 @@
 import { graphqlRequest } from "@/services/graphqlClient";
+import { getAccessToken } from "@/services/authToken";
+import { GRAPHQL_URL } from "@/services/backend";
 import type {
   AdminAuditLog,
   AdminBackendStatus,
@@ -8,6 +10,7 @@ import type {
   AdminDashboardStatistics,
   AdminListeningHistory,
   AdminListInput,
+  AdminLyricsReport,
   AdminPlaylist,
   AdminPostReport,
   AdminPost,
@@ -18,6 +21,16 @@ import type {
   AdminManagedEntity,
   AdminManagedEntityConnection,
 } from "@/types/admin";
+
+const LYRICS_API_ORIGIN = new URL(GRAPHQL_URL).origin;
+
+function lyricsAuthHeaders(json = false): HeadersInit {
+  const token = getAccessToken();
+  return {
+    ...(json ? { "Content-Type": "application/json" } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
 
 const PAGE_INFO_FIELDS =
   "pageInfo { hasNextPage hasPreviousPage endCursor } totalCount";
@@ -292,6 +305,40 @@ export async function fetchAdminTranscriptions(
     variables: { input },
   });
   return result.adminTranscriptions;
+}
+
+export async function fetchAdminLyricsReports(
+  input: AdminListInput,
+): Promise<AdminConnection<AdminLyricsReport>> {
+  const params = new URLSearchParams();
+  if (input.reportStatus) params.set("status", input.reportStatus);
+  if (input.first) params.set("take", String(input.first));
+  const response = await fetch(
+    `${LYRICS_API_ORIGIN}/api/lyrics/reports?${params.toString()}`,
+    { headers: lyricsAuthHeaders() },
+  );
+  if (!response.ok) throw new Error("Unable to load lyrics reports");
+  const nodes = (await response.json()) as AdminLyricsReport[];
+  return {
+    nodes,
+    totalCount: nodes.length,
+    pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },
+  };
+}
+
+export async function moderateAdminLyricsReport(input: {
+  reportId: string;
+  status: string;
+}): Promise<void> {
+  const response = await fetch(
+    `${LYRICS_API_ORIGIN}/api/lyrics/reports/${encodeURIComponent(input.reportId)}`,
+    {
+      method: "PUT",
+      headers: lyricsAuthHeaders(true),
+      body: JSON.stringify({ status: input.status }),
+    },
+  );
+  if (!response.ok) throw new Error("Unable to moderate lyrics report");
 }
 
 export async function fetchAdminUploads(

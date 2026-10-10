@@ -23,3 +23,63 @@ export async function getLyrics(track: LyricsTrack, signal?: AbortSignal): Promi
   if (!response.ok) throw new Error("Lyrics request failed");
   return response.json() as Promise<Lyrics>;
 }
+
+function authHeaders(json = false): HeadersInit {
+  const token = getAccessToken();
+  return {
+    ...(json ? { "Content-Type": "application/json" } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+export interface ReportLyricsInput {
+  provider: string;
+  trackId: string;
+  title: string;
+  artist: string;
+  reason: string;
+  proposedLyrics?: string;
+}
+
+export async function reportLyrics(input: ReportLyricsInput): Promise<void> {
+  const response = await fetch(`${ENDPOINT}/report`, {
+    method: "POST",
+    headers: authHeaders(true),
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) throw new Error("Lyrics report failed");
+}
+
+export async function getLyricsOverride(
+  provider: string,
+  trackId: string,
+  title: string,
+  artist: string,
+): Promise<Lyrics | null> {
+  const params = new URLSearchParams({ provider, trackId, title, artist });
+  const response = await fetch(`${ENDPOINT}/override?${params.toString()}`, {
+    headers: authHeaders(),
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Lyrics override request failed");
+  return response.json() as Promise<Lyrics>;
+}
+
+export interface SaveLyricsOverrideInput {
+  provider: string;
+  trackId: string;
+  title: string;
+  artist: string;
+  plainLyrics: string;
+}
+
+export async function saveLyricsOverride(
+  input: SaveLyricsOverrideInput,
+): Promise<void> {
+  const response = await fetch(`${ENDPOINT}/override`, {
+    method: "PUT",
+    headers: authHeaders(true),
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) throw new Error("Lyrics override save failed");
+}

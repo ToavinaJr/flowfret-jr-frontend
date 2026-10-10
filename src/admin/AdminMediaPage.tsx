@@ -1,13 +1,16 @@
 import { useSearchParams } from "react-router-dom";
 import AdminTranscriptionLrcEditor from "./AdminTranscriptionLrcEditor";
+import AdminLyricsEditor from "./AdminLyricsEditor";
 import { useTranslation } from "react-i18next";
 import {
   fetchAdminChordTranscriptions,
+  fetchAdminLyricsReports,
   fetchAdminTranscriptions,
   fetchAdminUploads,
 } from "@/services/adminApi";
 import type {
   AdminChordTranscription,
+  AdminLyricsReport,
   AdminTranscription,
   AdminUpload,
 } from "@/types/admin";
@@ -27,6 +30,7 @@ import {
 
 const MEDIA_TABS = [
   { value: "transcriptions", labelKey: "admin.resources.transcriptions.tab" },
+  { value: "lyricsReports", labelKey: "admin.resources.lyricsReports.tab" },
   { value: "uploads", labelKey: "admin.resources.uploads.tab" },
   { value: "chords", labelKey: "admin.resources.chords.tab" },
 ];
@@ -84,6 +88,41 @@ export default function AdminMediaPage() {
       key: "createdAt",
       labelKey: "admin.columns.createdAt",
       render: (row) => formatAdminDate(row.createdAt, i18n.language),
+    },
+  ];
+
+  const lyricsReportColumns: AdminColumn<AdminLyricsReport>[] = [
+    {
+      key: "track",
+      labelKey: "admin.columns.track",
+      className: "max-w-sm",
+      render: (row) => (
+        <div>
+          <p className="font-medium text-foreground">{row.title}</p>
+          <p className="text-xs text-muted-foreground">{row.artist}</p>
+        </div>
+      ),
+    },
+    {
+      key: "reason",
+      labelKey: "admin.resources.lyricsReports.reasonColumn",
+      className: "max-w-sm",
+      render: (row) => <p className="whitespace-pre-wrap">{row.reason}</p>,
+    },
+    {
+      key: "status",
+      labelKey: "admin.columns.status",
+      render: (row) => <AdminStatus value={row.status} />,
+    },
+    {
+      key: "createdAt",
+      labelKey: "admin.columns.createdAt",
+      render: (row) => formatAdminDate(row.createdAt, i18n.language),
+    },
+    {
+      key: "fix",
+      labelKey: "admin.resources.lyricsReports.editLyrics",
+      render: (row) => <AdminLyricsEditor report={row} />,
     },
   ];
 
@@ -187,7 +226,17 @@ export default function AdminMediaPage() {
         active={view}
         tabs={MEDIA_TABS}
       />
-      {view === "uploads" ? (
+      {view === "lyricsReports" ? (
+        <AdminListPage
+          section="media"
+          queryKey="lyrics-reports"
+          titleKey="admin.resources.lyricsReports.title"
+          descriptionKey="admin.resources.lyricsReports.description"
+          fetchPage={fetchAdminLyricsReports}
+          columns={lyricsReportColumns}
+          showIncludeDeleted={false}
+        />
+      ) : view === "uploads" ? (
         <AdminListPage
           section="media"
           queryKey="uploads"

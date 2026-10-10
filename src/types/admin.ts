@@ -125,6 +125,21 @@ export interface AdminPostReport {
   postIsDeleted: boolean;
 }
 
+export interface AdminLyricsReport {
+  id: string;
+  provider: string;
+  trackId: string;
+  title: string;
+  artist: string;
+  reporterId: string;
+  reason: string;
+  proposedLyrics: string | null;
+  status: string;
+  createdAt: string;
+  reviewedAt: string | null;
+  isDeleted: boolean;
+}
+
 export interface AdminUser {
   id: string;
   email: string;
