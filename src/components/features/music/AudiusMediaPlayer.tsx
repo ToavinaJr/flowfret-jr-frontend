@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Download,
-  FileText,
   Loader2,
+  Mic2,
   Pause,
   Play,
   RefreshCw,
@@ -57,7 +57,11 @@ export function TranscriptionMediaPlayer({
       }
     : null;
   const { lyrics, status: lyricsStatus } = useLyrics(lyricsTrack, lyricsOpen);
-  const usingLrclib = lyrics?.synced === true;
+  // Any resolved lyrics result (LRCLIB synced, or unsynced plain text from
+  // Genius/Tononkira/the LLM web-search fallback) is preferred over the
+  // heavier YouTube-extraction + Whisper transcription pipeline below —
+  // LyricsPanel already renders both synced and unsynced lyrics correctly.
+  const hasLyrics = Boolean(lyrics);
   const activeIndex = useMemo(
     () =>
       findActiveSegment(
@@ -113,20 +117,20 @@ export function TranscriptionMediaPlayer({
     }
   }, [preparing, transcription, playbackItem, playbackQueue, queueIndex, setQueue, toggle]);
 
-  // Resolves the lyrics-first-click decision once the LRCLIB lookup settles:
-  // a synced match plays immediately (no YouTube extraction or Whisper
-  // involved at all); anything else (no match, unsynced-only, no artist to
-  // search) falls back to the existing wait-for-Whisper-transcription flow.
+  // Resolves the lyrics-first-click decision once the /api/lyrics lookup
+  // settles: any match (synced or not) plays immediately, no YouTube
+  // extraction or Whisper involved at all; only a genuine miss falls back
+  // to the existing wait-for-Whisper-transcription flow.
   useEffect(() => {
     if (!awaitingLyricsDecision || lyricsStatus === "loading") return;
     setAwaitingLyricsDecision(false);
-    if (lyrics?.synced) {
+    if (hasLyrics) {
       if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
       void toggle(playbackItem);
       return;
     }
     void showLyricsThenPlay();
-  }, [awaitingLyricsDecision, lyricsStatus, lyrics, playbackItem, playbackQueue, queueIndex, setQueue, toggle, showLyricsThenPlay]);
+  }, [awaitingLyricsDecision, lyricsStatus, hasLyrics, playbackItem, playbackQueue, queueIndex, setQueue, toggle, showLyricsThenPlay]);
 
   async function retryTranscription() {
     setPreparing(true);
@@ -167,7 +171,7 @@ export function TranscriptionMediaPlayer({
               return;
             }
             setLyricsOpen(true);
-            if (usingLrclib || transcription || preparing) return;
+            if (hasLyrics || transcription || preparing) return;
             setAwaitingLyricsDecision(true);
           }}
           className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary text-foreground"
@@ -181,18 +185,18 @@ export function TranscriptionMediaPlayer({
           {preparing ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <FileText className="h-4 w-4" />
+            <Mic2 className="h-4 w-4" />
           )}
         </button>
       </div>
 
-      {lyricsOpen && usingLrclib ? (
+      {lyricsOpen && hasLyrics ? (
         <section
           className="order-last w-full basis-full pt-3"
           aria-label={t("lyrics.transcriptionFor", { title: track.title })}
         >
           <div className="mb-2 text-xs text-muted-foreground">
-            {t("lyrics.synchronized")}
+            {t(lyrics?.synced ? "lyrics.synchronized" : "lyrics.title")}
           </div>
           <LyricsPanel
             lyrics={lyrics}
@@ -203,7 +207,7 @@ export function TranscriptionMediaPlayer({
         </section>
       ) : null}
 
-      {lyricsOpen && !usingLrclib ? (
+      {lyricsOpen && !hasLyrics ? (
         <section
           className="order-last w-full basis-full pt-3"
           aria-label={t("lyrics.transcriptionFor", { title: track.title })}
@@ -211,7 +215,9 @@ export function TranscriptionMediaPlayer({
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
             <span>
               {transcription?.status === TRANSCRIPTION_STATUS.COMPLETED
-                ? t("lyrics.synchronized")
+                ? transcription.segments.length > 0
+                  ? t("lyrics.synchronized")
+                  : t("lyrics.unavailable")
                 : transcription?.processingPhase ===
                     TRANSCRIPTION_PHASE.MODEL_LOADING
                   ? t("lyrics.loadingModel")
