@@ -821,6 +821,7 @@
     "youtubeExtractionFailed": "Impossible d’extraire l’audio YouTube. Vérifiez que la vidéo est accessible puis réessayez.",
     "downloadFailed": "Impossible de télécharger le fichier LRC.",
     "downloadLrc": "Télécharger le LRC",
+    "editLyrics": "Modifier les paroles",
     "reportLyrics": "Signaler ces paroles",
     "reportReason": "Motif du signalement",
     "reportPlaceholder": "Expliquez ce qui ne va pas avec ces paroles…",

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { usePlayback } from "@/contexts/usePlayback";
 import type { PlaybackItem } from "@/contexts/playback-context";
+import { useAuth } from "@/hooks/useAuth";
 import { useTranscriptionEvents } from "@/hooks/useTranscriptionEvents";
 import { useLyrics } from "@/hooks/useLyrics";
 import { downloadTranscriptionLrc } from "@/services/transcriptionsApi";
@@ -19,8 +20,13 @@ import { findActiveSegment } from "@/utils/transcription";
 import { SynchronizedLyrics } from "./SynchronizedLyrics";
 import { LyricsPanel } from "./LyricsPanel";
 import { ReportLyricsDialog } from "./ReportLyricsDialog";
+import { InlineLyricsEditor } from "./InlineLyricsEditor";
 import { useTranslation } from "react-i18next";
-import { TRANSCRIPTION_PHASE, TRANSCRIPTION_STATUS } from "@/constants/domain";
+import {
+  TRANSCRIPTION_PHASE,
+  TRANSCRIPTION_STATUS,
+  USER_ROLE,
+} from "@/constants/domain";
 import { toMusicPlaybackItem } from "./music-playback";
 
 export function TranscriptionMediaPlayer({
@@ -33,6 +39,8 @@ export function TranscriptionMediaPlayer({
   queueIndex?: number;
 }) {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const isAdmin = user?.role === USER_ROLE.ADMIN;
   const { item, playState, currentTime, toggle, seek, setQueue } = usePlayback();
   const { transcription, error, prepare, retry } =
     useTranscriptionEvents(track);
@@ -203,15 +211,26 @@ export function TranscriptionMediaPlayer({
               {t(lyrics?.synced ? "lyrics.synchronized" : "lyrics.title")}
             </span>
             {lyrics && !lyrics.instrumental && lyricsTrack ? (
-              <button
-                type="button"
-                onClick={() => setReportOpen(true)}
-                aria-label={t("lyrics.reportLyrics")}
-                title={t("lyrics.reportLyrics")}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              >
-                <Flag aria-hidden="true" className="h-3.5 w-3.5" />
-              </button>
+              <div className="flex items-center gap-1">
+                {isAdmin ? (
+                  <InlineLyricsEditor
+                    track={lyricsTrack}
+                    initialPlainLyrics={
+                      lyrics.plainLyrics ??
+                      lyrics.lines.map((line) => line.text).join("\n")
+                    }
+                  />
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setReportOpen(true)}
+                  aria-label={t("lyrics.reportLyrics")}
+                  title={t("lyrics.reportLyrics")}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <Flag aria-hidden="true" className="h-3.5 w-3.5" />
+                </button>
+              </div>
             ) : null}
           </div>
           <LyricsPanel
