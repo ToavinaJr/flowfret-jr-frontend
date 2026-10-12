@@ -1,6 +1,6 @@
 import { GRAPHQL_URL } from "@/services/backend";
 import { getAccessToken } from "@/services/authToken";
-import type { Lyrics, LyricsTrack } from "@/types/lyrics";
+import type { Lyrics, LyricLine, LyricsTrack } from "@/types/lyrics";
 
 const ENDPOINT = `${new URL(GRAPHQL_URL).origin}/api/lyrics`;
 
@@ -70,7 +70,7 @@ export interface SaveLyricsOverrideInput {
   trackId: string;
   title: string;
   artist: string;
-  plainLyrics: string;
+  lines: LyricLine[];
 }
 
 export async function saveLyricsOverride(

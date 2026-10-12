@@ -215,10 +215,7 @@ export function TranscriptionMediaPlayer({
                 {isAdmin ? (
                   <InlineLyricsEditor
                     track={lyricsTrack}
-                    initialPlainLyrics={
-                      lyrics.plainLyrics ??
-                      lyrics.lines.map((line) => line.text).join("\n")
-                    }
+                    initialLines={lyrics.lines}
                   />
                 ) : null}
                 <button
