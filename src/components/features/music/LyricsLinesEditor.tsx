@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import type { LyricLine } from "@/types/lyrics";
 import { formatLrcTimestamp, parseLrcTimestamp } from "@/utils/lrcTimestamp";
 
@@ -20,6 +20,14 @@ export function LyricsLinesEditor({ lines, onChange }: LyricsLinesEditorProps) {
     onChange(lines.filter((_, i) => i !== index));
   }
 
+  function moveLine(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= lines.length) return;
+    const next = [...lines];
+    [next[index], next[target]] = [next[target], next[index]];
+    onChange(next);
+  }
+
   function addLine() {
     onChange([...lines, { startTimeMs: null, text: "" }]);
   }
@@ -31,8 +39,16 @@ export function LyricsLinesEditor({ lines, onChange }: LyricsLinesEditorProps) {
           <LyricsLineRow
             key={index}
             line={line}
+            // The "end" of a line is implicit in the LRC format: it plays
+            // until the next line's timestamp starts. Shown here purely as
+            // a read-only cue while aligning — nothing extra is stored.
+            endTimeMs={lines[index + 1]?.startTimeMs ?? null}
+            isFirst={index === 0}
+            isLast={index === lines.length - 1}
             onChangeTimestamp={(startTimeMs) => updateLine(index, { startTimeMs })}
             onChangeText={(text) => updateLine(index, { text })}
+            onMoveUp={() => moveLine(index, -1)}
+            onMoveDown={() => moveLine(index, 1)}
             onRemove={() => removeLine(index)}
           />
         ))}
@@ -56,13 +72,23 @@ export function LyricsLinesEditor({ lines, onChange }: LyricsLinesEditorProps) {
 
 function LyricsLineRow({
   line,
+  endTimeMs,
+  isFirst,
+  isLast,
   onChangeTimestamp,
   onChangeText,
+  onMoveUp,
+  onMoveDown,
   onRemove,
 }: {
   line: LyricLine;
+  endTimeMs: number | null;
+  isFirst: boolean;
+  isLast: boolean;
   onChangeTimestamp: (startTimeMs: number | null) => void;
   onChangeText: (text: string) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onRemove: () => void;
 }) {
   const { t } = useTranslation();
@@ -79,15 +105,42 @@ function LyricsLineRow({
 
   return (
     <div className="flex items-center gap-2">
-      <input
-        type="text"
-        value={timestampText}
-        onChange={(event) => setTimestampText(event.target.value)}
-        onBlur={() => onChangeTimestamp(parseLrcTimestamp(timestampText))}
-        placeholder="mm:ss.cc"
-        aria-label={t("lyrics.timestampLabel")}
-        className="w-24 shrink-0 rounded-md border border-border bg-secondary px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-primary"
-      />
+      <div className="flex shrink-0 flex-col">
+        <button
+          type="button"
+          onClick={onMoveUp}
+          disabled={isFirst}
+          aria-label={t("lyrics.moveLineUp")}
+          title={t("lyrics.moveLineUp")}
+          className="inline-flex h-4 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <ArrowUp aria-hidden="true" className="h-3 w-3" />
+        </button>
+        <button
+          type="button"
+          onClick={onMoveDown}
+          disabled={isLast}
+          aria-label={t("lyrics.moveLineDown")}
+          title={t("lyrics.moveLineDown")}
+          className="inline-flex h-4 w-6 items-center justify-center rounded text-muted-foreground hover:bg-secondary disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <ArrowDown aria-hidden="true" className="h-3 w-3" />
+        </button>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <input
+          type="text"
+          value={timestampText}
+          onChange={(event) => setTimestampText(event.target.value)}
+          onBlur={() => onChangeTimestamp(parseLrcTimestamp(timestampText))}
+          placeholder="h:mm:ss"
+          aria-label={t("lyrics.timestampLabel")}
+          className="w-20 rounded-md border border-border bg-secondary px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-primary"
+        />
+        <span className="w-20 shrink-0 font-mono text-xs text-muted-foreground">
+          – {formatLrcTimestamp(endTimeMs) || t("lyrics.endOfTrack")}
+        </span>
+      </div>
       <input
         type="text"
         value={line.text}
