@@ -85,8 +85,8 @@ export default function AdminLyricsEditor({ report }: { report: AdminLyricsRepor
       </button>
       {open
         ? createPortal(
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-              <section role="dialog" aria-modal="true" aria-labelledby={`lyrics-editor-title-${report.id}`} className="w-full max-w-3xl rounded-xl border border-border bg-card p-4 shadow-xl sm:p-6">
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-3 sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+              <section role="dialog" aria-modal="true" aria-labelledby={`lyrics-editor-title-${report.id}`} className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border bg-card p-4 shadow-xl sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h2 id={`lyrics-editor-title-${report.id}`} className="text-lg font-semibold">{t('admin.resources.lyricsReports.editorTitle')}</h2>
