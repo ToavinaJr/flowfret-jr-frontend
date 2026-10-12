@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, X } from 'lucide-react';
 import { getLyricsOverride, saveLyricsOverride } from '@/services/lyricsApi';
 import type { AdminLyricsReport } from '@/types/admin';
-import type { LyricLine } from '@/types/lyrics';
+import type { LyricLine, LyricsTrack } from '@/types/lyrics';
 import { LyricsLinesEditor } from '@/components/features/music/LyricsLinesEditor';
 
 function toLines(plainLyrics: string): LyricLine[] {
@@ -18,6 +18,12 @@ function toLines(plainLyrics: string): LyricLine[] {
 
 export default function AdminLyricsEditor({ report }: { report: AdminLyricsReport }) {
   const { t } = useTranslation();
+  const track: LyricsTrack = {
+    id: report.trackId,
+    provider: report.provider,
+    title: report.title,
+    artist: report.artist,
+  };
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [lines, setLines] = useState<LyricLine[]>([]);
@@ -108,6 +114,7 @@ export default function AdminLyricsEditor({ report }: { report: AdminLyricsRepor
                   <>
                     <LyricsLinesEditor
                       lines={lines}
+                      track={track}
                       onChange={(nextLines) => { setLines(nextLines); setSaved(false); setSaveError(false); }}
                     />
                     <div className="mt-2 flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">

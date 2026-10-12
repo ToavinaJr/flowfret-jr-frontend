@@ -1,29 +1,33 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowDown, ArrowUp, Download, Plus, Trash2 } from "lucide-react";
-import type { LyricLine } from "@/types/lyrics";
+import { ArrowDown, ArrowUp, Download, Plus, Search, Trash2 } from "lucide-react";
+import type { LyricLine, LyricsTrack } from "@/types/lyrics";
 import { formatLrcTimestamp, parseLrcTimestamp } from "@/utils/lrcTimestamp";
-import { importFromTononkiraUrl } from "@/services/lyricsApi";
+import { getLyrics, importFromTononkiraUrl } from "@/services/lyricsApi";
 
 interface LyricsLinesEditorProps {
   lines: LyricLine[];
   onChange: (lines: LyricLine[]) => void;
-  /** Track duration in seconds, used to estimate per-line timing for a freshly imported Tononkira page (plain text with no timing of its own). */
-  duration?: number;
+  /** The track being edited. Its provider/id/duration are needed to re-run a search with corrected artist/title, and to time-estimate a freshly imported Tononkira page. */
+  track?: LyricsTrack;
 }
 
-export function LyricsLinesEditor({ lines, onChange, duration }: LyricsLinesEditorProps) {
+export function LyricsLinesEditor({ lines, onChange, track }: LyricsLinesEditorProps) {
   const { t } = useTranslation();
   const [tononkiraUrl, setTononkiraUrl] = useState("");
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState(false);
+  const [searchArtist, setSearchArtist] = useState(track?.artist ?? "");
+  const [searchTitle, setSearchTitle] = useState(track?.title ?? "");
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
 
   async function importFromTononkira() {
     if (!tononkiraUrl.trim() || importing) return;
     setImporting(true);
     setImportError(false);
     try {
-      const scraped = await importFromTononkiraUrl(tononkiraUrl.trim(), duration);
+      const scraped = await importFromTononkiraUrl(tononkiraUrl.trim(), track?.duration);
       if (!scraped) {
         setImportError(true);
         return;
@@ -34,6 +38,28 @@ export function LyricsLinesEditor({ lines, onChange, duration }: LyricsLinesEdit
       setImportError(true);
     } finally {
       setImporting(false);
+    }
+  }
+
+  async function searchWithCorrectedMetadata() {
+    if (!track || !searchArtist.trim() || !searchTitle.trim() || searching) return;
+    setSearching(true);
+    setSearchError(false);
+    try {
+      const result = await getLyrics({
+        ...track,
+        artist: searchArtist.trim(),
+        title: searchTitle.trim(),
+      });
+      if (!result) {
+        setSearchError(true);
+        return;
+      }
+      onChange(result.lines);
+    } catch {
+      setSearchError(true);
+    } finally {
+      setSearching(false);
     }
   }
 
@@ -59,6 +85,49 @@ export function LyricsLinesEditor({ lines, onChange, duration }: LyricsLinesEdit
 
   return (
     <div className="mt-5">
+      {track ? (
+        <div className="mb-3">
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">
+            {t("lyrics.searchMetadataLabel")}
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={searchArtist}
+              onChange={(event) => {
+                setSearchArtist(event.target.value);
+                setSearchError(false);
+              }}
+              placeholder={t("lyrics.searchArtistPlaceholder")}
+              aria-label={t("lyrics.searchArtistPlaceholder")}
+              className="min-w-0 flex-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            <input
+              type="text"
+              value={searchTitle}
+              onChange={(event) => {
+                setSearchTitle(event.target.value);
+                setSearchError(false);
+              }}
+              placeholder={t("lyrics.searchTitlePlaceholder")}
+              aria-label={t("lyrics.searchTitlePlaceholder")}
+              className="min-w-0 flex-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            <button
+              type="button"
+              onClick={searchWithCorrectedMetadata}
+              disabled={searching || !searchArtist.trim() || !searchTitle.trim()}
+              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+            >
+              <Search aria-hidden="true" className="h-3.5 w-3.5" />
+              {searching ? t("lyrics.searching") : t("lyrics.searchButton")}
+            </button>
+          </div>
+          {searchError ? (
+            <p className="mt-1 text-xs text-destructive">{t("lyrics.searchNotFound")}</p>
+          ) : null}
+        </div>
+      ) : null}
       <div className="mb-3">
         <label htmlFor="tononkira-import-url" className="mb-1 block text-xs font-medium text-muted-foreground">
           {t("lyrics.tononkiraImportLabel")}

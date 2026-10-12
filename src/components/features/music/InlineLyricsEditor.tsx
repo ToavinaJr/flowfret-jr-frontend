@@ -127,7 +127,7 @@ export function InlineLyricsEditor({
                 </div>
                 <LyricsLinesEditor
                   lines={lines}
-                  duration={track.duration}
+                  track={track}
                   onChange={(nextLines) => {
                     setLines(nextLines);
                     setSaved(false);
