@@ -827,6 +827,7 @@
     "moveLineUp": "Monter la ligne",
     "moveLineDown": "Descendre la ligne",
     "timestampLabel": "Horodatage de début (h:mm:ss)",
+    "endTimestampLabel": "Horodatage de fin (h:mm:ss)",
     "endOfTrack": "fin",
     "lineTextLabel": "Texte de la ligne",
     "noLines": "Aucune ligne pour l’instant.",

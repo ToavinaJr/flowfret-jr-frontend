@@ -827,6 +827,7 @@
     "moveLineUp": "Move line up",
     "moveLineDown": "Move line down",
     "timestampLabel": "Start timestamp (h:mm:ss)",
+    "endTimestampLabel": "End timestamp (h:mm:ss)",
     "endOfTrack": "end",
     "lineTextLabel": "Line text",
     "noLines": "No lines yet.",

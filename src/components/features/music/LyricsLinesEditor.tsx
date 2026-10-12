@@ -71,6 +71,16 @@ export function LyricsLinesEditor({ lines, onChange, track }: LyricsLinesEditorP
     onChange(lines.filter((_, i) => i !== index));
   }
 
+  // A line's "end" isn't its own field - the LRC format stores one
+  // timestamp per line, and a line plays until the next one starts. So
+  // editing "end" here actually writes to the next line's startTimeMs;
+  // the last line has no next line, so its end stays fixed to the track's
+  // end and isn't editable.
+  function updateEndTime(index: number, endTimeMs: number | null) {
+    if (index + 1 >= lines.length) return;
+    updateLine(index + 1, { startTimeMs: endTimeMs });
+  }
+
   function moveLine(index: number, direction: -1 | 1) {
     const target = index + direction;
     if (target < 0 || target >= lines.length) return;
@@ -163,13 +173,11 @@ export function LyricsLinesEditor({ lines, onChange, track }: LyricsLinesEditorP
           <LyricsLineRow
             key={index}
             line={line}
-            // The "end" of a line is implicit in the LRC format: it plays
-            // until the next line's timestamp starts. Shown here purely as
-            // a read-only cue while aligning — nothing extra is stored.
             endTimeMs={lines[index + 1]?.startTimeMs ?? null}
             isFirst={index === 0}
             isLast={index === lines.length - 1}
             onChangeTimestamp={(startTimeMs) => updateLine(index, { startTimeMs })}
+            onChangeEndTimestamp={(endTimeMs) => updateEndTime(index, endTimeMs)}
             onChangeText={(text) => updateLine(index, { text })}
             onMoveUp={() => moveLine(index, -1)}
             onMoveDown={() => moveLine(index, 1)}
@@ -200,6 +208,7 @@ function LyricsLineRow({
   isFirst,
   isLast,
   onChangeTimestamp,
+  onChangeEndTimestamp,
   onChangeText,
   onMoveUp,
   onMoveDown,
@@ -210,6 +219,7 @@ function LyricsLineRow({
   isFirst: boolean;
   isLast: boolean;
   onChangeTimestamp: (startTimeMs: number | null) => void;
+  onChangeEndTimestamp: (endTimeMs: number | null) => void;
   onChangeText: (text: string) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -219,13 +229,21 @@ function LyricsLineRow({
   const [timestampText, setTimestampText] = useState(
     formatLrcTimestamp(line.startTimeMs),
   );
+  const [endTimestampText, setEndTimestampText] = useState(
+    formatLrcTimestamp(endTimeMs),
+  );
 
-  // Keep the field's text in sync when the underlying value changes from
-  // outside this row (e.g. the whole list is reset to a fresh override),
+  // Keep the fields' text in sync when the underlying values change from
+  // outside this row (e.g. the whole list is reset to a fresh override, or
+  // editing the next line's start shifts this line's displayed end),
   // without clobbering what the admin is actively typing mid-edit.
   useEffect(() => {
     setTimestampText(formatLrcTimestamp(line.startTimeMs));
   }, [line.startTimeMs]);
+
+  useEffect(() => {
+    setEndTimestampText(formatLrcTimestamp(endTimeMs));
+  }, [endTimeMs]);
 
   return (
     <div className="flex items-center gap-2">
@@ -261,9 +279,17 @@ function LyricsLineRow({
           aria-label={t("lyrics.timestampLabel")}
           className="w-20 rounded-md border border-border bg-secondary px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-primary"
         />
-        <span className="w-20 shrink-0 font-mono text-xs text-muted-foreground">
-          – {formatLrcTimestamp(endTimeMs) || t("lyrics.endOfTrack")}
-        </span>
+        <span aria-hidden="true" className="text-muted-foreground">–</span>
+        <input
+          type="text"
+          value={isLast ? "" : endTimestampText}
+          onChange={(event) => setEndTimestampText(event.target.value)}
+          onBlur={() => onChangeEndTimestamp(parseLrcTimestamp(endTimestampText))}
+          disabled={isLast}
+          placeholder={isLast ? t("lyrics.endOfTrack") : "h:mm:ss"}
+          aria-label={t("lyrics.endTimestampLabel")}
+          className="w-20 rounded-md border border-border bg-secondary px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+        />
       </div>
       <input
         type="text"
