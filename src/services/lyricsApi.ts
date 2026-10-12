@@ -83,3 +83,18 @@ export async function saveLyricsOverride(
   });
   if (!response.ok) throw new Error("Lyrics override save failed");
 }
+
+export async function importFromTononkiraUrl(
+  url: string,
+  duration?: number,
+): Promise<LyricLine[] | null> {
+  const params = new URLSearchParams({ url });
+  if (duration && Number.isFinite(duration)) params.set("duration", String(Math.round(duration)));
+  const response = await fetch(`${ENDPOINT}/tononkira-import?${params.toString()}`, {
+    headers: authHeaders(),
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Tononkira import failed");
+  const result = (await response.json()) as { lines: LyricLine[] };
+  return result.lines;
+}

@@ -273,6 +273,9 @@ export function TranscriptionMediaPlayer({
                       : t("lyrics.preparing")}
             </span>
             <div className="flex gap-2">
+              {isAdmin && lyricsTrack ? (
+                <InlineLyricsEditor track={lyricsTrack} initialLines={[]} />
+              ) : null}
               {transcription?.status === TRANSCRIPTION_STATUS.FAILED ? (
                 <button
                   type="button"

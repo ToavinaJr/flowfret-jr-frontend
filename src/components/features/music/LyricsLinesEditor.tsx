@@ -1,16 +1,41 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Download, Plus, Trash2 } from "lucide-react";
 import type { LyricLine } from "@/types/lyrics";
 import { formatLrcTimestamp, parseLrcTimestamp } from "@/utils/lrcTimestamp";
+import { importFromTononkiraUrl } from "@/services/lyricsApi";
 
 interface LyricsLinesEditorProps {
   lines: LyricLine[];
   onChange: (lines: LyricLine[]) => void;
+  /** Track duration in seconds, used to estimate per-line timing for a freshly imported Tononkira page (plain text with no timing of its own). */
+  duration?: number;
 }
 
-export function LyricsLinesEditor({ lines, onChange }: LyricsLinesEditorProps) {
+export function LyricsLinesEditor({ lines, onChange, duration }: LyricsLinesEditorProps) {
   const { t } = useTranslation();
+  const [tononkiraUrl, setTononkiraUrl] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState(false);
+
+  async function importFromTononkira() {
+    if (!tononkiraUrl.trim() || importing) return;
+    setImporting(true);
+    setImportError(false);
+    try {
+      const scraped = await importFromTononkiraUrl(tononkiraUrl.trim(), duration);
+      if (!scraped) {
+        setImportError(true);
+        return;
+      }
+      onChange(scraped);
+      setTononkiraUrl("");
+    } catch {
+      setImportError(true);
+    } finally {
+      setImporting(false);
+    }
+  }
 
   function updateLine(index: number, patch: Partial<LyricLine>) {
     onChange(lines.map((line, i) => (i === index ? { ...line, ...patch } : line)));
@@ -34,6 +59,36 @@ export function LyricsLinesEditor({ lines, onChange }: LyricsLinesEditorProps) {
 
   return (
     <div className="mt-5">
+      <div className="mb-3">
+        <label htmlFor="tononkira-import-url" className="mb-1 block text-xs font-medium text-muted-foreground">
+          {t("lyrics.tononkiraImportLabel")}
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id="tononkira-import-url"
+            type="url"
+            value={tononkiraUrl}
+            onChange={(event) => {
+              setTononkiraUrl(event.target.value);
+              setImportError(false);
+            }}
+            placeholder={t("lyrics.tononkiraImportPlaceholder")}
+            className="min-w-0 flex-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button
+            type="button"
+            onClick={importFromTononkira}
+            disabled={importing || !tononkiraUrl.trim()}
+            className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+          >
+            <Download aria-hidden="true" className="h-3.5 w-3.5" />
+            {importing ? t("lyrics.tononkiraImporting") : t("lyrics.tononkiraImportButton")}
+          </button>
+        </div>
+        {importError ? (
+          <p className="mt-1 text-xs text-destructive">{t("lyrics.tononkiraImportError")}</p>
+        ) : null}
+      </div>
       <div className="max-h-72 space-y-1.5 overflow-y-auto rounded-lg border border-border bg-background p-2 sm:max-h-96">
         {lines.map((line, index) => (
           <LyricsLineRow
