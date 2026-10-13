@@ -1087,6 +1087,7 @@
     "empty": "Aucun résultat.",
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
+    "pageIndicator": "Page {{page}} sur {{total}}",
     "viewReports": "Voir les signalements",
     "resourceNavigation": "Navigation des ressources administratives",
     "resources": {
@@ -1173,7 +1174,10 @@
       "action": "Action",
       "entityType": "Type d’entité",
       "from": "À partir du",
-      "to": "Jusqu’au"
+      "to": "Jusqu’au",
+      "sort": "Trier",
+      "sortNewest": "Plus récent d’abord",
+      "sortOldest": "Plus ancien d’abord"
     },
     "values": {
       "USER": "Membre",

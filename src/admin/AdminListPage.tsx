@@ -1,6 +1,6 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import type { AdminConnection, AdminListInput } from "@/types/admin";
@@ -19,6 +19,7 @@ export interface AdminFilter {
     | "postStatus"
     | "transcriptionStatus"
     | "uploadStatus"
+    | "reportStatus"
     | "provider"
     | "action"
     | "entityType"
@@ -39,9 +40,12 @@ interface AdminListPageProps<T extends { id: string }> {
   titleKey?: string;
   descriptionKey?: string;
   showIncludeDeleted?: boolean;
+  /** Most resources are ordered by createdAt; a few (listening history) sort by a different timestamp, but "newest/oldest first" still applies either way. */
+  showSort?: boolean;
 }
 
 const PAGE_SIZE = 25;
+const SEARCH_DEBOUNCE_MS = 400;
 
 export default function AdminListPage<T extends { id: string }>({
   section,
@@ -53,6 +57,7 @@ export default function AdminListPage<T extends { id: string }>({
   titleKey,
   descriptionKey,
   showIncludeDeleted = true,
+  showSort = true,
 }: AdminListPageProps<T>) {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -62,20 +67,30 @@ export default function AdminListPage<T extends { id: string }>({
       return value ? [[key, value]] : [];
     }),
   );
-  const [draft, setDraft] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [draftFilters, setDraftFilters] = useState<Record<string, string>>(
-    initialFilters,
-  );
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
     initialFilters,
   );
-  const [includeDeletedDraft, setIncludeDeletedDraft] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [direction, setDirection] = useState<"ASC" | "DESC">("DESC");
   const [cursors, setCursors] = useState<Array<string | undefined>>([
     undefined,
   ]);
   const cursor = cursors[cursors.length - 1];
+
+  // Filters, the deleted-items toggle and sort order apply immediately on
+  // change - only free text is debounced, since firing a request on every
+  // keystroke would be wasteful. This removes the old requirement to click
+  // "Rechercher" after touching a dropdown or date field.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearch(searchInput.trim());
+      setCursors([undefined]);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
+
   const query = useQuery({
     queryKey: [
       "admin",
@@ -83,6 +98,7 @@ export default function AdminListPage<T extends { id: string }>({
       search,
       activeFilters,
       includeDeleted,
+      direction,
       cursor,
     ],
     queryFn: () =>
@@ -92,31 +108,61 @@ export default function AdminListPage<T extends { id: string }>({
         ...(search ? { search } : {}),
         ...activeFilters,
         ...(includeDeleted ? { includeDeleted: true } : {}),
+        ...(showSort ? { direction } : {}),
       }),
     placeholderData: (previous) => previous,
   });
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSearch(draft.trim());
-    setActiveFilters(
-      Object.fromEntries(
-        Object.entries(draftFilters).filter(([, value]) => value !== ""),
-      ),
-    );
-    setIncludeDeleted(includeDeletedDraft);
+    setSearch(searchInput.trim());
     setCursors([undefined]);
   }
 
-  function resetFilters() {
-    setDraft("");
-    setSearch("");
-    setDraftFilters({});
-    setActiveFilters({});
-    setIncludeDeletedDraft(false);
-    setIncludeDeleted(false);
+  function updateFilter(key: string, value: string) {
+    setActiveFilters((current) => {
+      if (!value) {
+        const { [key]: _removed, ...rest } = current;
+        return rest;
+      }
+      return { ...current, [key]: value };
+    });
     setCursors([undefined]);
   }
+
+  function removeFilter(key: string) {
+    updateFilter(key, "");
+  }
+
+  function resetFilters() {
+    setSearchInput("");
+    setSearch("");
+    setActiveFilters({});
+    setIncludeDeleted(false);
+    setDirection("DESC");
+    setCursors([undefined]);
+  }
+
+  const hasActiveFilters =
+    Boolean(search) || Object.keys(activeFilters).length > 0 || includeDeleted;
+
+  const filterChips = useMemo(
+    () =>
+      Object.entries(activeFilters).map(([key, value]) => {
+        const filter = filters.find((candidate) => candidate.key === key);
+        const option = filter?.options?.find((candidate) => candidate.value === value);
+        const valueLabel = option ? t(option.labelKey) : value;
+        return {
+          key,
+          label: `${t(filter?.labelKey ?? key)}: ${valueLabel}`,
+        };
+      }),
+    [activeFilters, filters, t],
+  );
+
+  const totalCount = query.data?.totalCount ?? 0;
+  const currentPage = cursors.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   return (
     <section aria-labelledby={`admin-${section}-title`}>
@@ -136,7 +182,7 @@ export default function AdminListPage<T extends { id: string }>({
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="flex flex-col gap-3 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+        <div className="flex flex-col gap-3 border-b border-border p-3 sm:p-4">
           <form
             onSubmit={submitSearch}
             className="flex min-w-0 flex-1 flex-wrap items-end gap-2"
@@ -146,8 +192,8 @@ export default function AdminListPage<T extends { id: string }>({
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 name="admin-search"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
                 placeholder={t("admin.searchPlaceholder")}
                 className="min-h-11 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
@@ -158,27 +204,33 @@ export default function AdminListPage<T extends { id: string }>({
                 className="grid gap-1 text-xs text-muted-foreground"
               >
                 <span>{t(filter.labelKey)}</span>
-                {filter.type === "text" || filter.type === "date" ? (
+                {filter.type === "text" ? (
                   <input
-                    type={filter.type}
-                    value={draftFilters[filter.key] ?? ""}
+                    type="text"
+                    value={activeFilters[filter.key] ?? ""}
                     onChange={(event) =>
-                      setDraftFilters((current) => ({
-                        ...current,
-                        [filter.key]: event.target.value,
-                      }))
+                      updateFilter(filter.key, event.target.value)
                     }
                     placeholder={t("admin.filters.value")}
                     className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
                   />
+                ) : filter.type === "date" ? (
+                  <span className="relative">
+                    <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="date"
+                      value={activeFilters[filter.key] ?? ""}
+                      onChange={(event) =>
+                        updateFilter(filter.key, event.target.value)
+                      }
+                      className="min-h-11 min-w-36 rounded-lg border border-border bg-background py-0 pl-9 pr-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </span>
                 ) : (
                   <select
-                    value={draftFilters[filter.key] ?? ""}
+                    value={activeFilters[filter.key] ?? ""}
                     onChange={(event) =>
-                      setDraftFilters((current) => ({
-                        ...current,
-                        [filter.key]: event.target.value,
-                      }))
+                      updateFilter(filter.key, event.target.value)
                     }
                     className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
                   >
@@ -192,14 +244,31 @@ export default function AdminListPage<T extends { id: string }>({
                 )}
               </label>
             ))}
+            {showSort ? (
+              <label className="grid gap-1 text-xs text-muted-foreground">
+                <span>{t("admin.filters.sort")}</span>
+                <select
+                  value={direction}
+                  onChange={(event) => {
+                    setDirection(event.target.value as "ASC" | "DESC");
+                    setCursors([undefined]);
+                  }}
+                  className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="DESC">{t("admin.filters.sortNewest")}</option>
+                  <option value="ASC">{t("admin.filters.sortOldest")}</option>
+                </select>
+              </label>
+            ) : null}
             {showIncludeDeleted ? (
               <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
                 <input
                   type="checkbox"
-                  checked={includeDeletedDraft}
-                  onChange={(event) =>
-                    setIncludeDeletedDraft(event.target.checked)
-                  }
+                  checked={includeDeleted}
+                  onChange={(event) => {
+                    setIncludeDeleted(event.target.checked);
+                    setCursors([undefined]);
+                  }}
                   className="h-4 w-4 accent-primary"
                 />
                 {t("admin.filters.includeDeleted")}
@@ -211,9 +280,7 @@ export default function AdminListPage<T extends { id: string }>({
             >
               {t("admin.search")}
             </button>
-            {(search ||
-              Object.keys(activeFilters).length > 0 ||
-              includeDeleted) && (
+            {hasActiveFilters && (
               <button
                 type="button"
                 onClick={resetFilters}
@@ -223,11 +290,28 @@ export default function AdminListPage<T extends { id: string }>({
               </button>
             )}
           </form>
+
+          {filterChips.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {filterChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={() => removeFilter(chip.key)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/20"
+                >
+                  {chip.label}
+                  <X aria-hidden="true" className="h-3 w-3" />
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <p
             aria-live="polite"
             className="text-sm tabular-nums text-muted-foreground"
           >
-            {t("admin.total", { count: query.data?.totalCount ?? 0 })}
+            {t("admin.total", { count: totalCount })}
           </p>
         </div>
 
@@ -293,7 +377,10 @@ export default function AdminListPage<T extends { id: string }>({
           </p>
         ) : null}
 
-        <div className="flex items-center justify-end gap-2 border-t border-border p-3">
+        <div className="flex items-center justify-end gap-3 border-t border-border p-3">
+          <p className="text-xs tabular-nums text-muted-foreground">
+            {t("admin.pageIndicator", { page: currentPage, total: totalPages })}
+          </p>
           <button
             type="button"
             aria-label={t("admin.previousPage")}

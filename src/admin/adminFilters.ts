@@ -60,6 +60,8 @@ export const ADMIN_MEDIA_FILTERS: AdminFilter[] = [
 ];
 
 export const ADMIN_UPLOAD_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
   {
     key: "uploadStatus",
     labelKey: "admin.filters.status",
@@ -73,10 +75,28 @@ export const ADMIN_UPLOAD_FILTERS: AdminFilter[] = [
 ];
 
 export const ADMIN_PROVIDER_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
   {
     key: "provider",
     labelKey: "admin.filters.provider",
     options: ["AUDIUS", "SPOTIFY", "YOUTUBE"].map((value) => ({
+      value,
+      labelKey: `admin.values.${value}`,
+    })),
+  },
+];
+
+export const ADMIN_DATE_FILTERS: AdminFilter[] = [
+  { key: "from", labelKey: "admin.filters.from", type: "date" },
+  { key: "to", labelKey: "admin.filters.to", type: "date" },
+];
+
+export const ADMIN_LYRICS_REPORT_FILTERS: AdminFilter[] = [
+  {
+    key: "reportStatus",
+    labelKey: "admin.filters.status",
+    options: ["OPEN", "REVIEWED", "RESOLVED", "DISMISSED"].map((value) => ({
       value,
       labelKey: `admin.values.${value}`,
     })),

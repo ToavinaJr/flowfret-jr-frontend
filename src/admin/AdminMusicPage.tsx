@@ -19,7 +19,7 @@ import {
   formatAdminNumber,
   truncateAdminText,
 } from "./adminFormat";
-import { ADMIN_PROVIDER_FILTERS } from "./adminFilters";
+import { ADMIN_DATE_FILTERS, ADMIN_PROVIDER_FILTERS } from "./adminFilters";
 
 const MUSIC_TABS = [
   { value: "playlists", labelKey: "admin.resources.playlists.tab" },
@@ -189,6 +189,7 @@ export default function AdminMusicPage() {
           descriptionKey="admin.resources.playlists.description"
           fetchPage={fetchAdminPlaylists}
           columns={playlistColumns}
+          filters={ADMIN_DATE_FILTERS}
         />
       )}
     </div>

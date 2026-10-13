@@ -23,6 +23,7 @@ import {
   formatAdminNumber,
 } from "./adminFormat";
 import {
+  ADMIN_LYRICS_REPORT_FILTERS,
   ADMIN_MEDIA_FILTERS,
   ADMIN_PROVIDER_FILTERS,
   ADMIN_UPLOAD_FILTERS,
@@ -234,7 +235,9 @@ export default function AdminMediaPage() {
           descriptionKey="admin.resources.lyricsReports.description"
           fetchPage={fetchAdminLyricsReports}
           columns={lyricsReportColumns}
+          filters={ADMIN_LYRICS_REPORT_FILTERS}
           showIncludeDeleted={false}
+          showSort={false}
         />
       ) : view === "uploads" ? (
         <AdminListPage

@@ -1087,6 +1087,7 @@
     "empty": "No results.",
     "previousPage": "Previous page",
     "nextPage": "Next page",
+    "pageIndicator": "Page {{page}} of {{total}}",
     "viewReports": "View reports",
     "resourceNavigation": "Administration resource navigation",
     "resources": {
@@ -1173,7 +1174,10 @@
       "action": "Action",
       "entityType": "Entity type",
       "from": "From date",
-      "to": "To date"
+      "to": "To date",
+      "sort": "Sort",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first"
     },
     "values": {
       "USER": "Member",

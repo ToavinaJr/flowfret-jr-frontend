@@ -95,6 +95,7 @@ export interface AdminListInput {
   after?: string;
   search?: string;
   includeDeleted?: boolean;
+  direction?: "ASC" | "DESC";
   status?: string;
   role?: string;
   postStatus?: string;
