@@ -1,6 +1,8 @@
 {
   "nav": {
     "mainNavigation": "Navigation principale",
+    "collapseSidebar": "Réduire le menu",
+    "expandSidebar": "Développer le menu",
     "mobileNavigation": "Navigation mobile",
     "menuNavigation": "Navigation du menu",
     "feed": "Fil d'actualité",

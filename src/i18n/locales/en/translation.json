@@ -1,6 +1,8 @@
 {
   "nav": {
     "mainNavigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "mobileNavigation": "Mobile navigation",
     "menuNavigation": "Menu navigation",
     "feed": "Feed",
