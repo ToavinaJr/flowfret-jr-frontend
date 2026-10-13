@@ -1175,6 +1175,7 @@
       "entityType": "Type d’entité",
       "from": "À partir du",
       "to": "Jusqu’au",
+      "dateRange": "Période",
       "sort": "Trier",
       "sortNewest": "Plus récent d’abord",
       "sortOldest": "Plus ancien d’abord"

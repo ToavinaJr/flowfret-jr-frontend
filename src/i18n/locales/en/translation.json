@@ -1175,6 +1175,7 @@
       "entityType": "Entity type",
       "from": "From date",
       "to": "To date",
+      "dateRange": "Date range",
       "sort": "Sort",
       "sortNewest": "Newest first",
       "sortOldest": "Oldest first"

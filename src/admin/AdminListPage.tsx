@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import type { AdminConnection, AdminListInput } from "@/types/admin";
@@ -40,7 +40,6 @@ interface AdminListPageProps<T extends { id: string }> {
   titleKey?: string;
   descriptionKey?: string;
   showIncludeDeleted?: boolean;
-  /** Most resources are ordered by createdAt; a few (listening history) sort by a different timestamp, but "newest/oldest first" still applies either way. */
   showSort?: boolean;
 }
 
@@ -79,10 +78,6 @@ export default function AdminListPage<T extends { id: string }>({
   ]);
   const cursor = cursors[cursors.length - 1];
 
-  // Filters, the deleted-items toggle and sort order apply immediately on
-  // change - only free text is debounced, since firing a request on every
-  // keystroke would be wasteful. This removes the old requirement to click
-  // "Rechercher" after touching a dropdown or date field.
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setSearch(searchInput.trim());
@@ -164,6 +159,19 @@ export default function AdminListPage<T extends { id: string }>({
   const currentPage = cursors.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
+  // "from"/"to" are a single date range to the admin, not two unrelated
+  // fields - render them as one connected control when a screen declares
+  // both (in either order), everything else renders as its own field.
+  const dateRangeFilters = filters.filter(
+    (filter) => filter.key === "from" || filter.key === "to",
+  );
+  const fromFilter = dateRangeFilters.find((filter) => filter.key === "from");
+  const toFilter = dateRangeFilters.find((filter) => filter.key === "to");
+  const hasDateRange = Boolean(fromFilter && toFilter);
+  const otherFilters = filters.filter(
+    (filter) => !(hasDateRange && (filter.key === "from" || filter.key === "to")),
+  );
+
   return (
     <section aria-labelledby={`admin-${section}-title`}>
       <div className="mb-5 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
@@ -185,9 +193,9 @@ export default function AdminListPage<T extends { id: string }>({
         <div className="flex flex-col gap-3 border-b border-border p-3 sm:p-4">
           <form
             onSubmit={submitSearch}
-            className="flex min-w-0 flex-1 flex-wrap items-end gap-2"
+            className="flex min-w-0 flex-1 flex-col gap-3"
           >
-            <label className="relative min-w-0 flex-1 sm:max-w-sm">
+            <label className="relative block min-w-0">
               <span className="sr-only">{t("admin.search")}</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -198,97 +206,125 @@ export default function AdminListPage<T extends { id: string }>({
                 className="min-h-11 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
             </label>
-            {filters.map((filter) => (
-              <label
-                key={filter.key}
-                className="grid gap-1 text-xs text-muted-foreground"
-              >
-                <span>{t(filter.labelKey)}</span>
-                {filter.type === "text" ? (
-                  <input
-                    type="text"
-                    value={activeFilters[filter.key] ?? ""}
-                    onChange={(event) =>
-                      updateFilter(filter.key, event.target.value)
-                    }
-                    placeholder={t("admin.filters.value")}
-                    className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
-                  />
-                ) : filter.type === "date" ? (
-                  <span className="relative">
-                    <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+            <div className="flex flex-wrap items-end gap-2">
+              {hasDateRange && fromFilter && toFilter ? (
+                <label className="grid gap-1 text-xs text-muted-foreground">
+                  <span>{t("admin.filters.dateRange")}</span>
+                  <span className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-background px-3">
+                    <input
+                      type="date"
+                      aria-label={t(fromFilter.labelKey)}
+                      value={activeFilters[fromFilter.key] ?? ""}
+                      onChange={(event) =>
+                        updateFilter(fromFilter.key, event.target.value)
+                      }
+                      className="min-w-0 flex-1 border-none bg-transparent p-0 text-sm text-foreground outline-none dark:[color-scheme:dark]"
+                    />
+                    <span aria-hidden="true" className="text-muted-foreground">
+                      →
+                    </span>
+                    <input
+                      type="date"
+                      aria-label={t(toFilter.labelKey)}
+                      value={activeFilters[toFilter.key] ?? ""}
+                      onChange={(event) =>
+                        updateFilter(toFilter.key, event.target.value)
+                      }
+                      className="min-w-0 flex-1 border-none bg-transparent p-0 text-sm text-foreground outline-none dark:[color-scheme:dark]"
+                    />
+                  </span>
+                </label>
+              ) : null}
+              {otherFilters.map((filter) => (
+                <label
+                  key={filter.key}
+                  className="grid gap-1 text-xs text-muted-foreground"
+                >
+                  <span>{t(filter.labelKey)}</span>
+                  {filter.type === "text" ? (
+                    <input
+                      type="text"
+                      value={activeFilters[filter.key] ?? ""}
+                      onChange={(event) =>
+                        updateFilter(filter.key, event.target.value)
+                      }
+                      placeholder={t("admin.filters.value")}
+                      className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  ) : filter.type === "date" ? (
                     <input
                       type="date"
                       value={activeFilters[filter.key] ?? ""}
                       onChange={(event) =>
                         updateFilter(filter.key, event.target.value)
                       }
-                      className="min-h-11 min-w-36 rounded-lg border border-border bg-background py-0 pl-9 pr-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                      className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary dark:[color-scheme:dark]"
                     />
-                  </span>
-                ) : (
+                  ) : (
+                    <select
+                      value={activeFilters[filter.key] ?? ""}
+                      onChange={(event) =>
+                        updateFilter(filter.key, event.target.value)
+                      }
+                      className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="">{t("admin.filters.all")}</option>
+                      {(filter.options ?? []).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(option.labelKey)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </label>
+              ))}
+              {showSort ? (
+                <label className="grid gap-1 text-xs text-muted-foreground">
+                  <span>{t("admin.filters.sort")}</span>
                   <select
-                    value={activeFilters[filter.key] ?? ""}
-                    onChange={(event) =>
-                      updateFilter(filter.key, event.target.value)
-                    }
+                    value={direction}
+                    onChange={(event) => {
+                      setDirection(event.target.value as "ASC" | "DESC");
+                      setCursors([undefined]);
+                    }}
                     className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
                   >
-                    <option value="">{t("admin.filters.all")}</option>
-                    {(filter.options ?? []).map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {t(option.labelKey)}
-                      </option>
-                    ))}
+                    <option value="DESC">{t("admin.filters.sortNewest")}</option>
+                    <option value="ASC">{t("admin.filters.sortOldest")}</option>
                   </select>
-                )}
-              </label>
-            ))}
-            {showSort ? (
-              <label className="grid gap-1 text-xs text-muted-foreground">
-                <span>{t("admin.filters.sort")}</span>
-                <select
-                  value={direction}
-                  onChange={(event) => {
-                    setDirection(event.target.value as "ASC" | "DESC");
-                    setCursors([undefined]);
-                  }}
-                  className="min-h-11 min-w-36 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="DESC">{t("admin.filters.sortNewest")}</option>
-                  <option value="ASC">{t("admin.filters.sortOldest")}</option>
-                </select>
-              </label>
-            ) : null}
-            {showIncludeDeleted ? (
-              <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
-                <input
-                  type="checkbox"
-                  checked={includeDeleted}
-                  onChange={(event) => {
-                    setIncludeDeleted(event.target.checked);
-                    setCursors([undefined]);
-                  }}
-                  className="h-4 w-4 accent-primary"
-                />
-                {t("admin.filters.includeDeleted")}
-              </label>
-            ) : null}
-            <button
-              type="submit"
-              className="min-h-11 shrink-0 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
-            >
-              {t("admin.search")}
-            </button>
-            {hasActiveFilters && (
+                </label>
+              ) : null}
+              {showIncludeDeleted ? (
+                <label className="flex min-h-11 items-center gap-2 px-2 text-sm text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={includeDeleted}
+                    onChange={(event) => {
+                      setIncludeDeleted(event.target.checked);
+                      setCursors([undefined]);
+                    }}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  {t("admin.filters.includeDeleted")}
+                </label>
+              ) : null}
               <button
-                type="button"
-                onClick={resetFilters}
-                className="min-h-11 rounded-lg px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                type="submit"
+                className="min-h-11 shrink-0 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
               >
-                {t("admin.filters.reset")}
+                {t("admin.search")}
               </button>
-            )}
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="min-h-11 rounded-lg px-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  {t("admin.filters.reset")}
+                </button>
+              )}
+            </div>
           </form>
 
           {filterChips.length > 0 ? (
