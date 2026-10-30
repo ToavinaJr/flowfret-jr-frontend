@@ -871,7 +871,16 @@
     "previous": "Morceau précédent",
     "next": "Morceau suivant",
     "shuffle": "Lecture aléatoire",
-    "youtubePlayer": "Lecteur de playlist YouTube"
+    "youtubePlayer": "Lecteur de playlist YouTube",
+    "moveWindow": "Déplacer la fenêtre au coin suivant",
+    "minimizeWindow": "Réduire la fenêtre",
+    "restoreWindow": "Restaurer la fenêtre",
+    "closeWindow": "Fermer la fenêtre",
+    "resizeWindow": "Redimensionner avec le pointeur ou les flèches du clavier",
+    "resizeWindowTop": "Redimensionner la fenêtre par le bord supérieur",
+    "resizeWindowRight": "Redimensionner la fenêtre par le bord droit",
+    "resizeWindowBottom": "Redimensionner la fenêtre par le bord inférieur",
+    "resizeWindowLeft": "Redimensionner la fenêtre par le bord gauche"
   },
   "chordPlayer": {
     "title": "Accords",

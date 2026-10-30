@@ -97,7 +97,7 @@ export default function AdminLayout() {
             </SheetContent>
           </Sheet>
         </header>
-        <main className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+        <main className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 pb-32 sm:px-6 sm:py-7 sm:pb-32 lg:px-8 lg:pb-32">
           <Outlet />
         </main>
       </div>

@@ -5,7 +5,6 @@ import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import AppSidebar from "./AppSidebar";
 import MobileHeader from "./MobileHeader";
 import MobileNav from "./MobileNav";
-import PersistentMediaPlayer from "./PersistentMediaPlayer";
 import { RouteContentSkeleton } from "./skeletons/RouteContentSkeleton";
 
 const AppLayout = () => {
@@ -33,7 +32,6 @@ const AppLayout = () => {
           </Suspense>
         </main>
         <MobileNav />
-        <PersistentMediaPlayer />
       </div>
     </div>
   );

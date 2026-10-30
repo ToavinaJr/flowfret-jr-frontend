@@ -1,4 +1,3 @@
-import { Guitar, X } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
@@ -14,8 +13,6 @@ interface PersistentChordsProps {
   item: PlaybackItem;
   currentTime: number;
   onSeek: (time: number) => void;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -29,14 +26,12 @@ export function PersistentChords({
   item,
   currentTime,
   onSeek,
-  open,
-  onOpenChange,
 }: PersistentChordsProps) {
   const { t } = useTranslation();
   const { capo } = useCapo();
   const { analysis, status, progress, phase, failure } = useChordAnalysis(
     item,
-    open,
+    true,
   );
   const activeIndex = analysis
     ? Math.max(0, getCueIndexAtTime(analysis.cues, currentTime))
@@ -53,31 +48,7 @@ export function PersistentChords({
   );
 
   return (
-    <>
-      {open ? (
-        <div
-          id="persistent-chords-panel"
-          className="isolate absolute bottom-full left-0 right-0 max-h-[calc(100dvh-8rem)] overflow-y-auto border-t border-border bg-card/95 shadow-[0_-20px_50px_rgba(0,0,0,0.45)] backdrop-blur-3xl supports-[backdrop-filter]:bg-card/90 md:left-auto md:w-[min(36rem,100%)]"
-        >
-          <div className="flex items-center justify-between border-b border-border px-4 py-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold">
-                {t("chordPlayer.title")}
-              </h2>
-              <p className="truncate text-xs text-muted-foreground">
-                {item.title}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
-              aria-label={t("chordPlayer.close")}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
+    <div className="min-w-0">
           {status === "loading" ? (
             <div className="space-y-3 px-4 py-5" aria-live="polite">
               <div className="flex items-center justify-between gap-3 text-sm">
@@ -227,19 +198,6 @@ export function PersistentChords({
               </div>
             </div>
           ) : null}
-        </div>
-      ) : null}
-
-      <button
-        type="button"
-        onClick={() => onOpenChange(!open)}
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${open ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-        aria-label={open ? t("chordPlayer.close") : t("chordPlayer.open")}
-        aria-expanded={open}
-        aria-controls="persistent-chords-panel"
-      >
-        <Guitar className="h-5 w-5" />
-      </button>
-    </>
+    </div>
   );
 }

@@ -30,10 +30,11 @@ export function RemoteMediaPlayer({
     <button
       type="button"
       onClick={toggleFromQueue}
-      className="group flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md shadow-primary/20 transition-[transform,background-color] hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95"
+      className={`group flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-md transition-[transform,background-color,color] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95 ${isPlaying ? "border border-primary/40 bg-secondary text-primary shadow-none hover:bg-secondary/80" : "bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary/90"}`}
       aria-label={t(isPlaying ? "lyrics.pauseTrack" : "lyrics.playTrack", {
         title: track.title,
       })}
+      aria-pressed={isPlaying}
     >
       {isPlaying ? (
         <Pause className="h-[18px] w-[18px]" />
