@@ -45,7 +45,7 @@ const FeedPage = () => {
         {postsQuery.hasNextPage && <button type="button" disabled={postsQuery.isFetchingNextPage} onClick={() => void postsQuery.fetchNextPage()} className="mt-5 min-h-11 w-full rounded-md border border-border bg-card text-sm text-foreground disabled:opacity-50">{t(postsQuery.isFetchingNextPage ? "feed.loadingMore" : "feed.loadMore")}</button>}
         {postsQuery.isSuccess && !posts.length && <p className="py-10 text-center text-sm text-muted-foreground">{t("feed.empty")}</p>}
       </section>
-      <aside className="min-w-0 xl:col-start-2 xl:row-start-1 xl:pt-20"><DiscoverMembersPanel /></aside>
+      <aside className="min-w-0 xl:sticky xl:top-6 xl:col-start-2 xl:row-start-1 xl:self-start xl:pt-[3.5rem]"><DiscoverMembersPanel /></aside>
     </div>
   );
 };
