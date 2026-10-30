@@ -86,6 +86,7 @@ export async function playStringNote(
 export async function strumChord(
   diagramFrets: number[],
   baseFret: number,
+  capo = 0,
 ): Promise<void> {
   stopActiveSources();
   const ctx = await unlockAudioContext();
@@ -95,7 +96,7 @@ export async function strumChord(
   for (let si = 0; si < diagramFrets.length; si++) {
     const df = diagramFrets[si];
     if (df < 0) continue;
-    const actualFret = df === 0 ? 0 : baseFret - 1 + df;
+    const actualFret = (df === 0 ? 0 : baseFret - 1 + df) + capo;
     const freq = getNoteFrequency(si, actualFret);
     const buffer = buildPluckBuffer(ctx, freq);
     const source = ctx.createBufferSource();

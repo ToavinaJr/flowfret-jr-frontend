@@ -12,6 +12,9 @@ import {
 } from "@/utils/chords";
 import { playStringNote, strumChord } from "@/utils/stringSound";
 import { useTranslation } from "react-i18next";
+import { useCapo } from "@/contexts/CapoContext";
+import { CapoSelect } from "@/components/features/chords/CapoSelect";
+import { getChordRoot, transposeChordLabel } from "@/utils/chordTransposition";
 
 type CategoryFilter = "All" | "Major" | "Minor" | "7th" | "Other";
 
@@ -19,6 +22,7 @@ const CATEGORIES: CategoryFilter[] = ["All", "Major", "Minor", "7th", "Other"];
 
 const ChordsPage = () => {
   const { t } = useTranslation();
+  const { capo } = useCapo();
   const keys = useMemo(() => getKeys(), []);
   const [selectedKey, setSelectedKey] = useState(keys[0] ?? "C");
   const [search, setSearch] = useState("");
@@ -42,25 +46,43 @@ const ChordsPage = () => {
   }, [suffixes, selectedKey, search, category]);
 
   const activeSuffix = selectedSuffix ?? filteredSuffixes[0] ?? "major";
-  const chord = getChordsByKey(selectedKey).find((c) => c.suffix === activeSuffix);
-  const position = getChordPosition(selectedKey, activeSuffix, positionIndex);
-  const label = formatChordLabel(selectedKey, activeSuffix);
+  const soundingLabel = formatChordLabel(selectedKey, activeSuffix);
+  const shapeLabel = transposeChordLabel(soundingLabel, capo);
+  const shapeKey = getChordRoot(shapeLabel) ?? selectedKey;
+  const displayedSuffix = shapeLabel.slice(shapeKey.length);
+  const shapeSuffix = activeSuffix === "major"
+    ? "major"
+    : activeSuffix === "minor"
+      ? "minor"
+      : displayedSuffix;
+  const chord = getChordsByKey(shapeKey).find((c) => c.suffix === shapeSuffix);
+  const resolvedPositionIndex = Math.min(positionIndex, Math.max(0, (chord?.positions.length ?? 1) - 1));
+  const position = getChordPosition(shapeKey, shapeSuffix, resolvedPositionIndex);
+  const label = shapeLabel;
 
   async function handleStringPress(stringIndex: number, diagramFret: number) {
     if (!position || diagramFret < 0) return;
     const actualFret =
-      diagramFret === 0 ? 0 : position.baseFret - 1 + diagramFret;
+      (diagramFret === 0 ? 0 : position.baseFret - 1 + diagramFret) + capo;
     await playStringNote(stringIndex, actualFret);
   }
 
   async function handleStrum() {
     if (!position) return;
-    await strumChord(position.frets, position.baseFret);
+    await strumChord(position.frets, position.baseFret, capo);
   }
 
   return (
     <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("chords.title")}</h1>
+
+      <div className="mb-4 max-w-sm rounded-lg border border-border bg-card px-3">
+        <CapoSelect namespace="chords" />
+        <p className="pb-3 text-xs text-muted-foreground">
+          {t("chords.soundingChord")}: <span className="font-musical">{soundingLabel}</span>
+          {capo > 0 ? <> · {t("chords.playingShape")}: <span className="font-musical">{label}</span></> : null}
+        </p>
+      </div>
 
       <div className="relative mb-3 sm:mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -166,7 +188,7 @@ const ChordsPage = () => {
                     ←
                   </button>
                   <span className="text-xs font-musical text-muted-foreground">
-                    {t("chords.voicing")} {positionIndex + 1}/
+                    {t("chords.voicing")} {resolvedPositionIndex + 1}/
                     {chord?.positions.length ?? 1}
                   </span>
                   <button

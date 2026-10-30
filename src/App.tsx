@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
+import { CapoProvider } from "@/contexts/CapoContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import AppLayout from "@/components/AppLayout";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -62,6 +63,7 @@ const App = () => {
           <AuthProvider>
             <BrowserRouter>
               <ScrollToTop />
+              <CapoProvider>
               <PlaybackProvider>
                 <AuthGate>
                   <Suspense
@@ -148,6 +150,7 @@ const App = () => {
                   </Suspense>
                 </AuthGate>
               </PlaybackProvider>
+              </CapoProvider>
             </BrowserRouter>
           </AuthProvider>
         </TooltipProvider>

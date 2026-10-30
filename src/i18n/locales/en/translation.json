@@ -433,7 +433,12 @@
     "strum": "Strum",
     "selectPrompt": "Select a chord to preview",
     "diagram": "{{chord}} diagram",
-    "playString": "Play string {{string}}"
+    "playString": "Play string {{string}}",
+    "capo": "Capo",
+    "noCapo": "No capo",
+    "capoFret": "Fret {{fret}}",
+    "soundingChord": "Sounding chord",
+    "playingShape": "Play this shape"
   },
   "metronome": {
     "title": "Metronome",
@@ -872,6 +877,11 @@
     "title": "Chords",
     "open": "Show chords",
     "close": "Hide chords",
+    "capo": "Capo",
+    "noCapo": "No capo",
+    "capoFret": "Fret {{fret}}",
+    "soundingChord": "Sounding chord",
+    "playingShape": "Play this shape",
     "current": "Current chord",
     "playNow": "Play now",
     "alternative": "Alternative {{number}}",

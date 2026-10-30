@@ -1,6 +1,7 @@
 import type { ChordPosition } from "@/types/chord";
 import { getChordPositions } from "@/utils/chords";
 import { normaliseKey } from "@/utils/songCues";
+import { transposeChordLabel } from "@/utils/chordTransposition";
 
 export interface DisplayChordShape {
   label: string;
@@ -20,11 +21,12 @@ const SUFFIX_BY_LABEL: Record<string, string> = {
   "7": "7",
 };
 
-export function getDisplayChordShape(label?: string): DisplayChordShape {
+export function getDisplayChordShape(label?: string, capo = 0): DisplayChordShape {
+  const displayedLabel = transposeChordLabel(label ?? "", capo);
   const match = /^([A-G](?:#|b)?)(maj7|m7|sus2|sus4|dim|aug|7|m)?$/.exec(
-    label ?? "",
+    displayedLabel,
   );
-  if (!match) return { label: label ?? "—", position: undefined };
+  if (!match) return { label: displayedLabel || "—", position: undefined };
 
   const key = normaliseKey(match[1]);
   const suffix = match[2] ?? "";

@@ -6,6 +6,9 @@ import { useChordAnalysis } from "@/hooks/useChordAnalysis";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
 import { getDisplayChordShape } from "@/utils/chordShape";
 import { getCueIndexAtTime } from "@/utils/songCues";
+import { useCapo } from "@/contexts/CapoContext";
+import { CapoSelect } from "@/components/features/chords/CapoSelect";
+import { transposeChordLabel } from "@/utils/chordTransposition";
 
 interface PersistentChordsProps {
   item: PlaybackItem;
@@ -30,6 +33,7 @@ export function PersistentChords({
   onOpenChange,
 }: PersistentChordsProps) {
   const { t } = useTranslation();
+  const { capo } = useCapo();
   const { analysis, status, progress, phase, failure } = useChordAnalysis(
     item,
     open,
@@ -38,7 +42,7 @@ export function PersistentChords({
     ? Math.max(0, getCueIndexAtTime(analysis.cues, currentTime))
     : 0;
   const activeCue = analysis?.cues[activeIndex];
-  const activeChord = getDisplayChordShape(activeCue?.chord);
+  const activeChord = getDisplayChordShape(activeCue?.chord, capo);
   const nearbyCues = analysis?.cues.slice(
     Math.max(0, activeIndex - 2),
     activeIndex + 4,
@@ -123,6 +127,11 @@ export function PersistentChords({
 
           {status === "success" && analysis && activeCue ? (
             <div className="px-4 py-4">
+              <CapoSelect namespace="chordPlayer" />
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                {t("chordPlayer.soundingChord")}: <span className="font-musical">{activeCue.chord}</span>
+                {capo > 0 ? <> · {t("chordPlayer.playingShape")}: <span className="font-musical">{activeChord.label}</span></> : null}
+              </p>
               <div>
                 <div className="flex min-w-0 flex-col items-center">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -207,7 +216,7 @@ export function PersistentChords({
                       className={`min-w-20 rounded-lg border px-3 py-2 text-left backdrop-blur-xl ${active ? "border-primary bg-primary/20 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
                     >
                       <span className="block font-musical font-semibold">
-                        {cue.chord}
+                        {transposeChordLabel(cue.chord, capo)}
                       </span>
                       <span className="block text-[11px] text-muted-foreground">
                         {formatTime(cue.start)}

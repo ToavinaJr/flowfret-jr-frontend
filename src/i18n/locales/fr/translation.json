@@ -433,7 +433,12 @@
     "strum": "Jouer l’accord",
     "selectPrompt": "Sélectionnez un accord pour l’afficher",
     "diagram": "Diagramme de {{chord}}",
-    "playString": "Jouer la corde {{string}}"
+    "playString": "Jouer la corde {{string}}",
+    "capo": "Capodastre",
+    "noCapo": "Sans capodastre",
+    "capoFret": "Case {{fret}}",
+    "soundingChord": "Accord sonore",
+    "playingShape": "Forme à jouer"
   },
   "metronome": {
     "title": "Métronome",
@@ -872,6 +877,11 @@
     "title": "Accords",
     "open": "Afficher les accords",
     "close": "Masquer les accords",
+    "capo": "Capodastre",
+    "noCapo": "Sans capodastre",
+    "capoFret": "Case {{fret}}",
+    "soundingChord": "Accord sonore",
+    "playingShape": "Forme à jouer",
     "current": "Accord actuel",
     "playNow": "À jouer maintenant",
     "alternative": "Alternative {{number}}",
