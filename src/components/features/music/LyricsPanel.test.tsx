@@ -25,6 +25,16 @@ describe("LyricsPanel", () => {
     expect(screen.getByText("Plain line")).toBeInTheDocument();
   });
 
+  it("lets the reader increase and decrease lyric text size", () => {
+    window.localStorage.removeItem("flowfret.lyrics.font-size.v1");
+    renderPanel({ status: "success", lyrics: { provider: "lrclib", synced: false, instrumental: false, plainLyrics: "Plain line", lines: [] } });
+    const lyrics = screen.getByText("Plain line");
+    fireEvent.click(screen.getByRole("button", { name: /agrandir|increase lyrics/i }));
+    expect(lyrics).toHaveStyle({ fontSize: "18px" });
+    fireEvent.click(screen.getByRole("button", { name: /réduire|decrease lyrics/i }));
+    expect(lyrics).toHaveStyle({ fontSize: "16px" });
+  });
+
   it("highlights the active synchronized line and seeks", () => {
     const onSeek = vi.fn();
     renderPanel({ status: "success", currentTime: 3, onSeek, lyrics: { provider: "lrclib", synced: true, instrumental: false, lines: [{ startTimeMs: 1000, text: "First" }, { startTimeMs: 3000, text: "Second" }] } });

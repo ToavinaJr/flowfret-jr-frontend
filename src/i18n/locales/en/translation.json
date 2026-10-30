@@ -812,6 +812,9 @@
   },
   "lyrics": {
     "title": "Lyrics",
+    "textSize": "Text size",
+    "decreaseTextSize": "Decrease lyrics text size",
+    "increaseTextSize": "Increase lyrics text size",
     "open": "Show lyrics",
     "close": "Hide lyrics",
     "loading": "Loading lyrics…",

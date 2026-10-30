@@ -812,6 +812,9 @@
   },
   "lyrics": {
     "title": "Paroles",
+    "textSize": "Taille du texte",
+    "decreaseTextSize": "Réduire la taille du texte des paroles",
+    "increaseTextSize": "Agrandir la taille du texte des paroles",
     "open": "Afficher les paroles",
     "close": "Masquer les paroles",
     "loading": "Chargement des paroles…",
