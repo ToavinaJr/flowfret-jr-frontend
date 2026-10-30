@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
@@ -9,6 +9,10 @@ import { RouteContentSkeleton } from "./skeletons/RouteContentSkeleton";
 
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useSidebarCollapsed();
+
+  useEffect(() => {
+    document.documentElement.dataset.sidebarCollapsed = String(collapsed);
+  }, [collapsed]);
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background">

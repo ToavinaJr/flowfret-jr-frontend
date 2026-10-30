@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --app-sidebar-width-md: 16rem;
+  --app-sidebar-width-lg: 18rem;
+}
+
+:root[data-sidebar-collapsed="true"] {
+  --app-sidebar-width-md: 4rem;
+  --app-sidebar-width-lg: 4rem;
+}
+
 @layer base {
   :root {
     --background: 210 40% 98%;
