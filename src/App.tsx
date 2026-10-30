@@ -14,6 +14,7 @@ import AppLayout from "@/components/AppLayout";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
+const GlobalSearchPage = lazy(() => import("@/pages/GlobalSearchPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
 const ChordsPage = lazy(() => import("@/pages/ChordsPage"));
 const UploadPage = lazy(() => import("@/pages/UploadPage"));
@@ -73,6 +74,7 @@ const App = () => {
                     <Routes>
                       <Route element={<AppLayout />}>
                         <Route path="/" element={<FeedPage />} />
+                        <Route path="/search" element={<GlobalSearchPage />} />
                         <Route path="/tuner" element={<TunerPage />} />
                         <Route path="/chords" element={<ChordsPage />} />
                         <Route path="/upload" element={<UploadPage />} />

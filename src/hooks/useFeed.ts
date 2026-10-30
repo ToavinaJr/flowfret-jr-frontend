@@ -5,7 +5,7 @@ import type { FeedPost } from "@/types/feed";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-export function useFeed(searchQuery = "") {
+export function useFeed(searchQuery = "", options: { loadPosts?: boolean } = {}) {
   const { user, status } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -14,7 +14,7 @@ export function useFeed(searchQuery = "") {
     queryFn: ({ pageParam }) => fetchFeedPosts(typeof pageParam === "string" ? pageParam : undefined, 20, searchQuery),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.length === 20 ? lastPage[lastPage.length - 1]?.id : undefined,
-    enabled: status === "authenticated",
+    enabled: status === "authenticated" && options.loadPosts !== false,
     retry: 1,
   });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
