@@ -481,7 +481,10 @@
     "providerError": "Ce fournisseur musical est momentanément indisponible.",
     "playbackBlocked": "Le navigateur a bloqué la lecture. Appuyez de nouveau sur lecture.",
     "retryPlayback": "Réessayer",
-    "timeline": "Chronologie des accords"
+    "timeline": "Chronologie des accords",
+    "detectedChords": "Accords détectés",
+    "allChords": "Tous les accords",
+    "chordPreviewHint": "Aperçu de l’accord sélectionné · sélectionnez-le à nouveau pour revenir à la lecture"
   },
   "upload": {
     "title": "Importer et analyser",

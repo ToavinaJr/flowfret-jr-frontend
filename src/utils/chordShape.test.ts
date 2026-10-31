@@ -16,6 +16,13 @@ describe("getDisplayChordShape", () => {
     expect(getDisplayChordShape("D#7").position).toBeDefined();
   });
 
+  it("renders uppercase M7 chord labels and applies capo transposition", () => {
+    expect(getDisplayChordShape("EM7").label).toBe("Emaj7");
+    expect(getDisplayChordShape("EM7").position).toBeDefined();
+    expect(getDisplayChordShape("EM7", 2).label).toBe("Dmaj7");
+    expect(getDisplayChordShape("EM7", 2).position).toBeDefined();
+  });
+
   it("keeps unsupported labels visible without inventing a fingering", () => {
     expect(getDisplayChordShape("N")).toEqual({
       label: "N",

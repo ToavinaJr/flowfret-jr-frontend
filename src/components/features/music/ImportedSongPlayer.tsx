@@ -3,8 +3,10 @@ import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
 import { usePlayback } from "@/contexts/usePlayback";
 import type { PlaybackItem } from "@/contexts/playback-context";
 import type { ImportedSong } from "@/types/song";
-import { getChordPosition } from "@/utils/chords";
-import { getCueIndexAtTime, normaliseKey } from "@/utils/songCues";
+import { getDisplayChordShape } from "@/utils/chordShape";
+import { getCueIndexAtTime } from "@/utils/songCues";
+import { useCapo } from "@/contexts/CapoContext";
+import { CapoSelect } from "@/components/features/chords/CapoSelect";
 import { useTranslation } from "react-i18next";
 
 function formatTime(seconds: number): string {
@@ -14,32 +16,10 @@ function formatTime(seconds: number): string {
     .padStart(2, "0")}`;
 }
 
-function chordShape(label?: string) {
-  const match = /^([A-G](?:#|b)?)(maj7|m7|sus2|sus4|dim|aug|7|m)?$/.exec(
-    label ?? "",
-  );
-  if (!match) return { label: label ?? "—", position: undefined };
-  const key = normaliseKey(match[1]);
-  const suffixByLabel: Record<string, string> = {
-    "": "major",
-    m: "minor",
-    maj7: "maj7",
-    m7: "m7",
-    sus2: "sus2",
-    sus4: "sus4",
-    dim: "dim",
-    aug: "aug",
-    "7": "7",
-  };
-  return {
-    label: `${key}${match[2] ?? ""}`,
-    position: getChordPosition(key, suffixByLabel[match[2] ?? ""]),
-  };
-}
-
 export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
   const { t } = useTranslation();
   const { item, currentTime, select } = usePlayback();
+  const { capo } = useCapo();
   const [previewChord, setPreviewChord] = useState<string | null>(null);
   const playbackItem = useMemo<PlaybackItem>(
     () => ({
@@ -62,15 +42,19 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
   const previousCue = song.meta.cues[activeCueIndex - 1];
   const activeCue = song.meta.cues[activeCueIndex];
   const nextCue = song.meta.cues[activeCueIndex + 1];
-  const previous = chordShape(previousCue?.chord);
-  const current = chordShape(activeCue?.chord);
-  const next = chordShape(nextCue?.chord);
-  const displayed = previewChord ? chordShape(previewChord) : current;
+  const previous = getDisplayChordShape(previousCue?.chord, capo);
+  const current = getDisplayChordShape(activeCue?.chord, capo);
+  const next = getDisplayChordShape(nextCue?.chord, capo);
+  const displayed = previewChord
+    ? getDisplayChordShape(previewChord, capo)
+    : current;
   const chordSet = useMemo(
-    () => [
-      ...new Set(song.meta.cues.map((cue) => chordShape(cue.chord).label)),
-    ],
-    [song.meta.cues],
+    () => [...new Set(song.meta.cues.map((cue) => cue.chord))]
+      .map((chord) => ({
+        source: chord,
+        label: getDisplayChordShape(chord, capo).label,
+      })),
+    [song.meta.cues, capo],
   );
 
   useEffect(() => {
@@ -150,6 +134,9 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
         className="border-t border-border bg-background/45 p-3 lg:border-l lg:border-t-0"
         aria-label={t("player.detectedChords")}
       >
+        <div className="mb-3 rounded-lg border border-border/80 bg-card/70 px-3">
+          <CapoSelect namespace="chordPlayer" idPrefix="upload-chord-player" />
+        </div>
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t("player.allChords")}
@@ -159,17 +146,17 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
           </span>
         </div>
         <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1 lg:max-h-[370px] lg:grid-cols-2">
-          {chordSet.map((label) => (
+          {chordSet.map(({ source, label }) => (
             <button
-              key={label}
+              key={source}
               type="button"
               onClick={() =>
                 setPreviewChord((selected) =>
-                  selected === label ? null : label,
+                  selected === source ? null : source,
                 )
               }
-              aria-pressed={previewChord === label}
-              className={`rounded-lg border px-2 py-3 text-center transition-[color,background-color,border-color,box-shadow] ${previewChord === label ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
+              aria-pressed={previewChord === source}
+              className={`rounded-lg border px-2 py-3 text-center transition-[color,background-color,border-color,box-shadow] ${previewChord === source ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
             >
               <span className="block text-center font-musical text-base font-semibold">
                 {label}

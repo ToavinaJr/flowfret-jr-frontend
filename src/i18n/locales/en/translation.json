@@ -481,7 +481,10 @@
     "providerError": "This music provider is currently unavailable.",
     "playbackBlocked": "The browser blocked playback. Press play again to continue.",
     "retryPlayback": "Retry",
-    "timeline": "Chord timeline"
+    "timeline": "Chord timeline",
+    "detectedChords": "Detected chords",
+    "allChords": "All chords",
+    "chordPreviewHint": "Previewing selected chord · select it again to return to playback"
   },
   "upload": {
     "title": "Upload & Analyze",

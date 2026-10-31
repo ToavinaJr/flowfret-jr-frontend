@@ -1,15 +1,22 @@
 import { useTranslation } from "react-i18next";
 import { useCapo } from "@/contexts/CapoContext";
 
-export function CapoSelect({ namespace }: { namespace: "chords" | "chordPlayer" }) {
+export function CapoSelect({
+  namespace,
+  idPrefix = namespace,
+}: {
+  namespace: "chords" | "chordPlayer";
+  idPrefix?: string;
+}) {
   const { t } = useTranslation();
   const { capo, setCapo } = useCapo();
-  const labelId = `${namespace}-capo-label`;
+  const selectId = `${idPrefix}-capo`;
+  const labelId = `${selectId}-label`;
   return (
-    <label className="flex min-h-11 items-center justify-between gap-3 text-sm" htmlFor={`${namespace}-capo`}>
+    <label className="flex min-h-11 items-center justify-between gap-3 text-sm" htmlFor={selectId}>
       <span id={labelId} className="text-muted-foreground">{t(`${namespace}.capo`)}</span>
       <select
-        id={`${namespace}-capo`}
+        id={selectId}
         aria-labelledby={labelId}
         value={capo}
         onChange={(event) => setCapo(Number(event.target.value))}
