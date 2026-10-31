@@ -23,10 +23,18 @@ import { Switch } from "@/components/ui/switch";
 import { NotificationsSkeleton } from "@/components/skeletons/NotificationsSkeleton";
 import { UserAvatar } from "@/components/common/UserAvatar";
 import { getNotificationDestination } from "@/utils/notificationDestination";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type ConfigurableKind = Exclude<
   NotificationKind,
-  typeof NOTIFICATION_KIND.FRIEND_ACCEPTED
+  | typeof NOTIFICATION_KIND.FRIEND_ACCEPTED
+  | typeof NOTIFICATION_KIND.CHAT_MESSAGE
 >;
 const preferenceLabels: Record<ConfigurableKind, string> = {
   [NOTIFICATION_KIND.FRIEND_REQUEST]: "notifications.preference.friendRequest",
@@ -159,19 +167,19 @@ export default function NotificationsPage() {
   const types = Object.keys(preferenceLabels) as ConfigurableKind[];
   const rows = notifications.data?.pages.flat() ?? [];
   return (
+    <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
     <div className={PAGE_SHELL}>
       <header className="mb-4 flex items-center justify-between gap-3">
         <h1 className={`${PAGE_TITLE} mb-0`}>{t("notifications.title")}</h1>
-        <button
-          type="button"
-          aria-label={t(preferencesOpen ? "notifications.closePreferences" : "notifications.openPreferences")}
-          aria-expanded={preferencesOpen}
-          aria-controls="notification-preferences"
-          onClick={() => setPreferencesOpen((open) => !open)}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <Settings className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            aria-label={t("notifications.openPreferences")}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <Settings className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </DialogTrigger>
       </header>
       {notifications.isError ? (
         <p
@@ -239,45 +247,44 @@ export default function NotificationsPage() {
           </div>
         )}
       </section>
-      {preferencesOpen ? (
-        <section
-          id="notification-preferences"
-          className="mt-7 rounded-xl border bg-card p-4"
-        >
-          <h2 className="mb-4 font-semibold">
-            {t("notifications.preferencesTitle")}
-          </h2>
-          {preferences.isLoading ? (
-            <p role="status" className="text-sm text-muted-foreground">
-              {t("notifications.preferencesLoading")}
-            </p>
-          ) : preferences.isError ? (
-            <p role="alert" className="text-sm text-destructive">
-              {t("notifications.preferencesLoadError")}
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {types.map((type) => (
-                <label
-                  key={type}
-                  htmlFor={`notification-${type.toLowerCase()}`}
-                  className="flex items-center justify-between gap-4 text-sm"
-                >
-                  <span>{t(preferenceLabels[type])}</span>
-                  <Switch
-                    id={`notification-${type.toLowerCase()}`}
-                    checked={configured.get(type) ?? true}
-                    disabled={updatePreference.isPending}
-                    onCheckedChange={(enabled) =>
-                      updatePreference.mutate({ type, enabled })
-                    }
-                  />
-                </label>
-              ))}
-            </div>
-          )}
-        </section>
-      ) : null}
+      <DialogContent
+        id="notification-preferences"
+        className="max-h-[85vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-xl"
+      >
+        <DialogHeader>
+          <DialogTitle>{t("notifications.preferencesTitle")}</DialogTitle>
+        </DialogHeader>
+        {preferences.isLoading ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            {t("notifications.preferencesLoading")}
+          </p>
+        ) : preferences.isError ? (
+          <p role="alert" className="text-sm text-destructive">
+            {t("notifications.preferencesLoadError")}
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {types.map((type) => (
+              <label
+                key={type}
+                htmlFor={`notification-${type.toLowerCase()}`}
+                className="flex items-center justify-between gap-4 text-sm"
+              >
+                <span>{t(preferenceLabels[type])}</span>
+                <Switch
+                  id={`notification-${type.toLowerCase()}`}
+                  checked={configured.get(type) ?? true}
+                  disabled={updatePreference.isPending}
+                  onCheckedChange={(enabled) =>
+                    updatePreference.mutate({ type, enabled })
+                  }
+                />
+              </label>
+            ))}
+          </div>
+        )}
+      </DialogContent>
     </div>
+    </Dialog>
   );
 }
