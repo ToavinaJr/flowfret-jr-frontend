@@ -29,6 +29,7 @@ const MusicSearchPage = lazy(() => import("@/pages/MusicSearchPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const HelpPage = lazy(() => import("@/pages/HelpPage"));
 const FriendsPage = lazy(() => import("@/pages/FriendsPage"));
+const ChatPage = lazy(() => import("@/pages/ChatPage"));
 const NotificationsPage = lazy(() => import("@/pages/NotificationsPage"));
 const PostPage = lazy(() => import("@/pages/PostPage"));
 const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
@@ -66,94 +67,108 @@ const App = () => {
             <BrowserRouter>
               <ScrollToTop />
               <CapoProvider>
-              <PlaybackProvider>
-                <AuthGate>
-                  <Suspense
-                    fallback={<AppShellSkeleton />}
-                  >
-                    <Routes>
-                      <Route element={<AppLayout />}>
-                        <Route path="/" element={<FeedPage />} />
-                        <Route path="/search" element={<GlobalSearchPage />} />
-                        <Route path="/tuner" element={<TunerPage />} />
-                        <Route path="/chords" element={<ChordsPage />} />
-                        <Route path="/upload" element={<UploadPage />} />
-                        <Route path="/music" element={<MusicSearchPage />} />
-                        <Route path="/playlists" element={<PlaylistsPage />} />
-                        <Route
-                          path="/transcriptions"
-                          element={<TranscriptionsPage />}
-                        />
-                        <Route path="/teaching" element={<TeachingPage />} />
-                        <Route path="/metronome" element={<MetronomePage />} />
-                        <Route path="/scales" element={<ScalesPage />} />
-                        <Route path="/menu" element={<MenuPage />} />
-                        <Route path="/histoire" element={<HistoirePage />} />
-                        <Route path="/contact" element={<ContactPage />} />
-                        <Route
-                          path="/parametres"
-                          element={<ParametresPage />}
-                        />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route
-                          path="/profile/:userId"
-                          element={<ProfilePage />}
-                        />
-                        <Route path="/friends" element={<FriendsPage />} />
-                        <Route
-                          path="/notifications"
-                          element={<NotificationsPage />}
-                        />
-                        <Route path="/post/:postId" element={<PostPage />} />
-                        <Route path="/help" element={<HelpPage />} />
-                        <Route path="/verify-email" element={<FeedPage />} />
-                        <Route path="/reset-password" element={<FeedPage />} />
-                      </Route>
-                      <Route element={<AdminRoute />}>
-                        <Route path="/admin" element={<AdminLayout />}>
-                          <Route index element={<AdminOverviewPage />} />
-                          <Route path="users" element={<AdminUsersPage />} />
+                <PlaybackProvider>
+                  <AuthGate>
+                    <Suspense fallback={<AppShellSkeleton />}>
+                      <Routes>
+                        <Route element={<AppLayout />}>
+                          <Route path="/" element={<FeedPage />} />
                           <Route
-                            path="users/:userId"
-                            element={<AdminUserDetailPage />}
+                            path="/search"
+                            element={<GlobalSearchPage />}
+                          />
+                          <Route path="/tuner" element={<TunerPage />} />
+                          <Route path="/chords" element={<ChordsPage />} />
+                          <Route path="/upload" element={<UploadPage />} />
+                          <Route path="/music" element={<MusicSearchPage />} />
+                          <Route
+                            path="/playlists"
+                            element={<PlaylistsPage />}
                           />
                           <Route
-                            path="content"
-                            element={<AdminContentPage />}
+                            path="/transcriptions"
+                            element={<TranscriptionsPage />}
+                          />
+                          <Route path="/teaching" element={<TeachingPage />} />
+                          <Route
+                            path="/metronome"
+                            element={<MetronomePage />}
+                          />
+                          <Route path="/scales" element={<ScalesPage />} />
+                          <Route path="/menu" element={<MenuPage />} />
+                          <Route path="/histoire" element={<HistoirePage />} />
+                          <Route path="/contact" element={<ContactPage />} />
+                          <Route
+                            path="/parametres"
+                            element={<ParametresPage />}
+                          />
+                          <Route path="/profile" element={<ProfilePage />} />
+                          <Route
+                            path="/profile/:userId"
+                            element={<ProfilePage />}
+                          />
+                          <Route path="/friends" element={<FriendsPage />} />
+                          <Route
+                            path="/messages/:conversationId?"
+                            element={<ChatPage />}
                           />
                           <Route
-                            path="content/reports"
-                            element={<ModerationPage />}
+                            path="/notifications"
+                            element={<NotificationsPage />}
                           />
-                          <Route path="media" element={<AdminMediaPage />} />
-                          <Route path="music" element={<AdminMusicPage />} />
-                          <Route path="audit" element={<AdminAuditPage />} />
+                          <Route path="/post/:postId" element={<PostPage />} />
+                          <Route path="/help" element={<HelpPage />} />
+                          <Route path="/verify-email" element={<FeedPage />} />
                           <Route
-                            path="teachers"
-                            element={<AdminTeachersPage />}
-                          />
-                          <Route
-                            path="data"
-                            element={<AdminEntityManagerPage />}
-                          />
-                          <Route
-                            path="*"
-                            element={<Navigate to="/admin" replace />}
+                            path="/reset-password"
+                            element={<FeedPage />}
                           />
                         </Route>
-                      </Route>
-                      <Route
-                        path="/moderation"
-                        element={
-                          <Navigate to="/admin/content/reports" replace />
-                        }
-                      />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
-                </AuthGate>
-                <PersistentMediaPlayer />
-              </PlaybackProvider>
+                        <Route element={<AdminRoute />}>
+                          <Route path="/admin" element={<AdminLayout />}>
+                            <Route index element={<AdminOverviewPage />} />
+                            <Route path="users" element={<AdminUsersPage />} />
+                            <Route
+                              path="users/:userId"
+                              element={<AdminUserDetailPage />}
+                            />
+                            <Route
+                              path="content"
+                              element={<AdminContentPage />}
+                            />
+                            <Route
+                              path="content/reports"
+                              element={<ModerationPage />}
+                            />
+                            <Route path="media" element={<AdminMediaPage />} />
+                            <Route path="music" element={<AdminMusicPage />} />
+                            <Route path="audit" element={<AdminAuditPage />} />
+                            <Route
+                              path="teachers"
+                              element={<AdminTeachersPage />}
+                            />
+                            <Route
+                              path="data"
+                              element={<AdminEntityManagerPage />}
+                            />
+                            <Route
+                              path="*"
+                              element={<Navigate to="/admin" replace />}
+                            />
+                          </Route>
+                        </Route>
+                        <Route
+                          path="/moderation"
+                          element={
+                            <Navigate to="/admin/content/reports" replace />
+                          }
+                        />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </AuthGate>
+                  <PersistentMediaPlayer />
+                </PlaybackProvider>
               </CapoProvider>
             </BrowserRouter>
           </AuthProvider>

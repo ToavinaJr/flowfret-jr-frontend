@@ -22,6 +22,8 @@ export interface AppNotification {
     startsAt?: string;
     timeZone?: string;
     minutesBefore?: number;
+    conversationId?: string;
+    messageId?: string;
   };
   readAt: string | null;
   createdAt: string;

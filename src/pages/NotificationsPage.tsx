@@ -48,6 +48,7 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
     "notifications.preference.lessonUpdates",
   [NOTIFICATION_KIND.TEACHING_LESSON_REMINDER]:
     "notifications.preference.lessonReminders",
+  [NOTIFICATION_KIND.CHAT_MESSAGE]: "chat.notificationPreference",
 };
 
 function message(
@@ -98,6 +99,8 @@ function message(
       course: row.payload.courseTitle || "",
       hours: Number(row.payload.minutesBefore) === 1440 ? 24 : 1,
     });
+  if (row.type === NOTIFICATION_KIND.CHAT_MESSAGE)
+    return t("chat.notificationMessage", { actor });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
@@ -195,11 +198,15 @@ export default function NotificationsPage() {
         <div className="space-y-2">
           {rows.map((row) => {
             const teachingNotification = row.type.startsWith("TEACHING_");
-            const destination = teachingNotification
-              ? "/teaching"
-              : row.payload.postId
-                ? `/post/${row.payload.postId}`
-                : `/profile/${row.payload.actorId}`;
+            const chatNotification =
+              row.type === NOTIFICATION_KIND.CHAT_MESSAGE;
+            const destination = chatNotification
+              ? `/messages/${row.payload.conversationId || ""}`
+              : teachingNotification
+                ? "/teaching"
+                : row.payload.postId
+                  ? `/post/${row.payload.postId}`
+                  : `/profile/${row.payload.actorId}`;
             return (
               <Link
                 key={row.id}
@@ -232,7 +239,9 @@ export default function NotificationsPage() {
                       ? t("notifications.viewPost")
                       : teachingNotification
                         ? t("notifications.viewCourses")
-                        : t("notifications.viewProfile")}
+                        : chatNotification
+                          ? t("chat.viewMessages")
+                          : t("notifications.viewProfile")}
                   </span>
                 </div>
               </Link>

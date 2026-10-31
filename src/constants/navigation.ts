@@ -13,6 +13,7 @@ import {
   ListMusic,
   FileText,
   GraduationCap,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -34,6 +35,7 @@ export const SIDEBAR_NAV_ITEMS: AppNavItem[] = [
   { icon: GraduationCap, translationKey: "nav.courses", path: "/teaching" },
   { icon: Upload, translationKey: "nav.upload", path: "/upload" },
   { icon: Users, translationKey: "nav.friends", path: "/friends" },
+  { icon: MessageCircle, translationKey: "nav.messages", path: "/messages" },
   { icon: Bell, translationKey: "nav.notifications", path: "/notifications" },
   { icon: BookOpen, translationKey: "nav.chords", path: "/chords" },
   { icon: Music2, translationKey: "nav.scales", path: "/scales" },

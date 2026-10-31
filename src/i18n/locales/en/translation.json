@@ -19,6 +19,7 @@
     "courses": "Guitar lessons",
     "friends": "Friends",
     "notifications": "Notifications",
+    "messages": "Messages",
     "profile": "Profile"
   },
   "settings": {
@@ -542,18 +543,39 @@
       "level3": "Keep time"
     },
     "proof": {
-      "practice": { "title": "Practice with intention", "description": "Turn scattered exercises into a session you can actually follow." },
-      "clarity": { "title": "See what to play", "description": "Use clear diagrams, synchronized cues, and useful musical context." },
-      "momentum": { "title": "Build momentum", "description": "Keep your discoveries, history, and progress close at hand." }
+      "practice": {
+        "title": "Practice with intention",
+        "description": "Turn scattered exercises into a session you can actually follow."
+      },
+      "clarity": {
+        "title": "See what to play",
+        "description": "Use clear diagrams, synchronized cues, and useful musical context."
+      },
+      "momentum": {
+        "title": "Build momentum",
+        "description": "Keep your discoveries, history, and progress close at hand."
+      }
     },
     "features": {
       "eyebrow": "Everything in one place",
       "title": "Less searching. More playing.",
       "description": "FlowFret is designed to help you move from curiosity to confident playing without losing the thread.",
       "items": {
-        "practice": { "title": "A focused practice workspace", "description": "Explore chords, scales, tuner, metronome, and audio tools without jumping between disconnected apps.", "detail": "Your essential tools, ready when you are" },
-        "music": { "title": "Discover music that teaches you", "description": "Search music, listen, follow chord and lyric cues, and turn the songs you love into practical material.", "detail": "Listen with more intention" },
-        "community": { "title": "Learn with people around you", "description": "Share progress, connect with other guitarists, and keep your learning journey visible and motivating.", "detail": "Progress feels better together" }
+        "practice": {
+          "title": "A focused practice workspace",
+          "description": "Explore chords, scales, tuner, metronome, and audio tools without jumping between disconnected apps.",
+          "detail": "Your essential tools, ready when you are"
+        },
+        "music": {
+          "title": "Discover music that teaches you",
+          "description": "Search music, listen, follow chord and lyric cues, and turn the songs you love into practical material.",
+          "detail": "Listen with more intention"
+        },
+        "community": {
+          "title": "Learn with people around you",
+          "description": "Share progress, connect with other guitarists, and keep your learning journey visible and motivating.",
+          "detail": "Progress feels better together"
+        }
       }
     },
     "steps": {
@@ -562,18 +584,36 @@
       "description": "You do not need a perfect plan. FlowFret gives you the next useful step and lets your practice grow from there.",
       "cta": "Create your free account",
       "items": {
-        "discover": { "title": "Discover", "description": "Find a song, a chord shape, or a new idea worth exploring." },
-        "practice": { "title": "Practice", "description": "Use focused tools and visual cues to turn ideas into muscle memory." },
-        "progress": { "title": "Progress", "description": "Save what works, follow your history, and come back with confidence." }
+        "discover": {
+          "title": "Discover",
+          "description": "Find a song, a chord shape, or a new idea worth exploring."
+        },
+        "practice": {
+          "title": "Practice",
+          "description": "Use focused tools and visual cues to turn ideas into muscle memory."
+        },
+        "progress": {
+          "title": "Progress",
+          "description": "Save what works, follow your history, and come back with confidence."
+        }
       }
     },
     "faq": {
       "eyebrow": "Questions, answered",
       "title": "A better place to begin",
       "items": {
-        "first": { "question": "What is FlowFret?", "answer": "FlowFret is a guitar learning workspace that combines music discovery, practice tools, chord and scale references, and progress tracking." },
-        "level": { "question": "Is it for beginners?", "answer": "Yes. FlowFret is built for beginners, returning players, and experienced guitarists who want a more structured way to explore." },
-        "free": { "question": "Can I start for free?", "answer": "Yes. Create an account to explore the core workspace and start building your own practice rhythm." }
+        "first": {
+          "question": "What is FlowFret?",
+          "answer": "FlowFret is a guitar learning workspace that combines music discovery, practice tools, chord and scale references, and progress tracking."
+        },
+        "level": {
+          "question": "Is it for beginners?",
+          "answer": "Yes. FlowFret is built for beginners, returning players, and experienced guitarists who want a more structured way to explore."
+        },
+        "free": {
+          "question": "Can I start for free?",
+          "answer": "Yes. Create an account to explore the core workspace and start building your own practice rhythm."
+        }
       }
     },
     "final": {
@@ -1380,6 +1420,48 @@
     "resolve": "Resolve",
     "dismiss": "Dismiss",
     "empty": "No reports."
+  },
+  "chat": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "searchConversations": "Search conversations",
+    "newConversation": "New conversation",
+    "noSearchResults": "No conversations match this search.",
+    "profileOptions": "Options",
+    "startDirect": "Start a private conversation",
+    "chooseFriend": "Choose a friend",
+    "groupName": "Group name",
+    "addGroupMember": "Add a friend to the group",
+    "membersSelected": "member(s) selected",
+    "removeSelected": "Remove {{name}} from selection",
+    "createGroup": "Create group",
+    "group": "Group",
+    "conversation": "Conversation",
+    "empty": "No conversations yet.",
+    "photo": "Photo",
+    "noMessages": "Start the conversation",
+    "loadOlder": "Load earlier messages",
+    "backToConversations": "Back to conversations",
+    "nickname": "Your nickname in this conversation",
+    "nicknameSaved": "Nickname saved.",
+    "selectConversation": "Choose a conversation or start a new one.",
+    "addPhoto": "Add a photo",
+    "addEmoji": "Add an emoji",
+    "insertEmoji": "Insert {{emoji}} emoji",
+    "writeMessage": "Write a message…",
+    "send": "Send",
+    "notificationPreference": "New messages",
+    "notificationMessage": "{{actor}} sent you a message.",
+    "viewMessages": "View messages",
+    "add": "Add",
+    "groupMembers": "Group members",
+    "admin": "admin",
+    "promote": "Promote {{name}} to admin",
+    "demote": "Demote {{name}} to member",
+    "removeMember": "Remove {{name}} from group",
+    "leaveGroup": "Leave group",
+    "confirmRemove": "Remove {{name}} from this group?",
+    "confirmLeave": "Leave this group?"
   },
   "circleHarmony": {
     "major": "Major chords",

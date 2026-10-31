@@ -19,6 +19,7 @@
     "courses": "Cours de guitare",
     "friends": "Amis",
     "notifications": "Notifications",
+    "messages": "Messages",
     "profile": "Profil"
   },
   "settings": {
@@ -542,18 +543,39 @@
       "level3": "Garder le tempo"
     },
     "proof": {
-      "practice": { "title": "Pratiquer avec intention", "description": "Transformez des exercices dispersés en une session que vous pouvez vraiment suivre." },
-      "clarity": { "title": "Voir quoi jouer", "description": "Profitez de diagrammes clairs, de repères synchronisés et d’un contexte musical utile." },
-      "momentum": { "title": "Créer votre élan", "description": "Gardez vos découvertes, votre historique et votre progression à portée de main." }
+      "practice": {
+        "title": "Pratiquer avec intention",
+        "description": "Transformez des exercices dispersés en une session que vous pouvez vraiment suivre."
+      },
+      "clarity": {
+        "title": "Voir quoi jouer",
+        "description": "Profitez de diagrammes clairs, de repères synchronisés et d’un contexte musical utile."
+      },
+      "momentum": {
+        "title": "Créer votre élan",
+        "description": "Gardez vos découvertes, votre historique et votre progression à portée de main."
+      }
     },
     "features": {
       "eyebrow": "Tout au même endroit",
       "title": "Moins chercher. Plus jouer.",
       "description": "FlowFret vous aide à passer de la curiosité à une pratique assurée, sans perdre le fil.",
       "items": {
-        "practice": { "title": "Un espace de pratique ciblé", "description": "Explorez accords, gammes, accordeur, métronome et outils audio sans passer d’une application à l’autre.", "detail": "Vos outils essentiels, prêts quand vous l’êtes" },
-        "music": { "title": "Découvrir des musiques qui vous apprennent quelque chose", "description": "Recherchez, écoutez, suivez les repères d’accords et de paroles, puis transformez vos morceaux préférés en matière pratique.", "detail": "Écouter avec plus d’intention" },
-        "community": { "title": "Apprendre avec votre entourage", "description": "Partagez vos progrès, échangez avec d’autres guitaristes et rendez votre parcours plus motivant.", "detail": "La progression est meilleure ensemble" }
+        "practice": {
+          "title": "Un espace de pratique ciblé",
+          "description": "Explorez accords, gammes, accordeur, métronome et outils audio sans passer d’une application à l’autre.",
+          "detail": "Vos outils essentiels, prêts quand vous l’êtes"
+        },
+        "music": {
+          "title": "Découvrir des musiques qui vous apprennent quelque chose",
+          "description": "Recherchez, écoutez, suivez les repères d’accords et de paroles, puis transformez vos morceaux préférés en matière pratique.",
+          "detail": "Écouter avec plus d’intention"
+        },
+        "community": {
+          "title": "Apprendre avec votre entourage",
+          "description": "Partagez vos progrès, échangez avec d’autres guitaristes et rendez votre parcours plus motivant.",
+          "detail": "La progression est meilleure ensemble"
+        }
       }
     },
     "steps": {
@@ -562,18 +584,36 @@
       "description": "Vous n’avez pas besoin d’un plan parfait. FlowFret vous donne la prochaine étape utile et vous laisse construire la suite.",
       "cta": "Créer un compte gratuit",
       "items": {
-        "discover": { "title": "Découvrir", "description": "Trouvez un morceau, une position d’accord ou une nouvelle idée à explorer." },
-        "practice": { "title": "Pratiquer", "description": "Utilisez des outils ciblés et des repères visuels pour créer des automatismes." },
-        "progress": { "title": "Progresser", "description": "Gardez ce qui fonctionne, suivez votre historique et revenez avec confiance." }
+        "discover": {
+          "title": "Découvrir",
+          "description": "Trouvez un morceau, une position d’accord ou une nouvelle idée à explorer."
+        },
+        "practice": {
+          "title": "Pratiquer",
+          "description": "Utilisez des outils ciblés et des repères visuels pour créer des automatismes."
+        },
+        "progress": {
+          "title": "Progresser",
+          "description": "Gardez ce qui fonctionne, suivez votre historique et revenez avec confiance."
+        }
       }
     },
     "faq": {
       "eyebrow": "Vos questions, nos réponses",
       "title": "Un meilleur point de départ",
       "items": {
-        "first": { "question": "Qu’est-ce que FlowFret ?", "answer": "FlowFret est un espace d’apprentissage de la guitare qui réunit découverte musicale, outils de pratique, références d’accords et de gammes, et suivi de progression." },
-        "level": { "question": "Est-ce adapté aux débutants ?", "answer": "Oui. FlowFret s’adresse aux débutants, aux guitaristes qui reprennent et aux joueurs expérimentés qui souhaitent explorer avec plus de structure." },
-        "free": { "question": "Puis-je commencer gratuitement ?", "answer": "Oui. Créez un compte pour découvrir l’espace principal et commencer à construire votre rythme de pratique." }
+        "first": {
+          "question": "Qu’est-ce que FlowFret ?",
+          "answer": "FlowFret est un espace d’apprentissage de la guitare qui réunit découverte musicale, outils de pratique, références d’accords et de gammes, et suivi de progression."
+        },
+        "level": {
+          "question": "Est-ce adapté aux débutants ?",
+          "answer": "Oui. FlowFret s’adresse aux débutants, aux guitaristes qui reprennent et aux joueurs expérimentés qui souhaitent explorer avec plus de structure."
+        },
+        "free": {
+          "question": "Puis-je commencer gratuitement ?",
+          "answer": "Oui. Créez un compte pour découvrir l’espace principal et commencer à construire votre rythme de pratique."
+        }
       }
     },
     "final": {
@@ -1380,6 +1420,48 @@
     "resolve": "Résoudre",
     "dismiss": "Rejeter",
     "empty": "Aucun signalement."
+  },
+  "chat": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "searchConversations": "Rechercher une conversation",
+    "newConversation": "Nouvelle conversation",
+    "noSearchResults": "Aucune conversation ne correspond à cette recherche.",
+    "profileOptions": "Options",
+    "startDirect": "Nouvelle conversation privée",
+    "chooseFriend": "Choisir un ami",
+    "groupName": "Nom du groupe",
+    "addGroupMember": "Ajouter un ami au groupe",
+    "membersSelected": "membre(s) sélectionné(s)",
+    "removeSelected": "Retirer {{name}} de la sélection",
+    "createGroup": "Créer un groupe",
+    "group": "Groupe",
+    "conversation": "Conversation",
+    "empty": "Aucune conversation pour le moment.",
+    "photo": "Photo",
+    "noMessages": "Démarrer la conversation",
+    "loadOlder": "Charger les messages précédents",
+    "backToConversations": "Retour aux conversations",
+    "nickname": "Votre pseudo dans cette conversation",
+    "nicknameSaved": "Pseudo enregistré.",
+    "selectConversation": "Choisissez une conversation ou démarrez-en une nouvelle.",
+    "addPhoto": "Ajouter une photo",
+    "addEmoji": "Ajouter un emoji",
+    "insertEmoji": "Insérer l’emoji {{emoji}}",
+    "writeMessage": "Écrire un message…",
+    "send": "Envoyer",
+    "notificationPreference": "Nouveaux messages",
+    "notificationMessage": "{{actor}} vous a envoyé un message.",
+    "viewMessages": "Voir les messages",
+    "add": "Ajouter",
+    "groupMembers": "Membres du groupe",
+    "admin": "administrateur",
+    "promote": "Promouvoir {{name}} administrateur",
+    "demote": "Rétrograder {{name}} en membre",
+    "removeMember": "Retirer {{name}} du groupe",
+    "leaveGroup": "Quitter le groupe",
+    "confirmRemove": "Retirer {{name}} de ce groupe ?",
+    "confirmLeave": "Quitter ce groupe ?"
   },
   "circleHarmony": {
     "major": "Accords majeurs",
