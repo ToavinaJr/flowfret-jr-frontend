@@ -25,6 +25,8 @@ import { FRIENDSHIP_STATUS } from "@/constants/domain";
 import { fetchFriendships } from "@/services/friendsApi";
 import type { Friendship } from "@/services/friendsApi";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { EmojiPickerButton } from "@/components/chat/EmojiPickerButton";
+import { insertTextAtSelection } from "@/components/chat/insertText";
 import { PrivateChatImage } from "@/components/chat/PrivateChatImage";
 import {
   addChatGroupMembers,
@@ -44,6 +46,8 @@ import {
   type ChatMessage,
 } from "@/services/chatApi";
 
+const MESSAGE_MAX_LENGTH = 5000;
+
 export default function ChatPage() {
   const { conversationId } = useParams<{ conversationId?: string }>();
   const { t } = useTranslation();
@@ -62,6 +66,7 @@ export default function ChatPage() {
   const [nickname, setNickname] = useState("");
   const [conversationFilter, setConversationFilter] = useState("");
   const messagesEnd = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const conversations = useQuery({
     queryKey: ["chat-conversations"],
     queryFn: fetchConversations,
@@ -226,6 +231,24 @@ export default function ChatPage() {
     event.preventDefault();
     if (!body.trim() && !files.length) return;
     send.mutate();
+  };
+
+  const insertEmoji = (emoji: string) => {
+    const input = composerRef.current;
+    const selection = input
+      ? { start: input.selectionStart, end: input.selectionEnd }
+      : { start: body.length, end: body.length };
+    const result = insertTextAtSelection(
+      body,
+      emoji,
+      selection,
+      MESSAGE_MAX_LENGTH,
+    );
+    setBody(result.value);
+    window.requestAnimationFrame(() => {
+      input?.focus();
+      input?.setSelectionRange(result.caret, result.caret);
+    });
   };
 
   return (
@@ -736,22 +759,6 @@ export default function ChatPage() {
                     </button>
                   </div>
                 ) : null}
-                <div
-                  className="flex flex-wrap gap-1"
-                  aria-label={t("chat.addEmoji")}
-                >
-                  {["😀", "😂", "😍", "🎸", "❤️", "🔥"].map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      className="rounded p-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      aria-label={t("chat.insertEmoji", { emoji })}
-                      onClick={() => setBody((current) => `${current}${emoji}`)}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
                 <div className="flex items-end gap-2 rounded-2xl border border-border bg-muted/50 p-2 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10">
                   <label
                     className="cursor-pointer rounded-lg p-2 hover:bg-muted"
@@ -771,14 +778,16 @@ export default function ChatPage() {
                       }
                     />
                   </label>
+                  <EmojiPickerButton onSelect={insertEmoji} />
                   <label htmlFor="chat-message" className="sr-only">
                     {t("chat.writeMessage")}
                   </label>
                   <textarea
                     id="chat-message"
+                    ref={composerRef}
                     value={body}
                     onChange={(event) => setBody(event.target.value)}
-                    maxLength={5000}
+                    maxLength={MESSAGE_MAX_LENGTH}
                     rows={2}
                     placeholder={t("chat.writeMessage")}
                     className="max-h-32 min-h-11 flex-1 resize-y bg-transparent p-2 text-sm outline-none placeholder:text-muted-foreground"
@@ -786,7 +795,7 @@ export default function ChatPage() {
                   <button
                     type="submit"
                     disabled={send.isPending || (!body.trim() && !files.length)}
-                    className="rounded-lg bg-primary p-3 text-primary-foreground disabled:opacity-50"
+                    className="rounded-xl bg-primary p-3 text-primary-foreground shadow-md shadow-primary/20 transition hover:bg-primary/90 disabled:opacity-50"
                     aria-label={t("chat.send")}
                   >
                     {send.isPending ? (
