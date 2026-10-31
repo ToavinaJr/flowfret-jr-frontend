@@ -5,6 +5,7 @@ import { PROFILE_VISIBILITY, type ProfileVisibility } from "@/constants/domain";
 export interface SocialUser {
   id: string;
   username: string;
+  avatarUrl?: string | null;
   profile?: {
     id: string;
     displayName: string;
@@ -25,12 +26,12 @@ export interface UserProfile {
 export async function fetchMyProfile(
   userId: string,
 ): Promise<UserProfile | null> {
-  const fields = `id username authoredPosts { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } attachments { id upload { id storagePath } } }`;
+  const fields = `id username avatarUrl authoredPosts { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username avatarUrl profile { avatarUrl } } mentionedUsers { id username avatarUrl profile { avatarUrl } } attachments { id upload { id storagePath } } }`;
   const result = await graphqlRequest<{
     profileByUserId: UserProfile | null;
     user: UserProfile["user"] | null;
   }>({
-    query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { ${fields} } } user(id: $userId) { ${fields} } }`,
+    query: `query UserProfile($userId: String!) { profileByUserId(userId: $userId) { id userId displayName avatarUrl bio visibility user { ${fields} } } user(id: $userId) { ${fields} avatarUrl } }`,
     variables: { userId },
   });
   if (result.profileByUserId) return result.profileByUserId;

@@ -9,6 +9,7 @@ import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { formatRelative } from "./feed-format";
 import { MentionInput } from "./MentionInput";
 import { MentionText } from "./MentionText";
+import { UserAvatar } from "@/components/common/UserAvatar";
 
 interface FeedCommentItemProps {
   comment: FeedComment;
@@ -60,18 +61,12 @@ export function FeedCommentItem({
           to={`/profile/${comment.author.id}`}
           className="flex min-w-0 flex-1 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-xs font-semibold text-foreground">
-            {comment.author.profile?.avatarUrl ? (
-              <img
-                src={comment.author.profile.avatarUrl}
-                alt={`Avatar de ${comment.author.username}`}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              comment.author.username.slice(0, 2).toUpperCase()
-            )}
-          </div>
+          <UserAvatar
+            src={comment.author.avatarUrl}
+            name={comment.author.username}
+            alt={t("friends.avatarAlt", { name: comment.author.username })}
+            size="xs"
+          />
           <div className="min-w-0 flex-1">
             <div className="truncate font-medium text-foreground hover:underline">
               {comment.author.username}

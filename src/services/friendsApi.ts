@@ -13,7 +13,7 @@ export interface Friendship {
 
 export async function searchUsers(query: string): Promise<SocialUser[]> {
   const result = await graphqlRequest<{ searchUsers: SocialUser[] }>({
-    query: `query FindUsers($query: String!) { searchUsers(query: $query) { id username profile { id displayName avatarUrl bio } } }`,
+    query: `query FindUsers($query: String!) { searchUsers(query: $query) { id username avatarUrl profile { id displayName avatarUrl bio } } }`,
     variables: { query },
   });
   return result.searchUsers;
@@ -21,7 +21,7 @@ export async function searchUsers(query: string): Promise<SocialUser[]> {
 
 export async function fetchFriendships(): Promise<Friendship[]> {
   const result = await graphqlRequest<{ myFriendships: Friendship[] }>({
-    query: `query Friends { myFriendships { id requesterId receiverId status requester { id username profile { id displayName avatarUrl bio } } receiver { id username profile { id displayName avatarUrl bio } } } }`,
+    query: `query Friends { myFriendships { id requesterId receiverId status requester { id username avatarUrl profile { id displayName avatarUrl bio } } receiver { id username avatarUrl profile { id displayName avatarUrl bio } } } }`,
   });
   return result.myFriendships;
 }

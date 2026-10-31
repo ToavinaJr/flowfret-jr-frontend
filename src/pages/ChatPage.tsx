@@ -28,6 +28,7 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { EmojiPickerButton } from "@/components/chat/EmojiPickerButton";
 import { insertTextAtSelection } from "@/components/chat/insertText";
 import { PrivateChatImage } from "@/components/chat/PrivateChatImage";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import {
   addChatGroupMembers,
   connectChat,
@@ -87,6 +88,10 @@ export default function ChatPage() {
           t("chat.conversation"),
     [t, user?.id],
   );
+  const avatarFor = (conversation: ChatConversation) =>
+    conversation.type === "DIRECT"
+      ? conversation.participants.find((participant) => participant.userId !== user?.id)?.avatarUrl
+      : null;
   const messages = useQuery({
     queryKey: ["chat-messages", selectedId],
     queryFn: () => fetchMessages(selectedId!),
@@ -439,9 +444,11 @@ export default function ChatPage() {
                 onClick={() => setSelectedId(conversation.id)}
                 className={`flex w-full items-center gap-3 border-b border-border/70 px-4 py-3.5 text-left transition hover:bg-muted/70 ${selectedId === conversation.id ? "bg-primary/10 md:border-l-2 md:border-l-primary" : ""}`}
               >
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-base font-semibold text-primary" aria-hidden="true">
-                  {titleFor(conversation).slice(0, 1).toLocaleUpperCase()}
-                </span>
+                <UserAvatar
+                  src={avatarFor(conversation)}
+                  name={titleFor(conversation)}
+                  size="md"
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold">
                     {titleFor(conversation)}
@@ -477,6 +484,11 @@ export default function ChatPage() {
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
+                <UserAvatar
+                  src={avatarFor(selected)}
+                  name={titleFor(selected)}
+                  size="sm"
+                />
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate font-semibold">
                     {titleFor(selected)}

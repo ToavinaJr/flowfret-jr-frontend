@@ -8,6 +8,7 @@ import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { EditPostDialog } from "./EditPostDialog";
 import { formatRelative } from "./feed-format";
 import { ReportPostDialog } from "./ReportPostDialog";
+import { UserAvatar } from "@/components/common/UserAvatar";
 
 interface FeedCardHeaderProps {
   post: FeedPost;
@@ -32,18 +33,12 @@ export function FeedCardHeader({
           to={`/profile/${post.author.id}`}
           className="flex min-w-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-medium text-foreground">
-            {post.author.profile?.avatarUrl ? (
-              <img
-                src={post.author.profile.avatarUrl}
-                alt={t("friends.avatarAlt", { name: post.author.username })}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              post.author.username.slice(0, 2).toUpperCase()
-            )}
-          </div>
+          <UserAvatar
+            src={post.author.avatarUrl}
+            name={post.author.username}
+            alt={t("friends.avatarAlt", { name: post.author.username })}
+            size="sm"
+          />
           <div className="min-w-0">
             <div className="truncate text-sm text-foreground hover:underline">
               {post.author.username}

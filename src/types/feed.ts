@@ -1,6 +1,7 @@
 export interface FeedAuthor {
   id: string;
   username: string;
+  avatarUrl?: string | null;
   profile?: { avatarUrl: string | null } | null;
 }
 

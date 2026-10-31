@@ -6,7 +6,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Bell, MessageCircle, Users } from "lucide-react";
+import { useState } from "react";
+import { Bell, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { ACTIVITY_ACTION, NOTIFICATION_KIND } from "@/constants/domain";
@@ -20,6 +21,8 @@ import {
 } from "@/services/api";
 import { Switch } from "@/components/ui/switch";
 import { NotificationsSkeleton } from "@/components/skeletons/NotificationsSkeleton";
+import { UserAvatar } from "@/components/common/UserAvatar";
+import { getNotificationDestination } from "@/utils/notificationDestination";
 
 type ConfigurableKind = Exclude<
   NotificationKind,
@@ -112,6 +115,7 @@ function message(
 export default function NotificationsPage() {
   const { t } = useTranslation();
   const client = useQueryClient();
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
   const notifications = useInfiniteQuery({
     queryKey: ["notifications"],
     queryFn: ({ pageParam }) =>
@@ -125,6 +129,7 @@ export default function NotificationsPage() {
   const preferences = useQuery({
     queryKey: ["notification-preferences"],
     queryFn: fetchNotificationPreferences,
+    enabled: preferencesOpen,
   });
   const read = useMutation({
     mutationFn: markNotificationRead,
@@ -144,7 +149,7 @@ export default function NotificationsPage() {
     },
     onError: () => toast.error(t("notifications.preferenceError")),
   });
-  if (notifications.isLoading || preferences.isLoading)
+  if (notifications.isLoading)
     return (
       <div className={PAGE_SHELL}>
         <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
@@ -158,8 +163,20 @@ export default function NotificationsPage() {
   const rows = notifications.data?.pages.flat() ?? [];
   return (
     <div className={PAGE_SHELL}>
-      <h1 className={PAGE_TITLE}>{t("notifications.title")}</h1>
-      {notifications.isError || preferences.isError ? (
+      <header className="mb-4 flex items-center justify-between gap-3">
+        <h1 className={`${PAGE_TITLE} mb-0`}>{t("notifications.title")}</h1>
+        <button
+          type="button"
+          aria-label={t(preferencesOpen ? "notifications.closePreferences" : "notifications.openPreferences")}
+          aria-expanded={preferencesOpen}
+          aria-controls="notification-preferences"
+          onClick={() => setPreferencesOpen((open) => !open)}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <Settings className="h-5 w-5" aria-hidden="true" />
+        </button>
+      </header>
+      {notifications.isError ? (
         <p
           role="alert"
           className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
@@ -167,30 +184,6 @@ export default function NotificationsPage() {
           {t("notifications.loadError")}
         </p>
       ) : null}
-      <section className="mb-7 rounded-xl border bg-card p-4">
-        <h2 className="mb-4 font-semibold">
-          {t("notifications.preferencesTitle")}
-        </h2>
-        <div className="space-y-4">
-          {types.map((type) => (
-            <label
-              key={type}
-              htmlFor={`notification-${type.toLowerCase()}`}
-              className="flex items-center justify-between gap-4 text-sm"
-            >
-              <span>{t(preferenceLabels[type])}</span>
-              <Switch
-                id={`notification-${type.toLowerCase()}`}
-                checked={configured.get(type) ?? true}
-                disabled={updatePreference.isPending}
-                onCheckedChange={(enabled) =>
-                  updatePreference.mutate({ type, enabled })
-                }
-              />
-            </label>
-          ))}
-        </div>
-      </section>
       <section>
         <h2 className="mb-3 font-semibold">
           {t("notifications.recentActivity")}
@@ -200,13 +193,8 @@ export default function NotificationsPage() {
             const teachingNotification = row.type.startsWith("TEACHING_");
             const chatNotification =
               row.type === NOTIFICATION_KIND.CHAT_MESSAGE;
-            const destination = chatNotification
-              ? `/messages/${row.payload.conversationId || ""}`
-              : teachingNotification
-                ? "/teaching"
-                : row.payload.postId
-                  ? `/post/${row.payload.postId}`
-                  : `/profile/${row.payload.actorId}`;
+            const friendRequest = row.type === NOTIFICATION_KIND.FRIEND_REQUEST;
+            const destination = getNotificationDestination(row);
             return (
               <Link
                 key={row.id}
@@ -216,22 +204,11 @@ export default function NotificationsPage() {
                 }}
                 className={`flex gap-3 rounded-lg border p-4 transition-colors hover:border-primary/30 ${row.readAt ? "bg-card" : "border-primary/25 bg-primary/5"}`}
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-xs font-semibold">
-                  {row.payload.actorAvatarUrl ? (
-                    <img
-                      src={row.payload.actorAvatarUrl}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    row.payload.actorUsername?.slice(0, 2).toUpperCase() ||
-                    (row.type === NOTIFICATION_KIND.FRIEND_POST ? (
-                      <Users className="h-5 w-5" />
-                    ) : (
-                      <MessageCircle className="h-5 w-5" />
-                    ))
-                  )}
-                </div>
+                <UserAvatar
+                  src={row.actorAvatarUrl}
+                  name={row.actor?.username ?? row.payload.actorUsername ?? ""}
+                  size="sm"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm">{message(row, t)}</p>
                   <span className="mt-2 block text-xs text-primary">
@@ -241,7 +218,9 @@ export default function NotificationsPage() {
                         ? t("notifications.viewCourses")
                         : chatNotification
                           ? t("chat.viewMessages")
-                          : t("notifications.viewProfile")}
+                          : friendRequest
+                            ? t("notifications.viewFriendRequest")
+                            : t("notifications.viewProfile")}
                   </span>
                 </div>
               </Link>
@@ -267,6 +246,45 @@ export default function NotificationsPage() {
           </div>
         )}
       </section>
+      {preferencesOpen ? (
+        <section
+          id="notification-preferences"
+          className="mt-7 rounded-xl border bg-card p-4"
+        >
+          <h2 className="mb-4 font-semibold">
+            {t("notifications.preferencesTitle")}
+          </h2>
+          {preferences.isLoading ? (
+            <p role="status" className="text-sm text-muted-foreground">
+              {t("notifications.preferencesLoading")}
+            </p>
+          ) : preferences.isError ? (
+            <p role="alert" className="text-sm text-destructive">
+              {t("notifications.preferencesLoadError")}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {types.map((type) => (
+                <label
+                  key={type}
+                  htmlFor={`notification-${type.toLowerCase()}`}
+                  className="flex items-center justify-between gap-4 text-sm"
+                >
+                  <span>{t(preferenceLabels[type])}</span>
+                  <Switch
+                    id={`notification-${type.toLowerCase()}`}
+                    checked={configured.get(type) ?? true}
+                    disabled={updatePreference.isPending}
+                    onCheckedChange={(enabled) =>
+                      updatePreference.mutate({ type, enabled })
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

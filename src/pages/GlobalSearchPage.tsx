@@ -12,6 +12,7 @@ import { FeedCard } from "@/components/feed/FeedCard";
 import { MusicTrackCard } from "@/components/features/music/MusicTrackCard";
 import { toMusicPlaybackItem } from "@/components/features/music/music-playback";
 import type { SocialUser } from "@/services/profileApi";
+import { UserAvatar } from "@/components/common/UserAvatar";
 
 const MUSIC_PAGE_SIZE = 10;
 
@@ -34,7 +35,7 @@ export default function GlobalSearchPage() {
           {posts.data?.map((post) => <FeedCard key={post.id} post={post} onComment={comment} currentUserId={user?.id ?? ""} onToggleLike={toggleLike} onChanged={refresh} />)}
         </SearchSection>
         <SearchSection icon={<Users className="h-4 w-4" />} title={t("feed.searchMembers")} loading={members.isLoading} error={members.isError} empty={!members.isLoading && !members.isError && !members.data?.length}>
-          <ul className="grid gap-2 sm:grid-cols-2">{members.data?.map((person: SocialUser) => <li key={person.id}><Link to={`/profile/${person.id}`} className="flex min-h-14 items-center gap-3 rounded-lg border border-border p-3 hover:bg-secondary"><span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-sm font-semibold">{person.profile?.avatarUrl ? <img src={person.profile.avatarUrl} alt="" className="h-full w-full object-cover" /> : person.username.slice(0, 2).toUpperCase()}</span><span className="min-w-0"><span className="block truncate font-medium">{person.profile?.displayName || person.username}</span><span className="block truncate text-sm text-muted-foreground">@{person.username}</span></span></Link></li>)}</ul>
+          <ul className="grid gap-2 sm:grid-cols-2">{members.data?.map((person: SocialUser) => <li key={person.id}><Link to={`/profile/${person.id}`} className="flex min-h-14 items-center gap-3 rounded-lg border border-border p-3 hover:bg-secondary"><UserAvatar src={person.avatarUrl} name={person.profile?.displayName || person.username} size="xs" /><span className="min-w-0"><span className="block truncate font-medium">{person.profile?.displayName || person.username}</span><span className="block truncate text-sm text-muted-foreground">@{person.username}</span></span></Link></li>)}</ul>
         </SearchSection>
         <SearchSection icon={<Music2 className="h-4 w-4" />} title={t("feed.searchMusic")} loading={music.isLoading} error={music.isError} empty={!music.isLoading && !music.isError && tracks.length === 0}>
           <ul className="space-y-3">{tracks.map((track, index) => <li key={`${track.provider}:${track.providerTrackId}`}><MusicTrackCard track={track} playbackQueue={musicQueue} queueIndex={index} /></li>)}</ul>

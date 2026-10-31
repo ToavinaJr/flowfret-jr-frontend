@@ -273,11 +273,16 @@
       "lessonCompleted": "The session for “{{course}}” is complete.",
       "lessonReminder": "Your session for “{{course}}” starts in {{hours}} h."
     },
+    "openPreferences": "Open notification settings",
+    "closePreferences": "Close notification settings",
+    "preferencesLoading": "Loading notification settingsâ€¦",
+    "preferencesLoadError": "Unable to load notification settings.",
     "preferenceUpdated": "Preference updated.",
     "preferenceError": "Unable to update this preference.",
     "loadError": "Unable to load notifications. Please try again shortly.",
     "viewPost": "View post",
     "viewProfile": "View profile",
+    "viewFriendRequest": "View friend request",
     "viewCourses": "View courses",
     "empty": "No notifications yet."
   },

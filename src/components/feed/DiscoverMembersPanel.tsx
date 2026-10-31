@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { searchUsers, sendFriendRequest } from "@/services/friendsApi";
 import type { SocialUser } from "@/services/profileApi";
 import { PersonListSkeleton } from "@/components/skeletons/PersonListSkeleton";
+import { UserAvatar } from "@/components/common/UserAvatar";
 
 const DISCOVERY_LIMIT = 4;
 
@@ -54,9 +55,7 @@ export function DiscoverMembersPanel() {
             return (
               <li key={person.id} className="flex min-w-0 items-center gap-2">
                 <Link to={`/profile/${person.id}`} className="flex min-w-0 flex-1 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-secondary text-xs font-semibold text-foreground">
-                    {person.profile?.avatarUrl ? <img src={person.profile.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover" /> : person.username.slice(0, 2).toUpperCase()}
-                  </span>
+                  <UserAvatar src={person.avatarUrl} name={name} size="sm" />
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium text-foreground">{name}</span>
                     <span className="block truncate text-xs text-muted-foreground">@{person.username}</span>

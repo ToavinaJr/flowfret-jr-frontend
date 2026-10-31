@@ -277,7 +277,12 @@
     "preferenceError": "Impossible de modifier cette préférence.",
     "loadError": "Impossible de charger les notifications. Réessayez dans quelques instants.",
     "viewPost": "Voir la publication",
+    "openPreferences": "Ouvrir les paramètres des notifications",
+    "closePreferences": "Fermer les paramètres des notifications",
+    "preferencesLoading": "Chargement des paramètres des notifications…",
+    "preferencesLoadError": "Impossible de charger les paramètres des notifications.",
     "viewProfile": "Voir le profil",
+    "viewFriendRequest": "Voir la demande d’amitié",
     "viewCourses": "Voir les cours",
     "empty": "Aucune notification pour le moment."
   },

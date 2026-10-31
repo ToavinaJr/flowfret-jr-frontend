@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   keepPreviousData,
@@ -34,6 +35,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 export default function FriendsPage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const client = useQueryClient();
   const [query, setQuery] = useState("");
@@ -61,6 +63,25 @@ export default function FriendsPage() {
   });
   const searchPending =
     normalizedQuery !== debouncedQuery || results.isFetching;
+  const requestId = searchParams.get("request");
+  const requesterId = searchParams.get("requester");
+  const incomingTarget = (friendships.data ?? []).find(
+    (row) =>
+      row.status === FRIENDSHIP_STATUS.PENDING &&
+      row.receiverId === user?.id &&
+      ((requestId && row.id === requestId) ||
+        (!requestId && requesterId && row.requesterId === requesterId)),
+  );
+
+  useEffect(() => {
+    if (!incomingTarget) return;
+    const timeout = window.setTimeout(() => {
+      document
+        .getElementById(`friend-request-${incomingTarget.id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [incomingTarget]);
   const refresh = () => client.invalidateQueries({ queryKey: ["friendships"] });
   const add = useMutation({
     mutationFn: sendFriendRequest,
@@ -179,10 +200,12 @@ export default function FriendsPage() {
       {(incoming.length > 0 || outgoing.length > 0) && (
         <section className="mb-8">
           <h2 className="mb-3 font-semibold">{t("friends.pendingRequests")}</h2>
-          <div className="space-y-3">
+          <div id="pending-requests" className="space-y-3 scroll-mt-24">
             {incoming.map((row) => (
               <PersonCard
                 key={row.id}
+                id={`friend-request-${row.id}`}
+                highlighted={incomingTarget?.id === row.id}
                 person={row.requester}
                 action={
                   <div className="flex gap-1">

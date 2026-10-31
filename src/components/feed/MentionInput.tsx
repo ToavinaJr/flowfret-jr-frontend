@@ -6,6 +6,7 @@ import { fetchFriendships } from "@/services/friendsApi";
 import type { SocialUser } from "@/services/profileApi";
 import { activeMentionAt } from "@/utils/mentions";
 import { FRIENDSHIP_STATUS } from "@/constants/domain";
+import { UserAvatar } from "@/components/common/UserAvatar";
 
 interface MentionInputProps {
   id?: string;
@@ -140,17 +141,11 @@ export function MentionInput({
                 onClick={() => select(friend)}
                 className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm ${index === highlighted ? "bg-secondary" : "hover:bg-secondary"}`}
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary font-semibold">
-                  {friend.profile?.avatarUrl ? (
-                    <img
-                      src={friend.profile.avatarUrl}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    friend.username.slice(0, 2).toUpperCase()
-                  )}
-                </span>
+                <UserAvatar
+                  src={friend.avatarUrl}
+                  name={friend.profile?.displayName ?? friend.username}
+                  size="xs"
+                />
                 <span className="min-w-0">
                   <span className="block truncate font-medium">
                     {friend.profile?.displayName ?? friend.username}

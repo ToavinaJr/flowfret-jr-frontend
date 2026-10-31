@@ -3,7 +3,7 @@ import { graphqlRequest } from "@/services/graphqlClient";
 
 export async function fetchFeedPosts(after?: string, take = 20, query?: string): Promise<FeedPost[]> {
   const normalizedQuery = query?.trim();
-  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!, $query: String) { posts(after: $after, take: $take, query: $query) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), ...(normalizedQuery ? { query: normalizedQuery } : {}), take } });
+  const result = await graphqlRequest<{ posts: FeedPost[] }>({ query: `query GetFeedPosts($after: String, $take: Int!, $query: String) { posts(after: $after, take: $take, query: $query) { id content likeCount commentCount viewerHasLiked viewerLikeId createdAt author { id username avatarUrl profile { avatarUrl } } mentionedUsers { id username avatarUrl profile { avatarUrl } } attachments { id upload { id storagePath } } } }`, variables: { ...(after ? { after } : {}), ...(normalizedQuery ? { query: normalizedQuery } : {}), take } });
   return result.posts;
 }
 
@@ -18,8 +18,8 @@ export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
         viewerHasLiked
         viewerLikeId
         createdAt
-        author { id username profile { avatarUrl } }
-        mentionedUsers { id username profile { avatarUrl } }
+        author { id username avatarUrl profile { avatarUrl } }
+        mentionedUsers { id username avatarUrl profile { avatarUrl } }
         attachments { id upload { id storagePath } }
       }
     }`,
@@ -29,17 +29,17 @@ export async function fetchFeedPost(id: string): Promise<FeedPost | null> {
 }
 
 export async function createFeedPost(data: CreatePostInput): Promise<FeedPost> {
-  const result = await graphqlRequest<{ createPost: FeedPost }>({ query: `mutation CreateFeedPost($data: CreatePostInput!) { createPost(data: $data) { id content likeCount commentCount createdAt author { id username profile { avatarUrl } } comments { id content createdAt author { id username } } } }`, variables: { data } });
+  const result = await graphqlRequest<{ createPost: FeedPost }>({ query: `mutation CreateFeedPost($data: CreatePostInput!) { createPost(data: $data) { id content likeCount commentCount createdAt author { id username avatarUrl profile { avatarUrl } } comments { id content createdAt author { id username avatarUrl profile { avatarUrl } } } } }`, variables: { data } });
   return result.createPost;
 }
 
 export async function createFeedComment(data: CreateCommentInput): Promise<FeedComment> {
-  const result = await graphqlRequest<{ createComment: FeedComment }>({ query: `mutation CreateComment($data: CreateCommentInput!) { createComment(data: $data) { id content createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } } }`, variables: { data } });
+  const result = await graphqlRequest<{ createComment: FeedComment }>({ query: `mutation CreateComment($data: CreateCommentInput!) { createComment(data: $data) { id content createdAt author { id username avatarUrl profile { avatarUrl } } mentionedUsers { id username avatarUrl profile { avatarUrl } } } }`, variables: { data } });
   return result.createComment;
 }
 
 export async function fetchPostComments(postId: string, skip = 0, take = 20): Promise<FeedComment[]> {
-  const result = await graphqlRequest<{ commentsByPost: FeedComment[] }>({ query: `query PostComments($postId: String!, $skip: Int!, $take: Int!) { commentsByPost(postId: $postId, skip: $skip, take: $take) { id content createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } } }`, variables: { postId, skip, take } });
+  const result = await graphqlRequest<{ commentsByPost: FeedComment[] }>({ query: `query PostComments($postId: String!, $skip: Int!, $take: Int!) { commentsByPost(postId: $postId, skip: $skip, take: $take) { id content createdAt author { id username avatarUrl profile { avatarUrl } } mentionedUsers { id username avatarUrl profile { avatarUrl } } } }`, variables: { postId, skip, take } });
   return result.commentsByPost;
 }
 
@@ -63,7 +63,7 @@ export async function deleteFeedPost(id: string): Promise<void> {
 
 export async function updateFeedComment(id: string, content: string): Promise<FeedComment> {
   if (!id || !content.trim()) throw new Error("Commentaire invalide.");
-  const result = await graphqlRequest<{ updateComment: FeedComment }>({ query: `mutation UpdateFeedComment($id: String!, $data: UpdateCommentInput!) { updateComment(id: $id, data: $data) { id content createdAt author { id username profile { avatarUrl } } mentionedUsers { id username profile { avatarUrl } } } }`, variables: { id, data: { content: content.trim() } } });
+  const result = await graphqlRequest<{ updateComment: FeedComment }>({ query: `mutation UpdateFeedComment($id: String!, $data: UpdateCommentInput!) { updateComment(id: $id, data: $data) { id content createdAt author { id username avatarUrl profile { avatarUrl } } mentionedUsers { id username avatarUrl profile { avatarUrl } } } }`, variables: { id, data: { content: content.trim() } } });
   return result.updateComment;
 }
 

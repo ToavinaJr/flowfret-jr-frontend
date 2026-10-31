@@ -5,6 +5,8 @@ export type { NotificationKind } from "@/constants/domain";
 export interface AppNotification {
   id: string;
   type: NotificationKind;
+  actor?: { id: string; username: string; avatarUrl: string | null } | null;
+  actorAvatarUrl?: string | null;
   payload: {
     actorId?: string;
     actorUsername?: string;
@@ -24,6 +26,7 @@ export interface AppNotification {
     minutesBefore?: number;
     conversationId?: string;
     messageId?: string;
+    friendshipId?: string;
   };
   readAt: string | null;
   createdAt: string;
@@ -38,7 +41,7 @@ export async function fetchNotifications(
   after?: string,
 ): Promise<AppNotification[]> {
   const result = await graphqlRequest<{ myNotifications: AppNotification[] }>({
-    query: `query Notifications($after: String) { myNotifications(take: 25, after: $after) { id type payload readAt createdAt } }`,
+    query: `query Notifications($after: String) { myNotifications(take: 25, after: $after) { id type payload actorAvatarUrl actor { id username } readAt createdAt } }`,
     variables: after ? { after } : {},
   });
   return result.myNotifications;

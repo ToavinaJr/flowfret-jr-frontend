@@ -7,6 +7,7 @@ export interface ChatParticipant {
   id: string;
   userId: string;
   username: string;
+  avatarUrl: string | null;
   nickname: string | null;
   role: "ADMIN" | "MEMBER";
   lastReadAt: string | null;
@@ -38,7 +39,7 @@ export interface ChatConversation {
 
 export const fetchConversations = () =>
   graphqlRequest<{ myConversations: ChatConversation[] }>({
-    query: `query MyConversations { myConversations { id type name updatedAt unreadCount participants { id userId username nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
+    query: `query MyConversations { myConversations { id type name updatedAt unreadCount participants { id userId username avatarUrl nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
   }).then((data) => data.myConversations);
 export const fetchMessages = (conversationId: string, before?: string) =>
   graphqlRequest<{ conversationMessages: ChatMessage[] }>({
@@ -47,12 +48,12 @@ export const fetchMessages = (conversationId: string, before?: string) =>
   }).then((data) => data.conversationMessages);
 export const createDirectChat = (friendId: string) =>
   graphqlRequest<{ createDirectConversation: ChatConversation }>({
-    query: `mutation CreateDirectConversation($friendId: String!) { createDirectConversation(friendId: $friendId) { id type name updatedAt unreadCount participants { id userId username nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
+    query: `mutation CreateDirectConversation($friendId: String!) { createDirectConversation(friendId: $friendId) { id type name updatedAt unreadCount participants { id userId username avatarUrl nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
     variables: { friendId },
   }).then((data) => data.createDirectConversation);
 export const createGroupChat = (name: string, memberIds: string[]) =>
   graphqlRequest<{ createGroupConversation: ChatConversation }>({
-    query: `mutation CreateGroupConversation($name: String!, $memberIds: [String!]!) { createGroupConversation(name: $name, memberIds: $memberIds) { id type name updatedAt unreadCount participants { id userId username nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
+    query: `mutation CreateGroupConversation($name: String!, $memberIds: [String!]!) { createGroupConversation(name: $name, memberIds: $memberIds) { id type name updatedAt unreadCount participants { id userId username avatarUrl nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } } } }`,
     variables: { name, memberIds },
   }).then((data) => data.createGroupConversation);
 export const sendMessage = (
@@ -74,7 +75,7 @@ export const setChatNickname = (conversationId: string, nickname: string) =>
     query: `mutation SetChatNickname($conversationId: String!, $nickname: String) { setChatNickname(conversationId: $conversationId, nickname: $nickname) }`,
     variables: { conversationId, nickname: nickname || null },
   });
-const conversationSelection = `id type name updatedAt unreadCount participants { id userId username nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } }`;
+const conversationSelection = `id type name updatedAt unreadCount participants { id userId username avatarUrl nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } }`;
 export const renameChatGroup = (conversationId: string, name: string) =>
   graphqlRequest<{ renameChatGroup: ChatConversation }>({
     query: `mutation RenameChatGroup($conversationId: String!, $name: String!) { renameChatGroup(conversationId: $conversationId, name: $name) { ${conversationSelection} } }`,
