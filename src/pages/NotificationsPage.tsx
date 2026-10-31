@@ -51,7 +51,6 @@ const preferenceLabels: Record<ConfigurableKind, string> = {
     "notifications.preference.lessonUpdates",
   [NOTIFICATION_KIND.TEACHING_LESSON_REMINDER]:
     "notifications.preference.lessonReminders",
-  [NOTIFICATION_KIND.CHAT_MESSAGE]: "chat.notificationPreference",
 };
 
 function message(
@@ -102,8 +101,6 @@ function message(
       course: row.payload.courseTitle || "",
       hours: Number(row.payload.minutesBefore) === 1440 ? 24 : 1,
     });
-  if (row.type === NOTIFICATION_KIND.CHAT_MESSAGE)
-    return t("chat.notificationMessage", { actor });
   const owner = row.payload.postAuthorUsername
     ? t("notifications.postOwner", { owner: row.payload.postAuthorUsername })
     : "";
@@ -191,8 +188,6 @@ export default function NotificationsPage() {
         <div className="space-y-2">
           {rows.map((row) => {
             const teachingNotification = row.type.startsWith("TEACHING_");
-            const chatNotification =
-              row.type === NOTIFICATION_KIND.CHAT_MESSAGE;
             const friendRequest = row.type === NOTIFICATION_KIND.FRIEND_REQUEST;
             const destination = getNotificationDestination(row);
             return (
@@ -216,11 +211,9 @@ export default function NotificationsPage() {
                       ? t("notifications.viewPost")
                       : teachingNotification
                         ? t("notifications.viewCourses")
-                        : chatNotification
-                          ? t("chat.viewMessages")
-                          : friendRequest
-                            ? t("notifications.viewFriendRequest")
-                            : t("notifications.viewProfile")}
+                        : friendRequest
+                          ? t("notifications.viewFriendRequest")
+                          : t("notifications.viewProfile")}
                   </span>
                 </div>
               </Link>
