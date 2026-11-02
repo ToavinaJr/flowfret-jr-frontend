@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useCapo } from "@/contexts/CapoContext";
+import { useCapo } from "@/contexts/useCapo";
 
 export function CapoSelect({
   namespace,

@@ -12,7 +12,7 @@ import {
 } from "@/utils/chords";
 import { playStringNote, strumChord } from "@/utils/stringSound";
 import { useTranslation } from "react-i18next";
-import { useCapo } from "@/contexts/CapoContext";
+import { useCapo } from "@/contexts/useCapo";
 import { CapoSelect } from "@/components/features/chords/CapoSelect";
 import { getChordRoot, transposeChordLabel } from "@/utils/chordTransposition";
 

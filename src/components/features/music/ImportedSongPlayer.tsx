@@ -5,7 +5,7 @@ import type { PlaybackItem } from "@/contexts/playback-context";
 import type { ImportedSong } from "@/types/song";
 import { getDisplayChordShape } from "@/utils/chordShape";
 import { getCueIndexAtTime } from "@/utils/songCues";
-import { useCapo } from "@/contexts/CapoContext";
+import { useCapo } from "@/contexts/useCapo";
 import { CapoSelect } from "@/components/features/chords/CapoSelect";
 import { useTranslation } from "react-i18next";
 

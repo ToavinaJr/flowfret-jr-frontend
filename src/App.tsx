@@ -8,12 +8,14 @@ import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { CapoProvider } from "@/contexts/CapoContext";
-import PersistentMediaPlayer from "@/components/PersistentMediaPlayer";
 import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import AppLayout from "@/components/AppLayout";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
+const PersistentMediaPlayer = lazy(
+  () => import("@/components/PersistentMediaPlayer"),
+);
 const GlobalSearchPage = lazy(() => import("@/pages/GlobalSearchPage"));
 const TunerPage = lazy(() => import("@/pages/TunerPage"));
 const ChordsPage = lazy(() => import("@/pages/ChordsPage"));
@@ -167,7 +169,9 @@ const App = () => {
                       </Routes>
                     </Suspense>
                   </AuthGate>
-                  <PersistentMediaPlayer />
+                  <Suspense fallback={null}>
+                    <PersistentMediaPlayer />
+                  </Suspense>
                 </PlaybackProvider>
               </CapoProvider>
             </BrowserRouter>

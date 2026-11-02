@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { AdminConnection, AdminListInput } from "@/types/admin";
 import AdminListPage, { type AdminColumn, type AdminFilter } from "./AdminListPage";
 
 interface Row {
@@ -21,7 +22,9 @@ const filters: AdminFilter[] = [
   },
 ];
 
-function renderList(fetchPage: ReturnType<typeof vi.fn>, extraProps: Record<string, unknown> = {}) {
+type FetchPage = (input: AdminListInput) => Promise<AdminConnection<Row>>;
+
+function renderList(fetchPage: FetchPage, extraProps: Record<string, unknown> = {}) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -52,7 +55,7 @@ describe("AdminListPage", () => {
   });
 
   it("renders rows returned by fetchPage", async () => {
-    const fetchPage = vi.fn().mockResolvedValue({
+    const fetchPage = vi.fn<FetchPage>().mockResolvedValue({
       nodes: [{ id: "1", name: "Ada Lovelace" }],
       totalCount: 1,
       pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },
@@ -65,7 +68,7 @@ describe("AdminListPage", () => {
   });
 
   it("debounces the free-text search before calling fetchPage", async () => {
-    const fetchPage = vi.fn().mockResolvedValue({
+    const fetchPage = vi.fn<FetchPage>().mockResolvedValue({
       nodes: [],
       totalCount: 0,
       pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },
@@ -87,7 +90,7 @@ describe("AdminListPage", () => {
   });
 
   it("applies a select filter immediately and shows a removable chip", async () => {
-    const fetchPage = vi.fn().mockResolvedValue({
+    const fetchPage = vi.fn<FetchPage>().mockResolvedValue({
       nodes: [],
       totalCount: 0,
       pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },
@@ -115,7 +118,7 @@ describe("AdminListPage", () => {
   });
 
   it("passes the selected sort direction to fetchPage", async () => {
-    const fetchPage = vi.fn().mockResolvedValue({
+    const fetchPage = vi.fn<FetchPage>().mockResolvedValue({
       nodes: [],
       totalCount: 0,
       pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },
@@ -134,7 +137,7 @@ describe("AdminListPage", () => {
   });
 
   it("hides the sort control when showSort is false", async () => {
-    const fetchPage = vi.fn().mockResolvedValue({
+    const fetchPage = vi.fn<FetchPage>().mockResolvedValue({
       nodes: [],
       totalCount: 0,
       pageInfo: { hasNextPage: false, hasPreviousPage: false, endCursor: null },

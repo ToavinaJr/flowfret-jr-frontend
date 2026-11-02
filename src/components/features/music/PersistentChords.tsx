@@ -5,7 +5,7 @@ import { useChordAnalysis } from "@/hooks/useChordAnalysis";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
 import { getDisplayChordShape } from "@/utils/chordShape";
 import { getCueIndexAtTime } from "@/utils/songCues";
-import { useCapo } from "@/contexts/CapoContext";
+import { useCapo } from "@/contexts/useCapo";
 import { CapoSelect } from "@/components/features/chords/CapoSelect";
 import { transposeChordLabel } from "@/utils/chordTransposition";
 

@@ -14,6 +14,7 @@ function transposeNote(note: string, semitones: number): string | undefined {
 /** Returns the chord shape that sounds as `label` with a capo at `capo`. */
 export function transposeChordLabel(label: string, capo: number): string {
   if (!Number.isInteger(capo) || capo < 0 || capo > 12) return label;
+  if (capo === 0) return label;
   const match = /^([A-G](?:#|b)?)(.*?)(?:\/([A-G](?:#|b)?))?$/.exec(label);
   if (!match) return label;
   const root = transposeNote(match[1], -capo);

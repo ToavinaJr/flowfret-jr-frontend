@@ -1,8 +1,7 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import { CapoContext, type CapoContextValue } from "./capo-context";
 
 const STORAGE_KEY = "flowfret.capo-fret.v1";
-interface CapoContextValue { capo: number; setCapo: (capo: number) => void }
-const CapoContext = createContext<CapoContextValue | null>(null);
 
 function readSavedCapo(): number {
   try {
@@ -24,8 +23,3 @@ export function CapoProvider({ children }: { children: ReactNode }) {
   return <CapoContext.Provider value={value}>{children}</CapoContext.Provider>;
 }
 
-export function useCapo(): CapoContextValue {
-  const context = useContext(CapoContext);
-  if (!context) throw new Error("useCapo must be used within CapoProvider");
-  return context;
-}

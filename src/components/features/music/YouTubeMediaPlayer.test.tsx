@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { MusicTrack } from "@/types/music";
 import { YouTubeMediaPlayer } from "./YouTubeMediaPlayer";
 
+vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: null }) }));
+
 const playback = vi.hoisted(() => ({ toggle: vi.fn(), setQueue: vi.fn() }));
 vi.mock("@/contexts/usePlayback", () => ({
   usePlayback: () => ({
