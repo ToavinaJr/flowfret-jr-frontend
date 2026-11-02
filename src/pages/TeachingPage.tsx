@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BookOpen, Download, GraduationCap, Plus, Trash2 } from "lucide-react";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { TeachingWorkspaceSkeleton } from "@/components/skeletons/TeachingWorkspaceSkeleton";
 import { AdminResourceTabs } from "@/admin/AdminResourceTabs";
+import { useTeachingWorkspaceData } from "@/hooks/useTeachingWorkspaceData";
 
 const TEACHING_VIEWS = [
   { value: "courses", labelKey: "teaching.views.courses" },
@@ -24,9 +25,6 @@ import {
   cancelTeachingLesson,
   completeTeachingLesson,
   createTeachingCourse,
-  fetchTeachingLessons,
-  fetchTeachingMaterialsForCourses,
-  fetchTeachingWorkspace,
   markTeachingLessonAttendance,
   requestTeachingEnrollment,
   rescheduleTeachingLesson,
@@ -36,7 +34,6 @@ import {
   saveInstructorProfile,
   updateTeachingCourse,
   uploadTeachingMaterial,
-  type InstructorProfile,
   type TeachingCourse,
   type TeachingLesson,
   type TeachingLessonInput,
@@ -54,18 +51,20 @@ export default function TeachingPage() {
   const view = TEACHING_VIEWS.some((tab) => tab.value === requestedView)
     ? requestedView!
     : "courses";
-  const [profile, setProfile] = useState<InstructorProfile | null>(null);
-  const [myCourses, setMyCourses] = useState<TeachingCourse[]>([]);
-  const [enrolled, setEnrolled] = useState<TeachingCourse[]>([]);
-  const [enrollments, setEnrollments] = useState<
-    Awaited<ReturnType<typeof fetchTeachingWorkspace>>["myTeachingEnrollments"]
-  >([]);
-  const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
-  const [lessons, setLessons] = useState<TeachingLesson[]>([]);
-  const [materials, setMaterials] = useState<
-    Record<string, TeachingMaterial[]>
-  >({});
-  const [loading, setLoading] = useState(true);
+  const {
+    profile,
+    setProfile,
+    myCourses,
+    enrolled,
+    enrollments,
+    catalog,
+    lessons,
+    materials,
+    loading,
+    lessonCourseId,
+    setLessonCourseId,
+    refresh,
+  } = useTeachingWorkspaceData();
   const [busy, setBusy] = useState(false);
   const [headline, setHeadline] = useState("");
   const [biography, setBiography] = useState("");
@@ -84,7 +83,6 @@ export default function TeachingPage() {
   );
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [repeatOccurrences, setRepeatOccurrences] = useState("4");
-  const [lessonCourseId, setLessonCourseId] = useState("");
   const [lessonStartsAt, setLessonStartsAt] = useState(() =>
     toLocalInputValue(new Date(Date.now() + 60 * 60 * 1000)),
   );
@@ -94,66 +92,11 @@ export default function TeachingPage() {
   const [lessonLocation, setLessonLocation] = useState("");
   const [lessonMeetingUrl, setLessonMeetingUrl] = useState("");
 
-  const refresh = useCallback(async () => {
-    const data = await fetchTeachingWorkspace();
-    const from = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
-    const to = new Date(from.getTime() + 45 * 24 * 60 * 60 * 1000);
-    const calendar = await fetchTeachingLessons(
-      from.toISOString(),
-      to.toISOString(),
-    );
-    const activeStudentCourses = data.myEnrolledTeachingCourses.filter(
-      (course) =>
-        data.myTeachingEnrollments.some(
-          (enrollment) =>
-            enrollment.courseId === course.id && enrollment.status === "ACTIVE",
-        ),
-    );
-    const coursesForMaterials = [
-      ...new Map(
-        [...data.myTeachingCourses, ...activeStudentCourses].map((course) => [
-          course.id,
-          course,
-        ]),
-      ).values(),
-    ];
-    const courseMaterials = await fetchTeachingMaterialsForCourses(
-      coursesForMaterials.map((course) => course.id),
-    );
-    const materialMap: Record<string, TeachingMaterial[]> = {};
-    for (const course of coursesForMaterials)
-      materialMap[course.id] = courseMaterials.filter(
-        (material) => material.courseId === course.id,
-      );
-    setProfile(data.myInstructorProfile);
-    setMyCourses(data.myTeachingCourses);
-    setEnrolled(data.myEnrolledTeachingCourses);
-    setEnrollments(data.myTeachingEnrollments);
-    setCatalog(data.publishedTeachingCourses);
-    setLessons(calendar);
-    setMaterials(materialMap);
-    if (!lessonCourseId) {
-      const firstPublished = data.myTeachingCourses.find(
-        (course) => course.status === "PUBLISHED",
-      );
-      if (firstPublished) setLessonCourseId(firstPublished.id);
-    }
-    setHeadline(data.myInstructorProfile?.headline ?? "");
-    setBiography(data.myInstructorProfile?.biography ?? "");
-    setExperienceYears(String(data.myInstructorProfile?.experienceYears ?? 0));
-  }, [lessonCourseId]);
-
   useEffect(() => {
-    void refresh()
-      .catch((error: unknown) =>
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : t("teaching.feedback.loadFailed"),
-        ),
-      )
-      .finally(() => setLoading(false));
-  }, [refresh, t]);
+    setHeadline(profile?.headline ?? "");
+    setBiography(profile?.biography ?? "");
+    setExperienceYears(String(profile?.experienceYears ?? 0));
+  }, [profile]);
 
   async function saveTeacher(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
