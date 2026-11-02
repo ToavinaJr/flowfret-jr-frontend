@@ -1,4 +1,4 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Guitar, LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,7 +14,6 @@ interface AppSidebarProps {
 }
 
 const AppSidebar = ({ collapsed, onToggleCollapsed }: AppSidebarProps) => {
-  const location = useLocation();
   const { user } = useAuth();
   const { t } = useTranslation();
 
@@ -67,21 +66,22 @@ const AppSidebar = ({ collapsed, onToggleCollapsed }: AppSidebarProps) => {
         className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4"
       >
         {SIDEBAR_NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path;
           return (
             <NavLink
               key={item.path}
               to={item.path}
               title={collapsed ? t(item.translationKey) : undefined}
-              className={cn(
-                "relative flex min-h-[44px] items-center rounded-md py-2.5 text-sm transition-colors",
-                collapsed ? "justify-center px-2" : "gap-3 px-3",
-                isActive
-                  ? "bg-sidebar-accent text-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
-              )}
+              className={({ isActive }) =>
+                cn(
+                  "relative flex min-h-[44px] items-center rounded-md py-2.5 text-sm transition-colors",
+                  collapsed ? "justify-center px-2" : "gap-3 px-3",
+                  isActive
+                    ? "bg-sidebar-accent text-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
+                )
+              }
             >
-              <item.icon className="h-4 w-4 shrink-0" />
+              <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span className={cn("truncate", collapsed && "sr-only")}>
                 {t(item.translationKey)}
               </span>
@@ -104,10 +104,13 @@ const AppSidebar = ({ collapsed, onToggleCollapsed }: AppSidebarProps) => {
           <NavLink
             to="/admin"
             title={collapsed ? t("admin.title") : undefined}
-            className={cn(
-              "flex min-h-[44px] items-center rounded-md bg-secondary text-sm hover:text-primary",
-              collapsed ? "justify-center px-2" : "gap-2 px-3",
-            )}
+            className={({ isActive }) =>
+              cn(
+                "flex min-h-[44px] items-center rounded-md bg-secondary text-sm hover:text-primary",
+                isActive && "text-primary",
+                collapsed ? "justify-center px-2" : "gap-2 px-3",
+              )
+            }
           >
             <ShieldCheck className="h-4 w-4 shrink-0" />
             {!collapsed ? <span className="truncate">{t("admin.title")}</span> : null}

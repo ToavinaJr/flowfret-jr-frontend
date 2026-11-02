@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Guitar, LogOut, Menu, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/sheet";
 
 const MobileHeader = () => {
-  const location = useLocation();
   const { t } = useTranslation();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -58,28 +57,27 @@ const MobileHeader = () => {
             className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3"
           >
             <div className="flex flex-col gap-1">
-              {SIDEBAR_NAV_ITEMS.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
+              {SIDEBAR_NAV_ITEMS.map((item) => (
                   <NavLink
                     key={item.path}
                     to={item.path}
                     onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex min-h-[44px] items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
-                      isActive
-                        ? "bg-sidebar-accent text-foreground"
-                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
-                    )}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex min-h-[44px] items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+                        isActive
+                          ? "bg-sidebar-accent text-foreground"
+                          : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+                      )
+                    }
                   >
-                    <item.icon className="h-4 w-4 shrink-0" />
+                    <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span>{t(item.translationKey)}</span>
                     {item.path === "/notifications" ? (
                       <NotificationBadge />
                     ) : null}
                   </NavLink>
-                );
-              })}
+              ))}
             </div>
           </nav>
           <div className="shrink-0 space-y-2 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">

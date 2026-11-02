@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
-const baseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:8081';
+const baseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:8080';
 const email = process.env.E2E_EMAIL ?? 'alex.riffs@example.com';
 const password = process.env.E2E_PASSWORD ?? 'dev-password';
 const outputDirectory = 'playwright-output';
