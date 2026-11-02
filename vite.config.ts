@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 export default defineConfig(() => ({
   server: {
     host: "localhost",
-    port: 8080,
+    port: 8081,
     strictPort: true,
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
