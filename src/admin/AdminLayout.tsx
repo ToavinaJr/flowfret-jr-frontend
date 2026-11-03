@@ -45,6 +45,12 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
+      <a
+        href="#admin-main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        {t("common.skipToContent")}
+      </a>
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-card/60 backdrop-blur-xl lg:flex">
         <Link to="/" className="flex h-20 items-center gap-3 border-b border-border px-5" aria-label={t("landing.brand")}>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -97,7 +103,11 @@ export default function AdminLayout() {
             </SheetContent>
           </Sheet>
         </header>
-        <main className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 pb-32 sm:px-6 sm:py-7 sm:pb-32 lg:px-8 lg:pb-32">
+        <main
+          id="admin-main-content"
+          tabIndex={-1}
+          className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 pb-32 sm:px-6 sm:py-7 sm:pb-32 lg:px-8 lg:pb-32"
+        >
           <Outlet />
         </main>
       </div>

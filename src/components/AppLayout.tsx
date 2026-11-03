@@ -1,5 +1,6 @@
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import AppSidebar from "./AppSidebar";
@@ -8,6 +9,7 @@ import MobileNav from "./MobileNav";
 import { RouteContentSkeleton } from "./skeletons/RouteContentSkeleton";
 
 const AppLayout = () => {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useSidebarCollapsed();
 
   useEffect(() => {
@@ -16,6 +18,12 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background">
+      <a
+        href="#app-main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        {t("common.skipToContent")}
+      </a>
       <div className="hidden md:block">
         <AppSidebar
           collapsed={collapsed}
@@ -30,7 +38,11 @@ const AppLayout = () => {
         )}
       >
         <MobileHeader />
-        <main className="min-h-0 w-full flex-1 overflow-x-hidden pb-44 sm:pb-36 md:pb-20">
+        <main
+          id="app-main-content"
+          tabIndex={-1}
+          className="min-h-0 w-full flex-1 overflow-x-hidden pb-44 sm:pb-36 md:pb-20"
+        >
           <Suspense fallback={<RouteContentSkeleton />}>
             <Outlet />
           </Suspense>

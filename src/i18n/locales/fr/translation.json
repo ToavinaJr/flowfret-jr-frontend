@@ -39,8 +39,50 @@
     "logoutConfirm": "Se déconnecter",
     "logoutCancel": "Rester connecté"
   },
+  "equalizer": {
+    "simulated": "Mode expérimental : modèles simulés. Des voix peuvent rester et certains instruments peuvent être atténués.",
+    "title": "Equalizer",
+    "open": "Equalizer : régler la suppression des voix",
+    "description": "Atténuez progressivement les voix pour jouer sur l’accompagnement.",
+    "prepare": "Préparer les pistes",
+    "phase": {
+      "queue": "En attente du worker de séparation…",
+      "download": "Téléchargement de la source audio…",
+      "separation": "Séparation des voix en cours… Cette étape peut prendre plusieurs minutes.",
+      "finalizing": "Chargement des pistes séparées…"
+    },
+    "preparing": "Préparation des pistes… La lecture peut continuer.",
+    "errors": {
+      "unsupportedSource": "Ce fournisseur ne permet pas de supprimer les voix de ce morceau.",
+      "sourceUnavailable": "La source audio n’a pas pu être téléchargée. Elle est peut-être indisponible ou bloquée par son fournisseur.",
+      "sourceExpired": "Le flux audio a expiré avant la fin de la séparation. Relancez la préparation.",
+      "sourceExtractionFailed": "L’audio n’a pas pu être extrait de cette vidéo. Elle est peut-être restreinte ou le service source est indisponible.",
+      "extractorUnavailable": "L’outil audio YouTube n’a pas pu démarrer. Redémarrez le worker local et vérifiez sa configuration Python/yt-dlp.",
+      "sourceTooLarge": "Ce morceau est trop volumineux pour supprimer les voix.",
+      "sourceTooLong": "Ce morceau est trop long pour supprimer les voix.",
+      "queueBusy": "Le service de séparation est saturé ou temporairement indisponible. Réessayez dans un instant.",
+      "serviceUnavailable": "Le service n’a pas pu retrouver ou enregistrer cette tâche. Réessayez.",
+      "separationTimedOut": "La séparation des voix a dépassé le délai autorisé. Réessayez plus tard.",
+      "separationFailed": "Les voix n’ont pas pu être séparées de ce morceau. Réessayez.",
+      "storageFailed": "L’audio séparé n’a pas pu être enregistré. Réessayez plus tard.",
+      "authenticationRequired": "Votre session a peut-être expiré. Reconnectez-vous, puis relancez la suppression des voix.",
+      "accessDenied": "Votre compte n’est pas autorisé à préparer ce morceau pour supprimer les voix.",
+      "rateLimited": "Trop de demandes de préparation ont été envoyées. Attendez un peu avant de réessayer.",
+      "requestTimedOut": "La demande a mis trop de temps à aboutir. Vérifiez votre connexion et réessayez.",
+      "networkUnavailable": "Le service de séparation est injoignable. Vérifiez votre connexion et réessayez.",
+      "audioLoadFailed": "L’audio séparé n’a pas pu être chargé. Relancez la préparation du morceau.",
+      "retryLimitReached": "La limite de tentatives pour ce morceau est atteinte. Réessayez plus tard.",
+      "generic": "La préparation a échoué pour une raison inconnue. Réessayez ; si le problème persiste, contactez le support."
+    },
+    "unsupported": "Disponible pour les morceaux Audius et YouTube. Spotify et les fichiers locaux ne sont pas encore pris en charge.",
+    "removal": "Suppression des voix : {{percent}} %",
+    "fullVocals": "0 % · Voix complètes",
+    "instrumental": "100 % · Instrumental",
+    "quality": "La séparation peut laisser des traces de voix. Le réglage conserve l’accompagnement."
+  },
   "common": {
     "menu": "Menu",
+    "skipToContent": "Passer au contenu principal",
     "close": "Fermer",
     "cancel": "Annuler",
     "save": "Enregistrer",
@@ -442,6 +484,7 @@
   },
   "chords": {
     "title": "Explorateur d’accords",
+    "searchInputLabel": "Rechercher un accord",
     "searchPlaceholder": "Rechercher des accords… (Am, Cmaj7, F#dim)",
     "voicing": "Position",
     "strum": "Jouer l’accord",

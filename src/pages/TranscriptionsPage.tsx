@@ -73,12 +73,13 @@ function TranscriptionDetails({
   onRetry: () => Promise<void>;
 }) {
   const { t } = useTranslation();
+  const progress = Math.max(0, Math.min(100, item.progress));
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card p-4">
       <div className="flex flex-wrap items-start gap-2">
         <div className="mr-auto">
           <h2 className="break-words font-semibold">{item.title ?? t("transcriptions.fallbackTitle")}</h2>
-          <p className="text-xs text-muted-foreground">{t("transcriptions.progress", { progress: item.progress })}</p>
+          <p className="text-xs text-muted-foreground">{t("transcriptions.progress", { progress })}</p>
         </div>
         {item.status === "FAILED" && item.provider === "AUDIUS" && (
           <button type="button" onClick={() => void onRetry()} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm"><RefreshCw className="h-4 w-4" /> {t("transcriptions.retry")}</button>
@@ -87,8 +88,15 @@ function TranscriptionDetails({
           <button type="button" onClick={() => void downloadTranscriptionLrc(item.transcriptionId)} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-primary px-3 text-sm text-primary-foreground"><Download className="h-4 w-4" /> LRC</button>
         )}
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
-        <div className="h-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
+      <div
+        role="progressbar"
+        aria-label={t("transcriptions.progress", { progress })}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progress}
+        className="mt-4 h-2 overflow-hidden rounded-full bg-secondary"
+      >
+        <div className="h-full bg-primary" style={{ width: `${progress}%` }} />
       </div>
       {item.error && <p className="mt-3 break-words rounded-md bg-destructive/10 p-3 text-sm text-destructive">{item.error.code === "TRANSCRIPTION_PENDING_TIMEOUT" ? t("lyrics.pendingTimeout") : item.error.message}</p>}
       <div className="mt-4 max-h-[55vh] space-y-2 overflow-y-auto">

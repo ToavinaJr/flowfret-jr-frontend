@@ -2,6 +2,8 @@ import { createContext } from "react";
 import type { ChordCue, PlaybackErrorCode, PlayState } from "@/types/song";
 import type { MusicProvider } from "@/constants/domain";
 
+export type StemPreparationPhase = "queue" | "download" | "separation" | "finalizing" | null;
+
 export interface PlaybackArtist {
   id: string;
   name: string;
@@ -37,6 +39,14 @@ export interface PlaybackContextValue {
   currentTime: number;
   duration: number;
   volume: number;
+  vocalRemoval: number;
+  stemStatus: "idle" | "preparing" | "ready" | "failed";
+  stemProgress: number;
+  stemPhase: StemPreparationPhase;
+  stemErrorCode: string | null;
+  stemSimulated?: boolean;
+  prepareStems: () => Promise<void>;
+  setVocalRemoval: (value: number) => Promise<void>;
   queue: PlaybackItem[];
   currentIndex: number;
   shuffle: boolean;

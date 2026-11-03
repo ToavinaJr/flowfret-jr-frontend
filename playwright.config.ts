@@ -8,6 +8,9 @@ export default defineConfig({
     baseURL: "http://localhost:4173",
     browserName: "chromium",
     headless: true,
+    launchOptions: {
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    },
   },
   webServer: {
     command: "bun run dev -- --host localhost --port 4173",

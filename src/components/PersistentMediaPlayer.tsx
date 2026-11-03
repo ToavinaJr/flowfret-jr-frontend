@@ -16,6 +16,7 @@ import { usePlayback } from "@/contexts/usePlayback";
 import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 import { PersistentChords } from "@/components/features/music/PersistentChords";
 import { FloatingMediaWindow } from "@/components/features/music/FloatingMediaWindow";
+import { VocalRemovalControl } from "@/components/features/music/VocalRemovalControl";
 
 type PanelName = "chords" | "lyrics";
 
@@ -201,6 +202,7 @@ export default function PersistentMediaPlayer() {
             <Mic2 className="h-4 w-4" />
           </button>
         ) : null}
+        <VocalRemovalControl key={item.id} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
         </span>

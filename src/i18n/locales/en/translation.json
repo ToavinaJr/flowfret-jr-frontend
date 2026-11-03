@@ -39,8 +39,50 @@
     "logoutConfirm": "Log out",
     "logoutCancel": "Stay signed in"
   },
+  "equalizer": {
+    "simulated": "Experimental mode: simulated models. Vocals may remain and some instruments may be reduced.",
+    "title": "Equalizer",
+    "open": "Equalizer: adjust vocal removal",
+    "description": "Gradually reduce the vocals to play along with the backing track.",
+    "prepare": "Prepare tracks",
+    "phase": {
+      "queue": "Waiting for a separation worker…",
+      "download": "Downloading the audio source…",
+      "separation": "Separating vocals… This step can take several minutes.",
+      "finalizing": "Loading the separated tracks…"
+    },
+    "preparing": "Preparing tracks… Playback can continue.",
+    "errors": {
+      "unsupportedSource": "This provider does not support vocal removal for this track.",
+      "sourceUnavailable": "The audio source could not be downloaded. It may be unavailable or blocked by its provider.",
+      "sourceExpired": "The audio stream expired before separation finished. Try preparing it again.",
+      "sourceExtractionFailed": "Audio could not be extracted from this video. It may be restricted or the source service may be unavailable.",
+      "extractorUnavailable": "The YouTube audio tool could not start. Restart the local worker and check its Python/yt-dlp configuration.",
+      "sourceTooLarge": "This track is too large to prepare for vocal removal.",
+      "sourceTooLong": "This track is too long to prepare for vocal removal.",
+      "queueBusy": "The separation service is busy or temporarily unavailable. Please try again shortly.",
+      "serviceUnavailable": "The separation service could not save or find this task. Please try again.",
+      "separationTimedOut": "Vocal separation took too long. Please try again later.",
+      "separationFailed": "The vocals could not be separated from this track. Please try again.",
+      "storageFailed": "The separated audio could not be saved. Please try again later.",
+      "authenticationRequired": "Your session may have expired. Sign in again, then retry vocal removal.",
+      "accessDenied": "Your account is not allowed to prepare this track for vocal removal.",
+      "rateLimited": "Too many preparation requests were made. Wait a little before trying again.",
+      "requestTimedOut": "The request took too long to finish. Check your connection and try again.",
+      "networkUnavailable": "Could not reach the separation service. Check your connection and try again.",
+      "audioLoadFailed": "The separated audio could not be loaded. Try preparing the track again.",
+      "retryLimitReached": "This track has reached its retry limit. Please try again later.",
+      "generic": "Preparation failed for an unexpected reason. Please try again; if it continues, contact support."
+    },
+    "unsupported": "Available for Audius and YouTube tracks. Spotify and local files are not supported yet.",
+    "removal": "Vocal removal: {{percent}}%",
+    "fullVocals": "0% · Full vocals",
+    "instrumental": "100% · Instrumental",
+    "quality": "Separation may leave traces of vocals. The backing track is preserved."
+  },
   "common": {
     "menu": "Menu",
+    "skipToContent": "Skip to main content",
     "close": "Close",
     "cancel": "Cancel",
     "save": "Save",
@@ -442,6 +484,7 @@
   },
   "chords": {
     "title": "Chord Explorer",
+    "searchInputLabel": "Search chords",
     "searchPlaceholder": "Search chords… (Am, Cmaj7, F#dim)",
     "voicing": "Voicing",
     "strum": "Strum",
