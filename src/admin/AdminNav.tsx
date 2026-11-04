@@ -21,7 +21,7 @@ export function AdminNav({ onNavigate }: AdminNavProps) {
             cn(
               "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
               isActive
-                ? "bg-primary/10 font-medium text-primary"
+                ? "bg-secondary font-medium text-foreground"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )
           }

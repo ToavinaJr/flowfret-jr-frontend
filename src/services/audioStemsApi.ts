@@ -1,6 +1,7 @@
 import type { PlaybackItem } from "@/contexts/playback-context";
 import { GRAPHQL_URL } from "./backend";
 import { getAccessToken } from "./authToken";
+import { debugError, debugLog } from "@/utils/debug";
 
 export interface AudioStems {
   audioStemId: string;
@@ -120,12 +121,27 @@ export function parseAudioStems(value: unknown): AudioStems {
 
 async function request(path: string, signal: AbortSignal, body?: object): Promise<AudioStems> {
   const token = getAccessToken();
-  const response = await fetch(`${endpoint}${path}`, {
-    method: body ? "POST" : "GET",
-    headers: { Authorization: `Bearer ${token ?? ""}`, ...(body ? { "Content-Type": "application/json" } : {}) },
-    body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.any([signal, AbortSignal.timeout(30_000)]),
-  });
+  const method = body ? "POST" : "GET";
+  const apiOrigin = new URL(GRAPHQL_URL).origin;
+  debugLog("audio_stems.api_request_started", { method, path, apiOrigin });
+  let response: Response;
+  try {
+    response = await fetch(`${endpoint}${path}`, {
+      method,
+      headers: { Authorization: `Bearer ${token ?? ""}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.any([signal, AbortSignal.timeout(30_000)]),
+    });
+  } catch (error) {
+    debugError("audio_stems.api_request_failed", {
+      method,
+      path,
+      apiOrigin,
+      errorName: error instanceof Error ? error.name : "unknown",
+      errorMessage: error instanceof Error ? error.message : "Unknown request error",
+    });
+    throw error;
+  }
   if (!response.ok) {
     let code = `HTTP_${response.status}`;
     try {
@@ -137,6 +153,13 @@ async function request(path: string, signal: AbortSignal, body?: object): Promis
     } catch {
       // Keep the status-based reason when the server did not return JSON.
     }
+    debugError("audio_stems.api_response_failed", {
+      method,
+      path,
+      apiOrigin,
+      status: response.status,
+      code,
+    });
     throw new Error(code);
   }
   return parseAudioStems(await response.json());

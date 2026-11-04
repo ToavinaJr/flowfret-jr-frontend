@@ -238,7 +238,7 @@ export default function ModerationPage() {
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("moderation.reportReason")}</p>
+                <p className="text-xs font-medium text-muted-foreground">{t("moderation.reportReason")}</p>
                 <p className="mt-1 whitespace-pre-wrap break-words text-sm">{report.reason}</p>
               </div>
               <p className="text-xs text-muted-foreground">

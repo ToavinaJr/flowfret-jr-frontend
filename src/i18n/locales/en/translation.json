@@ -571,81 +571,57 @@
       "faq": "FAQ"
     },
     "hero": {
-      "eyebrow": "A clearer way to learn guitar",
-      "title": "Make every practice session",
-      "titleAccent": "count.",
-      "description": "FlowFret brings chords, scales, rhythm, music discovery, and your progress into one focused workspace for guitarists.",
-      "primaryCta": "Start learning for free",
-      "secondaryCta": "See how it works",
-      "noCard": "No credit card",
-      "allLevels": "For every level",
-      "yourPace": "At your own pace"
+      "eyebrow": "A guitar workbench for the song in front of you",
+      "title": "Turn songs you love into",
+      "titleAccent": "practice that sticks.",
+      "description": "Find chord shapes, keep time, follow available cues, and return to the part you want to play better.",
+      "primaryCta": "Start practicing",
+      "secondaryCta": "Browse chord library",
+      "chordTitle": "C major",
+      "chordPosition": "Open position",
+      "chordFingering": "String fingering: x 3 2 0 1 0",
+      "chordDiagramLabel": "C major guitar chord: mute the low E string, fret A on 3, D on 2, and B on 1; play G and high E open."
     },
-    "mockup": {
-      "session": "Practice session",
-      "nowPlaying": "Now playing",
-      "song": "Midnight Shapes",
-      "artist": "Your practice mix",
-      "chord": "Chords",
-      "scale": "Scales",
-      "rhythm": "Rhythm",
-      "level1": "Warm up",
-      "level2": "Explore",
-      "level3": "Keep time"
-    },
-    "proof": {
-      "practice": {
-        "title": "Practice with intention",
-        "description": "Turn scattered exercises into a session you can actually follow."
+    "tools": {
+      "chords": {
+        "title": "Read the shape",
+        "description": "Look up a chord and see where each finger goes."
       },
-      "clarity": {
-        "title": "See what to play",
-        "description": "Use clear diagrams, synchronized cues, and useful musical context."
+      "music": {
+        "title": "Work from a song",
+        "description": "Search and listen, then follow the chord and lyric cues that are available."
       },
-      "momentum": {
-        "title": "Build momentum",
-        "description": "Keep your discoveries, history, and progress close at hand."
+      "tuner": {
+        "title": "Tune before you play",
+        "description": "Check each string before working through a new shape."
+      },
+      "rhythm": {
+        "title": "Keep a steady pulse",
+        "description": "Set a tempo and make each repetition more even."
       }
     },
     "features": {
-      "eyebrow": "Everything in one place",
-      "title": "Less searching. More playing.",
-      "description": "FlowFret is designed to help you move from curiosity to confident playing without losing the thread.",
-      "items": {
-        "practice": {
-          "title": "A focused practice workspace",
-          "description": "Explore chords, scales, tuner, metronome, and audio tools without jumping between disconnected apps.",
-          "detail": "Your essential tools, ready when you are"
-        },
-        "music": {
-          "title": "Discover music that teaches you",
-          "description": "Search music, listen, follow chord and lyric cues, and turn the songs you love into practical material.",
-          "detail": "Listen with more intention"
-        },
-        "community": {
-          "title": "Learn with people around you",
-          "description": "Share progress, connect with other guitarists, and keep your learning journey visible and motivating.",
-          "detail": "Progress feels better together"
-        }
-      }
+      "eyebrow": "The workbench",
+      "title": "From the first chord to the whole song",
+      "description": "Find a shape, tune up, keep time, and return to the music."
     },
     "steps": {
-      "eyebrow": "A simple rhythm",
-      "title": "Start where you are.",
-      "description": "You do not need a perfect plan. FlowFret gives you the next useful step and lets your practice grow from there.",
-      "cta": "Create your free account",
+      "eyebrow": "A practical loop",
+      "title": "Find it. Play it. Return to it.",
+      "description": "Start with one song or one chord. Keep the reference close, repeat the part that needs work, and save what you want to revisit.",
+      "cta": "Open your workbench",
       "items": {
         "discover": {
-          "title": "Discover",
-          "description": "Find a song, a chord shape, or a new idea worth exploring."
+          "title": "Choose a starting point",
+          "description": "Pick a song you want to learn or a chord shape you want to understand."
         },
         "practice": {
-          "title": "Practice",
-          "description": "Use focused tools and visual cues to turn ideas into muscle memory."
+          "title": "Follow one useful cue",
+          "description": "Use a chord diagram, lyric line, tuner, or metronome while you play."
         },
         "progress": {
-          "title": "Progress",
-          "description": "Save what works, follow your history, and come back with confidence."
+          "title": "Keep the next step",
+          "description": "Save the reference you need and return when you pick up the guitar again."
         }
       }
     },
@@ -668,9 +644,9 @@
       }
     },
     "final": {
-      "title": "Your next practice session starts here.",
-      "description": "Create a free FlowFret account and give your guitar learning a place to flow.",
-      "cta": "Start with FlowFret"
+      "title": "Bring the song you want to learn.",
+      "description": "Open a focused guitar workspace for chord references, listening, and steady practice.",
+      "cta": "Start practicing"
     },
     "footer": "A calmer, clearer way to learn and play guitar."
   },

@@ -23,11 +23,9 @@ const MobileHeader = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
+    <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 md:hidden">
       <Link to="/" className="flex min-w-0 items-center gap-2" aria-label={t("landing.brand")}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Guitar className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
-        </div>
+        <Guitar className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
         <span className="truncate text-base font-medium tracking-tight text-foreground">
           FlowFret
         </span>

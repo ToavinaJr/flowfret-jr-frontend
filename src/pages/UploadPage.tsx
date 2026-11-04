@@ -141,7 +141,7 @@ const UploadPage = () => {
 
       {!importedSong ? (
         <div className="mt-6 rounded-lg border border-border bg-card p-3 sm:mt-8 sm:p-4">
-          <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+          <div className="mb-3 text-xs text-muted-foreground">
             {t("upload.howItWorks")}
           </div>
           <div className="space-y-3">

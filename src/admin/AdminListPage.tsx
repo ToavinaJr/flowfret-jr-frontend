@@ -334,7 +334,7 @@ export default function AdminListPage<T extends { id: string }>({
                   key={chip.key}
                   type="button"
                   onClick={() => removeFilter(chip.key)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/20"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1 text-xs font-medium text-foreground hover:bg-accent"
                 >
                   {chip.label}
                   <X aria-hidden="true" className="h-3 w-3" />
@@ -366,7 +366,7 @@ export default function AdminListPage<T extends { id: string }>({
 
         <div className="w-full overflow-x-auto">
           <table className="w-full min-w-[760px] table-fixed border-collapse text-left text-sm">
-            <thead className="bg-secondary/50 text-xs uppercase tracking-wide text-muted-foreground">
+            <thead className="text-xs text-muted-foreground">
               <tr>
                 {columns.map((column) => (
                   <th

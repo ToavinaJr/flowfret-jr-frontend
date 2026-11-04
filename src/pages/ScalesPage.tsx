@@ -25,7 +25,7 @@ const ScalesPage = () => {
       </p>
 
       <div className="mb-3 rounded-lg border border-border bg-card p-3 sm:mb-4 sm:p-4">
-        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+        <div className="mb-3 text-xs text-muted-foreground">
           {t("scales.root")}
         </div>
         <div className="flex flex-wrap gap-2">
@@ -47,7 +47,7 @@ const ScalesPage = () => {
       </div>
 
       <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:mb-6 sm:p-4">
-        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+        <div className="mb-3 text-xs text-muted-foreground">
           {t("scales.scale")}
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">

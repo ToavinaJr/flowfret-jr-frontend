@@ -60,7 +60,7 @@ export function PlaylistList({
         {playlists.map((playlist) => (
           <div
             key={playlist.id}
-            className={`flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-primary/10 text-primary" : "hover:bg-secondary"}`}
+            className={`flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-secondary text-foreground" : "hover:bg-secondary"}`}
           >
             <button
               type="button"

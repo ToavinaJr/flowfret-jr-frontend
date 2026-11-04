@@ -571,81 +571,39 @@
       "faq": "FAQ"
     },
     "hero": {
-      "eyebrow": "Une façon plus claire d’apprendre la guitare",
-      "title": "Chaque session de pratique",
-      "titleAccent": "compte.",
-      "description": "FlowFret réunit accords, gammes, rythme, découverte musicale et progression dans un espace pensé pour les guitaristes.",
-      "primaryCta": "Commencer gratuitement",
-      "secondaryCta": "Voir comment ça marche",
-      "noCard": "Sans carte bancaire",
-      "allLevels": "Tous les niveaux",
-      "yourPace": "À votre rythme"
-    },
-    "mockup": {
-      "session": "Session de pratique",
-      "nowPlaying": "En lecture",
-      "song": "Midnight Shapes",
-      "artist": "Votre sélection de pratique",
-      "chord": "Accords",
-      "scale": "Gammes",
-      "rhythm": "Rythme",
-      "level1": "Échauffement",
-      "level2": "Explorer",
-      "level3": "Garder le tempo"
-    },
-    "proof": {
-      "practice": {
-        "title": "Pratiquer avec intention",
-        "description": "Transformez des exercices dispersés en une session que vous pouvez vraiment suivre."
-      },
-      "clarity": {
-        "title": "Voir quoi jouer",
-        "description": "Profitez de diagrammes clairs, de repères synchronisés et d’un contexte musical utile."
-      },
-      "momentum": {
-        "title": "Créer votre élan",
-        "description": "Gardez vos découvertes, votre historique et votre progression à portée de main."
-      }
+      "eyebrow": "Un atelier de guitare pour le morceau que vous jouez",
+      "title": "Transformez les morceaux que vous aimez en",
+      "titleAccent": "exercices qui restent.",
+      "description": "Trouvez les positions d’accords, gardez le rythme, suivez les repères disponibles et revenez aux passages que vous voulez mieux jouer.",
+      "primaryCta": "Commencer à pratiquer",
+      "secondaryCta": "Parcourir les accords",
+      "chordTitle": "Do majeur",
+      "chordPosition": "Position ouverte",
+      "chordFingering": "Cordes : x 3 2 0 1 0",
+      "chordDiagramLabel": "Accord de do majeur : étouffez la corde de mi grave, placez le la en case 3, le ré en case 2 et le si en case 1 ; jouez sol et mi aigu à vide."
     },
     "features": {
-      "eyebrow": "Tout au même endroit",
-      "title": "Moins chercher. Plus jouer.",
-      "description": "FlowFret vous aide à passer de la curiosité à une pratique assurée, sans perdre le fil.",
-      "items": {
-        "practice": {
-          "title": "Un espace de pratique ciblé",
-          "description": "Explorez accords, gammes, accordeur, métronome et outils audio sans passer d’une application à l’autre.",
-          "detail": "Vos outils essentiels, prêts quand vous l’êtes"
-        },
-        "music": {
-          "title": "Découvrir des musiques qui vous apprennent quelque chose",
-          "description": "Recherchez, écoutez, suivez les repères d’accords et de paroles, puis transformez vos morceaux préférés en matière pratique.",
-          "detail": "Écouter avec plus d’intention"
-        },
-        "community": {
-          "title": "Apprendre avec votre entourage",
-          "description": "Partagez vos progrès, échangez avec d’autres guitaristes et rendez votre parcours plus motivant.",
-          "detail": "La progression est meilleure ensemble"
-        }
-      }
+      "eyebrow": "L’atelier",
+      "title": "Du premier accord au morceau entier",
+      "description": "Retrouvez une position, accordez la guitare, gardez le rythme et revenez au morceau."
     },
     "steps": {
-      "eyebrow": "Un rythme simple",
-      "title": "Commencez là où vous êtes.",
-      "description": "Vous n’avez pas besoin d’un plan parfait. FlowFret vous donne la prochaine étape utile et vous laisse construire la suite.",
-      "cta": "Créer un compte gratuit",
+      "eyebrow": "Une boucle de pratique",
+      "title": "Trouvez. Jouez. Revenez-y.",
+      "description": "Commencez par un morceau ou un accord. Gardez le repère près de vous, répétez le passage à travailler et enregistrez ce que vous voulez reprendre.",
+      "cta": "Ouvrir votre atelier",
       "items": {
         "discover": {
-          "title": "Découvrir",
-          "description": "Trouvez un morceau, une position d’accord ou une nouvelle idée à explorer."
+          "title": "Choisissez un point de départ",
+          "description": "Prenez un morceau à apprendre ou une position d’accord à comprendre."
         },
         "practice": {
-          "title": "Pratiquer",
-          "description": "Utilisez des outils ciblés et des repères visuels pour créer des automatismes."
+          "title": "Suivez un repère utile",
+          "description": "Appuyez-vous sur un diagramme, des paroles, l’accordeur ou le métronome."
         },
         "progress": {
-          "title": "Progresser",
-          "description": "Gardez ce qui fonctionne, suivez votre historique et revenez avec confiance."
+          "title": "Gardez la suite en tête",
+          "description": "Enregistrez le repère nécessaire et retrouvez-le à votre prochaine session."
         }
       }
     },
@@ -668,11 +626,29 @@
       }
     },
     "final": {
-      "title": "Votre prochaine session commence ici.",
-      "description": "Créez un compte FlowFret gratuit et donnez à votre apprentissage de la guitare un espace où s’exprimer.",
-      "cta": "Commencer avec FlowFret"
+      "title": "Apportez le morceau que vous voulez apprendre.",
+      "description": "Retrouvez les accords, l’écoute et les outils de pratique dans un même espace guitare.",
+      "cta": "Commencer à pratiquer"
     },
-    "footer": "Une façon plus calme et plus claire d’apprendre et de jouer de la guitare."
+    "footer": "Une façon plus calme et plus claire d’apprendre et de jouer de la guitare.",
+    "tools": {
+      "chords": {
+        "title": "Lire une position",
+        "description": "Consultez un accord et voyez où placer chaque doigt."
+      },
+      "music": {
+        "title": "Partir d’un morceau",
+        "description": "Recherchez et écoutez, puis suivez les accords et les paroles disponibles."
+      },
+      "tuner": {
+        "title": "Accorder avant de jouer",
+        "description": "Vérifiez chaque corde avant de travailler une nouvelle position."
+      },
+      "rhythm": {
+        "title": "Garder un tempo régulier",
+        "description": "Choisissez une vitesse et rendez chaque répétition plus stable."
+      }
+    }
   },
   "auth": {
     "title": {

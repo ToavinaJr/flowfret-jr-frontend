@@ -7,7 +7,7 @@ const MobileNav = () => {
   const { t } = useTranslation();
 
   return (
-    <nav aria-label={t("nav.mobileNavigation")} className="fixed bottom-0 left-0 right-0 z-50 min-h-[60px] border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-card/90 md:hidden">
+    <nav aria-label={t("nav.mobileNavigation")} className="fixed bottom-0 left-0 right-0 z-50 min-h-[60px] border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
       <div className="flex items-stretch justify-around gap-0.5 px-1 py-1.5">
         {MOBILE_TAB_ITEMS.map((item) => (
           <NavLink
@@ -17,7 +17,7 @@ const MobileNav = () => {
               cn(
                 "flex min-h-[48px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1 text-[11px] leading-tight transition-colors sm:text-xs",
                 isActive
-                  ? "bg-primary/10 font-semibold text-primary"
+                  ? "bg-secondary font-medium text-foreground"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )
             }

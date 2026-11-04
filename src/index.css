@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,95 +16,91 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 36 24% 97%;
+    --foreground: 25 13% 13%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 40 33% 99%;
+    --card-foreground: 25 13% 13%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 40 33% 99%;
+    --popover-foreground: 25 13% 13%;
 
     --primary: 346 77% 49%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 34 18% 93%;
+    --secondary-foreground: 25 13% 13%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 34 18% 93%;
+    --muted-foreground: 27 7% 40%;
 
-    --accent: 346 77% 56%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 34 18% 91%;
+    --accent-foreground: 25 13% 13%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 68% 43%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 30 12% 86%;
+    --input: 30 12% 80%;
     --ring: 346 77% 49%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 210 40% 98%;
-    --sidebar-foreground: 215 16% 47%;
+    --sidebar-background: 36 24% 97%;
+    --sidebar-foreground: 27 7% 40%;
     --sidebar-primary: 346 77% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 32% 91%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 214 32% 91%;
+    --sidebar-accent: 34 18% 91%;
+    --sidebar-accent-foreground: 25 13% 13%;
+    --sidebar-border: 30 12% 86%;
     --sidebar-ring: 346 77% 49%;
 
     --surface-elevated: 0 0% 100%;
-    --surface-hover: 210 40% 96%;
-    --glow-primary: 0 0 20px -5px hsla(346, 77%, 49%, 0.2);
-    --glow-accent: 0 0 20px -5px hsla(346, 77%, 56%, 0.2);
+    --surface-hover: 34 18% 93%;
     --tuner-in-tune: 346 77% 49%;
     --mobile-nav-offset: calc(3.75rem + env(safe-area-inset-bottom));
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 95%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 92%;
 
-    --card: 240 10% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 92%;
 
-    --popover: 240 10% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 346 77% 49%;
+    --primary: 346 77% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 15%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 92%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 64%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 66%;
 
-    --accent: 346 77% 58%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 0% 19%;
+    --accent-foreground: 0 0% 92%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 68% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 15%;
-    --input: 240 5% 15%;
-    --ring: 346 77% 49%;
+    --border: 0 0% 21%;
+    --input: 0 0% 26%;
+    --ring: 346 77% 56%;
 
-    --sidebar-background: 240 10% 6%;
-    --sidebar-foreground: 240 5% 64%;
-    --sidebar-primary: 346 77% 49%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 66%;
+    --sidebar-primary: 346 77% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 10% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 5% 15%;
-    --sidebar-ring: 346 77% 49%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 0 0% 21%;
+    --sidebar-ring: 346 77% 56%;
 
-    --surface-elevated: 240 10% 13%;
-    --surface-hover: 240 10% 16%;
-    --glow-primary: 0 0 20px -5px hsla(346, 77%, 49%, 0.3);
-    --glow-accent: 0 0 20px -5px hsla(346, 77%, 58%, 0.3);
+    --surface-elevated: 0 0% 12%;
+    --surface-hover: 0 0% 16%;
     --tuner-in-tune: 346 77% 49%;
   }
 }
@@ -128,6 +124,12 @@
   .font-musical {
     font-family: 'Geist Mono', monospace;
     font-variant-numeric: tabular-nums;
+  }
+
+  .font-display {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.025em;
   }
 }
 

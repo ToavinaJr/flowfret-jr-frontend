@@ -51,11 +51,9 @@ export default function AdminLayout() {
       >
         {t("common.skipToContent")}
       </a>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-card/60 backdrop-blur-xl lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-sidebar lg:flex">
         <Link to="/" className="flex h-20 items-center gap-3 border-b border-border px-5" aria-label={t("landing.brand")}>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Guitar aria-hidden="true" className="h-5 w-5" />
-          </div>
+          <Guitar aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
           <div className="min-w-0">
             <div className="truncate font-semibold">FlowFret</div>
             <div className="text-xs text-muted-foreground">
@@ -70,7 +68,7 @@ export default function AdminLayout() {
       </aside>
 
       <div className="min-h-dvh lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <ShieldCheck aria-hidden="true" className="h-5 w-5 text-primary" />
             <span className="truncate text-sm font-medium sm:text-base">

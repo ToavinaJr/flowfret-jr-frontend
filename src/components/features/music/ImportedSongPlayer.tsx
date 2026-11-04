@@ -138,7 +138,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
           <CapoSelect namespace="chordPlayer" idPrefix="upload-chord-player" />
         </div>
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <h2 className="text-xs font-medium text-muted-foreground">
             {t("player.allChords")}
           </h2>
           <span className="font-musical text-xs text-muted-foreground">

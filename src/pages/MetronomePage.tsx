@@ -107,7 +107,7 @@ const MetronomePage = () => {
       <h1 className={PAGE_TITLE}>{t("metronome.title")}</h1>
 
       <div className="mb-4 rounded-lg border border-border bg-card p-4 text-center sm:mb-6 sm:p-6 md:p-8">
-        <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+        <div className="mb-2 text-xs text-muted-foreground">
           BPM
         </div>
         <div className="mb-4 font-musical text-4xl text-foreground sm:mb-6 sm:text-5xl md:text-6xl">
@@ -179,7 +179,7 @@ const MetronomePage = () => {
       </div>
 
       <div className="mb-4 rounded-lg border border-border bg-card p-3 sm:p-4">
-        <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
+        <div className="mb-3 text-xs text-muted-foreground">
           {t("metronome.timeSignature")}
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

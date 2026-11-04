@@ -105,11 +105,11 @@ export function PersistentChords({
               </p>
               <div>
                 <div className="flex min-w-0 flex-col items-center">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {t("chordPlayer.current")}
                   </p>
                   {activeChord.positions?.length ? (
-                    <div className="mt-3 grid w-full grid-cols-2 place-items-center gap-2 rounded-xl border border-border/80 bg-background/80 p-2 shadow-inner backdrop-blur-xl sm:grid-cols-4">
+                    <div className="mt-3 grid w-full grid-cols-2 place-items-center gap-2 rounded-lg border border-border bg-background p-2 sm:grid-cols-4">
                       {activeChord.positions.map((position, index) => (
                         <div
                           key={`${activeChord.label}-${position.baseFret}-${index}`}
@@ -184,7 +184,7 @@ export function PersistentChords({
                       type="button"
                       onClick={() => onSeek(cue.start)}
                       aria-current={active ? "true" : undefined}
-                      className={`min-w-20 rounded-lg border px-3 py-2 text-left backdrop-blur-xl ${active ? "border-primary bg-primary/20 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
+                      className={`min-w-20 rounded-md border px-3 py-2 text-left ${active ? "border-primary bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
                     >
                       <span className="block font-musical font-semibold">
                         {transposeChordLabel(cue.chord, capo)}

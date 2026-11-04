@@ -28,7 +28,7 @@ export function AdminResourceTabs({
           key={tab.value}
           to={`${basePath}?view=${encodeURIComponent(tab.value)}`}
           aria-current={active === tab.value ? "page" : undefined}
-          className={`min-h-11 shrink-0 rounded-lg px-4 py-3 text-sm font-medium ${active === tab.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+          className={`min-h-11 shrink-0 rounded-md px-4 py-3 text-sm font-medium ${active === tab.value ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
         >
           {t(tab.labelKey)}
         </Link>

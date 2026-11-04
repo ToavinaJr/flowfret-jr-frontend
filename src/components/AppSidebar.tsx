@@ -30,9 +30,7 @@ const AppSidebar = ({ collapsed, onToggleCollapsed }: AppSidebarProps) => {
           className={cn("flex items-center gap-2", collapsed && "justify-center")}
           aria-label={t("landing.brand")}
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Guitar className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
-          </div>
+          <Guitar className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
           {!collapsed ? (
             <span className="truncate text-base font-medium tracking-tight text-foreground lg:text-lg">
               FlowFret
