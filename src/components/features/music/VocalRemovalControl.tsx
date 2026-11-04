@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
 import { supportsVocalRemoval, vocalRemovalFailureReason } from "@/services/audioStemsApi";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { debugLog } from "@/utils/debug";
 
 export function VocalRemovalControl() {
   const { t } = useTranslation();
@@ -11,7 +12,15 @@ export function VocalRemovalControl() {
   const percent = Math.round((vocalRemoval ?? 0) * 100);
   const preparing = stemStatus === "preparing";
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => {
+      if (open) {
+        debugLog("audio_stems.panel_opened", {
+          supported,
+          provider: item?.provider ?? "unknown",
+          hasTrackId: Boolean(item?.providerTrackId),
+        });
+      }
+    }}>
       <DialogTrigger asChild>
         <button type="button" aria-label={t("equalizer.open")} title={t("equalizer.title")}
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary ${percent > 0 ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}>
@@ -26,7 +35,14 @@ export function VocalRemovalControl() {
         {!supported ? <p className="text-sm text-muted-foreground">{t("equalizer.unsupported")}</p> : (
           <>
             {(stemStatus === "idle" || stemStatus === "failed") && (
-              <button type="button" onClick={() => void prepareStems()}
+              <button type="button" onClick={() => {
+                debugLog("audio_stems.prepare_clicked", {
+                  provider: item?.provider ?? "unknown",
+                  hasTrackId: Boolean(item?.providerTrackId),
+                  retry: stemStatus === "failed",
+                });
+                void prepareStems();
+              }}
                 className="min-h-11 rounded-md bg-primary px-4 text-sm text-primary-foreground hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring">
                 {t(stemStatus === "failed" ? "common.retry" : "equalizer.prepare")}
               </button>

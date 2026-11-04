@@ -10,7 +10,7 @@ export const runtimeConfig = Object.freeze({
     import.meta.env.VITE_TRANSCRIPTION_HTTP_TIMEOUT_MS,
     20_000,
   ),
-  debug: ["1", "true", "yes", "on"].includes(
+  debug: import.meta.env.DEV || ["1", "true", "yes", "on"].includes(
     (import.meta.env.VITE_DEBUG ?? "").trim().toLowerCase(),
   ),
 });

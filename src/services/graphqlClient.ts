@@ -36,7 +36,8 @@ function isAuthenticationError(message: string): boolean {
   return /unauthenticated|unauthorized|jwt expired|invalid token/i.test(message);
 }
 
-async function refreshAccessToken(): Promise<boolean> {
+/** Refresh the access token using the HttpOnly session cookie. Shared by GraphQL and REST clients. */
+export async function refreshAccessToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     try {

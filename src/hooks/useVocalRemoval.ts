@@ -3,6 +3,7 @@ import type { PlaybackItem, StemPreparationPhase } from "@/contexts/playback-con
 import { createAudioStems, getAudioStems, supportsVocalRemoval } from "@/services/audioStemsApi";
 import { StemMixer } from "@/services/stemMixer";
 import { unlockAudioContext } from "@/utils/audioContext";
+import { debugError, debugLog } from "@/utils/debug";
 
 export type StemStatus = "idle" | "preparing" | "ready" | "failed";
 async function decodeStem(context: AudioContext, url: string, signal: AbortSignal) {
@@ -48,10 +49,25 @@ export function useVocalRemoval(onEnded: () => void) {
   useEffect(() => dispose, [dispose]);
 
   const prepare = useCallback(async (item: PlaybackItem) => {
-    if (!supportsVocalRemoval(item) || requestRef.current || mixerRef.current) return;
+    const supported = supportsVocalRemoval(item);
+    if (!supported || requestRef.current || mixerRef.current) {
+      debugLog("audio_stems.prepare_skipped", {
+        provider: item.provider ?? "unknown",
+        hasTrackId: Boolean(item.providerTrackId),
+        supported,
+        requestInProgress: Boolean(requestRef.current),
+        stemsReady: Boolean(mixerRef.current),
+      });
+      return;
+    }
+    debugLog("audio_stems.prepare_started", {
+      provider: item.provider,
+      hasTrackId: Boolean(item.providerTrackId),
+    });
     const controller = new AbortController();
     requestRef.current = controller;
     const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(15 * 60_000)]);
+    let currentPhase: StemPreparationPhase = "queue";
     setStatus("preparing");
     setProgress(0);
     setPhase("queue");
@@ -62,7 +78,8 @@ export function useVocalRemoval(onEnded: () => void) {
       setSimulated(result.simulated === true);
       while (result.status === "PENDING" || result.status === "DOWNLOADING" || result.status === "PROCESSING") {
         setProgress(Math.max(0, Math.min(99, result.progress)));
-        setPhase(result.status === "PENDING" ? "queue" : result.status === "DOWNLOADING" ? "download" : "separation");
+        currentPhase = result.status === "PENDING" ? "queue" : result.status === "DOWNLOADING" ? "download" : "separation";
+        setPhase(currentPhase);
         await new Promise<void>((resolve, reject) => {
           signal.throwIfAborted();
           const abort = () => { clearTimeout(timer); reject(signal.reason); };
@@ -73,6 +90,7 @@ export function useVocalRemoval(onEnded: () => void) {
       }
       if (result.status === "FAILED") throw new Error(result.error?.code ?? "DEMUCS_FAILED");
       if (result.status !== "COMPLETED" || !result.vocalsUrl || !result.instrumentalUrl) throw new Error("DEMUCS_FAILED");
+      currentPhase = "finalizing";
       setPhase("finalizing");
       const [vocals, instrumental] = await Promise.all([
         decodeStem(context, result.vocalsUrl, signal),
@@ -86,16 +104,22 @@ export function useVocalRemoval(onEnded: () => void) {
     } catch (error) {
       if (!controller.signal.aborted) {
         setPhase(null);
-        setErrorCode(
-          error instanceof Error
-            ? error.name === "TimeoutError"
-              ? "REQUEST_TIMEOUT"
-              : error.name === "TypeError"
-                ? "NETWORK_ERROR"
-                : error.message
-            : null,
-        );
+        const errorCode = error instanceof Error
+          ? error.name === "TimeoutError"
+            ? "REQUEST_TIMEOUT"
+            : error.name === "TypeError"
+              ? "NETWORK_ERROR"
+              : error.message
+          : null;
+        debugError("audio_stems.prepare_failed", {
+          phase: currentPhase ?? "queue",
+          errorName: error instanceof Error ? error.name : "unknown",
+          code: errorCode ?? "UNKNOWN_ERROR",
+        });
+        setErrorCode(errorCode);
         setStatus("failed");
+      } else {
+        debugLog("audio_stems.prepare_aborted", {});
       }
     } finally {
       controller.abort();

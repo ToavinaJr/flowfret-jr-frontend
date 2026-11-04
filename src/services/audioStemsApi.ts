@@ -1,6 +1,7 @@
 import type { PlaybackItem } from "@/contexts/playback-context";
 import { GRAPHQL_URL } from "./backend";
 import { getAccessToken } from "./authToken";
+import { refreshAccessToken } from "./graphqlClient";
 import { debugError, debugLog } from "@/utils/debug";
 
 export interface AudioStems {
@@ -120,18 +121,37 @@ export function parseAudioStems(value: unknown): AudioStems {
 }
 
 async function request(path: string, signal: AbortSignal, body?: object): Promise<AudioStems> {
-  const token = getAccessToken();
   const method = body ? "POST" : "GET";
   const apiOrigin = new URL(GRAPHQL_URL).origin;
   debugLog("audio_stems.api_request_started", { method, path, apiOrigin });
+  const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(30_000)]);
+  const send = (token: string | null) => fetch(`${endpoint}${path}`, {
+    method,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(body ? { "Content-Type": "application/json" } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: requestSignal,
+  });
+
   let response: Response;
   try {
-    response = await fetch(`${endpoint}${path}`, {
-      method,
-      headers: { Authorization: `Bearer ${token ?? ""}`, ...(body ? { "Content-Type": "application/json" } : {}) },
-      body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.any([signal, AbortSignal.timeout(30_000)]),
-    });
+    const tokenUsed = getAccessToken();
+    response = await send(tokenUsed);
+    if (response.status === 401) {
+      // Another request may already have rotated the token while this request was in flight.
+      const currentToken = getAccessToken();
+      const refreshed = currentToken && currentToken !== tokenUsed
+        ? true
+        : await refreshAccessToken();
+      if (refreshed) {
+        debugLog("audio_stems.auth_refreshed_retrying", { method, path, apiOrigin });
+        response = await send(getAccessToken());
+      } else {
+        debugError("audio_stems.auth_refresh_failed", { method, path, apiOrigin });
+      }
+    }
   } catch (error) {
     debugError("audio_stems.api_request_failed", {
       method,
