@@ -19,6 +19,17 @@ describe("transcription API errors", () => {
     expect(getFriendlyTranscriptionError(error)).not.toContain("Trop de requêtes");
   });
 
+  it("uses the retry delay supplied by the backend when no Retry-After header is present", () => {
+    const error = parseTranscriptionApiError(
+      429,
+      '{"statusCode":429,"message":"Too many requests","retryAfterSeconds":900}',
+      null,
+    );
+
+    expect(error).toBeInstanceOf(TranscriptionRateLimitError);
+    expect((error as TranscriptionRateLimitError).retryAfterSeconds).toBe(900);
+  });
+
   it("keeps non-rate-limit failures readable without exposing raw backend payloads", () => {
     const error = parseTranscriptionApiError(500, '{"statusCode":500,"message":"server exploded"}', null);
 
