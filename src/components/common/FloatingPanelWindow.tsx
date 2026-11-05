@@ -60,20 +60,16 @@ function clampBounds(bounds: WindowBounds, isAdmin: boolean, sidebarCollapsed: b
   if (typeof window === "undefined") return bounds;
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-  const reservedHeight = viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT;
   const workspaceLeft = getWorkspaceLeft(isAdmin, sidebarCollapsed);
-  const availableWidth = Math.max(1, viewportWidth - workspaceLeft - 16);
-  const availableHeight = Math.max(1, viewportHeight - reservedHeight - 16);
-  const sideBySide = availableWidth >= MIN_WIDTH * 2 + 36;
-  const maxWidth = sideBySide ? Math.floor((availableWidth - 20) / 2) : availableWidth;
-  const width = Math.min(maxWidth, Math.max(Math.min(MIN_WIDTH, maxWidth), bounds.width));
-  const height = Math.min(availableHeight, Math.max(Math.min(MIN_HEIGHT, availableHeight), bounds.height));
+  const width = Math.max(MIN_WIDTH, bounds.width);
+  const height = Math.max(MIN_HEIGHT, bounds.height);
   const minX = Math.min(
     Math.max(8, viewportWidth - width - 8),
     viewportWidth < 768 ? 8 : workspaceLeft + 8,
   );
   const maxX = Math.max(minX, viewportWidth - width - 8);
   const minY = 8;
+  const reservedHeight = viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT;
   const maxY = Math.max(minY, viewportHeight - reservedHeight - height - 8);
   return {
     x: Math.min(maxX, Math.max(minX, bounds.x)),

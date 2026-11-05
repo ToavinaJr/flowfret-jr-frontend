@@ -153,7 +153,7 @@ describe("FloatingMediaWindow", () => {
     expect(Number.parseInt(lyrics.style.left, 10) + Number.parseInt(lyrics.style.width, 10)).toBeLessThanOrEqual(1024);
   });
 
-  it("preserves saved off-screen positions when the viewport changes", () => {
+  it("preserves saved window sizes even when they exceed the viewport", () => {
     localStorage.setItem("flowfret.media-window.chords.v1", JSON.stringify({ x: 900, y: 900, width: 600, height: 500 }));
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 320 });
     Object.defineProperty(window, "innerHeight", { configurable: true, value: 180 });
@@ -161,10 +161,34 @@ describe("FloatingMediaWindow", () => {
     renderWindow();
 
     const dialog = screen.getByRole("dialog", { name: "Chord window" });
-    expect(Number.parseInt(dialog.style.left, 10)).toBe(900);
-    expect(Number.parseInt(dialog.style.top, 10)).toBe(900);
-    expect(Number.parseInt(dialog.style.width, 10)).toBeLessThanOrEqual(320);
-    expect(Number.parseInt(dialog.style.height, 10)).toBeGreaterThan(0);
+    expect(Number.parseInt(dialog.style.width, 10)).toBe(600);
+    expect(Number.parseInt(dialog.style.height, 10)).toBe(500);
+    expect(Number.parseInt(dialog.style.left, 10)).toBe(8);
+    expect(Number.parseInt(dialog.style.top, 10)).toBe(8);
+  });
+
+  it("keeps the previous minimum width and height", () => {
+    localStorage.setItem("flowfret.media-window.chords.v1", JSON.stringify({ x: 24, y: 24, width: 120, height: 90 }));
+    renderWindow();
+
+    const dialog = screen.getByRole("dialog", { name: "Chord window" });
+    expect(Number.parseInt(dialog.style.width, 10)).toBe(260);
+    expect(Number.parseInt(dialog.style.height, 10)).toBe(180);
+  });
+
+  it("allows resizing beyond the viewport without a maximum size", () => {
+    renderWindow();
+    const dialog = screen.getByRole("dialog", { name: "Chord window" });
+    const resizeButton = document.querySelector<HTMLButtonElement>('[data-resize-edge="corner"]')!;
+    const initialWidth = Number.parseInt(dialog.style.width, 10);
+    const initialHeight = Number.parseInt(dialog.style.height, 10);
+
+    fireEvent.pointerDown(resizeButton, { pointerId: 6, clientX: 400, clientY: 500 });
+    fireEvent.pointerMove(dialog, { pointerId: 6, clientX: 400 + window.innerWidth, clientY: 500 + window.innerHeight });
+    fireEvent.pointerUp(dialog, { pointerId: 6 });
+
+    expect(Number.parseInt(dialog.style.width, 10)).toBe(initialWidth + window.innerWidth);
+    expect(Number.parseInt(dialog.style.height, 10)).toBe(initialHeight + window.innerHeight);
   });
 
   it("stacks both windows without overlap on a narrow viewport", () => {
