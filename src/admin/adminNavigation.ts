@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   GraduationCap,
   Library,
+  Mail,
   ScrollText,
   Users,
   type LucideIcon,
@@ -48,6 +49,11 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     path: "/admin/audit",
     translationKey: "admin.nav.audit",
     icon: ScrollText,
+  },
+  {
+    path: "/admin/contact",
+    translationKey: "admin.nav.contact",
+    icon: Mail,
   },
   {
     path: "/admin/teachers",

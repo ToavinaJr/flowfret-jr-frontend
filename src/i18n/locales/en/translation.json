@@ -479,6 +479,17 @@
   },
   "contact": {
     "title": "Contact",
+    "formTitle": "Send a message",
+    "name": "Your name",
+    "emailAddress": "Email address",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending message…",
+    "submitted": "Your message has been sent. We’ll get back to you.",
+    "submitFailed": "Message could not be sent. Please try again.",
+    "otherWaysTitle": "Other ways to reach us",
+    "emailLabel": "Email",
     "description": "Questions, feedback, or collaboration ideas — we’d love to hear from you.",
     "email": "Email {{email}}"
   },
@@ -571,9 +582,8 @@
     "getStarted": "Get started",
     "footerNavigation": "More about FlowFret",
     "footerLinks": {
-      "help": "Help",
-      "contact": "Contact",
-      "story": "Our story"
+      "features": "Features",
+      "faq": "Questions"
     },
     "nav": {
       "features": "Features",
@@ -581,10 +591,8 @@
       "faq": "FAQ"
     },
     "hero": {
-      "eyebrow": "A guitar workbench for the song in front of you",
-      "title": "Turn songs you love into",
-      "titleAccent": "practice that sticks.",
-      "description": "Find chord shapes, keep time, follow available cues, and return to the part you want to play better.",
+      "title": "Learn songs on guitar, one passage at a time",
+      "description": "Find the chords and lyrics available for a song, then loop the passage you want to practice.",
       "primaryCta": "Start practicing",
       "secondaryCta": "Browse chord library",
       "chordTitle": "C major",
@@ -593,13 +601,19 @@
       "chordDiagramLabel": "C major guitar chord: mute the low E string, fret A on 3, D on 2, and B on 1; play G and high E open."
     },
     "features": {
-      "eyebrow": "The FlowFret workspace",
-      "title": "Everything around learning a song",
-      "description": "Work from a chord, a recording, or a song you love. Keep the tools, references, and people you learn with in one place.",
+      "title": "Tools that follow the song",
+      "description": "Search for music, follow the cues available, practice with guitar tools, and keep your work close. Share what you learn with other players.",
       "groups": {
         "practice": { "title": "Explore and practice" },
         "library": { "title": "Keep your work" },
         "community": { "title": "Learn together" }
+      },
+      "tiles": {
+        "song": { "kicker": "The song", "title": "Stay with the music", "description": "Find a track, follow its available cues, and work a difficult passage until it feels natural." },
+        "arrangement": { "kicker": "The arrangement", "title": "See how the song moves", "description": "Bring in audio and inspect chord changes with clear fretboard references." },
+        "instruments": { "kicker": "The instrument", "title": "Get your hands ready", "description": "Tune, keep time, and find scale patterns across the neck." },
+        "library": { "kicker": "Your workbench", "title": "Pick up where you left off", "description": "Keep songs, transcription results, account preferences, and help close at hand." },
+        "community": { "kicker": "Other players", "title": "Learn with the guitar community", "description": "Find players, share progress, ask questions, and stay in touch across FlowFret." }
       },
       "items": {
         "music": { "title": "Music search and player", "description": "Find a track and use its available lyrics, chord cues, and player tools." },
@@ -625,46 +639,44 @@
       "availabilityNote": "Lyrics, chord cues, audio transcription, and vocal reduction depend on the track, its source, and service availability. Chord analysis is an estimate and may need correction."
     },
     "steps": {
-      "eyebrow": "A practical loop",
-      "title": "Find it. Play it. Return to it.",
-      "description": "Start with one song or one chord. Keep the reference close, repeat the part that needs work, and save what you want to revisit.",
+      "title": "Work on the part that needs another try",
+      "description": "Choose a song or upload a recording. Use the available cues and set a loop around the passage you want to learn.",
       "cta": "Open your workbench",
       "items": {
         "discover": {
-          "title": "Choose a starting point",
-          "description": "Pick a song you want to learn or a chord shape you want to understand."
+          "title": "Choose a song or chord",
+          "description": "Search the music library, upload an audio file, or look up a chord shape."
         },
         "practice": {
-          "title": "Follow one useful cue",
-          "description": "Use a chord diagram, lyric line, tuner, or metronome while you play."
+          "title": "Use the cues that are available",
+          "description": "Follow chord and lyric cues, tune your guitar, or set a tempo with the metronome."
         },
         "progress": {
-          "title": "Keep the next step",
-          "description": "Save the reference you need and return when you pick up the guitar again."
+          "title": "Repeat a short passage",
+          "description": "Set A and B in the player, then return to your playlists and saved transcriptions later."
         }
       }
     },
     "faq": {
-      "eyebrow": "Questions, answered",
-      "title": "A better place to begin",
+      "title": "Questions before you start",
       "items": {
-        "first": {
+        "about": {
           "question": "What is FlowFret?",
-          "answer": "FlowFret is a guitar learning workspace that combines music discovery, practice tools, chord and scale references, and progress tracking."
+          "answer": "FlowFret brings music playback, available song cues, chord references, practice tools, playlists, transcription history, and a guitarist community into one workspace."
         },
-        "level": {
-          "question": "Is it for beginners?",
-          "answer": "Yes. FlowFret is built for beginners, returning players, and experienced guitarists who want a more structured way to explore."
+        "starting": {
+          "question": "Can I use FlowFret as a beginner?",
+          "answer": "Yes. Start with chord diagrams, the tuner, scales, or the metronome, then bring those references into a song practice session."
         },
-        "free": {
-          "question": "Can I start for free?",
-          "answer": "Yes. Create an account to explore the core workspace and start building your own practice rhythm."
+        "availability": {
+          "question": "Will every song have lyrics and chords?",
+          "answer": "No. Lyrics and chord cues depend on the track and its source. Detected chords are estimates, and uploaded audio analysis may need correction."
         }
       }
     },
     "final": {
-      "title": "Bring the song you want to learn.",
-      "description": "Open a focused guitar workspace for chord references, listening, and steady practice.",
+      "title": "Bring a song you want to learn",
+      "description": "Start with one chord, one cue, or one passage to repeat.",
       "cta": "Start practicing"
     },
     "footer": "A guitar workspace for listening, learning, and playing."
@@ -725,6 +737,7 @@
     },
     "showPassword": "Show password",
     "hidePassword": "Hide password",
+    "illustrationLabel": "A song waveform marked with an A to B practice loop",
     "backToLogin": "Back to sign in",
     "or": "or",
     "continueWithGoogle": "Continue with Google",
@@ -1103,8 +1116,30 @@
       "media": "Media",
       "music": "Music",
       "audit": "Audit log",
+      "contact": "Contact messages",
       "teachers": "Teachers",
       "data": "Platform data"
+    },
+    "contact": {
+      "title": "Contact messages",
+      "description": "Review incoming messages and update their status.",
+      "filterStatus": "Status",
+      "allStatuses": "All messages",
+      "loading": "Loading messages…",
+        "loadFailed": "Contact messages could not be loaded.",
+        "updateFailed": "Message status could not be updated. Try again.",
+      "empty": "No contact messages yet.",
+      "sender": "Sender",
+      "subject": "Subject",
+      "message": "Message",
+      "received": "Received",
+      "status": {
+        "label": "Status",
+        "forMessage": "Status for {{subject}}",
+        "NEW": "New",
+        "IN_PROGRESS": "In progress",
+        "RESOLVED": "Resolved"
+      }
     },
     "entities": {
       "title": "Platform data management",

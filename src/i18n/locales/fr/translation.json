@@ -479,6 +479,17 @@
   },
   "contact": {
     "title": "Contact",
+    "formTitle": "Envoyer un message",
+    "name": "Votre nom",
+    "emailAddress": "Adresse e-mail",
+    "subject": "Sujet",
+    "message": "Message",
+    "send": "Envoyer le message",
+    "sending": "Envoi du message…",
+    "submitted": "Votre message a été envoyé. Nous vous répondrons bientôt.",
+    "submitFailed": "Le message n’a pas pu être envoyé. Veuillez réessayer.",
+    "otherWaysTitle": "Nous joindre autrement",
+    "emailLabel": "E-mail",
     "description": "Une question, un retour ou une idée de collaboration ? Nous serions ravis de vous lire.",
     "email": "Écrire à {{email}}"
   },
@@ -571,9 +582,8 @@
     "getStarted": "Commencer",
     "footerNavigation": "En savoir plus sur FlowFret",
     "footerLinks": {
-      "help": "Aide",
-      "contact": "Contact",
-      "story": "Notre histoire"
+      "features": "Fonctionnalités",
+      "faq": "Questions"
     },
     "nav": {
       "features": "Fonctionnalités",
@@ -581,10 +591,8 @@
       "faq": "FAQ"
     },
     "hero": {
-      "eyebrow": "Un atelier de guitare pour le morceau que vous jouez",
-      "title": "Transformez les morceaux que vous aimez en",
-      "titleAccent": "exercices qui restent.",
-      "description": "Trouvez les positions d’accords, gardez le rythme, suivez les repères disponibles et revenez aux passages que vous voulez mieux jouer.",
+      "title": "Apprenez vos morceaux à la guitare, passage après passage",
+      "description": "Retrouvez les paroles et les accords disponibles, puis bouclez le passage que vous voulez travailler.",
       "primaryCta": "Commencer à pratiquer",
       "secondaryCta": "Parcourir les accords",
       "chordTitle": "Do majeur",
@@ -593,13 +601,19 @@
       "chordDiagramLabel": "Accord de do majeur : étouffez la corde de mi grave, placez le la en case 3, le ré en case 2 et le si en case 1 ; jouez sol et mi aigu à vide."
     },
     "features": {
-      "eyebrow": "L’espace FlowFret",
-      "title": "Tout ce qui aide à apprendre un morceau",
-      "description": "Partez d’un accord, d’un enregistrement ou d’un morceau que vous aimez. Retrouvez au même endroit vos outils, vos repères et les personnes avec qui vous apprenez.",
+      "title": "Des outils qui suivent le morceau",
+      "description": "Recherchez un morceau, suivez les repères disponibles et travaillez avec vos outils de guitare. Retrouvez votre musique et partagez vos progrès avec d’autres guitaristes.",
       "groups": {
         "practice": { "title": "Explorer et pratiquer" },
         "library": { "title": "Garder ses repères" },
         "community": { "title": "Apprendre ensemble" }
+      },
+      "tiles": {
+        "song": { "kicker": "Le morceau", "title": "Restez dans la musique", "description": "Trouvez un titre, suivez les repères disponibles et reprenez le passage qui vous résiste." },
+        "arrangement": { "kicker": "L’arrangement", "title": "Suivez les mouvements du morceau", "description": "Importez un audio et examinez les changements d’accord avec des repères clairs sur le manche." },
+        "instruments": { "kicker": "L’instrument", "title": "Préparez vos mains", "description": "Accordez la guitare, gardez le tempo et repérez les gammes sur le manche." },
+        "library": { "kicker": "Votre atelier", "title": "Reprenez là où vous en étiez", "description": "Retrouvez vos morceaux, transcriptions, préférences et ressources d’aide." },
+        "community": { "kicker": "Les guitaristes", "title": "Apprenez avec la communauté", "description": "Rencontrez d’autres guitaristes, partagez vos progrès et échangez sur FlowFret." }
       },
       "items": {
         "music": { "title": "Recherche et lecteur musical", "description": "Trouvez un morceau et utilisez les paroles, les accords et les outils disponibles pour le travailler." },
@@ -625,46 +639,44 @@
       "availabilityNote": "Les paroles, les accords, la transcription audio et la réduction vocale dépendent du morceau, de sa source et de la disponibilité des services. Les accords détectés sont des estimations à vérifier."
     },
     "steps": {
-      "eyebrow": "Une boucle de pratique",
-      "title": "Trouvez. Jouez. Revenez-y.",
-      "description": "Commencez par un morceau ou un accord. Gardez le repère près de vous, répétez le passage à travailler et enregistrez ce que vous voulez reprendre.",
+      "title": "Reprenez le passage qui vous résiste",
+      "description": "Choisissez un morceau ou importez un enregistrement. Utilisez les repères disponibles, puis définissez la boucle autour du passage à apprendre.",
       "cta": "Ouvrir votre atelier",
       "items": {
         "discover": {
-          "title": "Choisissez un point de départ",
-          "description": "Prenez un morceau à apprendre ou une position d’accord à comprendre."
+          "title": "Choisissez un morceau ou un accord",
+          "description": "Recherchez un titre, importez un fichier audio ou consultez une position d’accord."
         },
         "practice": {
-          "title": "Suivez un repère utile",
-          "description": "Appuyez-vous sur un diagramme, des paroles, l’accordeur ou le métronome."
+          "title": "Utilisez les repères disponibles",
+          "description": "Suivez les accords et les paroles, accordez la guitare ou choisissez un tempo."
         },
         "progress": {
-          "title": "Gardez la suite en tête",
-          "description": "Enregistrez le repère nécessaire et retrouvez-le à votre prochaine session."
+          "title": "Répétez un court passage",
+          "description": "Définissez A et B dans le lecteur, puis retrouvez vos playlists et transcriptions plus tard."
         }
       }
     },
     "faq": {
-      "eyebrow": "Vos questions, nos réponses",
-      "title": "Un meilleur point de départ",
+      "title": "Avant de commencer",
       "items": {
-        "first": {
+        "about": {
           "question": "Qu’est-ce que FlowFret ?",
-          "answer": "FlowFret est un espace d’apprentissage de la guitare qui réunit découverte musicale, outils de pratique, références d’accords et de gammes, et suivi de progression."
+          "answer": "FlowFret réunit lecteur musical, paroles et accords disponibles, références d’accords, outils de pratique, playlists, historique des transcriptions et communauté de guitaristes."
         },
-        "level": {
-          "question": "Est-ce adapté aux débutants ?",
-          "answer": "Oui. FlowFret s’adresse aux débutants, aux guitaristes qui reprennent et aux joueurs expérimentés qui souhaitent explorer avec plus de structure."
+        "starting": {
+          "question": "Puis-je utiliser FlowFret en débutant ?",
+          "answer": "Oui. Commencez par les diagrammes d’accords, l’accordeur, les gammes ou le métronome, puis utilisez ces repères pour travailler un morceau."
         },
-        "free": {
-          "question": "Puis-je commencer gratuitement ?",
-          "answer": "Oui. Créez un compte pour découvrir l’espace principal et commencer à construire votre rythme de pratique."
+        "availability": {
+          "question": "Tous les morceaux ont-ils des paroles et des accords ?",
+          "answer": "Non. Leur disponibilité dépend du morceau et de sa source. Les accords détectés sont des estimations et l’analyse d’un fichier importé peut nécessiter des corrections."
         }
       }
     },
     "final": {
-      "title": "Apportez le morceau que vous voulez apprendre.",
-      "description": "Retrouvez les accords, l’écoute et les outils de pratique dans un même espace guitare.",
+      "title": "Apportez un morceau à apprendre",
+      "description": "Commencez par un accord, un repère ou un passage à répéter.",
       "cta": "Commencer à pratiquer"
     },
     "footer": "Un espace guitare pour écouter, apprendre et jouer."
@@ -725,6 +737,7 @@
     },
     "showPassword": "Afficher le mot de passe",
     "hidePassword": "Masquer le mot de passe",
+    "illustrationLabel": "Forme d’onde d’un morceau avec boucle de pratique entre A et B",
     "backToLogin": "Retour à la connexion",
     "or": "ou",
     "continueWithGoogle": "Continuer avec Google",
@@ -1103,8 +1116,30 @@
       "media": "Médias",
       "music": "Musique",
       "audit": "Journal d’audit",
+      "contact": "Messages de contact",
       "teachers": "Enseignants",
       "data": "Données plateforme"
+    },
+    "contact": {
+      "title": "Messages de contact",
+      "description": "Consultez les messages reçus et mettez leur statut à jour.",
+      "filterStatus": "Statut",
+      "allStatuses": "Tous les messages",
+      "loading": "Chargement des messages…",
+        "loadFailed": "Impossible de charger les messages de contact.",
+        "updateFailed": "Impossible de modifier le statut du message. Réessayez.",
+      "empty": "Aucun message de contact pour le moment.",
+      "sender": "Expéditeur",
+      "subject": "Sujet",
+      "message": "Message",
+      "received": "Reçu le",
+      "status": {
+        "label": "Statut",
+        "forMessage": "Statut du message « {{subject}} »",
+        "NEW": "Nouveau",
+        "IN_PROGRESS": "En cours",
+        "RESOLVED": "Traité"
+      }
     },
     "entities": {
       "title": "Gestion des données plateforme",

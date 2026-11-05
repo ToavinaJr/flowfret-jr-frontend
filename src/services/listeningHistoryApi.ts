@@ -9,9 +9,10 @@ const TRACK_FIELDS = `
   artists { id name }
 `;
 
-export async function fetchListeningHistory(): Promise<MusicTrack[]> {
+export async function fetchListeningHistory(take = 20, skip = 0): Promise<MusicTrack[]> {
   const data = await graphqlRequest<{ myListeningHistory: MusicTrack[] }>({
-    query: `query MyListeningHistory { myListeningHistory(take: 20) { ${TRACK_FIELDS} } }`,
+    query: `query MyListeningHistory($take: Int!, $skip: Int!) { myListeningHistory(take: $take, skip: $skip) { ${TRACK_FIELDS} } }`,
+    variables: { take, skip },
   });
   return data.myListeningHistory;
 }

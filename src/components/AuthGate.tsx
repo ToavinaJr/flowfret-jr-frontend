@@ -22,7 +22,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   if (flow.status === "loading") return <AppShellSkeleton />;
   if (flow.status === "authenticated") {
     if (location.pathname === "/login" || location.pathname === "/register") {
-      return <Navigate to="/" replace />;
+      return <Navigate to={getReturnDestination(location.state)} replace />;
     }
     return <>{children}</>;
   }
@@ -40,7 +40,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
       location.pathname,
     )
   ) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          returnTo: `${location.pathname}${location.search}${location.hash}`,
+        }}
+      />
+    );
   }
 
   return (
@@ -51,4 +59,21 @@ export function AuthGate({ children }: { children: ReactNode }) {
       </div>
     </Suspense>
   );
+}
+
+function getReturnDestination(state: unknown): string {
+  if (!state || typeof state !== "object" || !("returnTo" in state)) {
+    return "/";
+  }
+
+  const { returnTo } = state as { returnTo?: unknown };
+  if (
+    typeof returnTo !== "string" ||
+    !returnTo.startsWith("/") ||
+    returnTo.startsWith("//")
+  ) {
+    return "/";
+  }
+
+  return returnTo;
 }

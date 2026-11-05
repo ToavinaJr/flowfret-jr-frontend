@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { searchMusic } from "@/services/musicGraphql";
 import type { MusicSearchResult } from "@/types/music";
@@ -26,9 +26,11 @@ export function useMusicSearch(): UseMusicSearchResult {
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [hasSearched, setHasSearched] = useState(false);
-  const historyQuery = useQuery({
+  const historyQuery = useInfiniteQuery({
     queryKey: ["listening-history"],
-    queryFn: fetchListeningHistory,
+    queryFn: ({ pageParam }) => fetchListeningHistory(DEFAULT_LIMIT, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => lastPage.length === DEFAULT_LIMIT ? allPages.length * DEFAULT_LIMIT : undefined,
     staleTime: 30_000,
   });
 
@@ -81,7 +83,7 @@ export function useMusicSearch(): UseMusicSearchResult {
   }, [musicQuery.data?.pages]);
 
   const historyResults = useMemo<MusicSearchResult | null>(() => {
-    const tracks = historyQuery.data ?? [];
+    const tracks = historyQuery.data?.pages.flat() ?? [];
     if (!tracks.length) return null;
     return {
       provider: tracks[0].provider,
@@ -106,13 +108,13 @@ export function useMusicSearch(): UseMusicSearchResult {
     query,
     results: hasSearched ? searchResults : historyResults,
     loading: hasSearched ? musicQuery.isLoading : historyQuery.isLoading,
-    loadingMore: musicQuery.isFetchingNextPage,
-    hasMore: Boolean(musicQuery.hasNextPage),
+    loadingMore: hasSearched ? musicQuery.isFetchingNextPage : historyQuery.isFetchingNextPage,
+    hasMore: hasSearched ? Boolean(musicQuery.hasNextPage) : Boolean(historyQuery.hasNextPage),
     error: errorMessage,
     hasSearched,
     displayingHistory: !hasSearched && Boolean(historyResults?.tracks.length),
     search,
-    loadMore: () => void musicQuery.fetchNextPage(),
+    loadMore: () => void (hasSearched ? musicQuery.fetchNextPage() : historyQuery.fetchNextPage()),
     reset,
   };
 }

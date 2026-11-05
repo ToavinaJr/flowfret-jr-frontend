@@ -127,8 +127,14 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 export function getTranscriptionQueueDiagnostics(): Promise<Record<string, unknown>> {
   return request(`${BASE_URL}/diagnostics/queue`, { headers: headers() });
 }
-export function listTranscriptions(take = 20): Promise<TranscriptionResponse[]> {
-  return request(`${BASE_URL}?take=${encodeURIComponent(String(take))}`, {
+export interface TranscriptionPage {
+  nodes: TranscriptionResponse[];
+  totalCount: number;
+}
+
+export function listTranscriptions(take = 20, skip = 0): Promise<TranscriptionPage> {
+  const params = new URLSearchParams({ take: String(take), skip: String(skip) });
+  return request(`${BASE_URL}?${params.toString()}`, {
     headers: headers(),
   });
 }

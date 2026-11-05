@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import {
@@ -11,23 +11,29 @@ import type { TranscriptionResponse } from "@/types/transcription";
 import { useTranslation } from "react-i18next";
 import { TranscriptionsWorkspaceSkeleton } from "@/components/skeletons/TranscriptionsWorkspaceSkeleton";
 
+const TRANSCRIPTIONS_PAGE_SIZE = 10;
+
 export default function TranscriptionsPage() {
   const { t } = useTranslation();
   const [items, setItems] = useState<TranscriptionResponse[]>([]);
   const [selected, setSelected] = useState<TranscriptionResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    void listTranscriptions()
-      .then((rows) => {
-        setItems(rows);
-        setSelected(rows[0] ?? null);
+    setLoading(true);
+    void listTranscriptions(TRANSCRIPTIONS_PAGE_SIZE, page * TRANSCRIPTIONS_PAGE_SIZE)
+      .then((result) => {
+        setItems(result.nodes);
+        setTotalCount(result.totalCount);
+        setSelected(result.nodes[0] ?? null);
       })
       .catch((error: unknown) =>
         toast.error(error instanceof Error ? error.message : t("common.loadFailed")),
       )
       .finally(() => setLoading(false));
-  }, [t]);
+  }, [page, t]);
 
   async function retry(item: TranscriptionResponse) {
     const audioUrl = `https://api.audius.co/v1/tracks/${encodeURIComponent(item.trackId)}/stream`;
@@ -44,8 +50,9 @@ export default function TranscriptionsPage() {
         <TranscriptionsWorkspaceSkeleton />
       ) : (
         <div className="grid min-w-0 gap-4 md:grid-cols-[18rem_minmax(0,1fr)]">
-          <aside className="max-h-[48dvh] min-w-0 space-y-2 overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-card p-3 md:max-h-none">
-            {items.map((item) => (
+          <aside className="flex max-h-[48dvh] min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-3 md:max-h-none">
+            <div className="min-h-0 flex-1 space-y-2 overflow-x-hidden overflow-y-auto">
+              {items.map((item) => (
               <button
                 type="button"
                 key={item.transcriptionId}
@@ -55,8 +62,18 @@ export default function TranscriptionsPage() {
                 <span className="block truncate text-sm font-medium">{item.title ?? item.trackId}</span>
                 <span className="block truncate text-xs text-muted-foreground">{item.artist ?? t("transcriptions.unknownArtist")} · {item.status}</span>
               </button>
-            ))}
-            {!items.length && <p className="p-3 text-sm text-muted-foreground">{t("transcriptions.empty")}</p>}
+              ))}
+              {!items.length && <p className="p-3 text-sm text-muted-foreground">{t("transcriptions.empty")}</p>}
+            </div>
+            {totalCount > TRANSCRIPTIONS_PAGE_SIZE && (
+              <footer className="flex items-center justify-between gap-2 border-t border-border pt-3">
+                <span className="text-xs tabular-nums text-muted-foreground">{t("admin.pageIndicator", { page: page + 1, total: Math.ceil(totalCount / TRANSCRIPTIONS_PAGE_SIZE) })}</span>
+                <div className="flex gap-1">
+                  <button type="button" aria-label={t("admin.previousPage")} disabled={page === 0 || loading} onClick={() => setPage((current) => Math.max(0, current - 1))} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-border disabled:opacity-40"><ChevronLeft aria-hidden="true" className="h-4 w-4" /></button>
+                  <button type="button" aria-label={t("admin.nextPage")} disabled={(page + 1) * TRANSCRIPTIONS_PAGE_SIZE >= totalCount || loading} onClick={() => setPage((current) => current + 1)} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md border border-border disabled:opacity-40"><ChevronRight aria-hidden="true" className="h-4 w-4" /></button>
+                </div>
+              </footer>
+            )}
           </aside>
           {selected && <TranscriptionDetails item={selected} onRetry={() => retry(selected)} />}
         </div>

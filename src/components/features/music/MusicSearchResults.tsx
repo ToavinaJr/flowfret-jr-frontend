@@ -69,7 +69,7 @@ export function MusicSearchResults({
           </li>
         ))}
       </ul>
-      {hasSearched && hasMore ? (
+      {(hasSearched || displayingHistory) && hasMore ? (
         <button
           type="button"
           disabled={loadingMore}
