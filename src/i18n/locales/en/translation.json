@@ -569,6 +569,12 @@
     "closeMenu": "Close menu",
     "login": "Sign in",
     "getStarted": "Get started",
+    "footerNavigation": "More about FlowFret",
+    "footerLinks": {
+      "help": "Help",
+      "contact": "Contact",
+      "story": "Our story"
+    },
     "nav": {
       "features": "Features",
       "howItWorks": "How it works",
@@ -586,28 +592,37 @@
       "chordFingering": "String fingering: x 3 2 0 1 0",
       "chordDiagramLabel": "C major guitar chord: mute the low E string, fret A on 3, D on 2, and B on 1; play G and high E open."
     },
-    "tools": {
-      "chords": {
-        "title": "Read the shape",
-        "description": "Look up a chord and see where each finger goes."
-      },
-      "music": {
-        "title": "Work from a song",
-        "description": "Search and listen, then follow the chord and lyric cues that are available."
-      },
-      "tuner": {
-        "title": "Tune before you play",
-        "description": "Check each string before working through a new shape."
-      },
-      "rhythm": {
-        "title": "Keep a steady pulse",
-        "description": "Set a tempo and make each repetition more even."
-      }
-    },
     "features": {
-      "eyebrow": "The workbench",
-      "title": "From the first chord to the whole song",
-      "description": "Find a shape, tune up, keep time, and return to the music."
+      "eyebrow": "The FlowFret workspace",
+      "title": "Everything around learning a song",
+      "description": "Work from a chord, a recording, or a song you love. Keep the tools, references, and people you learn with in one place.",
+      "groups": {
+        "practice": { "title": "Explore and practice" },
+        "library": { "title": "Keep your work" },
+        "community": { "title": "Learn together" }
+      },
+      "items": {
+        "music": { "title": "Music search and player", "description": "Find a track and use its available lyrics, chord cues, and player tools." },
+        "upload": { "title": "Audio upload and chord analysis", "description": "Load a local audio file and review estimated chord changes." },
+        "chords": { "title": "Chord and fingering library", "description": "Search chord shapes, compare voicings, and view fretboard diagrams." },
+        "tuner": { "title": "Chromatic tuner", "description": "Tune a guitar string using your device microphone." },
+        "rhythm": { "title": "Metronome", "description": "Set a tempo and practice with a steady beat." },
+        "scales": { "title": "Scales and fretboard", "description": "Explore scale patterns and note positions on the neck." },
+        "practiceLoop": { "title": "Practice loop", "description": "Set A and B points in a track and repeat the passage you are learning." },
+        "vocalRemoval": { "title": "Vocal reduction", "description": "Prepare supported tracks and reduce the vocal level while you play along." },
+        "playlists": { "title": "Playlists", "description": "Organize tracks and return to the songs you are working on." },
+        "transcriptions": { "title": "Transcriptions and history", "description": "Review past audio transcriptions and download available results." },
+        "globalSearch": { "title": "Global search", "description": "Search music, community posts, and member profiles together." },
+        "feed": { "title": "Community feed", "description": "Share posts, music, and progress with other guitarists." },
+        "friends": { "title": "Friends", "description": "Find guitarists and manage your connections." },
+        "messages": { "title": "Private and group messages", "description": "Talk with friends and create group conversations." },
+        "teaching": { "title": "Guitar lessons", "description": "Find courses, request a place, or manage lessons and materials as an instructor." },
+        "notifications": { "title": "Notifications", "description": "Keep up with activity across your FlowFret account." },
+        "profiles": { "title": "Profiles", "description": "Manage your profile and discover other players." },
+        "settings": { "title": "Account settings", "description": "Manage your account preferences and security." },
+        "help": { "title": "Help and support", "description": "Find guidance and contact the FlowFret team." }
+      },
+      "availabilityNote": "Lyrics, chord cues, audio transcription, and vocal reduction depend on the track, its source, and service availability. Chord analysis is an estimate and may need correction."
     },
     "steps": {
       "eyebrow": "A practical loop",
@@ -652,7 +667,7 @@
       "description": "Open a focused guitar workspace for chord references, listening, and steady practice.",
       "cta": "Start practicing"
     },
-    "footer": "A calmer, clearer way to learn and play guitar."
+    "footer": "A guitar workspace for listening, learning, and playing."
   },
   "auth": {
     "title": {

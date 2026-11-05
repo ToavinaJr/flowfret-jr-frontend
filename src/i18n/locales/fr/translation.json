@@ -569,6 +569,12 @@
     "closeMenu": "Fermer le menu",
     "login": "Se connecter",
     "getStarted": "Commencer",
+    "footerNavigation": "En savoir plus sur FlowFret",
+    "footerLinks": {
+      "help": "Aide",
+      "contact": "Contact",
+      "story": "Notre histoire"
+    },
     "nav": {
       "features": "Fonctionnalités",
       "howItWorks": "Comment ça marche",
@@ -587,9 +593,36 @@
       "chordDiagramLabel": "Accord de do majeur : étouffez la corde de mi grave, placez le la en case 3, le ré en case 2 et le si en case 1 ; jouez sol et mi aigu à vide."
     },
     "features": {
-      "eyebrow": "L’atelier",
-      "title": "Du premier accord au morceau entier",
-      "description": "Retrouvez une position, accordez la guitare, gardez le rythme et revenez au morceau."
+      "eyebrow": "L’espace FlowFret",
+      "title": "Tout ce qui aide à apprendre un morceau",
+      "description": "Partez d’un accord, d’un enregistrement ou d’un morceau que vous aimez. Retrouvez au même endroit vos outils, vos repères et les personnes avec qui vous apprenez.",
+      "groups": {
+        "practice": { "title": "Explorer et pratiquer" },
+        "library": { "title": "Garder ses repères" },
+        "community": { "title": "Apprendre ensemble" }
+      },
+      "items": {
+        "music": { "title": "Recherche et lecteur musical", "description": "Trouvez un morceau et utilisez les paroles, les accords et les outils disponibles pour le travailler." },
+        "upload": { "title": "Import audio et analyse d’accords", "description": "Chargez un fichier audio local et examinez les changements d’accord estimés." },
+        "chords": { "title": "Accords et doigtés", "description": "Recherchez des positions, comparez leurs variantes et consultez les diagrammes du manche." },
+        "tuner": { "title": "Accordeur chromatique", "description": "Accordez chaque corde avec le microphone de votre appareil." },
+        "rhythm": { "title": "Métronome", "description": "Choisissez un tempo et travaillez avec une pulsation régulière." },
+        "scales": { "title": "Gammes et manche", "description": "Explorez les motifs de gamme et les notes sur le manche." },
+        "practiceLoop": { "title": "Boucle de pratique", "description": "Définissez les points A et B d’un morceau pour répéter le passage à apprendre." },
+        "vocalRemoval": { "title": "Réduction de la voix", "description": "Préparez les morceaux compatibles et baissez progressivement le niveau vocal pour jouer dessus." },
+        "playlists": { "title": "Playlists", "description": "Organisez vos morceaux et retrouvez ceux que vous travaillez." },
+        "transcriptions": { "title": "Transcriptions et historique", "description": "Consultez vos transcriptions audio précédentes et téléchargez les résultats disponibles." },
+        "settings": { "title": "Paramètres du compte", "description": "Gérez vos préférences et la sécurité de votre compte." },
+        "help": { "title": "Aide et accompagnement", "description": "Consultez les repères musicaux et les informations d’aide de FlowFret." },
+        "globalSearch": { "title": "Recherche globale", "description": "Recherchez en même temps des morceaux, des publications et des profils." },
+        "feed": { "title": "Fil de la communauté", "description": "Partagez des publications, de la musique et vos progrès avec d’autres guitaristes." },
+        "friends": { "title": "Amis", "description": "Trouvez des guitaristes et gérez vos relations." },
+        "messages": { "title": "Messages privés et groupes", "description": "Échangez avec vos amis et créez des conversations de groupe." },
+        "teaching": { "title": "Cours de guitare", "description": "Trouvez des cours, demandez une place ou gérez vos leçons et supports pédagogiques." },
+        "notifications": { "title": "Notifications", "description": "Suivez l’activité liée à votre compte FlowFret." },
+        "profiles": { "title": "Profils", "description": "Gérez votre profil et découvrez d’autres guitaristes." }
+      },
+      "availabilityNote": "Les paroles, les accords, la transcription audio et la réduction vocale dépendent du morceau, de sa source et de la disponibilité des services. Les accords détectés sont des estimations à vérifier."
     },
     "steps": {
       "eyebrow": "Une boucle de pratique",
@@ -634,25 +667,7 @@
       "description": "Retrouvez les accords, l’écoute et les outils de pratique dans un même espace guitare.",
       "cta": "Commencer à pratiquer"
     },
-    "footer": "Une façon plus calme et plus claire d’apprendre et de jouer de la guitare.",
-    "tools": {
-      "chords": {
-        "title": "Lire une position",
-        "description": "Consultez un accord et voyez où placer chaque doigt."
-      },
-      "music": {
-        "title": "Partir d’un morceau",
-        "description": "Recherchez et écoutez, puis suivez les accords et les paroles disponibles."
-      },
-      "tuner": {
-        "title": "Accorder avant de jouer",
-        "description": "Vérifiez chaque corde avant de travailler une nouvelle position."
-      },
-      "rhythm": {
-        "title": "Garder un tempo régulier",
-        "description": "Choisissez une vitesse et rendez chaque répétition plus stable."
-      }
-    }
+    "footer": "Un espace guitare pour écouter, apprendre et jouer."
   },
   "auth": {
     "title": {

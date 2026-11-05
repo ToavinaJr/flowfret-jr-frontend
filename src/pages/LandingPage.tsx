@@ -4,11 +4,41 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-const TOOLS = [
-  { key: "chords", href: "/chords" },
-  { key: "music", href: "/music" },
-  { key: "tuner", href: "/tuner" },
-  { key: "rhythm", href: "/metronome" },
+const FEATURE_GROUPS = [
+  {
+    key: "practice",
+    items: [
+      ["music", "/music"],
+      ["upload", "/upload"],
+      ["chords", "/chords"],
+      ["tuner", "/tuner"],
+      ["rhythm", "/metronome"],
+      ["scales", "/scales"],
+      ["practiceLoop", "/music"],
+      ["vocalRemoval", "/music"],
+    ],
+  },
+  {
+    key: "library",
+    items: [
+      ["playlists", "/playlists"],
+      ["transcriptions", "/transcriptions"],
+      ["settings", "/parametres"],
+      ["help", "/help"],
+    ],
+  },
+  {
+    key: "community",
+    items: [
+      ["globalSearch", "/search"],
+      ["feed", "/"],
+      ["friends", "/friends"],
+      ["messages", "/messages"],
+      ["teaching", "/teaching"],
+      ["notifications", "/notifications"],
+      ["profiles", "/profile"],
+    ],
+  },
 ] as const;
 const STEPS = ["discover", "practice", "progress"] as const;
 const FAQS = ["first", "level", "free"] as const;
@@ -107,26 +137,36 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="features" className="scroll-mt-20 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">{t("landing.features.eyebrow")}</p>
-            <h2 className="font-display mt-3 max-w-md text-4xl leading-tight sm:text-5xl">{t("landing.features.title")}</h2>
-            <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">{t("landing.features.description")}</p>
+      <section id="features" className="scroll-mt-20 border-y border-border bg-card/40">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mb-10 grid gap-5 lg:mb-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:gap-20">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t("landing.features.eyebrow")}</p>
+              <h2 className="font-display mt-3 max-w-md text-4xl leading-tight sm:text-5xl">{t("landing.features.title")}</h2>
+            </div>
+            <p className="max-w-2xl text-base leading-7 text-muted-foreground">{t("landing.features.description")}</p>
           </div>
-          <ul className="divide-y divide-border border-y border-border">
-            {TOOLS.map(({ key, href }) => (
-              <li key={key}>
-                <Link to={href} className="group flex items-center justify-between gap-6 py-5">
-                  <span>
-                    <span className="block text-base font-medium text-foreground">{t(`landing.tools.${key}.title`)}</span>
-                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">{t(`landing.tools.${key}.description`)}</span>
-                  </span>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" aria-hidden="true" />
-                </Link>
-              </li>
+          <div className="grid gap-x-10 gap-y-12 border-t border-border pt-8 md:grid-cols-2 xl:grid-cols-3">
+            {FEATURE_GROUPS.map(({ key, items }) => (
+              <section key={key} aria-labelledby={`landing-feature-${key}`}>
+                <h3 id={`landing-feature-${key}`} className="mb-4 text-xl font-semibold">{t(`landing.features.groups.${key}.title`)}</h3>
+                <ul className="divide-y divide-border">
+                  {items.map(([itemKey, href]) => (
+                    <li key={itemKey}>
+                      <Link to={href} className="group flex min-h-16 items-center justify-between gap-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                        <span className="min-w-0">
+                          <span className="block font-medium text-foreground">{t(`landing.features.items.${itemKey}.title`)}</span>
+                          <span className="mt-1 block text-sm leading-6 text-muted-foreground">{t(`landing.features.items.${itemKey}.description`)}</span>
+                        </span>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" aria-hidden="true" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </div>
+          <p className="mt-8 max-w-3xl text-sm leading-6 text-muted-foreground">{t("landing.features.availabilityNote")}</p>
         </div>
       </section>
 
@@ -182,10 +222,16 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-7 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-7 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 font-semibold text-foreground"><Guitar className="h-4 w-4 text-primary" aria-hidden="true" />FlowFret</div>
           <p>{t("landing.footer")}</p>
-          <div className="flex gap-4"><Link to="/login" className="hover:text-foreground">{t("landing.login")}</Link><Link to="/register" className="hover:text-foreground">{t("landing.getStarted")}</Link></div>
+          <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label={t("landing.footerNavigation")}>
+            <Link to="/help" className="hover:text-foreground">{t("landing.footerLinks.help")}</Link>
+            <Link to="/contact" className="hover:text-foreground">{t("landing.footerLinks.contact")}</Link>
+            <Link to="/histoire" className="hover:text-foreground">{t("landing.footerLinks.story")}</Link>
+            <Link to="/login" className="hover:text-foreground">{t("landing.login")}</Link>
+            <Link to="/register" className="hover:text-foreground">{t("landing.getStarted")}</Link>
+          </nav>
         </div>
       </footer>
     </main>

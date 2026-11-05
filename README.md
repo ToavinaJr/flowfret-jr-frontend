@@ -1,11 +1,17 @@
-# flowfret-jr
+# FlowFret frontend
 
-The client includes social feeds, provider-neutral music search, playlists with
-genre filtering and shared queue playback, transcription history, and account
-session/security controls. Build-time public configuration is centralized in
-`src/config/runtime.ts`; never expose backend secrets through `VITE_*` values.
+React + TypeScript + Vite client for FlowFret. The product feature overview is
+in the [project README](../README.md).
 
-React + Vite frontend for FlowFret.
+The authenticated workspace includes music search and playback, lyrics and
+chord cues when available, A/B practice looping, supported vocal reduction,
+local audio chord analysis, chord and scale references, tuner, metronome,
+playlists, transcription history, teaching, and social features. Public landing
+page content is translated in both `src/i18n/locales/en/translation.json` and
+`src/i18n/locales/fr/translation.json`.
+
+Build-time public configuration is centralized in `src/config/runtime.ts`;
+never expose backend secrets through `VITE_*` values.
 
 ## Administration
 
