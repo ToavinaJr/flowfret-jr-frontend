@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useAuth } from "./useAuth";
@@ -11,6 +11,7 @@ import {
 } from "@/services/googleAuth";
 import { ApiClientError } from "@/types/api";
 import type { AuthMode } from "@/types/auth";
+import { readPasswordResetToken } from "@/utils/passwordResetLink";
 import {
   assertPasswords,
   googleError,
@@ -23,6 +24,7 @@ export function useAuthGateFlow() {
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const form = useAuthForm();
   const { resetForm, setMode } = form;
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -67,22 +69,37 @@ export function useAuthGateFlow() {
   }, [t]);
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    if (!token) return;
-    if (window.location.pathname === "/reset-password") {
+    if (location.pathname === "/reset-password") {
+      const token = readPasswordResetToken(location.search, location.hash);
+      if (!token) return;
       setPasswordResetToken(token);
       setMode("reset");
-    } else if (
-      window.location.pathname === "/verify-email" ||
-      searchParams.has("token")
-    ) {
+      if (location.hash || searchParams.has("token")) {
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete("token");
+        const search = nextParams.toString();
+        navigate(`${location.pathname}${search ? `?${search}` : ""}`, {
+          replace: true,
+        });
+      }
+      return;
+    }
+    const token = searchParams.get("token");
+    if (token) {
       setVerificationToken(token);
       setMode("verify");
     }
-  }, [searchParams, setMode]);
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    navigate,
+    searchParams,
+    setMode,
+  ]);
 
   function switchMode(next: AuthMode) {
-  setMode(next);
+    setMode(next);
     setError(null);
     setAcceptedTerms(false);
     form.resetForm();
@@ -183,8 +200,7 @@ export function useAuthGateFlow() {
       return;
     }
     assertPasswords(state.password, state.confirmPassword, t);
-    if (!acceptedTerms)
-      throw new LocalAuthError(t("auth.errors.acceptTerms"));
+    if (!acceptedTerms) throw new LocalAuthError(t("auth.errors.acceptTerms"));
     await auth.register({
       email: state.email,
       password: state.password,

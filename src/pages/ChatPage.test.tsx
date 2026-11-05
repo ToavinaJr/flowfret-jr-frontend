@@ -224,7 +224,8 @@ describe("ChatPage", () => {
     );
 
     expect(mocks.removeMember).not.toHaveBeenCalled();
-    const [, options] = mocks.toast.mock.calls.at(-1) ?? [];
+    const lastToastCall = mocks.toast.mock.calls[mocks.toast.mock.calls.length - 1];
+    const options = lastToastCall?.[1];
     expect(mocks.toast).toHaveBeenLastCalledWith(
       message,
       expect.objectContaining({

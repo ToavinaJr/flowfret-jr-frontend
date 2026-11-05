@@ -32,7 +32,7 @@ function windowElement(minimized = false) {
       >
         <p>Window content</p>
       </FloatingPanelWindow>
-    </I18nextProvider>,
+    </I18nextProvider>
   );
 }
 
