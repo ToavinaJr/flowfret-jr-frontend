@@ -12,6 +12,7 @@ const playback = vi.hoisted(() => ({
     subtitle: "Ando Rak",
     artist: "Ando Rak",
     provider: "YOUTUBE",
+    providerTrackId: "video-42",
     destination: undefined as string | undefined,
   },
   lastEndedItemId: null as string | null,
@@ -22,6 +23,7 @@ const playback = vi.hoisted(() => ({
   duration: 120,
   volume: 1,
   toggle: vi.fn(),
+  pause: vi.fn(),
   seek: vi.fn(),
   setVolume: vi.fn(),
   queue: [] as unknown[],
@@ -56,9 +58,12 @@ describe("PersistentMediaPlayer lyrics control", () => {
       subtitle: "Ando Rak",
       artist: "Ando Rak",
       provider: "YOUTUBE",
+      providerTrackId: "video-42",
       destination: undefined,
     };
     playback.queue = [];
+    playback.currentTime = 0;
+    playback.pause.mockClear();
     playback.lastEndedItemId = null;
     playback.playbackEndSequence = 0;
     localStorage.clear();
@@ -114,5 +119,41 @@ describe("PersistentMediaPlayer lyrics control", () => {
     );
 
     expect(screen.queryByRole("dialog", { name: /lyrics/i })).not.toBeInTheDocument();
+  });
+
+  it("opens the floating YouTube video at the current playback position", () => {
+    playback.currentTime = 37.8;
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <PersistentMediaPlayer />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+
+    const videoButtons = screen.getAllByRole("button", { name: /watch this youtube video/i });
+    fireEvent.click(videoButtons[0]);
+
+    const dialog = screen.getByRole("dialog", { name: /youtube video/i });
+    const iframe = dialog.querySelector("iframe");
+    expect(iframe).toHaveAttribute(
+      "src",
+      expect.stringContaining("youtube-nocookie.com/embed/video-42?autoplay=1"),
+    );
+    expect(iframe).toHaveAttribute("src", expect.stringContaining("start=37"));
+    expect(playback.pause).toHaveBeenCalledOnce();
+  });
+
+  it("does not show the video action for a non-YouTube provider", () => {
+    playback.item = { ...playback.item, provider: "AUDIUS", providerTrackId: "track-42" };
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <PersistentMediaPlayer />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+
+    expect(screen.queryByRole("button", { name: /watch this youtube video/i })).not.toBeInTheDocument();
   });
 });

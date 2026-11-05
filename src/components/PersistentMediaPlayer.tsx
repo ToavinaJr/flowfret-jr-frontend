@@ -8,11 +8,13 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
+  Video,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { usePlayback } from "@/contexts/usePlayback";
+import { MUSIC_PROVIDER } from "@/constants/domain";
 import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 import { PersistentChords } from "@/components/features/music/PersistentChords";
 import { FloatingPanelWindow } from "@/components/common/FloatingPanelWindow";
@@ -20,7 +22,7 @@ import { VocalRemovalControl } from "@/components/features/music/VocalRemovalCon
 import { PracticeLoopControl } from "@/components/features/music/PracticeLoopControl";
 import type { PracticeLoop } from "@/services/practiceLoop";
 
-type PanelName = "chords" | "lyrics";
+type PanelName = "chords" | "lyrics" | "youtube-video";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -113,9 +115,9 @@ function LoopTimelineMarkers({
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
   const location = useLocation();
-  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
-  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
-  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, next: 62 });
+  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "youtube-video": false });
+  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "youtube-video": false });
+  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, "youtube-video": 62, next: 63 });
   const {
     item,
     lastEndedItemId,
@@ -126,6 +128,7 @@ export default function PersistentMediaPlayer() {
     duration,
     volume,
     toggle,
+    pause,
     seek,
     setVolume,
     queue,
@@ -141,14 +144,17 @@ export default function PersistentMediaPlayer() {
     const itemChanged = previousItemId.current !== item?.id;
     previousItemId.current = item?.id ?? null;
     if (itemChanged || lastEndedItemId === item?.id) {
-      setOpenPanels((current) =>
-        current.lyrics ? { ...current, lyrics: false } : current,
-      );
+      setOpenPanels((current) => ({
+        ...current,
+        lyrics: false,
+        "youtube-video": false,
+      }));
     }
   }, [item?.id, lastEndedItemId, playbackEndSequence]);
   if (!item) return null;
   const isSpotify = item.engine === "spotify";
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
+  const hasYouTubeVideo = item.provider === MUSIC_PROVIDER.YOUTUBE && Boolean(item.providerTrackId?.trim());
   const isAdmin = location.pathname.startsWith("/admin");
 
   function togglePanel(panel: PanelName) {
@@ -163,6 +169,13 @@ export default function PersistentMediaPlayer() {
 
   function closePanel(panel: PanelName) {
     setOpenPanels((current) => ({ ...current, [panel]: false }));
+  }
+
+  function openYouTubeVideo() {
+    pause();
+    setOpenPanels((current) => ({ ...current, "youtube-video": true }));
+    setMinimizedPanels((current) => ({ ...current, "youtube-video": false }));
+    focusWindow("youtube-video");
   }
 
   function focusWindow(panel: PanelName) {
@@ -217,6 +230,28 @@ export default function PersistentMediaPlayer() {
           onMinimize={() => setMinimizedPanels((current) => ({ ...current, lyrics: !current.lyrics }))}
         >
           <PersistentLyrics item={item} currentTime={currentTime} onSeek={seek} />
+        </FloatingPanelWindow>
+      ) : null}
+      {openPanels["youtube-video"] && hasYouTubeVideo ? (
+        <FloatingPanelWindow
+          windowId="youtube-video"
+          isAdmin={isAdmin}
+          title={`${t("mediaPlayer.youtubeVideo")} · ${item.title}`}
+          zIndex={windowOrder["youtube-video"]}
+          minimized={minimizedPanels["youtube-video"]}
+          onClose={() => closePanel("youtube-video")}
+          onFocus={() => focusWindow("youtube-video")}
+          onMinimize={() => setMinimizedPanels((current) => ({ ...current, "youtube-video": !current["youtube-video"] }))}
+        >
+          <div className="aspect-video w-full bg-black">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(item.providerTrackId ?? "")}?autoplay=1&controls=1&playsinline=1&rel=0&start=${Math.floor(currentTime)}`}
+              title={`${t("mediaPlayer.youtubeVideo")} · ${item.title}`}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+          </div>
         </FloatingPanelWindow>
       ) : null}
       <section
@@ -300,6 +335,18 @@ export default function PersistentMediaPlayer() {
             <Mic2 className="h-4 w-4" />
           </button>
         ) : null}
+        {hasYouTubeVideo ? (
+          <button
+            type="button"
+            onClick={openYouTubeVideo}
+            className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md sm:flex ${openPanels["youtube-video"] ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+            aria-label={t("mediaPlayer.showYoutubeVideo")}
+            aria-expanded={openPanels["youtube-video"]}
+            aria-controls="floating-media-window-youtube-video"
+          >
+            <Video className="h-4 w-4" />
+          </button>
+        ) : null}
         <PracticeLoopControl className="hidden sm:flex" />
         <VocalRemovalControl key={item.id} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
@@ -353,6 +400,18 @@ export default function PersistentMediaPlayer() {
         ) : null}
       </div>
       <div className="flex h-10 items-center gap-1.5 border-t border-border/70 px-2 sm:hidden">
+        {hasYouTubeVideo ? (
+          <button
+            type="button"
+            onClick={openYouTubeVideo}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${openPanels["youtube-video"] ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
+            aria-label={t("mediaPlayer.showYoutubeVideo")}
+            aria-expanded={openPanels["youtube-video"]}
+            aria-controls="floating-media-window-youtube-video"
+          >
+            <Video className="h-4 w-4" />
+          </button>
+        ) : null}
         <button
           type="button"
           disabled={queue.length < 2}

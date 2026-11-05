@@ -1,5 +1,5 @@
 import { Maximize2, Minus, Move, X } from "lucide-react";
-import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface WindowBounds {
@@ -10,7 +10,7 @@ interface WindowBounds {
 }
 
 interface FloatingPanelWindowProps {
-  windowId: "lyrics" | "chords" | "chat-compose";
+  windowId: "lyrics" | "chords" | "youtube-video" | "chat-compose";
   isAdmin?: boolean;
   sidebarCollapsed?: boolean;
   title: string;
@@ -42,12 +42,17 @@ function defaultBounds(windowId: FloatingPanelWindowProps["windowId"], isAdmin: 
   const workspaceLeft = getWorkspaceLeft(isAdmin, sidebarCollapsed);
   const availableWidth = Math.max(1, viewportWidth - workspaceLeft - 24);
   const sideBySide = availableWidth >= MIN_WIDTH * 2 + 36;
-  const width = Math.min(440, Math.max(220, sideBySide ? Math.floor((availableWidth - 36) / 2) : availableWidth));
+  const maxWidth = windowId === "youtube-video" ? 640 : 440;
+  const width = Math.min(maxWidth, Math.max(220, sideBySide && windowId !== "youtube-video" ? Math.floor((availableWidth - 36) / 2) : availableWidth));
   const availableHeight = viewportHeight - (viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT) - 32;
-  const height = Math.min(460, Math.max(MIN_HEIGHT, Math.floor((availableHeight - (sideBySide ? 0 : 12)) / (sideBySide ? 1 : 2))));
+  const height = windowId === "youtube-video"
+    ? Math.min(430, Math.max(MIN_HEIGHT, Math.floor(availableHeight)))
+    : Math.min(460, Math.max(MIN_HEIGHT, Math.floor((availableHeight - (sideBySide ? 0 : 12)) / (sideBySide ? 1 : 2))));
   const bottom = viewportHeight - (viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT) - 12;
   return {
-    x: sideBySide && (windowId === "lyrics" || windowId === "chat-compose") ? viewportWidth - width - 12 : workspaceLeft + 12,
+    x: windowId === "youtube-video"
+      ? Math.max(workspaceLeft + 12, workspaceLeft + Math.floor((availableWidth - width) / 2))
+      : sideBySide && (windowId === "lyrics" || windowId === "chat-compose") ? viewportWidth - width - 12 : workspaceLeft + 12,
     y: sideBySide || windowId === "lyrics" || windowId === "chat-compose"
       ? bottom - height
       : bottom - height * 2 - 12,
@@ -56,21 +61,31 @@ function defaultBounds(windowId: FloatingPanelWindowProps["windowId"], isAdmin: 
   };
 }
 
-function clampBounds(bounds: WindowBounds, isAdmin: boolean, sidebarCollapsed: boolean): WindowBounds {
+function clampBounds(bounds: WindowBounds, isAdmin: boolean, sidebarCollapsed: boolean, minimized = false): WindowBounds {
   if (typeof window === "undefined") return bounds;
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportWidth = Math.max(1, window.innerWidth);
+  const viewportHeight = Math.max(1, window.innerHeight);
   const workspaceLeft = getWorkspaceLeft(isAdmin, sidebarCollapsed);
-  const width = Math.max(MIN_WIDTH, bounds.width);
-  const height = Math.max(MIN_HEIGHT, bounds.height);
-  const minX = Math.min(
-    Math.max(8, viewportWidth - width - 8),
-    viewportWidth < 768 ? 8 : workspaceLeft + 8,
+  const horizontalInset = Math.min(8, viewportWidth / 2);
+  const verticalInset = Math.min(8, viewportHeight / 2);
+  const maxWidth = Math.max(1, viewportWidth - horizontalInset * 2);
+  const minWidth = Math.min(MIN_WIDTH, maxWidth);
+  const width = Math.min(maxWidth, Math.max(minWidth, bounds.width));
+  const reservedHeight = Math.min(
+    viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT,
+    viewportHeight / 3,
   );
-  const maxX = Math.max(minX, viewportWidth - width - 8);
-  const minY = 8;
-  const reservedHeight = viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT;
-  const maxY = Math.max(minY, viewportHeight - reservedHeight - height - 8);
+  const maxHeight = Math.max(1, viewportHeight - verticalInset * 2 - reservedHeight);
+  const minHeight = Math.min(MIN_HEIGHT, maxHeight);
+  const height = Math.min(maxHeight, Math.max(minHeight, bounds.height));
+  const minX = Math.min(
+    viewportWidth < 768 ? horizontalInset : workspaceLeft + 8,
+    viewportWidth - horizontalInset - width,
+  );
+  const maxX = Math.max(minX, viewportWidth - horizontalInset - width);
+  const minY = verticalInset;
+  const visibleHeight = minimized ? Math.min(54, height) : height;
+  const maxY = Math.max(minY, viewportHeight - verticalInset - reservedHeight - visibleHeight);
   return {
     x: Math.min(maxX, Math.max(minX, bounds.x)),
     y: Math.min(maxY, Math.max(minY, bounds.y)),
@@ -100,11 +115,11 @@ function resizeBounds(
     isAdmin,
     sidebarCollapsed,
   );
-  return {
+  return clampBounds({
     ...constrained,
     x: fromLeft ? bounds.x + bounds.width - constrained.width : bounds.x,
     y: fromTop ? bounds.y + bounds.height - constrained.height : bounds.y,
-  };
+  }, isAdmin, sidebarCollapsed);
 }
 
 function readBounds(windowId: FloatingPanelWindowProps["windowId"], isAdmin: boolean, sidebarCollapsed: boolean): WindowBounds {
@@ -151,11 +166,12 @@ export function FloatingPanelWindow({
     }
   }, [bounds, windowId]);
 
-  useEffect(() => {
-    const constrain = () => setBounds((current) => clampBounds(current, isAdmin, sidebarCollapsed));
+  useLayoutEffect(() => {
+    const constrain = () => setBounds((current) => clampBounds(current, isAdmin, sidebarCollapsed, minimized));
     window.addEventListener("resize", constrain);
+    constrain();
     return () => window.removeEventListener("resize", constrain);
-  }, [isAdmin, sidebarCollapsed]);
+  }, [isAdmin, sidebarCollapsed, minimized]);
 
   function startInteraction(event: PointerEvent<HTMLElement>, mode: "move" | ResizeEdge) {
     if (
@@ -182,7 +198,7 @@ export function FloatingPanelWindow({
     const deltaX = event.clientX - current.pointerX;
     const deltaY = event.clientY - current.pointerY;
     const next = current.mode === "move"
-      ? { ...current.bounds, x: current.bounds.x + deltaX, y: current.bounds.y + deltaY }
+      ? clampBounds({ ...current.bounds, x: current.bounds.x + deltaX, y: current.bounds.y + deltaY }, isAdmin, sidebarCollapsed, minimized)
       : resizeBounds(current.bounds, current.mode, deltaX, deltaY, isAdmin, sidebarCollapsed);
     setBounds(next);
   }
@@ -191,10 +207,11 @@ export function FloatingPanelWindow({
     setBounds((current) => {
       if (typeof window === "undefined") return current;
       const right = current.x + current.width > window.innerWidth / 2;
-      const bottom = current.y + current.height / 2 > window.innerHeight / 2;
+      const visibleHeight = minimized ? Math.min(54, current.height) : current.height;
+      const bottom = current.y + visibleHeight / 2 > window.innerHeight / 2;
       const reservedHeight = window.innerWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT;
-      const next = { ...current, x: right ? 12 : window.innerWidth - current.width - 12, y: bottom ? 12 : window.innerHeight - current.height - reservedHeight };
-      return clampBounds(next, isAdmin, sidebarCollapsed);
+      const next = { ...current, x: right ? 12 : window.innerWidth - current.width - 12, y: bottom ? 12 : window.innerHeight - visibleHeight - reservedHeight };
+      return clampBounds(next, isAdmin, sidebarCollapsed, minimized);
     });
     onFocus();
   }
@@ -233,7 +250,7 @@ export function FloatingPanelWindow({
       onPointerCancel={() => { interaction.current = null; }}
       onFocusCapture={onFocus}
       className="fixed flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card text-foreground shadow-2xl"
-      style={{ left: bounds.x, top: bounds.y, width: bounds.width, height: minimized ? 54 : bounds.height, zIndex }}
+      style={{ left: bounds.x, top: bounds.y, width: bounds.width, height: minimized ? Math.min(54, bounds.height) : bounds.height, zIndex }}
     >
       <header
         className="flex min-h-[52px] shrink-0 cursor-move touch-none items-center justify-between gap-2 border-b border-border bg-card/95 px-3 py-2"
