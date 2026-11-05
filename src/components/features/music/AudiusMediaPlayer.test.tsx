@@ -118,6 +118,37 @@ describe("AudiusMediaPlayer transcription", () => {
     expect(screen.getByLabelText("Transcription de Song")).toBeInTheDocument();
   });
 
+  it("keeps audio playing when the browser tab loses focus", async () => {
+    mocks.prepare.mockReturnValue(new Promise(() => undefined));
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <PlaybackProvider>
+            <AudiusMediaPlayer track={track} />
+          </PlaybackProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Lire Song" }));
+    await waitFor(() =>
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
+    );
+    vi.mocked(HTMLMediaElement.prototype.pause).mockClear();
+
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      value: "hidden",
+    });
+    fireEvent(document, new Event("visibilitychange"));
+    fireEvent(window, new Event("blur"));
+
+    expect(HTMLMediaElement.prototype.pause).not.toHaveBeenCalled();
+  });
+
   it("waits for the transcription to complete before playing when lyrics are opened first", async () => {
     mocks.prepare.mockImplementation(async () => {
       mocks.setTranscription({ status: "PENDING", segments: [] });

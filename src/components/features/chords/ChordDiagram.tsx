@@ -64,7 +64,7 @@ export function ChordDiagram({
       >
         {baseFret > 1 && (
           <text
-            x={offsetX - 4 * scale}
+            x={offsetX - 10 * scale}
             y={topY + fretSpacing * 0.65}
             fontSize={fsBaseFret}
             textAnchor="end"

@@ -34,6 +34,7 @@ import {
 } from "@/services/chatApi";
 
 export const CHAT_MESSAGE_MAX_LENGTH = 5000;
+export const CHAT_NICKNAME_MAX_LENGTH = 50;
 
 export function useChatWorkspace() {
   const { conversationId } = useParams<{ conversationId?: string }>();
@@ -142,7 +143,13 @@ export function useChatWorkspace() {
     onError: (error: Error) => toast.error(error.message),
   });
   const saveNickname = useMutation({
-    mutationFn: () => setChatNickname(selectedId!, nickname),
+    mutationFn: () => {
+      const normalizedNickname = nickname.trim();
+      if (normalizedNickname.length > CHAT_NICKNAME_MAX_LENGTH) {
+        throw new Error(t("chat.nicknameTooLong", { max: CHAT_NICKNAME_MAX_LENGTH }));
+      }
+      return setChatNickname(selectedId!, normalizedNickname || null);
+    },
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: ["chat-conversations"] });
       toast.success(t("chat.nicknameSaved"));

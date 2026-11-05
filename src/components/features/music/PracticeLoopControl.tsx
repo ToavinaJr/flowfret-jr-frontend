@@ -12,13 +12,7 @@ function formatTime(seconds: number | null): string {
   return `${minutes}:${wholeSeconds}.${tenths}`;
 }
 
-export function PracticeLoopControl({
-  className = "",
-  embedded = false,
-}: {
-  className?: string;
-  embedded?: boolean;
-}) {
+export function PracticeLoopControl({ className = "" }: { className?: string }) {
   const { t } = useTranslation();
   const panelId = useId();
   const {
@@ -39,19 +33,15 @@ export function PracticeLoopControl({
 
   const panel = (
     <section
-      id={embedded ? undefined : panelId}
+      id={panelId}
       aria-label={t("mediaPlayer.practiceLoop")}
-      className={embedded
-        ? "w-full p-4"
-        : "fixed bottom-[calc(var(--mobile-nav-offset)+6.75rem+0.5rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-4 shadow-xl sm:bottom-[calc(76px+0.5rem)] sm:left-auto sm:right-2 sm:w-[min(24rem,calc(100vw-1rem))] sm:p-4"}
+      className="fixed bottom-[calc(var(--mobile-nav-offset)+6.75rem+0.5rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-4 shadow-xl sm:bottom-[calc(76px+0.5rem)] sm:left-auto sm:right-2 sm:w-[min(24rem,calc(100vw-1rem))] sm:p-4"
     >
       <div className="mb-4 space-y-2">
         <div className="flex items-center justify-between gap-3">
-          {!embedded ? (
-            <h2 className="text-sm font-semibold text-foreground">
-              {t("mediaPlayer.practiceLoop")}
-            </h2>
-          ) : null}
+          <h2 className="text-sm font-semibold text-foreground">
+            {t("mediaPlayer.practiceLoop")}
+          </h2>
           <span data-testid="practice-loop-times" className="ml-auto shrink-0 rounded-md bg-secondary px-2 py-1 font-mono tabular-nums text-xs text-foreground">
             {t("mediaPlayer.practiceLoopStartAt", { time: formatTime(practiceLoop.start) })}
             {" · "}
@@ -100,8 +90,6 @@ export function PracticeLoopControl({
       </div>
     </section>
   );
-
-  if (embedded) return panel;
 
   return (
     <div className={`relative flex shrink-0 ${className}`}>

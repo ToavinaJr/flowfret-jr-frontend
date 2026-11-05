@@ -70,10 +70,10 @@ export const markChatRead = (conversationId: string) =>
     query: `mutation MarkConversationRead($conversationId: String!) { markConversationRead(conversationId: $conversationId) }`,
     variables: { conversationId },
   });
-export const setChatNickname = (conversationId: string, nickname: string) =>
+export const setChatNickname = (conversationId: string, nickname: string | null) =>
   graphqlRequest<{ setChatNickname: boolean }>({
     query: `mutation SetChatNickname($conversationId: String!, $nickname: String) { setChatNickname(conversationId: $conversationId, nickname: $nickname) }`,
-    variables: { conversationId, nickname: nickname || null },
+    variables: { conversationId, nickname },
   });
 const conversationSelection = `id type name updatedAt unreadCount participants { id userId username avatarUrl nickname role lastReadAt } lastMessage { id conversationId senderId senderUsername body createdAt attachments { id uploadId position contentUrl } }`;
 export const renameChatGroup = (conversationId: string, name: string) =>
@@ -141,6 +141,7 @@ export function connectChat(): Socket | null {
   return io(`${new URL(GRAPHQL_URL).origin}/chat`, {
     auth: { token },
     transports: ["websocket", "polling"],
+    tryAllTransports: true,
     reconnection: true,
   });
 }

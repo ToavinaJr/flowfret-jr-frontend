@@ -1472,8 +1472,14 @@
     "profileOptions": "Options",
     "startDirect": "Start a private conversation",
     "chooseFriend": "Choose a friend",
+    "friendPickerHint": "Search by display name or @username to find the right person.",
     "groupName": "Group name",
     "addGroupMember": "Add a friend to the group",
+    "groupPickerHint": "Choose at least two friends. Their usernames help distinguish people with the same name.",
+    "selected": "Selected",
+    "noFriendsFound": "No friends match this search.",
+    "noFriendsAvailable": "You do not have any friends to add yet.",
+    "membersSelectedLabel": "Selected group members",
     "membersSelected": "member(s) selected",
     "removeSelected": "Remove {{name}} from selection",
     "createGroup": "Create group",
@@ -1486,6 +1492,7 @@
     "backToConversations": "Back to conversations",
     "nickname": "Your nickname in this conversation",
     "nicknameSaved": "Nickname saved.",
+    "nicknameTooLong": "Your nickname must be {{max}} characters or fewer.",
     "selectConversation": "Choose a conversation or start a new one.",
     "addPhoto": "Add a photo",
     "openEmojiPicker": "Open emoji picker",
@@ -1537,7 +1544,9 @@
     "removeMember": "Remove {{name}} from group",
     "leaveGroup": "Leave group",
     "confirmRemove": "Remove {{name}} from this group?",
-    "confirmLeave": "Leave this group?"
+    "confirmLeave": "Leave this group?",
+    "confirmRemoveAction": "Remove member",
+    "confirmLeaveAction": "Leave group"
   },
   "circleHarmony": {
     "major": "Major chords",

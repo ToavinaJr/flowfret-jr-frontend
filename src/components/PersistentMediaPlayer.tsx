@@ -3,31 +3,85 @@ import {
   Mic2,
   Pause,
   Play,
-  Repeat2,
   Shuffle,
   SkipBack,
   SkipForward,
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { usePlayback } from "@/contexts/usePlayback";
 import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 import { PersistentChords } from "@/components/features/music/PersistentChords";
-import { FloatingMediaWindow } from "@/components/features/music/FloatingMediaWindow";
+import { FloatingPanelWindow } from "@/components/common/FloatingPanelWindow";
 import { VocalRemovalControl } from "@/components/features/music/VocalRemovalControl";
 import { PracticeLoopControl } from "@/components/features/music/PracticeLoopControl";
 import type { PracticeLoop } from "@/services/practiceLoop";
 
-type PanelName = "chords" | "lyrics" | "practice-loop";
+type PanelName = "chords" | "lyrics";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
   return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
     .toString()
     .padStart(2, "0")}`;
+}
+
+function ScrollingTrackText({
+  text,
+  className,
+}: {
+  text: string;
+  className: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const label = textRef.current;
+    if (!container || !label) return;
+    const measure = () => setOverflows(label.scrollWidth > container.clientWidth + 1);
+    measure();
+    const observer = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(measure);
+    observer?.observe(container);
+    observer?.observe(label);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [text]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`player-track-text min-w-0 overflow-x-auto overflow-y-hidden whitespace-nowrap ${className}`}
+      title={text}
+    >
+      <div
+        className={overflows ? "media-player-marquee flex w-max" : "min-w-0"}
+        style={overflows ? { animationDuration: `${Math.min(32, Math.max(8, text.length / 5))}s` } : undefined}
+      >
+        <span
+          ref={textRef}
+          className={overflows ? "shrink-0 pr-8" : "block truncate"}
+        >
+          {text}
+        </span>
+        {overflows ? (
+          <span aria-hidden="true" className="shrink-0 pr-8">
+            {text}
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
 }
 
 function LoopTimelineMarkers({
@@ -59,11 +113,13 @@ function LoopTimelineMarkers({
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
   const location = useLocation();
-  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "practice-loop": false });
-  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "practice-loop": false });
-  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, "practice-loop": 62, next: 63 });
+  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
+  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
+  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, next: 62 });
   const {
     item,
+    lastEndedItemId,
+    playbackEndSequence,
     playState,
     playbackError,
     currentTime,
@@ -80,11 +136,20 @@ export default function PersistentMediaPlayer() {
     retry,
     practiceLoop,
   } = usePlayback();
+  const previousItemId = useRef(item?.id ?? null);
+  useEffect(() => {
+    const itemChanged = previousItemId.current !== item?.id;
+    previousItemId.current = item?.id ?? null;
+    if (itemChanged || lastEndedItemId === item?.id) {
+      setOpenPanels((current) =>
+        current.lyrics ? { ...current, lyrics: false } : current,
+      );
+    }
+  }, [item?.id, lastEndedItemId, playbackEndSequence]);
   if (!item) return null;
   const isSpotify = item.engine === "spotify";
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
   const isAdmin = location.pathname.startsWith("/admin");
-  const isImportedUpload = location.pathname === "/upload" && item.id.startsWith("import:");
 
   function togglePanel(panel: PanelName) {
     if (openPanels[panel] && minimizedPanels[panel]) {
@@ -112,12 +177,14 @@ export default function PersistentMediaPlayer() {
         className="h-10 w-10 shrink-0 rounded-md bg-secondary object-cover sm:h-11 sm:w-11"
       />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">
-          {item.title}
-        </p>
-        <p className="truncate text-xs text-muted-foreground">
-          {item.subtitle}
-        </p>
+        <ScrollingTrackText
+          text={item.title}
+          className="text-sm font-semibold text-foreground"
+        />
+        <ScrollingTrackText
+          text={item.subtitle}
+          className="text-xs text-muted-foreground"
+        />
       </div>
     </>
   );
@@ -125,7 +192,7 @@ export default function PersistentMediaPlayer() {
   return (
     <>
       {openPanels.chords ? (
-        <FloatingMediaWindow
+        <FloatingPanelWindow
           windowId="chords"
           isAdmin={isAdmin}
           title={`${t("chordPlayer.title")} · ${item.title}`}
@@ -136,10 +203,10 @@ export default function PersistentMediaPlayer() {
           onMinimize={() => setMinimizedPanels((current) => ({ ...current, chords: !current.chords }))}
         >
           <PersistentChords item={item} currentTime={currentTime} onSeek={seek} />
-        </FloatingMediaWindow>
+        </FloatingPanelWindow>
       ) : null}
       {openPanels.lyrics && hasLyrics ? (
-        <FloatingMediaWindow
+        <FloatingPanelWindow
           windowId="lyrics"
           isAdmin={isAdmin}
           title={`${t("lyrics.title")} · ${item.title}`}
@@ -150,21 +217,7 @@ export default function PersistentMediaPlayer() {
           onMinimize={() => setMinimizedPanels((current) => ({ ...current, lyrics: !current.lyrics }))}
         >
           <PersistentLyrics item={item} currentTime={currentTime} onSeek={seek} />
-        </FloatingMediaWindow>
-      ) : null}
-      {openPanels["practice-loop"] && isImportedUpload ? (
-        <FloatingMediaWindow
-          windowId="practice-loop"
-          isAdmin={isAdmin}
-          title={t("mediaPlayer.practiceLoop")}
-          zIndex={windowOrder["practice-loop"]}
-          minimized={minimizedPanels["practice-loop"]}
-          onClose={() => closePanel("practice-loop")}
-          onFocus={() => focusWindow("practice-loop")}
-          onMinimize={() => setMinimizedPanels((current) => ({ ...current, "practice-loop": !current["practice-loop"] }))}
-        >
-          <PracticeLoopControl embedded />
-        </FloatingMediaWindow>
+        </FloatingPanelWindow>
       ) : null}
       <section
       aria-label={t("mediaPlayer.audioPlayer")}
@@ -247,17 +300,7 @@ export default function PersistentMediaPlayer() {
             <Mic2 className="h-4 w-4" />
           </button>
         ) : null}
-        {isImportedUpload ? (
-          <button
-            type="button"
-            onClick={() => togglePanel("practice-loop")}
-            className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:flex ${openPanels["practice-loop"] ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={t("mediaPlayer.practiceLoopConfigure")}
-            aria-expanded={openPanels["practice-loop"]}
-            aria-controls="floating-media-window-practice-loop"
-            title={t("mediaPlayer.practiceLoop")}
-          ><Repeat2 className="h-5 w-5" aria-hidden="true" /></button>
-        ) : <PracticeLoopControl className="hidden sm:flex" />}
+        <PracticeLoopControl className="hidden sm:flex" />
         <VocalRemovalControl key={item.id} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
@@ -320,17 +363,7 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        {isImportedUpload ? (
-          <button
-            type="button"
-            onClick={() => togglePanel("practice-loop")}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${openPanels["practice-loop"] ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
-            aria-label={t("mediaPlayer.practiceLoopConfigure")}
-            aria-expanded={openPanels["practice-loop"]}
-            aria-controls="floating-media-window-practice-loop"
-            title={t("mediaPlayer.practiceLoop")}
-          ><Repeat2 className="h-4 w-4" aria-hidden="true" /></button>
-        ) : <PracticeLoopControl className="sm:hidden" />}
+        <PracticeLoopControl className="sm:hidden" />
         <div className="relative min-w-0 flex-1">
           <input
             name="playbackPositionMobile"

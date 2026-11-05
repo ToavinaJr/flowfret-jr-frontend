@@ -76,9 +76,9 @@ const ChordsPage = () => {
     <div className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("chords.title")}</h1>
 
-      <div className="mb-4 max-w-sm rounded-lg border border-border bg-card px-3">
+      <div className="mb-4 max-w-sm rounded-lg border border-border bg-card p-4">
         <CapoSelect namespace="chords" />
-        <p className="pb-3 text-xs text-muted-foreground">
+        <p className="mt-2 text-xs text-muted-foreground">
           {t("chords.soundingChord")}: <span className="font-musical">{soundingLabel}</span>
           {capo > 0 ? <> · {t("chords.playingShape")}: <span className="font-musical">{label}</span></> : null}
         </p>

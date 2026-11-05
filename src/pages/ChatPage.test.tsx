@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   group: vi.fn(),
   nickname: vi.fn(),
   send: vi.fn(),
+  removeMember: vi.fn(),
+  toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
   socket: vi.fn(),
   pickers: [] as HTMLElement[],
 }));
@@ -41,10 +43,12 @@ vi.mock("@/services/chatApi", () => ({
   createGroupChat: mocks.group,
   markChatRead: mocks.read,
   setChatNickname: mocks.nickname,
+  removeChatGroupMember: mocks.removeMember,
   sendMessage: mocks.send,
   uploadChatImages: vi.fn(),
   connectChat: mocks.socket,
 }));
+vi.mock("sonner", () => ({ toast: mocks.toast }));
 
 describe("ChatPage", () => {
   beforeEach(() => {
@@ -72,6 +76,7 @@ describe("ChatPage", () => {
     });
     mocks.messages.mockResolvedValue([]);
     mocks.read.mockResolvedValue(undefined);
+    mocks.removeMember.mockResolvedValue(undefined);
     mocks.socket.mockReturnValue({
       on: vi.fn(),
       emit: vi.fn(),
@@ -94,9 +99,11 @@ describe("ChatPage", () => {
     expect(
       await screen.findByText("Aucune conversation pour le moment."),
     ).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Nouvelle conversation privée"), {
-      target: { value: "friend" },
+    fireEvent.click(screen.getByRole("button", { name: "Nouvelle conversation" }));
+    fireEvent.change(screen.getByRole("searchbox", { name: "Choisir un ami" }), {
+      target: { value: "Alice" },
     });
+    fireEvent.click(screen.getByRole("button", { name: "Alice, @Alice" }));
 
     await waitFor(() => expect(mocks.direct.mock.calls[0]?.[0]).toBe("friend"));
   });
@@ -147,6 +154,86 @@ describe("ChatPage", () => {
       expect(
         screen.queryByRole("dialog", { name: "Sélecteur d’émojis" }),
       ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("offers a path to find friends when the friend list is empty", async () => {
+    mocks.friendships.mockResolvedValue([]);
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={client}>
+        <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
+          <ChatPage />
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Nouvelle conversation" }));
+    fireEvent.focus(screen.getByRole("searchbox", { name: "Choisir un ami" }));
+
+    expect(await screen.findByRole("link", { name: "Trouver des amis" })).toHaveAttribute(
+      "href",
+      "/friends#discover",
+    );
+  });
+
+  it.each([
+    {
+      memberId: "friend",
+      message: "Retirer Alice de ce groupe ?",
+      actionLabel: "Retirer le membre",
+    },
+    {
+      memberId: "me",
+      message: "Quitter ce groupe ?",
+      actionLabel: "Quitter le groupe",
+    },
+  ])("asks before removing member $memberId", async ({ memberId, message, actionLabel }) => {
+    mocks.conversations.mockResolvedValue([
+      {
+        id: "group-1",
+        type: "GROUP",
+        name: "Jam",
+        participants: [
+          { id: "p1", userId: "me", username: "me", nickname: null, role: "ADMIN", lastReadAt: null },
+          { id: "p2", userId: "friend", username: "Alice", nickname: null, role: "MEMBER", lastReadAt: null },
+        ],
+        unreadCount: 0,
+        updatedAt: new Date().toISOString(),
+        lastMessage: null,
+      },
+    ]);
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={client}>
+        <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
+          <ChatPage />
+        </I18nextProvider>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: /Jam/ }));
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: memberId === "me" ? "Quitter le groupe" : "Retirer Alice du groupe",
+      }),
+    );
+
+    expect(mocks.removeMember).not.toHaveBeenCalled();
+    const [, options] = mocks.toast.mock.calls.at(-1) ?? [];
+    expect(mocks.toast).toHaveBeenLastCalledWith(
+      message,
+      expect.objectContaining({
+        action: expect.objectContaining({ label: actionLabel }),
+      }),
+    );
+    (options as { action: { onClick: () => void } }).action.onClick();
+    await waitFor(() =>
+      expect(mocks.removeMember).toHaveBeenCalledWith("group-1", memberId),
     );
   });
 });

@@ -213,3 +213,27 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@keyframes media-player-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.media-player-marquee {
+  animation-name: media-player-marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.media-player-marquee:hover {
+  animation-play-state: paused;
+}
+
+.player-track-text {
+  scrollbar-width: none;
+}
+
+.player-track-text::-webkit-scrollbar {
+  display: none;
+}

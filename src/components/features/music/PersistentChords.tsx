@@ -98,7 +98,9 @@ export function PersistentChords({
 
           {status === "success" && analysis && activeCue ? (
             <div className="px-4 py-4">
-              <CapoSelect namespace="chordPlayer" />
+              <div className="rounded-lg border border-border/80 bg-card/60 px-4">
+                <CapoSelect namespace="chordPlayer" />
+              </div>
               <p className="mt-2 text-center text-xs text-muted-foreground">
                 {t("chordPlayer.soundingChord")}: <span className="font-musical">{activeCue.chord}</span>
                 {capo > 0 ? <> · {t("chordPlayer.playingShape")}: <span className="font-musical">{activeChord.label}</span></> : null}

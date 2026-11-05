@@ -41,7 +41,16 @@ export function TranscriptionMediaPlayer({
   const { t } = useTranslation();
   const { user } = useAuth();
   const isAdmin = user?.role === USER_ROLE.ADMIN;
-  const { item, playState, currentTime, toggle, seek, setQueue } = usePlayback();
+  const {
+    item,
+    playState,
+    currentTime,
+    toggle,
+    seek,
+    setQueue,
+    lastEndedItemId,
+    playbackEndSequence,
+  } = usePlayback();
   const { transcription, error, prepare, retry } =
     useTranscriptionEvents(track);
   const [lyricsOpen, setLyricsOpen] = useState(false);
@@ -52,6 +61,9 @@ export function TranscriptionMediaPlayer({
   const playbackItem = toMusicPlaybackItem(track);
   const isActive = item?.id === playbackItem.id;
   const isPlaying = isActive && playState === "playing";
+  useEffect(() => {
+    if (lastEndedItemId === playbackItem.id) setLyricsOpen(false);
+  }, [lastEndedItemId, playbackEndSequence, playbackItem.id]);
   // A pre-synced lyrics database (LRCLIB) is tried before the heavier
   // YouTube-extraction + Whisper pipeline: most known tracks resolve
   // instantly from it, with no audio download or transcription needed at

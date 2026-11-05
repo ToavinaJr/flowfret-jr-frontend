@@ -1472,8 +1472,14 @@
     "profileOptions": "Options",
     "startDirect": "Nouvelle conversation privée",
     "chooseFriend": "Choisir un ami",
+    "friendPickerHint": "Recherchez par nom affiché ou par @identifiant pour trouver la bonne personne.",
     "groupName": "Nom du groupe",
     "addGroupMember": "Ajouter un ami au groupe",
+    "groupPickerHint": "Choisissez au moins deux amis. Leurs identifiants permettent de distinguer les personnes qui ont le même nom.",
+    "selected": "Sélectionné",
+    "noFriendsFound": "Aucun ami ne correspond à cette recherche.",
+    "noFriendsAvailable": "Vous n’avez pas encore d’amis à ajouter.",
+    "membersSelectedLabel": "Membres du groupe sélectionnés",
     "membersSelected": "membre(s) sélectionné(s)",
     "removeSelected": "Retirer {{name}} de la sélection",
     "createGroup": "Créer un groupe",
@@ -1486,6 +1492,7 @@
     "backToConversations": "Retour aux conversations",
     "nickname": "Votre pseudo dans cette conversation",
     "nicknameSaved": "Pseudo enregistré.",
+    "nicknameTooLong": "Votre pseudo doit contenir {{max}} caractères au maximum.",
     "selectConversation": "Choisissez une conversation ou démarrez-en une nouvelle.",
     "addPhoto": "Ajouter une photo",
     "openEmojiPicker": "Ouvrir le sélecteur d’émojis",
@@ -1537,7 +1544,9 @@
     "removeMember": "Retirer {{name}} du groupe",
     "leaveGroup": "Quitter le groupe",
     "confirmRemove": "Retirer {{name}} de ce groupe ?",
-    "confirmLeave": "Quitter ce groupe ?"
+    "confirmLeave": "Quitter ce groupe ?",
+    "confirmRemoveAction": "Retirer le membre",
+    "confirmLeaveAction": "Quitter le groupe"
   },
   "circleHarmony": {
     "major": "Accords majeurs",

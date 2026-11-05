@@ -134,7 +134,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
         className="border-t border-border bg-background/45 p-3 lg:border-l lg:border-t-0"
         aria-label={t("player.detectedChords")}
       >
-        <div className="mb-3 rounded-lg border border-border/80 bg-card/70 px-3">
+        <div className="mb-3 rounded-lg border border-border/80 bg-card/70 px-4">
           <CapoSelect namespace="chordPlayer" idPrefix="upload-chord-player" />
         </div>
         <div className="mb-3 flex items-center justify-between gap-2 px-1">

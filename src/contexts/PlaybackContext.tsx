@@ -10,7 +10,6 @@ import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
 import { usePlaybackMediaSession } from "@/hooks/usePlaybackMediaSession";
 import { usePlaybackPersistence } from "@/hooks/usePlaybackPersistence";
 import { usePlaybackQueue } from "@/hooks/usePlaybackQueue";
-import { usePlaybackTabCoordination } from "@/hooks/usePlaybackTabCoordination";
 import {
   PLAYBACK_LOGOUT_EVENT,
   readPlaybackSession,
@@ -48,7 +47,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   clearPlaybackRef.current = engine.clear;
   const clearQueue = queue.setQueue;
   const resetShuffle = queue.setShuffle;
-  const pausePlayback = engine.pause;
   const seekPlayback = engine.seek;
   playNextRef.current = engine.play;
 
@@ -110,14 +108,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     volume: engine.volume,
     shuffle: queue.shuffle,
   });
-  usePlaybackTabCoordination(engine.playState, pausePlayback);
   usePlaybackMediaSession({
     item: engine.item,
     playState: engine.playState,
     currentTime: engine.currentTime,
     duration: engine.duration,
     play,
-    pause: pausePlayback,
+    pause: engine.pause,
     next,
     previous,
     seek: seekPlayback,
@@ -126,6 +123,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const value = useMemo<PlaybackContextValue>(
     () => ({
       item: engine.item,
+      lastEndedItemId: engine.lastEndedItemId,
+      playbackEndSequence: engine.playbackEndSequence,
       playState: engine.playState,
       playbackError: engine.playbackError,
       currentTime: engine.currentTime,

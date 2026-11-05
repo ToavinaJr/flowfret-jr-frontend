@@ -5,20 +5,29 @@ import {
   MessageCircle,
   Search,
   Send,
+  UserPlus,
   Users,
   X,
 } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { EmojiPickerButton } from "@/components/chat/EmojiPickerButton";
+import { ChatFriendPicker } from "@/components/chat/ChatFriendPicker";
 import { PrivateChatImage } from "@/components/chat/PrivateChatImage";
+import { FloatingPanelWindow } from "@/components/common/FloatingPanelWindow";
 import { UserAvatar } from "@/components/common/UserAvatar";
 import {
   CHAT_MESSAGE_MAX_LENGTH,
+  CHAT_NICKNAME_MAX_LENGTH,
   useChatWorkspace,
 } from "@/hooks/useChatWorkspace";
 import type { ChatMessage } from "@/services/chatApi";
 
 export default function ChatPage() {
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeMinimized, setComposeMinimized] = useState(false);
+  const nicknameMenuRef = useRef<HTMLDetailsElement>(null);
   const {
     t,
     user,
@@ -62,6 +71,9 @@ export default function ChatPage() {
     loadOlderMessages,
     insertEmoji,
   } = useChatWorkspace();
+  const friends = friendRows.map((row) =>
+    row.requesterId === user?.id ? row.receiver : row.requester,
+  );
 
   return (
     <main className={`${PAGE_SHELL} max-w-7xl`}>
@@ -80,6 +92,134 @@ export default function ChatPage() {
           </button>
         </div>
       ) : null}
+      {composeOpen ? (
+        <FloatingPanelWindow
+          windowId="chat-compose"
+          title={t("chat.newConversation")}
+          zIndex={90}
+          minimized={composeMinimized}
+          onClose={() => {
+            setComposeOpen(false);
+            setComposeMinimized(false);
+          }}
+          onFocus={() => undefined}
+          onMinimize={() => setComposeMinimized((value) => !value)}
+        >
+          <div className="space-y-4 p-4">
+            <section className="space-y-3 rounded-xl border border-border bg-background/60 p-3 sm:p-4">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  {t("chat.startDirect")}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {t("chat.friendPickerHint")}
+                </p>
+              </div>
+              <ChatFriendPicker
+                friends={friends}
+                label={t("chat.chooseFriend")}
+                onSelect={(friend) => {
+                  setComposeOpen(false);
+                  startDirect.mutate(friend.id);
+                }}
+              />
+            </section>
+
+            <section className="space-y-3 rounded-xl border border-border bg-background/60 p-3 sm:p-4">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  {t("chat.createGroup")}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {t("chat.groupPickerHint")}
+                </p>
+              </div>
+              <form
+                className="space-y-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (groupName.trim() && groupMembers.length >= 2) {
+                    createGroup.mutate(undefined, {
+                      onSuccess: () => setComposeOpen(false),
+                    });
+                  }
+                }}
+              >
+                <label htmlFor="chat-group-name" className="sr-only">
+                  {t("chat.groupName")}
+                </label>
+                <input
+                  id="chat-group-name"
+                  className="h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+                  value={groupName}
+                  onChange={(event) => setGroupName(event.target.value)}
+                  placeholder={t("chat.groupName")}
+                  maxLength={80}
+                />
+                <ChatFriendPicker
+                  friends={friends}
+                  label={t("chat.addGroupMember")}
+                  selectedIds={groupMembers}
+                  onSelect={(friend) =>
+                    setGroupMembers((current) =>
+                      current.includes(friend.id)
+                        ? current.filter((id) => id !== friend.id)
+                        : [...current, friend.id],
+                    )
+                  }
+                />
+                {groupMembers.length ? (
+                  <ul className="flex flex-wrap gap-2" aria-label={t("chat.membersSelectedLabel")}>
+                    {groupMembers.map((memberId) => {
+                      const friend = friends.find((candidate) => candidate.id === memberId);
+                      if (!friend) return null;
+                      const displayName = friend.profile?.displayName?.trim() || friend.username;
+                      return (
+                        <li
+                          key={friend.id}
+                          className="inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-2"
+                        >
+                          <UserAvatar
+                            src={friend.profile?.avatarUrl || friend.avatarUrl}
+                            name={displayName}
+                            size="xs"
+                            className="h-7 w-7 text-[10px]"
+                            alt=""
+                          />
+                          <span className="min-w-0">
+                            <span className="block max-w-28 truncate text-xs font-medium">{displayName}</span>
+                            <span className="block max-w-28 truncate text-[10px] text-muted-foreground">@{friend.username}</span>
+                          </span>
+                          <button
+                            type="button"
+                            aria-label={t("chat.removeSelected", { name: `@${friend.username}` })}
+                            onClick={() => setGroupMembers((current) => current.filter((id) => id !== friend.id))}
+                            className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          >
+                            <X className="h-3.5 w-3.5" aria-hidden="true" />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
+                <button
+                  type="submit"
+                  disabled={
+                    createGroup.isPending ||
+                    groupMembers.length < 2 ||
+                    !groupName.trim()
+                  }
+                  className="min-h-11 w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Users className="mr-2 inline h-4 w-4" aria-hidden="true" />
+                  {t("chat.createGroup")}
+                </button>
+              </form>
+            </section>
+          </div>
+        </FloatingPanelWindow>
+      ) : null}
       <div className="grid h-[min(78vh,52rem)] min-h-[34rem] grid-cols-1 overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-black/5 md:grid-cols-[20rem_minmax(0,1fr)]">
         <aside
           className={`${selectedId ? "hidden md:flex" : "flex"} min-h-0 flex-col border-b border-border bg-background/70 md:border-b-0 md:border-r`}
@@ -88,9 +228,22 @@ export default function ChatPage() {
           <div className="space-y-3 border-b border-border p-4">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg font-semibold">{t("chat.conversations")}</h2>
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                {visibleConversations.length}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                  {visibleConversations.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setComposeOpen(true)}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  aria-label={t("chat.newConversation")}
+                  aria-expanded={composeOpen}
+                  aria-controls="floating-media-window-chat-compose"
+                  title={t("chat.newConversation")}
+                >
+                  <UserPlus className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
             </div>
             <label className="relative block" htmlFor="chat-conversation-search">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -103,132 +256,6 @@ export default function ChatPage() {
                 className="h-10 w-full rounded-full border border-transparent bg-muted/70 pl-9 pr-3 text-sm outline-none transition focus:border-primary/40 focus:bg-background focus:ring-2 focus:ring-primary/15"
               />
             </label>
-            <details className="group rounded-xl border border-border/80 bg-card px-3 py-2">
-              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-medium marker:hidden">
-                <Users className="h-4 w-4 text-primary" aria-hidden="true" />
-                {t("chat.newConversation")}
-              </summary>
-              <div className="mt-3 space-y-3 border-t border-border pt-3">
-                <label className="block text-xs text-muted-foreground" htmlFor="chat-friend">
-                  {t("chat.startDirect")}
-                </label>
-                <select
-                  id="chat-friend"
-                  className="w-full rounded-lg border border-input bg-background p-2.5 text-sm"
-                  defaultValue=""
-                  onChange={(event) => {
-                    if (event.target.value) startDirect.mutate(event.target.value);
-                    event.target.value = "";
-                  }}
-                >
-                  <option value="">{t("chat.chooseFriend")}</option>
-                  {friendRows.map((row) => {
-                    const friend = row.requesterId === user?.id ? row.receiver : row.requester;
-                    return <option key={row.id} value={friend.id}>{friend.username}</option>;
-                  })}
-                </select>
-              </div>
-            </details>
-            <details className="group rounded-xl border border-border/80 bg-card px-3 py-2">
-              <summary className="cursor-pointer list-none text-sm font-medium marker:hidden">
-                {t("chat.createGroup")}
-              </summary>
-              <div className="mt-3 border-t border-border pt-3">
-            <form
-              className="space-y-2"
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (groupName.trim() && groupMembers.length >= 2)
-                  createGroup.mutate();
-              }}
-            >
-              <label htmlFor="chat-group-name" className="sr-only">
-                {t("chat.groupName")}
-              </label>
-              <input
-                id="chat-group-name"
-                className="w-full rounded-md border border-input bg-background p-2 text-sm"
-                value={groupName}
-                onChange={(event) => setGroupName(event.target.value)}
-                placeholder={t("chat.groupName")}
-                maxLength={80}
-              />
-              <select
-                aria-label={t("chat.addGroupMember")}
-                className="w-full rounded-md border border-input bg-background p-2 text-sm"
-                value=""
-                onChange={(event) => {
-                  if (
-                    event.target.value &&
-                    !groupMembers.includes(event.target.value)
-                  )
-                    setGroupMembers((prev) => [...prev, event.target.value]);
-                }}
-              >
-                <option value="">{t("chat.addGroupMember")}</option>
-                {friendRows.map((row) => {
-                  const friend =
-                    row.requesterId === user?.id ? row.receiver : row.requester;
-                  return (
-                    <option key={row.id} value={friend.id}>
-                      {friend.username}
-                    </option>
-                  );
-                })}
-              </select>
-              {groupMembers.length ? (
-                <ul className="flex flex-wrap gap-1">
-                  {groupMembers.map((memberId) => {
-                    const friendRow = friendRows.find(
-                      (row) =>
-                        (row.requesterId === user?.id
-                          ? row.receiverId
-                          : row.requesterId) === memberId,
-                    );
-                    const friend = friendRow
-                      ? friendRow.requesterId === user?.id
-                        ? friendRow.receiver
-                        : friendRow.requester
-                      : null;
-                    return (
-                      <li
-                        key={memberId}
-                        className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs"
-                      >
-                        {friend?.username ?? memberId}
-                        <button
-                          type="button"
-                          aria-label={t("chat.removeSelected", {
-                            name: friend?.username ?? memberId,
-                          })}
-                          onClick={() =>
-                            setGroupMembers((current) =>
-                              current.filter((id) => id !== memberId),
-                            )
-                          }
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : null}
-              <button
-                type="submit"
-                disabled={
-                  createGroup.isPending ||
-                  groupMembers.length < 2 ||
-                  !groupName.trim()
-                }
-                className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-              >
-                <Users className="mr-2 inline h-4 w-4" />
-                {t("chat.createGroup")}
-              </button>
-            </form>
-              </div>
-            </details>
           </div>
           <div className="flex-1 overflow-y-auto">
             {conversations.isLoading ? (
@@ -306,15 +333,19 @@ export default function ChatPage() {
                       .join(", ")}
                   </p>
                 </div>
-                <details className="relative">
+                <details key={selected.id} ref={nicknameMenuRef} className="relative">
                   <summary className="cursor-pointer list-none rounded-full border border-border px-3 py-2 text-xs font-medium hover:bg-muted">
                     {t("chat.profileOptions")}
                   </summary>
                   <form
-                    className="absolute right-0 top-12 z-10 flex w-72 gap-2 rounded-xl border border-border bg-card p-3 shadow-xl"
+                    className={`absolute right-0 top-full z-30 ${selected.type === "GROUP" ? "mt-16" : "mt-6"} flex w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] gap-2 rounded-xl border border-border bg-card p-3 shadow-xl}`}
                     onSubmit={(event) => {
                       event.preventDefault();
-                      saveNickname.mutate();
+                      saveNickname.mutate(undefined, {
+                        onSuccess: () => {
+                          if (nicknameMenuRef.current) nicknameMenuRef.current.open = false;
+                        },
+                      });
                     }}
                   >
                     <label htmlFor="chat-nickname" className="sr-only">
@@ -324,7 +355,7 @@ export default function ChatPage() {
                       id="chat-nickname"
                       value={nickname}
                       onChange={(event) => setNickname(event.target.value)}
-                      maxLength={50}
+                      maxLength={CHAT_NICKNAME_MAX_LENGTH}
                       placeholder={t("chat.nickname")}
                       className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm"
                     />
@@ -367,49 +398,20 @@ export default function ChatPage() {
                   </form>
                   {selected.participants.find((p) => p.userId === user?.id)
                     ?.role === "ADMIN" ? (
-                    <div className="flex gap-2">
-                      <label className="sr-only" htmlFor="chat-add-member">
-                        {t("chat.addGroupMember")}
-                      </label>
-                      <select
-                        id="chat-add-member"
-                        value={addMemberId}
-                        onChange={(event) => setAddMemberId(event.target.value)}
-                        className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm"
-                      >
-                        <option value="">{t("chat.addGroupMember")}</option>
-                        {friendRows
-                          .filter(
-                            (row) =>
-                              !selected.participants.some(
-                                (participant) =>
-                                  participant.userId ===
-                                  (row.requesterId === user?.id
-                                    ? row.receiverId
-                                    : row.requesterId),
-                              ),
-                          )
-                          .map((row) => {
-                            const friendId =
-                              row.requesterId === user?.id
-                                ? row.receiverId
-                                : row.requesterId;
-                            const friend =
-                              row.requesterId === user?.id
-                                ? row.receiver
-                                : row.requester;
-                            return (
-                              <option key={row.id} value={friendId}>
-                                {friend.username}
-                              </option>
-                            );
-                          })}
-                      </select>
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <ChatFriendPicker
+                        friends={friends.filter((friend) =>
+                          !selected.participants.some((participant) => participant.userId === friend.id),
+                        )}
+                        label={t("chat.addGroupMember")}
+                        selectedIds={addMemberId ? [addMemberId] : []}
+                        onSelect={(friend) => setAddMemberId(friend.id)}
+                      />
                       <button
                         type="button"
                         disabled={!addMemberId || addMembers.isPending}
                         onClick={() => addMembers.mutate()}
-                        className="rounded-md border px-2 text-sm"
+                        className="min-h-10 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {t("chat.add")}
                       </button>
@@ -422,13 +424,22 @@ export default function ChatPage() {
                     {selected.participants.map((participant) => (
                       <li
                         key={participant.id}
-                        className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs"
+                        className="flex max-w-full items-center gap-2 rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
                       >
-                        <span>
-                          {participant.nickname || participant.username}
-                          {participant.role === "ADMIN"
-                            ? ` · ${t("chat.admin")}`
-                            : ""}
+                        <UserAvatar
+                          src={participant.avatarUrl}
+                          name={participant.nickname || participant.username}
+                          size="xs"
+                          alt=""
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block max-w-32 truncate font-medium">
+                            {participant.nickname || participant.username}
+                            {participant.role === "ADMIN" ? ` · ${t("chat.admin")}` : ""}
+                          </span>
+                          <span className="block max-w-32 truncate text-[10px] text-muted-foreground">
+                            @{participant.username}
+                          </span>
                         </span>
                         {selected.participants.find(
                           (p) => p.userId === user?.id,
@@ -468,17 +479,31 @@ export default function ChatPage() {
                                   })
                             }
                             onClick={() => {
-                              if (
-                                window.confirm(
-                                  t(
-                                    participant.userId === user?.id
-                                      ? "chat.confirmLeave"
-                                      : "chat.confirmRemove",
-                                    { name: participant.username },
-                                  ),
-                                )
-                              )
-                                removeMember.mutate(participant.userId);
+                              const isLeaving = participant.userId === user?.id;
+                              toast(
+                                t(
+                                  isLeaving
+                                    ? "chat.confirmLeave"
+                                    : "chat.confirmRemove",
+                                  { name: participant.username },
+                                ),
+                                {
+                                  action: {
+                                    label: t(
+                                      isLeaving
+                                        ? "chat.confirmLeaveAction"
+                                        : "chat.confirmRemoveAction",
+                                    ),
+                                    onClick: () =>
+                                      removeMember.mutate(participant.userId),
+                                  },
+                                  cancel: {
+                                    label: t("common.cancel"),
+                                    onClick: () => undefined,
+                                  },
+                                  duration: 10_000,
+                                },
+                              );
                             }}
                           >
                             <X className="h-3 w-3" />

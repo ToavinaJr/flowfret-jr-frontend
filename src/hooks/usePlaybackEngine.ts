@@ -73,11 +73,18 @@ export function usePlaybackEngine(
   const [playbackError, setPlaybackError] = useState<PlaybackErrorCode | null>(
     null,
   );
+  const [lastEndedItemId, setLastEndedItemId] = useState<string | null>(null);
+  const [playbackEndSequence, setPlaybackEndSequence] = useState(0);
+  const reportNaturalEnd = useCallback(() => {
+    setLastEndedItemId(itemRef.current?.id ?? null);
+    setPlaybackEndSequence((sequence) => sequence + 1);
+    onEndedRef.current?.();
+  }, []);
   const handleStemEnded = useCallback(() => {
     setPlayState("paused");
     if (repeatAfterNaturalEnd()) return;
-    onEndedRef.current?.();
-  }, [repeatAfterNaturalEnd]);
+    reportNaturalEnd();
+  }, [repeatAfterNaturalEnd, reportNaturalEnd]);
   const stems = useVocalRemoval(handleStemEnded);
   const { activeRef: stemsActive, mixerRef, reset: resetStems } = stems;
   const setNativePlayState = useCallback((state: Parameters<typeof setPlayState>[0]) => {
@@ -97,8 +104,8 @@ export function usePlaybackEngine(
   const handleYouTubeEnded = useCallback(() => {
     if (stemsActive.current) return;
     if (repeatAfterNaturalEnd()) return;
-    onEndedRef.current?.();
-  }, [repeatAfterNaturalEnd, stemsActive]);
+    reportNaturalEnd();
+  }, [repeatAfterNaturalEnd, reportNaturalEnd, stemsActive]);
   const updateCurrentTime = useCallback((time: number) => {
     if (stemsActive.current) return;
     if (repeatAt(time)) return;
@@ -178,7 +185,7 @@ export function usePlaybackEngine(
       if (stemsActive.current) return;
       setPlayState("paused");
       if (repeatAfterNaturalEnd()) return;
-      onEndedRef.current?.();
+      reportNaturalEnd();
     };
     const onError = () => {
       if (stemsActive.current) return;
@@ -217,7 +224,7 @@ export function usePlaybackEngine(
     };
     // Initial values are intentionally captured once when the engine is created.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [releaseSource, repeatAt, repeatAfterNaturalEnd, updateCurrentTime]);
+  }, [releaseSource, repeatAt, repeatAfterNaturalEnd, reportNaturalEnd, updateCurrentTime]);
 
   const select = useCallback(
     (next: PlaybackItem) => {
@@ -451,6 +458,8 @@ export function usePlaybackEngine(
 
   return {
     item,
+    lastEndedItemId,
+    playbackEndSequence,
     playState,
     currentTime,
     duration,

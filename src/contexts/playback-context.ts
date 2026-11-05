@@ -35,6 +35,8 @@ export interface PlaybackItem {
 
 export interface PlaybackContextValue {
   item: PlaybackItem | null;
+  lastEndedItemId: string | null;
+  playbackEndSequence: number;
   playState: PlayState;
   playbackError: PlaybackErrorCode | null;
   currentTime: number;

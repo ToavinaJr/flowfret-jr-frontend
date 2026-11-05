@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import { Smile } from "lucide-react";
@@ -23,8 +24,10 @@ export function EmojiPickerButton({ onSelect }: EmojiPickerButtonProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const onSelectRef = useRef(onSelect);
+  const [position, setPosition] = useState<{ left: number; top: number } | null>(null);
   const locale = i18n.language.startsWith("fr") ? "fr" : "en";
   const isDark = resolvedTheme === "dark";
 
@@ -93,8 +96,10 @@ export function EmojiPickerButton({ onSelect }: EmojiPickerButtonProps) {
   useEffect(() => {
     if (!open) return;
     const closeOnOutsidePointer = (event: PointerEvent) => {
-      if (event.target instanceof Node && rootRef.current?.contains(event.target))
-        return;
+      if (event.target instanceof Node) {
+        if (rootRef.current?.contains(event.target)) return;
+        if (dialogRef.current?.contains(event.target)) return;
+      }
       setOpen(false);
     };
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -107,6 +112,43 @@ export function EmojiPickerButton({ onSelect }: EmojiPickerButtonProps) {
     return () => {
       document.removeEventListener("pointerdown", closeOnOutsidePointer);
       document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setPosition(null);
+      return;
+    }
+    const placeDialog = () => {
+      const trigger = triggerRef.current;
+      const dialog = dialogRef.current;
+      if (!trigger || !dialog) return;
+      const triggerBounds = trigger.getBoundingClientRect();
+      const dialogBounds = dialog.getBoundingClientRect();
+      const margin = 8;
+      const left = Math.min(
+        window.innerWidth - dialogBounds.width - margin,
+        Math.max(margin, triggerBounds.left),
+      );
+      const above = triggerBounds.top - dialogBounds.height - 12;
+      const top = above >= margin
+        ? above
+        : Math.max(
+            margin,
+            Math.min(
+              window.innerHeight - dialogBounds.height - margin,
+              triggerBounds.bottom + 12,
+            ),
+          );
+      setPosition({ left, top });
+    };
+    placeDialog();
+    window.addEventListener("resize", placeDialog);
+    window.addEventListener("scroll", placeDialog, true);
+    return () => {
+      window.removeEventListener("resize", placeDialog);
+      window.removeEventListener("scroll", placeDialog, true);
     };
   }, [open]);
 
@@ -123,18 +165,27 @@ export function EmojiPickerButton({ onSelect }: EmojiPickerButtonProps) {
       >
         <Smile className="h-5 w-5" aria-hidden="true" />
       </button>
-      {open ? (
-        <div
-          role="dialog"
-          aria-label={t("chat.emojiPicker.title")}
-          className="absolute bottom-full right-0 z-20 mb-3 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl shadow-black/15"
-        >
-          <div
-            ref={panelRef}
-            className={`h-[22rem] [&>emoji-picker]:h-full [&>emoji-picker]:w-full ${PICKER_THEME_VARIABLES}`}
-          />
-        </div>
-      ) : null}
+      {open
+        ? createPortal(
+            <div
+              ref={dialogRef}
+              role="dialog"
+              aria-label={t("chat.emojiPicker.title")}
+              className="fixed z-[100] w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl shadow-black/15"
+              style={{
+                left: position?.left ?? 8,
+                top: position?.top ?? 8,
+                visibility: position ? "visible" : "hidden",
+              }}
+            >
+              <div
+                ref={panelRef}
+                className={`h-[min(22rem,calc(100dvh-1rem))] [&>emoji-picker]:h-full [&>emoji-picker]:w-full ${PICKER_THEME_VARIABLES}`}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

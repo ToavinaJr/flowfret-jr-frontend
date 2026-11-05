@@ -14,6 +14,8 @@ const playback = vi.hoisted(() => ({
     provider: "YOUTUBE",
     destination: undefined as string | undefined,
   },
+  lastEndedItemId: null as string | null,
+  playbackEndSequence: 0,
   playState: "paused",
   playbackError: null,
   currentTime: 0,
@@ -57,6 +59,8 @@ describe("PersistentMediaPlayer lyrics control", () => {
       destination: undefined,
     };
     playback.queue = [];
+    playback.lastEndedItemId = null;
+    playback.playbackEndSequence = 0;
     localStorage.clear();
   });
 
@@ -82,5 +86,33 @@ describe("PersistentMediaPlayer lyrics control", () => {
 
     expect(screen.getByRole("dialog", { name: /lyrics/i })).toBeInTheDocument();
     expect(screen.getByText("Lyrics window content")).toBeInTheDocument();
+  });
+
+  it("closes the lyrics window when the current song ends", () => {
+    const { rerender } = render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <PersistentMediaPlayer />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+    fireEvent.click(
+      document.querySelector<HTMLButtonElement>(
+        'button[aria-controls="floating-media-window-lyrics"]',
+      )!,
+    );
+    expect(screen.getByRole("dialog", { name: /lyrics/i })).toBeInTheDocument();
+
+    playback.lastEndedItemId = playback.item.id;
+    playback.playbackEndSequence += 1;
+    rerender(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <PersistentMediaPlayer />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+
+    expect(screen.queryByRole("dialog", { name: /lyrics/i })).not.toBeInTheDocument();
   });
 });
