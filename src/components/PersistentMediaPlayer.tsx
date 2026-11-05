@@ -3,6 +3,7 @@ import {
   Mic2,
   Pause,
   Play,
+  Repeat2,
   Shuffle,
   SkipBack,
   SkipForward,
@@ -20,7 +21,7 @@ import { VocalRemovalControl } from "@/components/features/music/VocalRemovalCon
 import { PracticeLoopControl } from "@/components/features/music/PracticeLoopControl";
 import type { PracticeLoop } from "@/services/practiceLoop";
 
-type PanelName = "chords" | "lyrics";
+type PanelName = "chords" | "lyrics" | "practice-loop";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -58,9 +59,9 @@ function LoopTimelineMarkers({
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
   const location = useLocation();
-  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
-  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false });
-  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, next: 62 });
+  const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "practice-loop": false });
+  const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "practice-loop": false });
+  const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, "practice-loop": 62, next: 63 });
   const {
     item,
     playState,
@@ -83,6 +84,7 @@ export default function PersistentMediaPlayer() {
   const isSpotify = item.engine === "spotify";
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
   const isAdmin = location.pathname.startsWith("/admin");
+  const isImportedUpload = location.pathname === "/upload" && item.id.startsWith("import:");
 
   function togglePanel(panel: PanelName) {
     if (openPanels[panel] && minimizedPanels[panel]) {
@@ -148,6 +150,20 @@ export default function PersistentMediaPlayer() {
           onMinimize={() => setMinimizedPanels((current) => ({ ...current, lyrics: !current.lyrics }))}
         >
           <PersistentLyrics item={item} currentTime={currentTime} onSeek={seek} />
+        </FloatingMediaWindow>
+      ) : null}
+      {openPanels["practice-loop"] && isImportedUpload ? (
+        <FloatingMediaWindow
+          windowId="practice-loop"
+          isAdmin={isAdmin}
+          title={t("mediaPlayer.practiceLoop")}
+          zIndex={windowOrder["practice-loop"]}
+          minimized={minimizedPanels["practice-loop"]}
+          onClose={() => closePanel("practice-loop")}
+          onFocus={() => focusWindow("practice-loop")}
+          onMinimize={() => setMinimizedPanels((current) => ({ ...current, "practice-loop": !current["practice-loop"] }))}
+        >
+          <PracticeLoopControl embedded />
         </FloatingMediaWindow>
       ) : null}
       <section
@@ -231,7 +247,17 @@ export default function PersistentMediaPlayer() {
             <Mic2 className="h-4 w-4" />
           </button>
         ) : null}
-        <PracticeLoopControl className="hidden sm:flex" />
+        {isImportedUpload ? (
+          <button
+            type="button"
+            onClick={() => togglePanel("practice-loop")}
+            className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:flex ${openPanels["practice-loop"] ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+            aria-label={t("mediaPlayer.practiceLoopConfigure")}
+            aria-expanded={openPanels["practice-loop"]}
+            aria-controls="floating-media-window-practice-loop"
+            title={t("mediaPlayer.practiceLoop")}
+          ><Repeat2 className="h-5 w-5" aria-hidden="true" /></button>
+        ) : <PracticeLoopControl className="hidden sm:flex" />}
         <VocalRemovalControl key={item.id} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
@@ -294,7 +320,17 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        <PracticeLoopControl className="sm:hidden" />
+        {isImportedUpload ? (
+          <button
+            type="button"
+            onClick={() => togglePanel("practice-loop")}
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${openPanels["practice-loop"] ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
+            aria-label={t("mediaPlayer.practiceLoopConfigure")}
+            aria-expanded={openPanels["practice-loop"]}
+            aria-controls="floating-media-window-practice-loop"
+            title={t("mediaPlayer.practiceLoop")}
+          ><Repeat2 className="h-4 w-4" aria-hidden="true" /></button>
+        ) : <PracticeLoopControl className="sm:hidden" />}
         <div className="relative min-w-0 flex-1">
           <input
             name="playbackPositionMobile"

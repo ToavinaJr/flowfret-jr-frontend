@@ -499,6 +499,7 @@
   },
   "metronome": {
     "title": "Métronome",
+    "bpm": "Tempo en battements par minute",
     "decrease": "Réduire le BPM",
     "increase": "Augmenter le BPM",
     "start": "Démarrer",
@@ -513,11 +514,13 @@
     "inTune": "Accordé ✓",
     "startMicrophone": "Démarrer le microphone",
     "stopMicrophone": "Arrêter le microphone",
+    "microphoneError": "Impossible d’accéder au microphone. Vérifiez les autorisations du navigateur, puis réessayez.",
     "selectString": "Sélectionner une corde",
     "referenceStrings": "Cordes de référence"
   },
   "player": {
     "importedSubtitle": "Morceau importé · Lecteur guitare",
+    "chordsFor": "Accords de {{title}}",
     "chordCount": "{{count}} accords",
     "importedSuffix": " · Importé",
     "restart": "Recommencer",
@@ -543,6 +546,7 @@
       "classifying": "Détection des accords…",
       "complete": "Analyse terminée"
     },
+    "analysisComplete": "Analyse audio terminée",
     "invalidFile": "Sélectionnez un fichier audio (MP3, WAV…).",
     "tooLarge": "Fichier trop volumineux (20 Mo maximum).",
     "analysisFailed": "Échec de l’analyse. Essayez un autre fichier.",

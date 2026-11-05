@@ -12,7 +12,13 @@ function formatTime(seconds: number | null): string {
   return `${minutes}:${wholeSeconds}.${tenths}`;
 }
 
-export function PracticeLoopControl({ className = "" }: { className?: string }) {
+export function PracticeLoopControl({
+  className = "",
+  embedded = false,
+}: {
+  className?: string;
+  embedded?: boolean;
+}) {
   const { t } = useTranslation();
   const panelId = useId();
   const {
@@ -31,6 +37,72 @@ export function PracticeLoopControl({ className = "" }: { className?: string }) 
     (duration <= 0 || currentTime <= duration);
   const hasMarkers = practiceLoop.start !== null || practiceLoop.end !== null;
 
+  const panel = (
+    <section
+      id={embedded ? undefined : panelId}
+      aria-label={t("mediaPlayer.practiceLoop")}
+      className={embedded
+        ? "w-full p-4"
+        : "fixed bottom-[calc(var(--mobile-nav-offset)+6.75rem+0.5rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-4 shadow-xl sm:bottom-[calc(76px+0.5rem)] sm:left-auto sm:right-2 sm:w-[min(24rem,calc(100vw-1rem))] sm:p-4"}
+    >
+      <div className="mb-4 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          {!embedded ? (
+            <h2 className="text-sm font-semibold text-foreground">
+              {t("mediaPlayer.practiceLoop")}
+            </h2>
+          ) : null}
+          <span data-testid="practice-loop-times" className="ml-auto shrink-0 rounded-md bg-secondary px-2 py-1 font-mono tabular-nums text-xs text-foreground">
+            {t("mediaPlayer.practiceLoopStartAt", { time: formatTime(practiceLoop.start) })}
+            {" · "}
+            {t("mediaPlayer.practiceLoopEndAt", { time: formatTime(practiceLoop.end) })}
+          </span>
+        </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          {t("mediaPlayer.practiceLoopHint")}
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={setPracticeLoopStart}
+          className="min-h-11 rounded-md border border-border bg-background px-3 py-2 text-center text-sm font-medium leading-tight text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          {t("mediaPlayer.practiceLoopSetStart")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setPracticeLoopEnd()}
+          disabled={!canSetEnd}
+          title={!canSetEnd ? t("mediaPlayer.practiceLoopEndHint") : undefined}
+          className="min-h-11 rounded-md border border-border bg-background px-3 py-2 text-center text-sm font-medium leading-tight text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {t("mediaPlayer.practiceLoopSetEnd")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setPracticeLoopEnabled(!practiceLoop.enabled)}
+          disabled={!hasValidLoop}
+          aria-pressed={practiceLoop.enabled}
+          className="min-h-11 rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold leading-tight text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {t(practiceLoop.enabled ? "mediaPlayer.practiceLoopDisable" : "mediaPlayer.practiceLoopEnable")}
+        </button>
+        <button
+          type="button"
+          onClick={clearPracticeLoop}
+          disabled={!hasMarkers}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-center text-sm leading-tight text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          <RotateCcw className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {t("mediaPlayer.practiceLoopClear")}
+        </button>
+      </div>
+    </section>
+  );
+
+  if (embedded) return panel;
+
   return (
     <div className={`relative flex shrink-0 ${className}`}>
       <button
@@ -45,65 +117,7 @@ export function PracticeLoopControl({ className = "" }: { className?: string }) 
       >
         <Repeat2 className="h-5 w-5" aria-hidden="true" />
       </button>
-      {open ? (
-        <section
-          id={panelId}
-          aria-label={t("mediaPlayer.practiceLoop")}
-          className="fixed bottom-[calc(var(--mobile-nav-offset)+6.75rem+0.5rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-3 shadow-xl sm:bottom-[calc(76px+0.5rem)] sm:left-auto sm:right-2 sm:w-[min(22rem,calc(100vw-1rem))] sm:p-4"
-        >
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold text-foreground">
-                {t("mediaPlayer.practiceLoop")}
-              </h2>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                {t("mediaPlayer.practiceLoopHint")}
-              </p>
-            </div>
-            <span data-testid="practice-loop-times" className="shrink-0 rounded-md bg-secondary px-2 py-1 font-mono text-xs text-foreground">
-              {t("mediaPlayer.practiceLoopStartAt", { time: formatTime(practiceLoop.start) })}
-              {" · "}
-              {t("mediaPlayer.practiceLoopEndAt", { time: formatTime(practiceLoop.end) })}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={setPracticeLoopStart}
-              className="min-h-10 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {t("mediaPlayer.practiceLoopSetStart")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPracticeLoopEnd()}
-              disabled={!canSetEnd}
-              title={!canSetEnd ? t("mediaPlayer.practiceLoopEndHint") : undefined}
-              className="min-h-10 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {t("mediaPlayer.practiceLoopSetEnd")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPracticeLoopEnabled(!practiceLoop.enabled)}
-              disabled={!hasValidLoop}
-              aria-pressed={practiceLoop.enabled}
-              className="min-h-10 rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {t(practiceLoop.enabled ? "mediaPlayer.practiceLoopDisable" : "mediaPlayer.practiceLoopEnable")}
-            </button>
-            <button
-              type="button"
-              onClick={clearPracticeLoop}
-              disabled={!hasMarkers}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 text-sm text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-              {t("mediaPlayer.practiceLoopClear")}
-            </button>
-          </div>
-        </section>
-      ) : null}
+      {open ? panel : null}
     </div>
   );
 }

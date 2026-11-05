@@ -10,7 +10,7 @@ interface WindowBounds {
 }
 
 interface FloatingMediaWindowProps {
-  windowId: "lyrics" | "chords";
+  windowId: "lyrics" | "chords" | "practice-loop";
   isAdmin?: boolean;
   sidebarCollapsed?: boolean;
   title: string;
@@ -44,11 +44,17 @@ function defaultBounds(windowId: FloatingMediaWindowProps["windowId"], isAdmin: 
   const sideBySide = availableWidth >= MIN_WIDTH * 2 + 36;
   const width = Math.min(440, Math.max(220, sideBySide ? Math.floor((availableWidth - 36) / 2) : availableWidth));
   const availableHeight = viewportHeight - (viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT) - 32;
-  const height = Math.min(440, Math.max(MIN_HEIGHT, Math.floor((availableHeight - (sideBySide ? 0 : 12)) / (sideBySide ? 1 : 2))));
+  const height = windowId === "practice-loop"
+    ? Math.min(280, Math.max(1, availableHeight))
+    : Math.min(440, Math.max(MIN_HEIGHT, Math.floor((availableHeight - (sideBySide ? 0 : 12)) / (sideBySide ? 1 : 2))));
   const bottom = viewportHeight - (viewportWidth < 768 ? MOBILE_RESERVED_HEIGHT : DESKTOP_RESERVED_HEIGHT) - 12;
   return {
-    x: sideBySide && windowId === "lyrics" ? viewportWidth - width - 12 : workspaceLeft + 12,
-    y: sideBySide || windowId === "lyrics" ? bottom - height : bottom - height * 2 - 12,
+    x: sideBySide && (windowId === "lyrics" || windowId === "practice-loop") ? viewportWidth - width - 12 : workspaceLeft + 12,
+    y: windowId === "practice-loop"
+      ? Math.max(12, bottom - height * 2 - 12)
+      : sideBySide || windowId === "lyrics"
+        ? bottom - height
+        : bottom - height * 2 - 12,
     width,
     height,
   };

@@ -499,6 +499,7 @@
   },
   "metronome": {
     "title": "Metronome",
+    "bpm": "Tempo in beats per minute",
     "decrease": "Decrease BPM",
     "increase": "Increase BPM",
     "start": "Start",
@@ -513,11 +514,13 @@
     "inTune": "In Tune ✓",
     "startMicrophone": "Start microphone",
     "stopMicrophone": "Stop microphone",
+    "microphoneError": "Unable to access the microphone. Check your browser permissions and try again.",
     "selectString": "Select String",
     "referenceStrings": "Reference strings"
   },
   "player": {
     "importedSubtitle": "Imported track · Guitar Player",
+    "chordsFor": "Chords for {{title}}",
     "chordCount": "{{count}} chords",
     "importedSuffix": " · Imported",
     "restart": "Restart",
@@ -543,6 +546,7 @@
       "classifying": "Detecting chords…",
       "complete": "Analysis complete"
     },
+    "analysisComplete": "Audio analysis complete",
     "invalidFile": "Please select an audio file (MP3, WAV…).",
     "tooLarge": "File too large (max 20MB).",
     "analysisFailed": "Analysis failed. Try another file.",
