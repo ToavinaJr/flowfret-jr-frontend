@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import type { ChordCue, PlaybackErrorCode, PlayState } from "@/types/song";
 import type { MusicProvider } from "@/constants/domain";
+import type { PracticeLoop } from "@/services/practiceLoop";
 
 export type StemPreparationPhase = "queue" | "download" | "separation" | "finalizing" | null;
 
@@ -61,6 +62,11 @@ export interface PlaybackContextValue {
   setShuffle: (enabled: boolean) => void;
   next: () => Promise<void>;
   previous: () => Promise<void>;
+  practiceLoop: PracticeLoop;
+  setPracticeLoopStart: () => void;
+  setPracticeLoopEnd: () => boolean;
+  setPracticeLoopEnabled: (enabled: boolean) => void;
+  clearPracticeLoop: () => void;
 }
 
 export const PlaybackContext = createContext<PlaybackContextValue | null>(null);

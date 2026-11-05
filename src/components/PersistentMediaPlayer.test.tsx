@@ -28,6 +28,11 @@ const playback = vi.hoisted(() => ({
   next: vi.fn(),
   previous: vi.fn(),
   retry: vi.fn(),
+  practiceLoop: { start: null, end: null, enabled: false },
+  setPracticeLoopStart: vi.fn(),
+  setPracticeLoopEnd: vi.fn(() => false),
+  setPracticeLoopEnabled: vi.fn(),
+  clearPracticeLoop: vi.fn(),
 }));
 
 vi.mock("@/contexts/usePlayback", () => ({ usePlayback: () => playback }));

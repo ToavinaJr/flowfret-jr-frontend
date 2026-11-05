@@ -958,7 +958,18 @@
     "resizeWindowTop": "Resize window from the top edge",
     "resizeWindowRight": "Resize window from the right edge",
     "resizeWindowBottom": "Resize window from the bottom edge",
-    "resizeWindowLeft": "Resize window from the left edge"
+    "resizeWindowLeft": "Resize window from the left edge",
+    "practiceLoop": "Practice loop",
+    "practiceLoopConfigure": "Configure practice loop",
+    "practiceLoopHint": "Move playback to the start of the passage and set A, then set B at its end.",
+    "practiceLoopStartAt": "A: {{time}}",
+    "practiceLoopEndAt": "B: {{time}}",
+    "practiceLoopSetStart": "Set A",
+    "practiceLoopSetEnd": "Set B",
+    "practiceLoopEndHint": "Move playback at least 0.5 seconds after A.",
+    "practiceLoopEnable": "Enable loop",
+    "practiceLoopDisable": "Disable loop",
+    "practiceLoopClear": "Clear A and B"
   },
   "chordPlayer": {
     "title": "Chords",

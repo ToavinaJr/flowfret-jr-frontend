@@ -7,6 +7,14 @@ import { useSpotifyController } from "./useSpotifyController";
 import { useYouTubeController } from "./useYouTubeController";
 import { useVocalRemoval } from "./useVocalRemoval";
 import { clampGain } from "@/services/stemMixer";
+import {
+  EMPTY_PRACTICE_LOOP,
+  clampPracticeLoop,
+  isPracticeLoopValid,
+  setPracticeLoopEnd as createLoopEnd,
+  setPracticeLoopStart as createLoopStart,
+  type PracticeLoop,
+} from "@/services/practiceLoop";
 
 interface InitialPlaybackState {
   item: PlaybackItem | null;
@@ -27,6 +35,34 @@ export function usePlaybackEngine(
   const generationRef = useRef(0);
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
+  const playRef = useRef<((item?: PlaybackItem) => Promise<void>) | null>(null);
+  const seekRef = useRef<((time: number) => void) | null>(null);
+  const durationRef = useRef(initial?.item?.duration ?? 0);
+  const loopRef = useRef<PracticeLoop>(EMPTY_PRACTICE_LOOP);
+  const loopJumpingRef = useRef(false);
+  const [practiceLoop, setPracticeLoop] = useState<PracticeLoop>(EMPTY_PRACTICE_LOOP);
+  const publishLoop = useCallback((next: PracticeLoop) => {
+    loopRef.current = next;
+    loopJumpingRef.current = false;
+    setPracticeLoop(next);
+  }, []);
+  const repeatAt = useCallback((time: number) => {
+    const loop = loopRef.current;
+    if (!loop.enabled || !isPracticeLoopValid(loop, durationRef.current)) return false;
+    if (time <= loop.start! + 0.15) loopJumpingRef.current = false;
+    if (time < loop.end! || loopJumpingRef.current) return false;
+    loopJumpingRef.current = true;
+    seekRef.current?.(loop.start!);
+    return true;
+  }, []);
+  const repeatAfterNaturalEnd = useCallback(() => {
+    const loop = loopRef.current;
+    if (!loop.enabled || !isPracticeLoopValid(loop, durationRef.current)) return false;
+    loopJumpingRef.current = true;
+    seekRef.current?.(loop.start!);
+    void playRef.current?.();
+    return true;
+  }, []);
   const [item, setItem] = useState<PlaybackItem | null>(initial?.item ?? null);
   const [playState, setPlayState] = useState<PlayState>(
     initial?.item ? "paused" : "idle",
@@ -39,24 +75,36 @@ export function usePlaybackEngine(
   );
   const handleStemEnded = useCallback(() => {
     setPlayState("paused");
+    if (repeatAfterNaturalEnd()) return;
     onEndedRef.current?.();
-  }, []);
+  }, [repeatAfterNaturalEnd]);
   const stems = useVocalRemoval(handleStemEnded);
   const { activeRef: stemsActive, mixerRef, reset: resetStems } = stems;
   const setNativePlayState = useCallback((state: Parameters<typeof setPlayState>[0]) => {
     if (!stemsActive.current) setPlayState(state);
   }, [stemsActive]);
   const setNativeDuration = useCallback((value: number) => {
-    if (!stemsActive.current) setDuration(value);
+    if (!stemsActive.current) {
+      durationRef.current = value;
+      setDuration(value);
+      const next = clampPracticeLoop(loopRef.current, value);
+      if (next !== loopRef.current) {
+        loopRef.current = next;
+        setPracticeLoop(next);
+      }
+    }
   }, [stemsActive]);
   const handleYouTubeEnded = useCallback(() => {
-    if (!stemsActive.current) onEndedRef.current?.();
-  }, [stemsActive]);
+    if (stemsActive.current) return;
+    if (repeatAfterNaturalEnd()) return;
+    onEndedRef.current?.();
+  }, [repeatAfterNaturalEnd, stemsActive]);
   const updateCurrentTime = useCallback((time: number) => {
     if (stemsActive.current) return;
+    if (repeatAt(time)) return;
     resumeAtRef.current = time;
     setCurrentTime(time);
-  }, [stemsActive]);
+  }, [repeatAt, stemsActive]);
   const handleYouTubeError = useCallback(() => {
     if (stemsActive.current) return;
     setPlaybackError("PROVIDER_UNAVAILABLE");
@@ -91,12 +139,20 @@ export function usePlaybackEngine(
     const onTime = () => {
       if (stemsActive.current || restorePendingRef.current) return;
       if (audio.readyState < HTMLMediaElement.HAVE_METADATA) return;
+      if (repeatAt(audio.currentTime)) return;
       resumeAtRef.current = audio.currentTime;
       updateCurrentTime(audio.currentTime);
     };
     const onMetadata = () => {
       if (stemsActive.current) return;
-      setDuration(audio.duration || itemRef.current?.duration || 0);
+      const actualDuration = audio.duration || itemRef.current?.duration || 0;
+      durationRef.current = actualDuration;
+      setDuration(actualDuration);
+      const nextLoop = clampPracticeLoop(loopRef.current, actualDuration);
+      if (nextLoop !== loopRef.current) {
+        loopRef.current = nextLoop;
+        setPracticeLoop(nextLoop);
+      }
       if (resumeAtRef.current > 0) {
         const position = Math.min(resumeAtRef.current, audio.duration || resumeAtRef.current);
         restorePendingRef.current = position > 0;
@@ -121,6 +177,7 @@ export function usePlaybackEngine(
     const handleEnded = () => {
       if (stemsActive.current) return;
       setPlayState("paused");
+      if (repeatAfterNaturalEnd()) return;
       onEndedRef.current?.();
     };
     const onError = () => {
@@ -160,7 +217,7 @@ export function usePlaybackEngine(
     };
     // Initial values are intentionally captured once when the engine is created.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [releaseSource, updateCurrentTime]);
+  }, [releaseSource, repeatAt, repeatAfterNaturalEnd, updateCurrentTime]);
 
   const select = useCallback(
     (next: PlaybackItem) => {
@@ -176,6 +233,8 @@ export function usePlaybackEngine(
       itemRef.current = next;
       resumeAtRef.current = 0;
       restorePendingRef.current = false;
+      durationRef.current = next.duration ?? 0;
+      publishLoop(EMPTY_PRACTICE_LOOP);
       setItem(next);
       setCurrentTime(0);
       setDuration(next.duration || 0);
@@ -186,7 +245,7 @@ export function usePlaybackEngine(
         audioRef.current.load();
       }
     },
-    [releaseSource, spotify, youtube, resetStems],
+    [releaseSource, spotify, youtube, resetStems, publishLoop],
   );
 
   const play = useCallback(
@@ -231,6 +290,7 @@ export function usePlaybackEngine(
     },
     [queryClient, select, spotify, youtube, stemsActive, mixerRef],
   );
+  playRef.current = play;
 
   const retry = useCallback(async () => {
     const active = itemRef.current;
@@ -272,13 +332,15 @@ export function usePlaybackEngine(
     releaseSource(previous);
     itemRef.current = null;
     resumeAtRef.current = 0;
+    durationRef.current = 0;
+    publishLoop(EMPTY_PRACTICE_LOOP);
     loggedItemRef.current = null;
     setItem(null);
     setPlayState("idle");
     setPlaybackError(null);
     setCurrentTime(0);
     setDuration(0);
-  }, [releaseSource, spotify, youtube, resetStems]);
+  }, [releaseSource, spotify, youtube, resetStems, publishLoop]);
 
   const seek = useCallback(
     (time: number) => {
@@ -303,6 +365,7 @@ export function usePlaybackEngine(
     },
     [spotify, youtube, stemsActive, mixerRef],
   );
+  seekRef.current = seek;
 
   const setVolume = useCallback(
     (next: number) => {
@@ -315,14 +378,36 @@ export function usePlaybackEngine(
     [youtube, mixerRef],
   );
 
+  const setPracticeLoopStart = useCallback(() => {
+    publishLoop(createLoopStart(loopRef.current, currentTime, durationRef.current));
+  }, [currentTime, publishLoop]);
+  const setPracticeLoopEnd = useCallback(() => {
+    const next = createLoopEnd(loopRef.current, currentTime, durationRef.current);
+    if (!next) return false;
+    publishLoop(next);
+    return true;
+  }, [currentTime, publishLoop]);
+  const setPracticeLoopEnabled = useCallback((enabled: boolean) => {
+    const loop = loopRef.current;
+    publishLoop({
+      ...loop,
+      enabled: enabled && isPracticeLoopValid(loop, durationRef.current),
+    });
+  }, [publishLoop]);
+  const clearPracticeLoop = useCallback(() => {
+    publishLoop(EMPTY_PRACTICE_LOOP);
+  }, [publishLoop]);
+
   useEffect(() => {
     const timer = window.setInterval(() => {
       if (!stemsActive.current || !mixerRef.current) return;
-      resumeAtRef.current = mixerRef.current.currentTime;
-      setCurrentTime(resumeAtRef.current);
+      const time = mixerRef.current.currentTime;
+      if (repeatAt(time)) return;
+      resumeAtRef.current = time;
+      setCurrentTime(time);
     }, 100);
     return () => window.clearInterval(timer);
-  }, [stemsActive, mixerRef]);
+  }, [stemsActive, mixerRef, repeatAt]);
 
   async function setVocalRemoval(value: number) {
     const mixer = mixerRef.current;
@@ -345,6 +430,12 @@ export function usePlaybackEngine(
     mixer.seek(currentPosition);
     mixer.setVolume(volume);
     setDuration(mixer.duration);
+    durationRef.current = mixer.duration;
+    const nextLoop = clampPracticeLoop(loopRef.current, mixer.duration);
+    if (nextLoop !== loopRef.current) {
+      loopRef.current = nextLoop;
+      setPracticeLoop(nextLoop);
+    }
     if (playing) {
       try {
         await mixer.resume();
@@ -382,6 +473,11 @@ export function usePlaybackEngine(
     stemErrorCode: stems.errorCode,
     prepareStems: () => itemRef.current ? stems.prepare(itemRef.current) : Promise.resolve(),
     setVocalRemoval,
+    practiceLoop,
+    setPracticeLoopStart,
+    setPracticeLoopEnd,
+    setPracticeLoopEnabled,
+    clearPracticeLoop,
   };
 }
 

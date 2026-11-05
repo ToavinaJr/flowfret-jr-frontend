@@ -153,6 +153,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       setShuffle: queue.setShuffle,
       next,
       previous,
+      practiceLoop: engine.practiceLoop,
+      setPracticeLoopStart: engine.setPracticeLoopStart,
+      setPracticeLoopEnd: engine.setPracticeLoopEnd,
+      setPracticeLoopEnabled: engine.setPracticeLoopEnabled,
+      clearPracticeLoop: engine.clearPracticeLoop,
     }),
     [engine, next, play, previous, queue, select, setQueue, toggle],
   );

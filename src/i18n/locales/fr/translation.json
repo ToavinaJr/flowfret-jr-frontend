@@ -958,7 +958,18 @@
     "resizeWindowTop": "Redimensionner la fenêtre par le bord supérieur",
     "resizeWindowRight": "Redimensionner la fenêtre par le bord droit",
     "resizeWindowBottom": "Redimensionner la fenêtre par le bord inférieur",
-    "resizeWindowLeft": "Redimensionner la fenêtre par le bord gauche"
+    "resizeWindowLeft": "Redimensionner la fenêtre par le bord gauche",
+    "practiceLoop": "Boucle de pratique",
+    "practiceLoopConfigure": "Configurer la boucle de pratique",
+    "practiceLoopHint": "Placez la lecture au début du passage, définissez A, puis définissez B à la fin.",
+    "practiceLoopStartAt": "A : {{time}}",
+    "practiceLoopEndAt": "B : {{time}}",
+    "practiceLoopSetStart": "Définir A",
+    "practiceLoopSetEnd": "Définir B",
+    "practiceLoopEndHint": "Placez la lecture au moins 0,5 seconde après A.",
+    "practiceLoopEnable": "Activer la boucle",
+    "practiceLoopDisable": "Désactiver la boucle",
+    "practiceLoopClear": "Effacer A et B"
   },
   "chordPlayer": {
     "title": "Accords",

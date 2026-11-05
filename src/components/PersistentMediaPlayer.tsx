@@ -17,6 +17,8 @@ import { PersistentLyrics } from "@/components/features/music/PersistentLyrics";
 import { PersistentChords } from "@/components/features/music/PersistentChords";
 import { FloatingMediaWindow } from "@/components/features/music/FloatingMediaWindow";
 import { VocalRemovalControl } from "@/components/features/music/VocalRemovalControl";
+import { PracticeLoopControl } from "@/components/features/music/PracticeLoopControl";
+import type { PracticeLoop } from "@/services/practiceLoop";
 
 type PanelName = "chords" | "lyrics";
 
@@ -25,6 +27,32 @@ function formatTime(seconds: number): string {
   return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
     .toString()
     .padStart(2, "0")}`;
+}
+
+function LoopTimelineMarkers({
+  loop,
+  duration,
+}: {
+  loop: PracticeLoop;
+  duration: number;
+}) {
+  if (!Number.isFinite(duration) || duration <= 0 || loop.start === null) return null;
+  const start = Math.min(100, (loop.start / duration) * 100);
+  const end = loop.end === null ? null : Math.min(100, (loop.end / duration) * 100);
+  return (
+    <div data-testid="practice-loop-markers" className="pointer-events-none absolute inset-x-0 top-1/2 z-20 h-3 -translate-y-1/2" aria-hidden="true">
+      {end !== null && end > start ? (
+        <span
+          className={`absolute top-1/2 h-1 -translate-y-1/2 rounded-full ${loop.enabled ? "bg-primary" : "bg-primary/50"}`}
+          style={{ left: `${start}%`, width: `${end - start}%` }}
+        />
+      ) : null}
+      <span className="absolute top-0 h-3 w-0.5 rounded-full bg-primary" style={{ left: `${start}%` }} />
+      {end !== null ? (
+        <span className="absolute top-0 h-3 w-0.5 rounded-full bg-primary" style={{ left: `${end}%` }} />
+      ) : null}
+    </div>
+  );
 }
 
 export default function PersistentMediaPlayer() {
@@ -49,6 +77,7 @@ export default function PersistentMediaPlayer() {
     next,
     previous,
     retry,
+    practiceLoop,
   } = usePlayback();
   if (!item) return null;
   const isSpotify = item.engine === "spotify";
@@ -202,21 +231,25 @@ export default function PersistentMediaPlayer() {
             <Mic2 className="h-4 w-4" />
           </button>
         ) : null}
+        <PracticeLoopControl className="hidden sm:flex" />
         <VocalRemovalControl key={item.id} />
         <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
           {formatTime(currentTime)}
         </span>
-        <input
-          name="playbackPositionDesktop"
-          type="range"
-          min={0}
-          max={duration || 1}
-          step={0.1}
-          value={Math.min(currentTime, duration || 1)}
-          onChange={(event) => seek(Number(event.target.value))}
-          className="hidden min-w-24 flex-1 accent-primary sm:block"
-          aria-label={t("player.seek")}
-        />
+        <div className="relative hidden min-w-24 flex-1 sm:block">
+          <input
+            name="playbackPositionDesktop"
+            type="range"
+            min={0}
+            max={duration || 1}
+            step={0.1}
+            value={Math.min(currentTime, duration || 1)}
+            onChange={(event) => seek(Number(event.target.value))}
+            className="relative z-10 block w-full accent-primary"
+            aria-label={t("player.seek")}
+          />
+          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
+        </div>
         <span className="hidden w-10 text-xs text-muted-foreground sm:block">
           {formatTime(duration)}
         </span>
@@ -261,17 +294,21 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        <input
-          name="playbackPositionMobile"
-          type="range"
-          min={0}
-          max={duration || 1}
-          step={0.1}
-          value={Math.min(currentTime, duration || 1)}
-          onChange={(event) => seek(Number(event.target.value))}
-          className="min-w-0 flex-1 accent-primary"
-          aria-label={t("player.seek")}
-        />
+        <PracticeLoopControl className="sm:hidden" />
+        <div className="relative min-w-0 flex-1">
+          <input
+            name="playbackPositionMobile"
+            type="range"
+            min={0}
+            max={duration || 1}
+            step={0.1}
+            value={Math.min(currentTime, duration || 1)}
+            onChange={(event) => seek(Number(event.target.value))}
+            className="relative z-10 block w-full accent-primary"
+            aria-label={t("player.seek")}
+          />
+          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
+        </div>
         {!isSpotify ? (
           <>
             <button
