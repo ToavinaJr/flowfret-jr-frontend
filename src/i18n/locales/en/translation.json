@@ -4,7 +4,18 @@
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
     "mobileNavigation": "Mobile navigation",
-    "menuNavigation": "Menu navigation",
+    "toolsNavigation": "Practice tools",
+    "tools": "Tools",
+    "settings": "Settings",
+    "help": "Help",
+    "history": "History",
+    "contact": "Contact",
+    "sections": {
+      "music": "Music",
+      "learn": "Learn",
+      "community": "Community",
+      "account": "Account & help"
+    },
     "feed": "Feed",
     "music": "Music",
     "upload": "Upload",
@@ -81,7 +92,6 @@
     "quality": "Separation may leave traces of vocals. The backing track is preserved."
   },
   "common": {
-    "menu": "Menu",
     "skipToContent": "Skip to main content",
     "close": "Close",
     "cancel": "Cancel",
@@ -413,29 +423,7 @@
   },
   "morePage": {
     "title": "Menu",
-    "subtitle": "Tools and pages beyond the main navigation.",
-    "items": {
-      "music": "Music",
-      "musicDescription": "Spotify and Genius search",
-      "scales": "Scales",
-      "scalesDescription": "Modes on the fretboard",
-      "metronome": "Metronome",
-      "metronomeDescription": "BPM and tap tempo",
-      "upload": "Import",
-      "uploadDescription": "Analyze audio files",
-      "history": "History",
-      "historyDescription": "Story of the guitar",
-      "settings": "Settings",
-      "settingsDescription": "Preferences",
-      "contact": "Contact",
-      "contactDescription": "Get in touch",
-      "tuner": "Tuner",
-      "tunerDescription": "Pitch reference",
-      "help": {
-        "menuLabel": "Help",
-        "menuDescription": "Music notation and theory guide"
-      }
-    }
+    "subtitle": "Everything beyond the main tabs."
   },
   "history": {
     "title": "History of the Guitar",
@@ -448,7 +436,6 @@
     "settings": "Settings",
     "avatarAlt": "Profile picture",
     "guest": "Guest",
-    "openMenu": "Open menu",
     "logout": "Log out",
     "description": "Find all your tools for improving: chords, scales, player, metronome, and track import. Share your progress and discoveries with the FlowFret community."
   },
@@ -830,8 +817,8 @@
     "title": "Music Theory Help",
     "intro": "A practical reference for understanding notes, chord symbols, harmony, and the circle of fifths.",
     "notes": {
-      "title": "Notation of scale notes",
-      "description": "Western music names seven natural notes. The sequence repeats at each octave.",
+      "title": "Music notation: the written language of music",
+      "description": "Written notation records pitch and duration. Notes sit on the five lines and four spaces of a staff; a clef assigns their pitch names, while key signatures and accidentals adjust them.",
       "names": {
         "0": "Do",
         "1": "Re",
@@ -858,8 +845,8 @@
       }
     },
     "derived": {
-      "title": "Derived chords",
-      "description": "Harmonizing each note of a major scale creates a predictable family of chords. In C major these are C, Dm, Em, F, G, Am, and B diminished.",
+      "title": "Harmony and chords: music’s vertical dimension",
+      "description": "Melody moves through time; harmony describes pitches sounding together. Stacking notes, often in thirds, forms chords, and connecting chords creates progressions that build tension and release. Harmonizing each note of a major scale creates a family of chords: in C major, C, Dm, Em, F, G, Am, and B diminished.",
       "functions": {
         "0": "Tonic",
         "1": "Supertonic",
@@ -874,6 +861,91 @@
       "title": "Reading chords",
       "description": "Read chord charts from left to right. Vertical bars divide measures; two chords inside one measure usually share its duration.",
       "example": "This example plays C for one measure, Am for one, Dm7 and G7 for half a measure each, then resolves to Cmaj7."
+    },
+    "rhythm": {
+      "title": "Rhythm and meter: how music organizes time",
+      "description": "Rhythm arranges sounds and silences in time. A steady pulse gives music its beat; meter groups those beats into repeating measures.",
+      "beatTitle": "Beat and tempo",
+      "beatDescription": "The beat is the pulse you can tap along to. Tempo tells how fast it moves, usually in beats per minute (BPM). Note values show how long sounds and rests last.",
+      "meterTitle": "Time signature",
+      "meterDescription": "The top number tells how many beats or subdivisions are grouped in a measure. The bottom number identifies the note value used as the reference.",
+      "examples": "4/4 groups four quarter-note beats; 3/4 groups three; 6/8 commonly feels like two groups of three eighth notes. A bar line marks the end of each measure."
+    },
+    "tablature": {
+      "title": "Tablature vs. staff notation",
+      "description": "Both systems can describe the same guitar passage, but they answer different questions. Many editions show them together.",
+      "tabTitle": "Tablature (TAB)",
+      "tabDescription": "Six lines represent the guitar strings, with the high E string on top. Numbers show which fret to play; 0 means an open string. TAB is direct about fingering, but may omit exact pitch spelling and rhythm unless durations are written above it.",
+      "staffTitle": "Standard staff",
+      "staffDescription": "Five lines and four spaces show pitch. The clef, note heads, stems, flags, and rests explain pitch and duration. Staff notation is useful across instruments and makes harmony easier to read."
+    },
+    "triads": {
+      "title": "Triads",
+      "description": "A triad is a three-note chord built from a root, a third, and a fifth. Its quality depends on the semitone distance between those notes.",
+      "majorTitle": "Major · 4 + 3 semitones",
+      "majorDescription": "Root to major third, then minor third. C–E–G is a C major triad.",
+      "minorTitle": "Minor · 3 + 4 semitones",
+      "minorDescription": "Root to minor third, then major third. A–C–E is an A minor triad.",
+      "diminishedTitle": "Diminished · 3 + 3 semitones",
+      "diminishedDescription": "Two minor thirds make a tense, compact sound. B–D–F is diminished.",
+      "augmentedTitle": "Augmented · 4 + 4 semitones",
+      "augmentedDescription": "Two major thirds create a wide, unresolved sound. C–E–G♯ is augmented."
+    },
+    "intervals": {
+      "title": "Intervals",
+      "description": "An interval is the distance between two pitches. Its name counts note letters; its quality and semitone size describe the exact sound.",
+      "unisonName": "Unison",
+      "unisonSemitones": "0 semitones",
+      "minorSecondName": "Minor 2nd",
+      "minorSecondSemitones": "1 semitone",
+      "majorThirdName": "Major 3rd",
+      "majorThirdSemitones": "4 semitones",
+      "perfectFifthName": "Perfect 5th",
+      "perfectFifthSemitones": "7 semitones",
+      "octaveName": "Octave",
+      "octaveSemitones": "12 semitones",
+      "guitarExample": "On one guitar string, one fret raises a note by one semitone; twelve frets reach the octave."
+    },
+    "scales": {
+      "title": "Scales and their root notes",
+      "description": "A scale is an ordered selection of pitches. Its interval formula gives it its color; the root is the starting and resting point around which the scale is organized. In /scales, choose a root and a family to display its notes on the fretboard.",
+      "majorTitle": "Major scale",
+      "majorDescription": "Seven notes following whole, whole, half, whole, whole, whole, half steps. It is a reference for major keys and diatonic harmonization.",
+      "minorTitle": "Natural minor",
+      "minorDescription": "Seven notes with a minor third and minor sixth. Its formula is 1, 2, ♭3, 4, 5, ♭6, ♭7; it has a minor color without a raised leading tone.",
+      "harmonicMinorTitle": "Harmonic minor",
+      "harmonicMinorDescription": "Like natural minor, but with a major seventh. This leading tone pulls strongly toward the root and creates a characteristic interval between ♭6 and 7.",
+      "pentatonicTitle": "Major and minor pentatonic",
+      "pentatonicDescription": "Each uses five notes. Major pentatonic removes degrees 4 and 7 from the major scale; minor pentatonic removes 2 and ♭6 from natural minor. Their smaller note set makes them approachable for early improvisation.",
+      "bluesTitle": "Blues scale",
+      "bluesDescription": "The minor pentatonic with an added diminished fifth, often called the blue note. It creates expressive tension between the fourth and fifth degrees.",
+      "modesTitle": "Dorian and Mixolydian modes",
+      "modesDescription": "These seven-note scales each have a distinct color: Dorian is minor with a major sixth; Mixolydian is major with a minor seventh. Listen for and compare their distinctive degrees.",
+      "rootNote": "The root gives the scale its name: in A minor, the root is A. Moving the root transposes the whole formula without changing its intervals. A root is not the same as a complete key, which also involves chords and their harmonic center."
+    },
+    "barres": {
+      "title": "Barre chords",
+      "description": "A barre uses a flattened finger, usually the index, to fret several strings at one position. This lets you move chord shapes along the neck.",
+      "shapesTitle": "Movable E and A shapes",
+      "shapesDescription": "An E-shape barre gets its root from the low E string; an A-shape barre gets it from the A string. For example, move an E-major shape up one fret to make F major. The resulting root determines the chord name.",
+      "techniqueTitle": "Placement and pressure",
+      "techniqueDescription": "Place the index close to the fret, slightly rolled onto its side, then adjust it to avoid muted strings. Keep your thumb behind the neck and use only the pressure needed; take a break if pain persists.",
+      "practiceTitle": "Build it gradually",
+      "practiceDescription": "Start with a partial barre or two or three strings. Check each string individually, release your hand between attempts, then add strings and slowly switch between two shapes. Clear notes matter more than force."
+    },
+    "ear": {
+      "title": "Different kinds of musical ear",
+      "description": "These abilities support each other. Relative pitch and harmonic listening improve with practice; perfect pitch is not required to play or understand music.",
+      "absoluteTitle": "Absolute pitch",
+      "absoluteDescription": "Recognizing or producing a specific pitch without a reference note. It is uncommon; pitch memory can be practiced, but acquiring absolute pitch is not necessary to become a musician.",
+      "relativeTitle": "Relative pitch",
+      "relativeDescription": "Recognizing distances between notes from a reference. Sing a familiar note, then identify intervals, melodies, or scale degrees in relation to it. This is a highly useful, trainable skill.",
+      "harmonicTitle": "Harmonic ear",
+      "harmonicDescription": "Hearing notes played together, chord quality, the bass, and tension or resolution in a progression. Listen for the bass first, then sing the third and identify whether the chord is major or minor.",
+      "musicalTitle": "Musical ear",
+      "musicalDescription": "A broader ability to notice and remember pitch, rhythm, timbre, melodic contour, and expression. It helps you reproduce, anticipate, and understand musical passages.",
+      "trainingTitle": "A short daily routine",
+      "trainingDescription": "Sing the root of a song and check it on an instrument; compare a few intervals, identify major and minor triads, then pick out a short phrase or bass line by ear. Go slowly, check your answers, and vary the keys."
     },
     "circle": {
       "title": "Interactive circle of fifths",
@@ -1099,6 +1171,10 @@
       "deleteAccount": "Delete account",
       "deleteDescription": "This immediately disables the account and all its sessions. Enter DELETE to confirm.",
       "deleteConfirmation": "Deletion confirmation",
+      "deletePromptTitle": "Delete your account permanently?",
+      "deletePromptDescription": "This will disable your account and end all active sessions. This action cannot be undone.",
+      "cancelDelete": "Keep my account",
+      "confirmDelete": "Delete permanently",
       "deletePermanently": "Permanently delete my account"
     }
   },
@@ -1109,6 +1185,11 @@
     "backToApp": "Back to the application",
     "sectionReady": "Structure ready",
     "sectionDescription": "Management tools for this section will be added in the next functional batch.",
+    "navSections": {
+      "community": "Community",
+      "catalog": "Catalog",
+      "system": "System"
+    },
     "nav": {
       "overview": "Overview",
       "users": "Members",

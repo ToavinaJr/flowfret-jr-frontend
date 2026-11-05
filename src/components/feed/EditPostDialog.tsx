@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 import { useTranslation } from "react-i18next";
 import { updateFeedPost } from "@/services/api";
 import type { FeedPost } from "@/types/feed";
@@ -7,7 +8,6 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { MentionInput } from "./MentionInput";
 
@@ -67,7 +67,7 @@ export function EditPostDialog({
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent className="w-[calc(100%-2rem)] max-w-xl rounded-xl p-0">
         <DialogHeader className="border-b border-border px-5 py-4 text-left">
-          <DialogTitle>{t("feed.editPost")}</DialogTitle>
+          <PopupTitle icon={Pencil}>{t("feed.editPost")}</PopupTitle>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4 px-5 pb-5">
           <div>

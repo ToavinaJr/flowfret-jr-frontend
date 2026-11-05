@@ -237,3 +237,12 @@
 .player-track-text::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes logout-practice-cursor {
+  0%, 12% { transform: translateX(0); }
+  88%, 100% { transform: translateX(96px); }
+}
+
+.logout-practice-cursor {
+  animation: logout-practice-cursor 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+}

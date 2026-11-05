@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Ban, KeyRound, Shield, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Ban, KeyRound, Shield, Trash2, UserRoundCog } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -19,10 +19,10 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { AdminStatus } from "./AdminListPage";
 import { formatAdminDate } from "./adminFormat";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 type UserAction = "role" | "status" | "sessions" | "delete";
 const DELETE_CONFIRMATION = "DELETE";
@@ -223,9 +223,9 @@ export default function AdminUserDetailPage() {
       >
         <DialogContent className="w-[calc(100%-2rem)] max-w-lg rounded-xl">
           <DialogHeader>
-            <DialogTitle>
+            <PopupTitle icon={UserRoundCog}>
               {action ? t(`admin.userDetail.actions.${action}.title`) : ""}
-            </DialogTitle>
+            </PopupTitle>
             <DialogDescription>
               {action ? t(`admin.userDetail.actions.${action}.description`) : ""}
             </DialogDescription>

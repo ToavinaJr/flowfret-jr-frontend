@@ -5,6 +5,7 @@ import {
   type UIEvent,
 } from "react";
 import { MessageCircle } from "lucide-react";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 import { useTranslation } from "react-i18next";
 import { fetchPostComments } from "@/services/api";
 import type { FeedComment, FeedPost } from "@/types/feed";
@@ -13,7 +14,6 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { FeedCommentItem } from "./FeedCommentItem";
 import { MentionInput } from "./MentionInput";
@@ -103,7 +103,7 @@ export function FeedComments({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>{t("feed.comments")}</DialogTitle>
+            <PopupTitle icon={MessageCircle}>{t("feed.comments")}</PopupTitle>
           </DialogHeader>
           <div
             className="max-h-[60vh] space-y-3 overflow-y-auto pr-2"

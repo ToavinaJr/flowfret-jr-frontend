@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Flag } from "lucide-react";
 import { toast } from "sonner";
 import { reportFeedPost } from "@/services/api";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 interface ReportPostDialogProps {
   postId: string;
@@ -47,7 +48,7 @@ export function ReportPostDialog({
     >
       <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
         <DialogHeader>
-          <DialogTitle>{t("feed.reportPost")}</DialogTitle>
+          <PopupTitle icon={Flag}>{t("feed.reportPost")}</PopupTitle>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <textarea

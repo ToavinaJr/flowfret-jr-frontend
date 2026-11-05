@@ -10,6 +10,7 @@ import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { CapoProvider } from "@/contexts/CapoContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import AppLayout from "@/components/AppLayout";
+import ToolsLayout from "@/components/ToolsLayout";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const FeedPage = lazy(() => import("@/pages/FeedPage"));
@@ -80,8 +81,15 @@ const App = () => {
                             path="/search"
                             element={<GlobalSearchPage />}
                           />
-                          <Route path="/tuner" element={<TunerPage />} />
-                          <Route path="/chords" element={<ChordsPage />} />
+                          <Route element={<ToolsLayout />}>
+                            <Route path="/chords" element={<ChordsPage />} />
+                            <Route path="/scales" element={<ScalesPage />} />
+                            <Route path="/tuner" element={<TunerPage />} />
+                            <Route
+                              path="/metronome"
+                              element={<MetronomePage />}
+                            />
+                          </Route>
                           <Route path="/upload" element={<UploadPage />} />
                           <Route path="/music" element={<MusicSearchPage />} />
                           <Route
@@ -93,11 +101,6 @@ const App = () => {
                             element={<TranscriptionsPage />}
                           />
                           <Route path="/teaching" element={<TeachingPage />} />
-                          <Route
-                            path="/metronome"
-                            element={<MetronomePage />}
-                          />
-                          <Route path="/scales" element={<ScalesPage />} />
                           <Route path="/menu" element={<MenuPage />} />
                           <Route path="/histoire" element={<HistoirePage />} />
                           <Route path="/contact" element={<ContactPage />} />

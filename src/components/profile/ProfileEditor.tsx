@@ -74,7 +74,9 @@ export function ProfileEditor({
         </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-xl font-semibold">{displayName}</div>
-          <div className="text-muted-foreground">@{username}</div>
+          <div className="break-words text-muted-foreground [overflow-wrap:anywhere]">
+            @{username}
+          </div>
           {own && avatar && (
             <DeleteConfirmationDialog
               entity="avatar"

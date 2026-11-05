@@ -3,6 +3,17 @@ import { toast } from "sonner";
 import { changeAccountPassword, deleteAccount } from "@/services/accountApi";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 export function AccountSecurity() {
   const { t } = useTranslation();
@@ -11,6 +22,7 @@ export function AccountSecurity() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [pending, setPending] = useState<"password" | "delete" | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,9 +39,13 @@ export function AccountSecurity() {
     }
   }
 
-  async function removeAccount(event: FormEvent<HTMLFormElement>) {
+  function requestAccountDeletion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (confirmation !== "DELETE") return;
+    setDeleteDialogOpen(true);
+  }
+
+  async function removeAccount() {
     setPending("delete");
     try {
       await deleteAccount(currentPassword, confirmation);
@@ -56,7 +72,7 @@ export function AccountSecurity() {
           {t("account.security.saveAndLogout")}
         </button>
       </form>
-      <form onSubmit={removeAccount} className="space-y-3 rounded-xl border border-destructive/40 bg-card p-4">
+      <form onSubmit={requestAccountDeletion} className="space-y-3 rounded-xl border border-destructive/40 bg-card p-4">
         <h2 className="font-semibold text-destructive">{t("account.security.deleteAccount")}</h2>
         <p className="text-xs text-muted-foreground">
           {t("account.security.deleteDescription")}
@@ -78,6 +94,27 @@ export function AccountSecurity() {
           {t("account.security.deletePermanently")}
         </button>
       </form>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <PopupTitle icon={Trash2} variant="alert" tone="destructive">{t("account.security.deletePromptTitle")}</PopupTitle>
+            <AlertDialogDescription>{t("account.security.deletePromptDescription")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending === "delete"}>{t("account.security.cancelDelete")}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={pending === "delete" || confirmation !== "DELETE"}
+              onClick={(event) => {
+                event.preventDefault();
+                if (pending === null && confirmation === "DELETE") void removeAccount();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t("account.security.confirmDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,26 +1,25 @@
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { useState, type FormEvent } from "react";
-import { ArrowUpRight, Mail, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Linkedin, Mail, MessageCircle } from "lucide-react";
 import { submitContactMessage, type ContactMessageInput } from "@/services/contactApi";
+import { toast } from "sonner";
 
 const ContactPage = () => {
   const { t } = useTranslation();
   const [form, setForm] = useState<ContactMessageInput>({ name: "", email: "", subject: "", message: "" });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
     setPending(true);
     setError(false);
-    setSubmitted(false);
     try {
       await submitContactMessage(form);
       setForm({ name: "", email: "", subject: "", message: "" });
-      setSubmitted(true);
+      toast.success(t("contact.submitted"));
     } catch {
       setError(true);
     } finally {
@@ -60,7 +59,6 @@ const ContactPage = () => {
             <textarea required minLength={10} maxLength={5000} rows={7} value={form.message} onChange={(event) => updateField("message", event.target.value)} className="mt-2 w-full resize-y rounded-md border border-input bg-background p-3 font-normal leading-6 outline-none focus-visible:ring-2 focus-visible:ring-primary" />
           </label>
           {error && <p role="alert" className="text-sm text-destructive">{t("contact.submitFailed")}</p>}
-          {submitted && <p role="status" className="text-sm text-primary">{t("contact.submitted")}</p>}
           <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground disabled:cursor-wait disabled:opacity-60">
             {t(pending ? "contact.sending" : "contact.send")}
             <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
@@ -78,8 +76,10 @@ const ContactPage = () => {
             <span className="min-w-0"><span className="block text-sm font-medium">WhatsApp</span><span className="block text-sm text-muted-foreground">+261 34 16 540 07</span></span>
             <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
           </a>
-          <a href="https://www.linkedin.com/in/randriamihaingoson-toavina-sylvianno/" target="_blank" rel="noreferrer" className="flex min-h-16 items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 text-sm font-medium hover:bg-secondary">
-            LinkedIn <ArrowUpRight aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
+          <a href="https://www.linkedin.com/in/randriamihaingoson-toavina-sylvianno/" target="_blank" rel="noreferrer" className="flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm font-medium hover:bg-secondary">
+            <Linkedin aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
+            <span>LinkedIn</span>
+            <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
           </a>
         </aside>
       </div>

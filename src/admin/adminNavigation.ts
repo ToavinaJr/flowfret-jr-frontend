@@ -62,3 +62,35 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   },
   { path: "/admin/data", translationKey: "admin.nav.data", icon: Database },
 ];
+
+export interface AdminNavSection {
+  id: string;
+  /** Section heading. Omitted for the overview entry. */
+  translationKey?: string;
+  paths: readonly string[];
+}
+
+/** Groups the flat admin entries by intent; every ADMIN_NAV_ITEMS path appears exactly once. */
+export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
+  { id: "overview", paths: ["/admin"] },
+  {
+    id: "community",
+    translationKey: "admin.navSections.community",
+    paths: [
+      "/admin/users",
+      "/admin/content",
+      "/admin/teachers",
+      "/admin/contact",
+    ],
+  },
+  {
+    id: "catalog",
+    translationKey: "admin.navSections.catalog",
+    paths: ["/admin/media", "/admin/music"],
+  },
+  {
+    id: "system",
+    translationKey: "admin.navSections.system",
+    paths: ["/admin/audit", "/admin/data"],
+  },
+];

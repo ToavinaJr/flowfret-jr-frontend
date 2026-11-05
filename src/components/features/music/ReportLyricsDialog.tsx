@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Flag } from "lucide-react";
 import { toast } from "sonner";
 import { reportLyrics } from "@/services/lyricsApi";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 interface ReportLyricsDialogProps {
   provider: string;
@@ -62,7 +63,7 @@ export function ReportLyricsDialog({
     >
       <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
         <DialogHeader>
-          <DialogTitle>{t("lyrics.reportLyrics")}</DialogTitle>
+          <PopupTitle icon={Flag}>{t("lyrics.reportLyrics")}</PopupTitle>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <textarea

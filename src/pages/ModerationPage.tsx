@@ -15,10 +15,10 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { AdminStatus } from "@/admin/AdminListPage";
 import { formatAdminDate } from "@/admin/adminFormat";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 type Decision = {
   report: AdminPostReport;
@@ -301,7 +301,7 @@ export default function ModerationPage() {
       >
         <DialogContent className="w-[calc(100%-2rem)] max-w-lg rounded-xl">
           <DialogHeader>
-            <DialogTitle>{t("moderation.decisionTitle", { status: decision ? t(`moderation.status.${decision.status}`) : "" })}</DialogTitle>
+            <PopupTitle icon={ShieldCheck}>{t("moderation.decisionTitle", { status: decision ? t(`moderation.status.${decision.status}`) : "" })}</PopupTitle>
             <DialogDescription>{t("moderation.decisionDescription")}</DialogDescription>
           </DialogHeader>
           <form onSubmit={submitDecision} className="space-y-4">

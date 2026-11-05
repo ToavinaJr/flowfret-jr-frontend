@@ -4,7 +4,18 @@
     "collapseSidebar": "Réduire le menu",
     "expandSidebar": "Développer le menu",
     "mobileNavigation": "Navigation mobile",
-    "menuNavigation": "Navigation du menu",
+    "toolsNavigation": "Outils de pratique",
+    "tools": "Outils",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "history": "Histoire",
+    "contact": "Contact",
+    "sections": {
+      "music": "Musique",
+      "learn": "Apprendre",
+      "community": "Communauté",
+      "account": "Compte et aide"
+    },
     "feed": "Fil d'actualité",
     "music": "Musique",
     "upload": "Téléverser",
@@ -81,7 +92,6 @@
     "quality": "La séparation peut laisser des traces de voix. Le réglage conserve l’accompagnement."
   },
   "common": {
-    "menu": "Menu",
     "skipToContent": "Passer au contenu principal",
     "close": "Fermer",
     "cancel": "Annuler",
@@ -413,29 +423,7 @@
   },
   "morePage": {
     "title": "Menu",
-    "subtitle": "Outils et pages au-delà de la navigation principale.",
-    "items": {
-      "music": "Musique",
-      "musicDescription": "Recherche Spotify et Genius",
-      "scales": "Gammes",
-      "scalesDescription": "Modes sur le manche",
-      "metronome": "Métronome",
-      "metronomeDescription": "BPM et tap tempo",
-      "upload": "Importer",
-      "uploadDescription": "Analyser des fichiers audio",
-      "history": "Histoire",
-      "historyDescription": "Histoire de la guitare",
-      "settings": "Paramètres",
-      "settingsDescription": "Préférences",
-      "contact": "Contact",
-      "contactDescription": "Nous contacter",
-      "tuner": "Accordeur",
-      "tunerDescription": "Référence de hauteur",
-      "help": {
-        "menuLabel": "Aide",
-        "menuDescription": "Guide de notation et de théorie musicale"
-      }
-    }
+    "subtitle": "Tout ce qui n'est pas dans les onglets principaux."
   },
   "history": {
     "title": "Histoire de la guitare",
@@ -448,7 +436,6 @@
     "settings": "Paramètres",
     "avatarAlt": "Photo de profil",
     "guest": "Invité",
-    "openMenu": "Ouvrir le menu",
     "logout": "Se déconnecter",
     "description": "Retrouvez tous vos outils pour progresser : accords, gammes, lecteur, métronome et import de morceaux. Partagez aussi vos progrès et vos découvertes avec la communauté FlowFret."
   },
@@ -830,8 +817,8 @@
     "title": "Aide en théorie musicale",
     "intro": "Une référence pratique pour comprendre les notes, les symboles d’accords, l’harmonie et le cercle des quintes.",
     "notes": {
-      "title": "Notation des notes de la gamme",
-      "description": "La musique occidentale nomme sept notes naturelles. La séquence se répète à chaque octave.",
+      "title": "La notation musicale : le langage écrit de la musique",
+      "description": "La notation écrite indique la hauteur et la durée des sons. Les notes se placent sur les cinq lignes et les quatre interlignes de la portée ; la clé fixe leur nom, et les armures ou altérations en modifient la hauteur.",
       "names": {
         "0": "Do",
         "1": "Ré",
@@ -858,8 +845,8 @@
       }
     },
     "derived": {
-      "title": "Accords dérivés",
-      "description": "Harmoniser chaque note d’une gamme majeure produit une famille prévisible d’accords. En Do majeur : Do, Rém, Mim, Fa, Sol, Lam et Si diminué.",
+      "title": "L'harmonie et les accords : la dimension verticale de la musique",
+      "description": "La mélodie avance dans le temps ; l'harmonie décrit les sons entendus ensemble. Empiler des notes, souvent par tierces, forme des accords ; les enchaîner crée des tensions et des résolutions. Harmoniser chaque note d'une gamme majeure produit une famille d'accords : en Do majeur, Do, Rém, Mim, Fa, Sol, Lam et Si diminué.",
       "functions": {
         "0": "Tonique",
         "1": "Sus-tonique",
@@ -874,6 +861,91 @@
       "title": "Lecture des accords",
       "description": "Lisez les grilles d’accords de gauche à droite. Les barres verticales séparent les mesures ; deux accords dans une mesure se partagent généralement sa durée.",
       "example": "Cet exemple joue Do pendant une mesure, Lam pendant une mesure, Rém7 et Sol7 pendant une demi-mesure chacun, puis revient sur DoMaj7."
+    },
+    "rhythm": {
+      "title": "Le rythme et la métrique : l'organisation temporelle",
+      "description": "Le rythme organise les sons et les silences dans le temps. Une pulsation régulière donne le battement ; la métrique regroupe ces battements en mesures répétées.",
+      "beatTitle": "Pulsation et tempo",
+      "beatDescription": "La pulsation est le battement que l'on peut marquer en écoutant. Le tempo indique sa vitesse, souvent en battements par minute (BPM). Les valeurs de notes indiquent la durée des sons et des silences.",
+      "meterTitle": "Chiffrage de mesure",
+      "meterDescription": "Le chiffre du haut indique combien de battements ou subdivisions forment une mesure. Celui du bas précise la valeur de note qui sert de référence.",
+      "examples": "Le 4/4 regroupe quatre noires ; le 3/4 en regroupe trois ; le 6/8 se ressent souvent en deux groupes de trois croches. Une barre de mesure marque la fin de chaque mesure."
+    },
+    "tablature": {
+      "title": "Tablature ou portée",
+      "description": "Les deux systèmes peuvent décrire le même passage de guitare, mais ne donnent pas les mêmes indications. Certaines partitions les affichent ensemble.",
+      "tabTitle": "Tablature (TAB)",
+      "tabDescription": "Les six lignes représentent les cordes de la guitare, avec la corde de mi aigu en haut. Les chiffres indiquent la case à jouer ; 0 signifie une corde à vide. La tablature guide directement les doigts, mais peut omettre le nom exact des notes et le rythme si les durées ne sont pas indiquées.",
+      "staffTitle": "Portée traditionnelle",
+      "staffDescription": "Les cinq lignes et quatre interlignes indiquent la hauteur des notes. La clé, les têtes de notes, les hampes et les silences précisent hauteur et durée. Cette notation fonctionne pour tous les instruments et facilite la lecture de l'harmonie."
+    },
+    "triads": {
+      "title": "Les triades",
+      "description": "Une triade est un accord de trois notes : fondamentale, tierce et quinte. Sa couleur dépend du nombre de demi-tons entre ces notes.",
+      "majorTitle": "Majeure · 4 + 3 demi-tons",
+      "majorDescription": "Une tierce majeure puis une tierce mineure. Do–Mi–Sol forme une triade de Do majeur.",
+      "minorTitle": "Mineure · 3 + 4 demi-tons",
+      "minorDescription": "Une tierce mineure puis une tierce majeure. La–Do–Mi forme une triade de La mineur.",
+      "diminishedTitle": "Diminuée · 3 + 3 demi-tons",
+      "diminishedDescription": "Deux tierces mineures créent un son tendu et resserré. Si–Ré–Fa est une triade diminuée.",
+      "augmentedTitle": "Augmentée · 4 + 4 demi-tons",
+      "augmentedDescription": "Deux tierces majeures produisent un son ouvert et instable. Do–Mi–Sol♯ est une triade augmentée."
+    },
+    "intervals": {
+      "title": "Les intervalles",
+      "description": "Un intervalle est la distance entre deux hauteurs. Son nom compte les notes ; sa qualité et son nombre de demi-tons précisent le son exact.",
+      "unisonName": "Unisson",
+      "unisonSemitones": "0 demi-ton",
+      "minorSecondName": "Seconde mineure",
+      "minorSecondSemitones": "1 demi-ton",
+      "majorThirdName": "Tierce majeure",
+      "majorThirdSemitones": "4 demi-tons",
+      "perfectFifthName": "Quinte juste",
+      "perfectFifthSemitones": "7 demi-tons",
+      "octaveName": "Octave",
+      "octaveSemitones": "12 demi-tons",
+      "guitarExample": "Sur une même corde de guitare, une case ajoute un demi-ton ; douze cases conduisent à l'octave."
+    },
+    "scales": {
+      "title": "Les gammes et leur fondamentale",
+      "description": "Une gamme est une sélection de notes ordonnée par hauteur. Sa formule d'intervalles définit sa couleur ; la fondamentale est le point de départ et de repos autour duquel la gamme s'organise. Dans /scales, choisissez une fondamentale et une famille pour afficher ses notes sur le manche.",
+      "majorTitle": "Gamme majeure",
+      "majorDescription": "Sept notes selon la formule ton, ton, demi-ton, ton, ton, ton, demi-ton. Elle sert de repère pour les tonalités majeures et l'harmonisation diatonique.",
+      "minorTitle": "Mineure naturelle",
+      "minorDescription": "Sept notes avec une tierce mineure et une sixte mineure. Sa formule est 1, 2, ♭3, 4, 5, ♭6, ♭7 ; elle donne une couleur mineure sans sensible élevée.",
+      "harmonicMinorTitle": "Mineure harmonique",
+      "harmonicMinorDescription": "Comme la mineure naturelle, mais avec une septième majeure. Cette sensible renforce l'attraction vers la fondamentale et crée un intervalle caractéristique entre ♭6 et 7.",
+      "pentatonicTitle": "Pentatoniques majeure et mineure",
+      "pentatonicDescription": "Elles utilisent cinq notes. La pentatonique majeure retire les degrés 4 et 7 de la majeure ; la mineure retire 2 et ♭6 de la mineure naturelle. Leur nombre réduit de notes facilite les premières improvisations.",
+      "bluesTitle": "Gamme blues",
+      "bluesDescription": "La pentatonique mineure enrichie d'une quinte diminuée, souvent appelée blue note. Cette note crée une tension expressive entre la quarte et la quinte.",
+      "modesTitle": "Modes dorien et mixolydien",
+      "modesDescription": "Ce sont des gammes de sept notes avec une couleur propre : le dorien est mineur avec une sixte majeure ; le mixolydien est majeur avec une septième mineure. Écoutez et comparez leurs degrés distinctifs.",
+      "rootNote": "La fondamentale est la note qui donne son nom à la gamme : en La mineur, c'est La. La déplacer transpose toute la formule sans en changer les intervalles. À ne pas confondre avec la tonalité complète, qui inclut aussi les accords et leur centre harmonique."
+    },
+    "barres": {
+      "title": "Les accords barrés",
+      "description": "Un barré consiste à aplatir un doigt, le plus souvent l'index, pour appuyer plusieurs cordes sur une même case. Il permet de déplacer des formes d'accords le long du manche.",
+      "shapesTitle": "Formes mobiles de Mi et de La",
+      "shapesDescription": "Un accord barré de forme Mi prend sa fondamentale sur la corde grave de Mi ; la forme La la place sur la corde de La. Par exemple, déplacer la forme de Mi majeur d'une case vers le haut donne Fa majeur. Le nom de l'accord dépend de la fondamentale obtenue.",
+      "techniqueTitle": "Placement et pression",
+      "techniqueDescription": "Placez l'index près de la frette, légèrement tourné sur son côté, puis ajustez-le pour éviter les cordes étouffées. Gardez le pouce derrière le manche et utilisez seulement la pression nécessaire ; une douleur persistante signifie qu'il faut faire une pause.",
+      "practiceTitle": "Progresser par étapes",
+      "practiceDescription": "Commencez par un demi-barré ou par deux ou trois cordes. Vérifiez chaque corde séparément, relâchez la main entre les essais, puis ajoutez progressivement les cordes et enchaînez deux formes lentement. La netteté compte davantage que la force."
+    },
+    "ear": {
+      "title": "Les différentes formes d'oreille musicale",
+      "description": "Ces capacités se complètent. L'oreille relative et l'écoute harmonique se développent avec une pratique régulière ; l'oreille absolue n'est pas nécessaire pour jouer ou comprendre la musique.",
+      "absoluteTitle": "Oreille absolue",
+      "absoluteDescription": "Reconnaître ou chanter une hauteur précise sans note de référence. C'est une capacité rare ; on peut travailler la mémoire des hauteurs, mais il n'est pas nécessaire de l'acquérir pour devenir musicien.",
+      "relativeTitle": "Oreille relative",
+      "relativeDescription": "Reconnaître les distances entre les notes à partir d'une référence. Chantez une note connue, puis identifiez des intervalles, des mélodies ou les degrés d'une gamme par rapport à elle. C'est une compétence très utile et entraînable.",
+      "harmonicTitle": "Oreille harmonique",
+      "harmonicDescription": "Entendre les notes jouées ensemble, la qualité d'un accord, sa basse et la tension ou la résolution d'une progression. Écoutez d'abord la basse, puis chantez la tierce et repérez si l'accord est majeur ou mineur.",
+      "musicalTitle": "Oreille musicale",
+      "musicalDescription": "Aptitude plus large à percevoir et mémoriser la hauteur, le rythme, le timbre, les contours mélodiques et les nuances. Elle aide à reproduire, anticiper et comprendre un passage musical.",
+      "trainingTitle": "Routine d'entraînement courte",
+      "trainingDescription": "Chaque jour, chantez la fondamentale d'un morceau et vérifiez-la avec un instrument ; comparez ensuite quelques intervalles, reconnaissez des triades majeures et mineures, puis relevez à l'oreille une courte phrase ou une basse. Travaillez lentement, vérifiez vos réponses et variez les tonalités."
     },
     "circle": {
       "title": "Cercle des quintes interactif",
@@ -1099,6 +1171,10 @@
       "deleteAccount": "Supprimer le compte",
       "deleteDescription": "Cette action désactive immédiatement le compte et toutes ses sessions. Saisissez DELETE pour confirmer.",
       "deleteConfirmation": "Confirmation de suppression",
+      "deletePromptTitle": "Supprimer définitivement votre compte ?",
+      "deletePromptDescription": "Votre compte sera désactivé et toutes vos sessions seront fermées. Cette action est irréversible.",
+      "cancelDelete": "Garder mon compte",
+      "confirmDelete": "Supprimer définitivement",
       "deletePermanently": "Supprimer définitivement mon compte"
     }
   },
@@ -1109,6 +1185,11 @@
     "backToApp": "Retour à l’application",
     "sectionReady": "Structure prête",
     "sectionDescription": "Cette section recevra ses outils de gestion lors du prochain lot fonctionnel.",
+    "navSections": {
+      "community": "Communauté",
+      "catalog": "Catalogue",
+      "system": "Système"
+    },
     "nav": {
       "overview": "Vue d’ensemble",
       "users": "Membres",

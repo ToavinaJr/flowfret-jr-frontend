@@ -1,11 +1,12 @@
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface DeleteConfirmationDialogProps {
@@ -42,8 +43,7 @@ export function DeleteConfirmationDialog({ entity, trigger, onConfirm }: DeleteC
     <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
     <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
       <AlertDialogHeader>
-        <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10 text-destructive"><Trash2 className="h-5 w-5" /></div>
-        <AlertDialogTitle>{t(`deleteDialog.${entity}.title`)}</AlertDialogTitle>
+        <PopupTitle icon={Trash2} variant="alert" tone="destructive">{t(`deleteDialog.${entity}.title`)}</PopupTitle>
         <AlertDialogDescription>{t(`deleteDialog.${entity}.description`)}</AlertDialogDescription>
       </AlertDialogHeader>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

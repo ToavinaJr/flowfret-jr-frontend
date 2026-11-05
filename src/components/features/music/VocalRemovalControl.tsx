@@ -2,8 +2,9 @@ import { SlidersHorizontal } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
 import { supportsVocalRemoval, vocalRemovalFailureReason } from "@/services/audioStemsApi";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { debugLog } from "@/utils/debug";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 
 export function VocalRemovalControl() {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ export function VocalRemovalControl() {
         </button>
       </DialogTrigger>
       <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto overscroll-contain rounded-xl motion-reduce:animate-none">
-        <DialogTitle>{t("equalizer.title")}</DialogTitle>
+        <PopupTitle icon={SlidersHorizontal}>{t("equalizer.title")}</PopupTitle>
         <DialogDescription>{t("equalizer.description")}</DialogDescription>
         {stemSimulated && <p role="status" className="text-sm text-muted-foreground">{t("equalizer.simulated")}</p>}
         <p className="truncate text-sm font-medium">{item?.title}</p>

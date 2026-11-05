@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ListPlus, Loader2, Plus } from "lucide-react";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -7,7 +8,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -90,7 +90,7 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
       </DialogTrigger>
       <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md min-w-0 flex-col overflow-hidden p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle>{t("playlists.addToPlaylist")}</DialogTitle>
+          <PopupTitle icon={ListPlus}>{t("playlists.addToPlaylist")}</PopupTitle>
           <DialogDescription className="truncate">
             {track.title}
           </DialogDescription>

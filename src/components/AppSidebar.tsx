@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Guitar, LogOut, ShieldCheck } from "lucide-r
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { USER_ROLE } from "@/constants/domain";
-import { SIDEBAR_NAV_ITEMS } from "@/constants/navigation";
+import { NAV_SECTIONS } from "@/constants/navigation";
 import { useTranslation } from "react-i18next";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
 import { LogoutConfirmationDialog } from "@/components/LogoutConfirmationDialog";
@@ -63,36 +63,61 @@ const AppSidebar = ({ collapsed, onToggleCollapsed }: AppSidebarProps) => {
         aria-label={t("nav.mainNavigation")}
         className="flex-1 space-y-1 overflow-y-auto px-2 py-3 lg:px-3 lg:py-4"
       >
-        {SIDEBAR_NAV_ITEMS.map((item) => {
+        {NAV_SECTIONS.map((section, index) => {
+          const headingId = `sidebar-section-${section.id}`;
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              title={collapsed ? t(item.translationKey) : undefined}
-              className={({ isActive }) =>
-                cn(
-                  "relative flex min-h-[44px] items-center rounded-md py-2.5 text-sm transition-colors",
-                  collapsed ? "justify-center px-2" : "gap-3 px-3",
-                  isActive
-                    ? "bg-sidebar-accent text-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
-                )
-              }
+            <div
+              key={section.id}
+              role="group"
+              aria-labelledby={section.translationKey ? headingId : undefined}
+              className="space-y-1"
             >
-              <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span className={cn("truncate", collapsed && "sr-only")}>
-                {t(item.translationKey)}
-              </span>
-              {item.path === "/notifications" ? (
+              {section.translationKey ? (
                 collapsed ? (
-                  <span className="absolute right-1 top-1.5">
-                    <NotificationBadge />
-                  </span>
+                  <div
+                    role="separator"
+                    className={cn("mx-2 border-t border-border", index > 0 && "!mt-3")}
+                  />
                 ) : (
-                  <NotificationBadge />
+                  <p
+                    id={headingId}
+                    className="px-3 pb-1 pt-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
+                  >
+                    {t(section.translationKey)}
+                  </p>
                 )
               ) : null}
-            </NavLink>
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  title={collapsed ? t(item.translationKey) : undefined}
+                  className={({ isActive }) =>
+                    cn(
+                      "relative flex min-h-[44px] items-center rounded-md py-2.5 text-sm transition-colors",
+                      collapsed ? "justify-center px-2" : "gap-3 px-3",
+                      isActive
+                        ? "bg-sidebar-accent text-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground",
+                    )
+                  }
+                >
+                  <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  <span className={cn("truncate", collapsed && "sr-only")}>
+                    {t(item.translationKey)}
+                  </span>
+                  {item.path === "/notifications" ? (
+                    collapsed ? (
+                      <span className="absolute right-1 top-1.5">
+                        <NotificationBadge />
+                      </span>
+                    ) : (
+                      <NotificationBadge />
+                    )
+                  ) : null}
+                </NavLink>
+              ))}
+            </div>
           );
         })}
       </nav>

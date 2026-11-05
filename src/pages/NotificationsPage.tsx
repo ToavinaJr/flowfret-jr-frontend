@@ -22,12 +22,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { NotificationsSkeleton } from "@/components/skeletons/NotificationsSkeleton";
 import { UserAvatar } from "@/components/common/UserAvatar";
+import { PopupTitle } from "@/components/ui/PopupTitle";
 import { getNotificationDestination } from "@/utils/notificationDestination";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
@@ -252,7 +252,7 @@ export default function NotificationsPage() {
         className="max-h-[85vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-xl"
       >
         <DialogHeader>
-          <DialogTitle>{t("notifications.preferencesTitle")}</DialogTitle>
+          <PopupTitle icon={Bell}>{t("notifications.preferencesTitle")}</PopupTitle>
         </DialogHeader>
         {preferences.isLoading ? (
           <p role="status" className="text-sm text-muted-foreground">
