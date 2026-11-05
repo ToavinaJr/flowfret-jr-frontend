@@ -37,7 +37,7 @@ const ContactPage = () => {
         <h1 className={PAGE_TITLE}>{t("contact.title")}</h1>
         <p className="mt-3 text-body text-muted-foreground">{t("contact.description")}</p>
       </header>
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
+      <div className="mt-8 grid gap-6 md:grid-cols-[minmax(0,1fr)_19rem] md:items-start">
         <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="text-lg font-semibold">{t("contact.formTitle")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -67,16 +67,39 @@ const ContactPage = () => {
 
         <aside className="space-y-3" aria-label={t("contact.otherWaysTitle")}>
           <h2 className="text-lg font-semibold">{t("contact.otherWaysTitle")}</h2>
-          <a href="mailto:toavinasylvianno14@gmail.com" className="flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-secondary">
+          <a
+            href="mailto:toavinasylvianno14@gmail.com"
+            className="flex min-h-16 min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-secondary"
+          >
             <Mail aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
-            <span className="min-w-0"><span className="block text-sm font-medium">{t("contact.emailLabel")}</span><span className="block break-all text-sm text-muted-foreground">toavinasylvianno14@gmail.com</span></span>
+            <span className="min-w-0">
+              <span className="block text-sm font-medium">{t("contact.emailLabel")}</span>
+              <span className="block break-all text-sm text-muted-foreground">
+                toavinasylvianno14@gmail.com
+              </span>
+            </span>
           </a>
-          <a href="https://wa.me/261341654007" target="_blank" rel="noreferrer" className="flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-secondary">
+          <a
+            href="https://wa.me/261341654007"
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-h-16 min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-4 hover:bg-secondary"
+          >
             <MessageCircle aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
-            <span className="min-w-0"><span className="block text-sm font-medium">WhatsApp</span><span className="block text-sm text-muted-foreground">+261 34 16 540 07</span></span>
+            <span className="min-w-0">
+              <span className="block text-sm font-medium">WhatsApp</span>
+              <span className="block break-words text-sm text-muted-foreground">
+                +261 34 16 540 07
+              </span>
+            </span>
             <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
           </a>
-          <a href="https://www.linkedin.com/in/randriamihaingoson-toavina-sylvianno/" target="_blank" rel="noreferrer" className="flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm font-medium hover:bg-secondary">
+          <a
+            href="https://www.linkedin.com/in/randriamihaingoson-toavina-sylvianno/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-h-16 min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm font-medium hover:bg-secondary"
+          >
             <Linkedin aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
             <span>LinkedIn</span>
             <ArrowUpRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
