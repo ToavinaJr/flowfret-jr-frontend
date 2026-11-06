@@ -429,7 +429,32 @@
     "title": "Histoire de la guitare",
     "origins": "La guitare moderne à six cordes est issue d’instruments à cordes pincées plus anciens d’Europe et du Moyen-Orient. Au XIXe siècle, les luthiers espagnols lui ont donné la forme classique actuelle.",
     "modern": "Les cordes en acier et les micros électriques du XXe siècle ont ouvert la voie au blues, au jazz, au rock et à d’innombrables styles hybrides, tandis que le manche restait une carte de la gamme chromatique.",
-    "flowfret": "FlowFret poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage."
+    "flowfret": "FlowFret poursuit cette histoire dans le numérique avec des diagrammes d’accords, des gammes et l’analyse audio au service de l’apprentissage.",
+    "typesTitle": "Les grandes familles de guitares",
+    "typesIntro": "Chaque forme de guitare répond à un son et à une façon de jouer. Voici les instruments que l’on rencontre le plus souvent.",
+    "photoCredit": "Photo : {{name}} / Unsplash",
+    "types": {
+      "classical": {
+        "title": "Guitare classique",
+        "description": "Ses cordes en nylon offrent un toucher souple et un timbre chaleureux. Elle est au cœur du répertoire classique, mais aussi de nombreuses musiques traditionnelles."
+      },
+      "acoustic": {
+        "title": "Guitare folk",
+        "description": "Ses cordes en acier et sa caisse résonnante produisent un son clair et puissant, apprécié en folk, pop, country et accompagnement chanté."
+      },
+      "electric": {
+        "title": "Guitare électrique",
+        "description": "Ses micros transforment la vibration des cordes en signal audio. Amplification et effets lui donnent une grande variété de sons, du jazz au rock."
+      },
+      "bass": {
+        "title": "Guitare basse",
+        "description": "Avec ses cordes graves et son manche plus long, elle soutient l’harmonie et le rythme en reliant les accords à la batterie."
+      },
+      "electroAcoustic": {
+        "title": "Guitare électro-acoustique",
+        "description": "Une guitare acoustique équipée d’un capteur et souvent d’un préampli : elle conserve sa caisse de résonance et peut être branchée sur une sonorisation."
+      }
+    }
   },
   "profile": {
     "title": "Profil",

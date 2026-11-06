@@ -429,7 +429,32 @@
     "title": "History of the Guitar",
     "origins": "The modern six-string guitar evolved from earlier plucked instruments across Europe and the Middle East. By the 19th century, Spanish makers refined it into the classical form we recognize today.",
     "modern": "Steel-string acoustics and electric pickups in the 20th century opened blues, jazz, rock, and countless hybrids — while the fretboard remained a map of the chromatic scale.",
-    "flowfret": "FlowFret continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing."
+    "flowfret": "FlowFret continues that lineage digitally with chord diagrams, scales, and audio analysis for learning and playing.",
+    "typesTitle": "The main guitar families",
+    "typesIntro": "Each guitar shape serves a different sound and playing style. Here are some of the instruments you will encounter most often.",
+    "photoCredit": "Photo by {{name}} / Unsplash",
+    "types": {
+      "classical": {
+        "title": "Classical guitar",
+        "description": "Nylon strings feel gentle under the fingers and produce a warm tone. It is central to classical repertoire and many traditional styles."
+      },
+      "acoustic": {
+        "title": "Steel-string acoustic guitar",
+        "description": "Steel strings and a resonant body create a bright, projecting sound suited to folk, pop, country, and singer-songwriter accompaniment."
+      },
+      "electric": {
+        "title": "Electric guitar",
+        "description": "Pickups turn string vibration into an audio signal. Amplification and effects provide a wide range of sounds, from jazz to rock."
+      },
+      "bass": {
+        "title": "Bass guitar",
+        "description": "Its low strings and longer neck anchor harmony and rhythm, connecting the chords with the drums."
+      },
+      "electroAcoustic": {
+        "title": "Electro-acoustic guitar",
+        "description": "An acoustic guitar fitted with a pickup and often a preamp: it keeps its resonant body and can also connect to a sound system."
+      }
+    }
   },
   "profile": {
     "title": "Profile",
