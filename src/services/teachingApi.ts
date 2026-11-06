@@ -119,6 +119,7 @@ export interface TeachingCourse {
   level: string | null;
   format: "INDIVIDUAL" | "GROUP";
   maxStudents: number;
+  reservedSeats: number;
   teachingMode: "IN_PERSON" | "ONLINE" | "HYBRID";
   priceAmount: number;
   priceCurrency: string;
@@ -146,6 +147,10 @@ export interface TeachingEnrollment {
     "REQUESTED" | "INVITED" | "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
   courseTitle?: string;
   instructorUsername?: string;
+  studentUsername?: string;
+  invitedAt?: string | null;
+  acceptedAt?: string | null;
+  endedAt?: string | null;
 }
 
 export interface TeachingLesson {
@@ -170,12 +175,17 @@ export interface TeachingLesson {
   }>;
 }
 
-type CourseInput = Omit<TeachingCourse, "id" | "instructorId" | "status">;
+type CourseInput = Omit<
+  TeachingCourse,
+  "id" | "instructorId" | "reservedSeats" | "status"
+>;
 
 const COURSE_FIELDS =
-  "id instructorId title description level format maxStudents teachingMode priceAmount priceCurrency priceUnit durationMinutes status";
+  "id instructorId title description level format maxStudents reservedSeats teachingMode priceAmount priceCurrency priceUnit durationMinutes status";
 const INSTRUCTOR_FIELDS =
   "id userId status headline biography experienceYears specialties languages";
+const ENROLLMENT_FIELDS =
+  "id courseId studentId status courseTitle instructorUsername studentUsername invitedAt acceptedAt endedAt";
 
 export async function fetchTeachingWorkspace() {
   return graphqlRequest<{
@@ -184,9 +194,36 @@ export async function fetchTeachingWorkspace() {
     myEnrolledTeachingCourses: TeachingCourse[];
     publishedTeachingCourses: TeachingCourse[];
     myTeachingEnrollments: TeachingEnrollment[];
+    myTeachingCourseEnrollments: TeachingEnrollment[];
   }>({
-    query: `query TeachingWorkspace { myInstructorProfile { ${INSTRUCTOR_FIELDS} } myTeachingCourses { ${COURSE_FIELDS} } myEnrolledTeachingCourses { ${COURSE_FIELDS} } publishedTeachingCourses(take: 50) { ${COURSE_FIELDS} } myTeachingEnrollments { id courseId studentId status courseTitle instructorUsername } }`,
+    query: `query TeachingWorkspace { myInstructorProfile { ${INSTRUCTOR_FIELDS} } myTeachingCourses { ${COURSE_FIELDS} } myEnrolledTeachingCourses { ${COURSE_FIELDS} } publishedTeachingCourses(take: 50) { ${COURSE_FIELDS} } myTeachingEnrollments { ${ENROLLMENT_FIELDS} } myTeachingCourseEnrollments { ${ENROLLMENT_FIELDS} } }`,
   });
+}
+
+export async function inviteStudentToTeachingCourse(
+  courseId: string,
+  studentId: string,
+) {
+  const result = await graphqlRequest<{
+    inviteStudentToTeachingCourse: TeachingEnrollment;
+  }>({
+    query: `mutation InviteStudentToTeachingCourse($courseId: String!, $studentId: String!) { inviteStudentToTeachingCourse(courseId: $courseId, studentId: $studentId) { ${ENROLLMENT_FIELDS} } }`,
+    variables: { courseId, studentId },
+  });
+  return result.inviteStudentToTeachingCourse;
+}
+
+export async function updateTeachingEnrollment(
+  id: string,
+  status: TeachingEnrollment["status"],
+) {
+  const result = await graphqlRequest<{
+    updateTeachingEnrollment: TeachingEnrollment;
+  }>({
+    query: `mutation UpdateTeachingEnrollment($id: String!, $data: UpdateTeachingEnrollmentInput!) { updateTeachingEnrollment(id: $id, data: $data) { ${ENROLLMENT_FIELDS} } }`,
+    variables: { id, data: { status } },
+  });
+  return result.updateTeachingEnrollment;
 }
 
 export async function respondToTeachingInvitation(

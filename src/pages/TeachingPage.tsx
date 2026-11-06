@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { TeachingWorkspaceSkeleton } from "@/components/skeletons/TeachingWorkspaceSkeleton";
+import { TeachingEnrollmentsPanel } from "@/components/teaching/TeachingEnrollmentsPanel";
 import { AdminResourceTabs } from "@/admin/AdminResourceTabs";
 import { useTeachingWorkspaceData } from "@/hooks/useTeachingWorkspaceData";
 
@@ -25,6 +26,7 @@ import {
   cancelTeachingLesson,
   completeTeachingLesson,
   createTeachingCourse,
+  inviteStudentToTeachingCourse,
   markTeachingLessonAttendance,
   requestTeachingEnrollment,
   rescheduleTeachingLesson,
@@ -33,8 +35,10 @@ import {
   respondToTeachingInvitation,
   saveInstructorProfile,
   updateTeachingCourse,
+  updateTeachingEnrollment,
   uploadTeachingMaterial,
   type TeachingCourse,
+  type TeachingEnrollment,
   type TeachingLesson,
   type TeachingLessonInput,
   type TeachingMaterial,
@@ -57,6 +61,7 @@ export default function TeachingPage() {
     myCourses,
     enrolled,
     enrollments,
+    teacherEnrollments,
     catalog,
     lessons,
     materials,
@@ -209,6 +214,43 @@ export default function TeachingPage() {
           ? t("teaching.feedback.invitationAccepted")
           : t("teaching.feedback.invitationDeclined"),
       );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("teaching.feedback.invitationFailed"),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function changeEnrollmentStatus(
+    enrollment: TeachingEnrollment,
+    status: TeachingEnrollment["status"],
+  ) {
+    setBusy(true);
+    try {
+      await updateTeachingEnrollment(enrollment.id, status);
+      await refresh();
+      toast.success(t("teaching.feedback.enrollmentUpdated"));
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("teaching.feedback.enrollmentUpdateFailed"),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function inviteStudent(courseId: string, studentId: string) {
+    setBusy(true);
+    try {
+      await inviteStudentToTeachingCourse(courseId, studentId);
+      await refresh();
+      toast.success(t("teaching.feedback.studentInvited"));
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -908,55 +950,17 @@ export default function TeachingPage() {
           </section>
 
           <section hidden={view !== "enrollments"}>
-            <h2 className="mb-3 font-semibold">{t("teaching.fields.myRequestsAndInvitations")}</h2>
-            {enrollments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("teaching.empty.noRequests")}
-              </p>
-            ) : (
-              <div className="grid gap-3">
-                {enrollments.map((enrollment) => (
-                  <article
-                    key={enrollment.id}
-                    className={`${cardClass} flex flex-wrap items-center justify-between gap-3`}
-                  >
-                    <div>
-                      <h3 className="font-medium">
-                        {enrollment.courseTitle || t("teaching.fields.courseFallback")}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {t("teaching.fields.instructorLabel")}{" "}
-                        {enrollment.instructorUsername || t("teaching.fields.platformName")} ·{" "}
-                        {statusLabel(enrollment.status)}
-                      </p>
-                    </div>
-                    {enrollment.status === "INVITED" && (
-                      <div className="flex gap-2">
-                        <Button
-                          disabled={busy}
-                          onClick={() =>
-                            void answerInvitation(enrollment.id, true)
-                          }
-                        >
-                          {t("teaching.actions.acceptInvitation")}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          disabled={busy}
-                          onClick={() =>
-                            void answerInvitation(enrollment.id, false)
-                          }
-                        >
-                          {t("teaching.actions.declineInvitation")}
-                        </Button>
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
-            )}
+            <TeachingEnrollmentsPanel
+              busy={busy}
+              courses={myCourses}
+              currentUserId={user?.id}
+              studentEnrollments={enrollments}
+              teacherEnrollments={teacherEnrollments}
+              onInvitationResponse={answerInvitation}
+              onInvite={inviteStudent}
+              onStatusChange={changeEnrollmentStatus}
+            />
           </section>
-
           <section hidden={view !== "materials"}>
             <h2 className="mb-3 font-semibold">{t("teaching.fields.myCourseMaterials")}</h2>
             {activeEnrolled.length === 0 ? (
@@ -1025,6 +1029,10 @@ export default function TeachingPage() {
                         {course.format === "GROUP"
                           ? t("teaching.fields.groupPlaces", { count: course.maxStudents })
                           : t("teaching.fields.individualCourse")}{" "}
+                        · {t("teaching.fields.availablePlaces", {
+                          count: Math.max(course.maxStudents - course.reservedSeats, 0),
+                          total: course.maxStudents,
+                        })}{" "}
                         · {t("teaching.fields.minutes", { count: course.durationMinutes })} · {statusLabel(course.status)}
                       </p>
                     </div>
@@ -1144,16 +1152,26 @@ export default function TeachingPage() {
                         {course.format === "GROUP"
                           ? t("teaching.fields.groupPlaces", { count: course.maxStudents })
                           : t("teaching.fields.individualCourse")}{" "}
+                        · {t("teaching.fields.availablePlaces", {
+                          count: Math.max(course.maxStudents - course.reservedSeats, 0),
+                          total: course.maxStudents,
+                        })}{" "}
                         · {t("teaching.fields.minutes", { count: course.durationMinutes })}
                       </p>
                     </div>
                     <Button
-                      disabled={busy || myEnrollmentIds.has(course.id)}
+                      disabled={
+                        busy ||
+                        myEnrollmentIds.has(course.id) ||
+                        course.reservedSeats >= course.maxStudents
+                      }
                       onClick={() => void enroll(course)}
                     >
                       {myEnrollmentIds.has(course.id)
                         ? t("teaching.actions.enrollmentSent")
-                        : t("teaching.actions.requestSeat")}
+                        : course.reservedSeats >= course.maxStudents
+                          ? t("teaching.actions.courseFull")
+                          : t("teaching.actions.requestSeat")}
                     </Button>
                   </article>
                 ))}

@@ -21,6 +21,9 @@ export function useTeachingWorkspaceData() {
   const [enrollments, setEnrollments] = useState<
     WorkspaceData["myTeachingEnrollments"]
   >([]);
+  const [teacherEnrollments, setTeacherEnrollments] = useState<
+    WorkspaceData["myTeachingCourseEnrollments"]
+  >([]);
   const [catalog, setCatalog] = useState<TeachingCourse[]>([]);
   const [lessons, setLessons] = useState<TeachingLesson[]>([]);
   const [materials, setMaterials] = useState<
@@ -64,6 +67,7 @@ export function useTeachingWorkspaceData() {
     setMyCourses(data.myTeachingCourses);
     setEnrolled(data.myEnrolledTeachingCourses);
     setEnrollments(data.myTeachingEnrollments);
+    setTeacherEnrollments(data.myTeachingCourseEnrollments);
     setCatalog(data.publishedTeachingCourses);
     setLessons(calendar);
     setMaterials(materialMap);
@@ -92,6 +96,7 @@ export function useTeachingWorkspaceData() {
     myCourses,
     enrolled,
     enrollments,
+    teacherEnrollments,
     catalog,
     lessons,
     materials,

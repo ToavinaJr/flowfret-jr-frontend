@@ -23,6 +23,7 @@ const course = (id: string, status: "DRAFT" | "PUBLISHED" = "PUBLISHED") => ({
   level: null,
   format: "GROUP" as const,
   maxStudents: 8,
+  reservedSeats: 0,
   teachingMode: "ONLINE" as const,
   priceAmount: 1000,
   priceCurrency: "EUR",
@@ -45,6 +46,15 @@ describe("useTeachingWorkspaceData", () => {
           courseId: "student-course",
           studentId: "me",
           status: "ACTIVE",
+        },
+      ],
+      myTeachingCourseEnrollments: [
+        {
+          id: "student-request",
+          courseId: "teacher-course",
+          studentId: "student",
+          studentUsername: "learner",
+          status: "REQUESTED",
         },
       ],
     });
@@ -86,6 +96,9 @@ describe("useTeachingWorkspaceData", () => {
     expect(result.current.myCourses).toHaveLength(1);
     expect(result.current.enrolled).toHaveLength(1);
     expect(result.current.catalog).toHaveLength(1);
+    expect(result.current.teacherEnrollments).toEqual([
+      expect.objectContaining({ id: "student-request" }),
+    ]);
     expect(result.current.lessonCourseId).toBe("teacher-course");
     expect(result.current.materials).toEqual({
       "teacher-course": [expect.objectContaining({ id: "material-1" })],
