@@ -230,6 +230,15 @@
   animation-play-state: paused;
 }
 
+.card-title-marquee {
+  animation-play-state: paused;
+}
+
+.group:hover .card-title-marquee,
+.group:focus-within .card-title-marquee {
+  animation-play-state: running;
+}
+
 .player-track-text {
   scrollbar-width: none;
 }

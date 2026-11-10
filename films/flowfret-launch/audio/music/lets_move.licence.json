@@ -1,0 +1,39 @@
+{
+ "record": 1,
+ "kind": "music",
+ "file": "lets_move.mp3",
+ "sha256": "c57f2d651fa3c6bdfe7b07f01e6a0e8e80b0b36ec33a95a59ca231d63036d7da",
+ "bytes": 3231778,
+ "title": "Let's Move",
+ "artist": "Michael Ramir C.",
+ "source": "Mixkit",
+ "page": "https://mixkit.co/free-stock-music/mood/driving/",
+ "file_url": "https://assets.mixkit.co/music/836/836.mp3",
+ "licence": "Mixkit Stock Music Free License",
+ "licence_id": "mixkit-music",
+ "licence_url": "https://mixkit.co/license/#musicFree",
+ "credit_required": false,
+ "credit": "Music: \"Let's Move\" by Michael Ramir C. (Mixkit)",
+ "content_id": "unknown",
+ "ai_generated": false,
+ "vocals": false,
+ "checked": "2026-11-09",
+ "certificate": null,
+ "licence_seen": {
+  "quote": "Items under the Mixkit Stock Music Free License can be used in your commercial and non-commercial projects for free.",
+  "url": "https://mixkit.co/license/modal/musicFree/",
+  "date": "2026-11-09"
+ },
+ "limits": "web, social, ads and VOD; no TV or radio broadcast, CD/DVD or video games; never remix it into a music-only track, redistribute the file or register it with a rights service",
+ "modifications": "edited at bar lines for the film; levels adjusted",
+ "found": {
+  "by": "music.mjs",
+  "query": "driving tech-house electronic groove",
+  "listed_notice": "Mixkit Stock Music Free License",
+  "ai_marked": false,
+  "vocal_tags": false,
+  "notes": [
+   "measure: fetch failed"
+  ]
+ }
+}

@@ -7,7 +7,9 @@ import { AddToPlaylistButton } from "@/components/features/playlists/AddToPlayli
 import { MUSIC_PROVIDER } from "@/constants/domain";
 import { MusicMediaPlayer } from "./MusicMediaPlayer";
 import { TrackLyrics } from "./TrackLyrics";
+import { TrackStudyButtons } from "./TrackStudyButtons";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
+import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
 
 interface MusicTrackCardProps {
   track: MusicTrack;
@@ -49,8 +51,12 @@ export function MusicTrackCard({
         <div className="min-w-0 flex-1 self-stretch py-0.5">
           <div className="flex min-w-0 items-start gap-2">
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[15px] font-semibold leading-5 tracking-[-0.01em] text-foreground sm:text-base">
-                {track.title}
+              <h3 className="min-w-0 text-[15px] font-semibold leading-5 tracking-[-0.01em] text-foreground sm:text-base">
+                <ScrollingTrackText
+                  text={track.title}
+                  scrollOnHover
+                  className="max-w-full"
+                />
               </h3>
               <p className="mt-0.5 truncate text-sm text-muted-foreground">
                 {artistNames}
@@ -87,6 +93,11 @@ export function MusicTrackCard({
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:contents">
           <MusicMediaPlayer
+            track={track}
+            playbackQueue={playbackQueue}
+            queueIndex={queueIndex}
+          />
+          <TrackStudyButtons
             track={track}
             playbackQueue={playbackQueue}
             queueIndex={queueIndex}

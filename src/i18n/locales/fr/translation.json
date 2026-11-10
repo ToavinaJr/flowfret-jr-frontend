@@ -1121,6 +1121,7 @@
     "youtubePlayer": "Lecteur de playlist YouTube",
     "youtubeVideo": "Vidéo YouTube",
     "showYoutubeVideo": "Regarder cette vidéo YouTube",
+    "showYoutubeVideoFor": "Regarder la vidéo YouTube de {{title}}",
     "moveWindow": "Déplacer la fenêtre au coin suivant",
     "minimizeWindow": "Réduire la fenêtre",
     "restoreWindow": "Restaurer la fenêtre",
@@ -1145,6 +1146,7 @@
   "chordPlayer": {
     "title": "Accords",
     "open": "Afficher les accords",
+    "openTrack": "Afficher les accords de {{title}}",
     "close": "Masquer les accords",
     "capo": "Capodastre",
     "noCapo": "Sans capodastre",

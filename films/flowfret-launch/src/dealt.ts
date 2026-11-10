@@ -1,0 +1,6 @@
+// What the deck dealt for this film (scripts/deck.py writes this file with out/DIRECTION.md): src/deal.ts plays it
+// instead of a deal of its own, so the sheet and the template never disagree. Re-deal with deck.py (--redraw),
+// never by hand; launch.ts `pin` still fixes a slot, launch.ts `creative.swap` trades one creative element and
+// `heroes.swap` one hero shot (each with a reason). The direction also seeds a scene-bank deal (src/bank.ts).
+// lint-ok: the deck's palette mapped onto the brand (src/palette.ts paints the scenes from it; palette.py checked it)
+export const DEALT: { direction: string; deal: Record<string, string>; creative?: string[]; reserve?: string[]; hero?: string[]; heroReserve?: string[]; palette?: Record<string, string> } | null = {"direction": "campaign", "deal": {"voice": "build", "ground": "blackField"}, "creative": ["scale-contrast", "object-turn", "bubble-swarm"], "reserve": ["colour-flood", "dot-button", "word-swap", "type-window", "split-around", "split-compare", "shape-morph", "zoom-wall", "cursor-follow", "letter-swing", "type-object", "pixel-assemble", "logo-orbit", "data-sculpture", "photo-arc"], "palette": {"accent": "#E11D48", "night": "#121212"}};

@@ -1,0 +1,142 @@
+{
+ "version": 1,
+ "tool": "brand.py",
+ "name": "FlowFret",
+ "colours": {
+  "source": "supplied",
+  "accent": "#E11D48",
+  "stage": "dark",
+  "list": [
+   {
+    "hex": "#E11D48",
+    "role": "accent",
+    "L": 0.5858,
+    "C": 0.222,
+    "h": 17.5846,
+    "label": "primary"
+   },
+   {
+    "hex": "#121212",
+    "role": "ground",
+    "L": 0.1822,
+    "C": 0.0,
+    "h": 89.8756,
+    "label": "background"
+   },
+   {
+    "hex": "#EBEBEB",
+    "role": "ink",
+    "L": 0.9401,
+    "C": 0.0,
+    "h": 89.8756,
+    "label": "foreground"
+   },
+   {
+    "hex": "#1A1A1A",
+    "role": "extra",
+    "L": 0.2178,
+    "C": 0.0,
+    "h": 89.8756,
+    "label": "surface"
+   },
+   {
+    "hex": "#262626",
+    "role": "extra",
+    "L": 0.2686,
+    "C": 0.0,
+    "h": 89.8756,
+    "label": "secondary"
+   },
+   {
+    "hex": "#363636",
+    "role": "line",
+    "L": 0.3329,
+    "C": 0.0,
+    "h": 89.8756,
+    "label": "border"
+   }
+  ],
+  "second_hues": [],
+  "checks": {
+   "stage": "dark",
+   "statements": 15.71,
+   "accent_on_stage": 3.99,
+   "accent_on_paper": 3.94,
+   "accent_lift_on_slate": 3.22,
+   "type_on_slate": 12.69
+  },
+  "tokens": {
+   "ink": {
+    "hex": "#121212",
+    "supplied": true
+   },
+   "ink2": {
+    "hex": "#1A1A1A",
+    "supplied": true
+   },
+   "paper": {
+    "hex": "#EBEBEB",
+    "supplied": true
+   },
+   "mist": {
+    "hex": "#E1E1E1",
+    "supplied": false
+   },
+   "line": {
+    "hex": "#363636",
+    "supplied": true
+   },
+   "mute": {
+    "hex": "#696969",
+    "supplied": false
+   },
+   "white": {
+    "hex": "#FFFFFF",
+    "supplied": false
+   },
+   "accent": {
+    "hex": "#E11D48",
+    "supplied": true
+   },
+   "slate": {
+    "hex": "#262626",
+    "supplied": true
+   },
+   "slateRaised": {
+    "hex": "#484848",
+    "supplied": false
+   },
+   "accentLift": {
+    "hex": "#E11D48",
+    "supplied": true
+   }
+  }
+ },
+ "fonts": {
+  "family": null,
+  "google": null,
+  "faces": [],
+  "skipped": []
+ },
+ "logo": {
+  "mark": {
+   "file": "flowfret-mark.svg",
+   "split": "leaves",
+   "parts": [
+    "p0",
+    "p1",
+    "p2",
+    "p3"
+   ],
+   "leaves": 4,
+   "viewBox": "0 0 64 64"
+  },
+  "wordmark": null,
+  "raster": null
+ },
+ "screenshots": [],
+ "photos": [],
+ "notes": [],
+ "warnings": [],
+ "fails": []
+}

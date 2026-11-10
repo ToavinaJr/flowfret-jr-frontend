@@ -1,0 +1,37 @@
+{
+ "items": [
+  {
+   "file": "../public/assets/guitarist-hands.mp4",
+   "sha256": "2ae8e946fdb72b0563bb9bd2034087fcdb03a87cc84be283a13941d43c41d693",
+   "bytes": 11175066,
+   "kind": "video",
+   "width": 1920,
+   "height": 1080,
+   "duration": 19.875,
+   "fps": 24,
+   "title": "Male hands playing the guitar",
+   "author": null,
+   "source": "Coverr",
+   "provider": "Coverr",
+   "ref": "coverr:N7HHxJ7w9G",
+   "page": "https://coverr.co/videos/male-hands-playing-the-guitar-n7hhxj7w9g",
+   "file_url": "https://cdn.coverr.co/videos/coverr-male-hands-playing-the-guitar-5373/1080p.mp4",
+   "licence": "Coverr License (free clips)",
+   "licence_id": "coverr",
+   "licence_url": "https://coverr.co/license",
+   "credit_required": false,
+   "credit": null,
+   "licence_seen": {
+    "quote": "You may use Coverr.co's videos and music for both commercial and non-commercial purposes at no cost ... You are not required to add an attribution credit to the original creator or to Coverr.co",
+    "url": "https://coverr.co/license",
+    "date": "2026-10-28"
+   },
+   "limits": "free clips only; never compile the clips into a similar service; never use them to train AI; people, brands and landmarks in a clip need their own clearance",
+   "notes": [],
+   "checked": "2026-11-09",
+   "modifications": null,
+   "shown_on_screen": false
+  }
+ ],
+ "about": "Private licence record of this film's imagery (scripts/assets.mjs). Never shown on screen. Licences marked credit_required false need no credit."
+}
