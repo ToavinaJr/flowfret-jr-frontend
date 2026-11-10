@@ -11,6 +11,7 @@ import {
   Video,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { usePlayback } from "@/contexts/usePlayback";
@@ -23,6 +24,7 @@ import { PracticeLoopControl } from "@/components/features/music/PracticeLoopCon
 import type { PracticeLoop } from "@/services/practiceLoop";
 import { OPEN_MEDIA_PANEL_EVENT, type MediaPanelRequest } from "@/components/features/music/media-panel-events";
 import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
+import { fetchRuntimeFeatures } from "@/services/runtimeFeaturesApi";
 
 type PanelName = "chords" | "lyrics" | "youtube-video";
 
@@ -62,6 +64,12 @@ function LoopTimelineMarkers({
 export default function PersistentMediaPlayer() {
   const { t } = useTranslation();
   const location = useLocation();
+  const { data: runtimeFeatures } = useQuery({
+    queryKey: ["runtime-features"],
+    queryFn: fetchRuntimeFeatures,
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: false,
+  });
   const [openPanels, setOpenPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "youtube-video": false });
   const [minimizedPanels, setMinimizedPanels] = useState<Record<PanelName, boolean>>({ chords: false, lyrics: false, "youtube-video": false });
   const [windowOrder, setWindowOrder] = useState({ chords: 60, lyrics: 61, "youtube-video": 62, next: 63 });
@@ -270,16 +278,18 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
-        <button
-          type="button"
-          onClick={() => togglePanel("chords")}
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.chords ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-          aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")}
-          aria-expanded={openPanels.chords}
-          aria-controls="floating-media-window-chords"
-        >
-          <Guitar className="h-5 w-5" />
-        </button>
+        {runtimeFeatures?.chordTranscription ? (
+          <button
+            type="button"
+            onClick={() => togglePanel("chords")}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.chords ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+            aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")}
+            aria-expanded={openPanels.chords}
+            aria-controls="floating-media-window-chords"
+          >
+            <Guitar className="h-5 w-5" />
+          </button>
+        ) : null}
         {hasLyrics ? (
           <button
             type="button"
