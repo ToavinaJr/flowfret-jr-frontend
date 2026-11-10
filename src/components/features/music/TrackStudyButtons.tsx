@@ -1,11 +1,13 @@
 import { Guitar, Video } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
+import { useQuery } from "@tanstack/react-query";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import { MUSIC_PROVIDER } from "@/constants/domain";
 import type { MusicTrack } from "@/types/music";
 import { toMusicPlaybackItem } from "./music-playback";
 import { requestMediaPanel } from "./media-panel-events";
+import { fetchRuntimeFeatures } from "@/services/runtimeFeaturesApi";
 
 export function TrackStudyButtons({
   track,
@@ -18,6 +20,12 @@ export function TrackStudyButtons({
 }) {
   const { t } = useTranslation();
   const { select, setQueue } = usePlayback();
+  const { data: runtimeFeatures } = useQuery({
+    queryKey: ["runtime-features"],
+    queryFn: fetchRuntimeFeatures,
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: false,
+  });
   const playbackItem = toMusicPlaybackItem(track);
 
   function openPanel(panel: "chords" | "youtube-video") {
@@ -31,15 +39,17 @@ export function TrackStudyButtons({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => openPanel("chords")}
-        className={buttonClassName}
-        aria-label={t("chordPlayer.openTrack", { title: track.title })}
-        title={t("chordPlayer.open")}
-      >
-        <Guitar className="h-4 w-4" aria-hidden="true" />
-      </button>
+      {runtimeFeatures?.chordTranscription ? (
+        <button
+          type="button"
+          onClick={() => openPanel("chords")}
+          className={buttonClassName}
+          aria-label={t("chordPlayer.openTrack", { title: track.title })}
+          title={t("chordPlayer.open")}
+        >
+          <Guitar className="h-4 w-4" aria-hidden="true" />
+        </button>
+      ) : null}
       {track.provider === MUSIC_PROVIDER.YOUTUBE ? (
         <button
           type="button"
