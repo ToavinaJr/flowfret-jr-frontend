@@ -20,9 +20,6 @@ const MenuPage = () => {
   return (
     <div className={`${PAGE_SHELL} max-w-2xl lg:max-w-2xl`}>
       <h1 className={`${PAGE_TITLE} mb-2`}>{t("morePage.title")}</h1>
-      <p className="mb-4 text-sm text-muted-foreground sm:mb-6">
-        {t("morePage.subtitle")}
-      </p>
 
       {MORE_PAGE_SECTIONS.map((section) => {
         const headingId = `more-section-${section.id}`;

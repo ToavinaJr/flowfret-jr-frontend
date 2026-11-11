@@ -140,7 +140,7 @@ const ChordsPage = () => {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
         <div className="order-2 max-h-[50vh] overflow-x-hidden overflow-y-auto pr-1 lg:order-1 lg:max-h-[480px]">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))]">
             {filteredSuffixes.map((suffix) => {
               const name = formatChordLabel(selectedKey, suffix);
               const isActive = activeSuffix === suffix;
