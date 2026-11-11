@@ -205,6 +205,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       seek: engine.seek,
       setVolume: engine.setVolume,
       setQueue,
+      removeQueueItem: queue.removeItem,
+      moveQueueItem: queue.moveItem,
       setShuffle: queue.setShuffle,
       setRepeatMode,
       setSleepTimer,

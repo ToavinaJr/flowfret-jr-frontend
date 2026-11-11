@@ -84,12 +84,35 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
     return queue[index];
   }, [currentIndex, queue, shuffle]);
 
+  const removeItem = useCallback((index: number) => {
+    if (index < 0 || index >= queue.length) return;
+    const nextQueue = queue.filter((_, itemIndex) => itemIndex !== index);
+    setQueueState(nextQueue);
+    setCurrentIndex((current) => {
+      if (!nextQueue.length) return -1;
+      if (index < current) return current - 1;
+      if (index === current) return Math.min(current, nextQueue.length - 1);
+      return current;
+    });
+  }, [queue]);
+
+  const moveItem = useCallback((from: number, to: number) => {
+    if (from < 0 || from >= queue.length || to < 0 || to >= queue.length || from === to) return;
+    const nextQueue = [...queue];
+    const [moved] = nextQueue.splice(from, 1);
+    nextQueue.splice(to, 0, moved);
+    setQueueState(nextQueue);
+    setCurrentIndex((current) => current === from ? to : from < current && to >= current ? current - 1 : from > current && to <= current ? current + 1 : current);
+  }, [queue]);
+
   return {
     queue,
     currentIndex,
     shuffle,
     setShuffle,
     setQueue,
+    removeItem,
+    moveItem,
     syncSelection,
     next,
     previous,

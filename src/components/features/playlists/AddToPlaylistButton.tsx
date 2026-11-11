@@ -16,10 +16,10 @@ import {
   fetchPlaylists,
 } from "@/services/playlistsApi";
 import type { MusicTrack } from "@/types/music";
-import type { Playlist } from "@/types/playlist";
+import type { Playlist, PlaylistTrack } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
 
-export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
+export function AddToPlaylistButton({ track, compact = false }: { track: MusicTrack | PlaylistTrack; compact?: boolean }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -81,11 +81,11 @@ export function AddToPlaylistButton({ track }: { track: MusicTrack }) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+          className={`${compact ? "h-9 w-9 justify-center border-0 px-0" : "h-11 gap-2 border border-border px-3"} inline-flex shrink-0 items-center rounded-md text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground`}
           aria-label={t("playlists.addNamed", { title: track.title })}
         >
           <ListPlus className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("playlists.playlist")}</span>
+          {!compact ? <span className="hidden sm:inline">{t("playlists.playlist")}</span> : null}
         </button>
       </DialogTrigger>
       <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md min-w-0 flex-col overflow-hidden p-4 sm:p-6">

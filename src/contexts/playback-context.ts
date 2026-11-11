@@ -64,6 +64,8 @@ export interface PlaybackContextValue {
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
   setQueue: (items: PlaybackItem[], startIndex?: number) => void;
+  removeQueueItem: (index: number) => void;
+  moveQueueItem: (from: number, to: number) => void;
   setShuffle: (enabled: boolean) => void;
   setRepeatMode: (mode: RepeatMode) => void;
   setSleepTimer: (minutes: number | "track" | null) => void;

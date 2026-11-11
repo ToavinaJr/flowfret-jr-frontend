@@ -29,6 +29,9 @@ import { RepeatControl } from "@/components/features/music/RepeatControl";
 import { SleepTimerControl } from "@/components/features/music/SleepTimerControl";
 import { FavoriteTrackButton } from "@/components/features/music/FavoriteTrackButton";
 import type { MusicTrack } from "@/types/music";
+import type { PlaylistTrack } from "@/types/playlist";
+import { AddToPlaylistButton } from "@/components/features/playlists/AddToPlaylistButton";
+import { QueueDialog } from "@/components/features/music/QueueDialog";
 
 type PanelName = "chords" | "lyrics" | "youtube-video";
 
@@ -87,16 +90,20 @@ export default function PersistentMediaPlayer() {
     duration,
     volume,
     toggle,
+    play,
     pause,
     seek,
     setVolume,
     queue,
+    currentIndex,
     shuffle,
     setShuffle,
     next,
     previous,
     retry,
     practiceLoop,
+    removeQueueItem,
+    moveQueueItem,
   } = usePlayback();
   const previousItemId = useRef(item?.id ?? null);
   useEffect(() => {
@@ -140,6 +147,25 @@ export default function PersistentMediaPlayer() {
         geniusUrl: null,
         geniusMatchScore: null,
         durationMs: Math.max(0, Math.round((item.duration ?? 0) * 1000)),
+      }
+    : null;
+  const playlistTrack: PlaylistTrack | null = item.provider && item.providerTrackId
+    ? {
+        id: `${item.provider}:${item.providerTrackId}`,
+        provider: item.provider,
+        providerTrackId: item.providerTrackId,
+        title: item.title,
+        artists: item.artists?.length ? item.artists : [{ id: "unknown", name: item.artist || item.subtitle }],
+        album: item.album ?? null,
+        genre: item.genre ?? null,
+        imageUrl: item.imageUrl ?? null,
+        externalUrl: item.externalUrl ?? (item.provider === MUSIC_PROVIDER.YOUTUBE
+          ? `https://www.youtube.com/watch?v=${encodeURIComponent(item.providerTrackId)}`
+          : item.provider === MUSIC_PROVIDER.SPOTIFY
+            ? `https://open.spotify.com/track/${encodeURIComponent(item.providerTrackId)}`
+            : item.src),
+        durationMs: Math.max(0, Math.round((item.duration ?? 0) * 1000)),
+        isrc: item.isrc ?? null,
       }
     : null;
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
@@ -312,18 +338,6 @@ export default function PersistentMediaPlayer() {
         </button>
         <RepeatControl className="hidden sm:grid" />
         <SleepTimerControl className="hidden sm:flex" />
-        {runtimeFeatures?.chordTranscription ? (
-          <button
-            type="button"
-            onClick={() => togglePanel("chords")}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.chords ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")}
-            aria-expanded={openPanels.chords}
-            aria-controls="floating-media-window-chords"
-          >
-            <Guitar className="h-5 w-5" />
-          </button>
-        ) : null}
         {hasLyrics ? (
           <button
             type="button"
@@ -334,6 +348,26 @@ export default function PersistentMediaPlayer() {
             aria-controls="floating-media-window-lyrics"
           >
             <Mic2 className="h-4 w-4" />
+          </button>
+        ) : null}
+        {playlistTrack ? <AddToPlaylistButton track={playlistTrack} compact /> : null}
+        <QueueDialog
+          queue={queue}
+          currentIndex={currentIndex}
+          onPlay={(index) => { const selected = queue[index]; if (selected) void play(selected); }}
+          onRemove={removeQueueItem}
+          onMove={moveQueueItem}
+        />
+        {runtimeFeatures?.chordTranscription ? (
+          <button
+            type="button"
+            onClick={() => togglePanel("chords")}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.chords ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+            aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")}
+            aria-expanded={openPanels.chords}
+            aria-controls="floating-media-window-chords"
+          >
+            <Guitar className="h-5 w-5" />
           </button>
         ) : null}
         {hasYouTubeVideo ? (
@@ -406,6 +440,7 @@ export default function PersistentMediaPlayer() {
         ) : null}
       </div>
       <div className="flex h-11 min-w-0 max-w-full items-center gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain border-t border-border/70 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
+        {favoriteTrack ? <FavoriteTrackButton track={favoriteTrack} /> : null}
         {hasYouTubeVideo ? (
           <button
             type="button"
@@ -418,7 +453,14 @@ export default function PersistentMediaPlayer() {
             <Video className="h-4 w-4" />
           </button>
         ) : null}
-        {favoriteTrack ? <FavoriteTrackButton track={favoriteTrack} /> : null}
+        <QueueDialog
+          queue={queue}
+          currentIndex={currentIndex}
+          onPlay={(index) => { const selected = queue[index]; if (selected) void play(selected); }}
+          onRemove={removeQueueItem}
+          onMove={moveQueueItem}
+          compact
+        />
         <button
           type="button"
           disabled={queue.length < 2}
