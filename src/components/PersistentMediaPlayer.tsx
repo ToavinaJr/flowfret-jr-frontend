@@ -281,7 +281,7 @@ export default function PersistentMediaPlayer() {
       aria-label={t("mediaPlayer.audioPlayer")}
       className={`fixed z-40 border-t border-border bg-card ${isAdmin ? "bottom-0 left-0 right-0 md:left-64" : "bottom-[var(--mobile-nav-offset)] left-0 right-0 md:bottom-0 md:left-[var(--app-sidebar-width-md)] lg:left-[var(--app-sidebar-width-lg)]"}`}
     >
-      <div className="mx-auto flex h-[68px] max-w-5xl items-center gap-1.5 px-2 sm:h-[76px] sm:gap-3 sm:px-5">
+      <div className="mx-auto flex h-[68px] w-full min-w-0 max-w-5xl items-center gap-1.5 overflow-x-auto overflow-y-hidden px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-[76px] sm:gap-3 sm:px-5">
         {item.destination ? (
           <Link
             to={item.destination}
@@ -294,6 +294,52 @@ export default function PersistentMediaPlayer() {
             {content}
           </div>
         )}
+        {!isSpotify ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setVolume(volume > 0 ? 0 : 1)}
+              className="hidden h-10 w-10 shrink-0 items-center justify-center text-muted-foreground md:flex"
+              aria-label={volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")}
+            >
+              {volume > 0 ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+            </button>
+            <input
+              name="playbackVolumeDesktop"
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(event) => setVolume(Number(event.target.value))}
+              className="hidden w-24 shrink-0 accent-primary lg:block"
+              aria-label={t("mediaPlayer.volume")}
+            />
+          </>
+        ) : null}
+        <span className="hidden w-10 shrink-0 text-right text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeElapsed")}>
+          {formatTime(currentTime)}
+        </span>
+        <div className="relative hidden min-w-24 flex-1 sm:block">
+          <input
+            name="playbackPositionDesktop"
+            type="range"
+            min={0}
+            max={duration || 1}
+            step={0.1}
+            value={Math.min(currentTime, duration || 1)}
+            onChange={(event) => seek(Number(event.target.value))}
+            className="relative z-10 block w-full accent-primary"
+            aria-label={t("player.seek")}
+          />
+          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
+        </div>
+        <span className="hidden w-10 shrink-0 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeRemaining")}>
+          -{formatTime(Math.max(0, duration - currentTime))}
+        </span>
+        <span className="hidden w-10 shrink-0 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.totalDuration")}>
+          {formatTime(duration)}
+        </span>
         <button
           type="button"
           disabled={queue.length < 2}
@@ -385,58 +431,6 @@ export default function PersistentMediaPlayer() {
         <PracticeLoopControl className="hidden sm:flex" />
         {runtimeFeatures?.equalizerTranscription ? (
           <VocalRemovalControl key={item.id} />
-        ) : null}
-        <span className="hidden w-10 text-right text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeElapsed")}>
-          {formatTime(currentTime)}
-        </span>
-        <div className="relative hidden min-w-24 flex-1 sm:block">
-          <input
-            name="playbackPositionDesktop"
-            type="range"
-            min={0}
-            max={duration || 1}
-            step={0.1}
-            value={Math.min(currentTime, duration || 1)}
-            onChange={(event) => seek(Number(event.target.value))}
-            className="relative z-10 block w-full accent-primary"
-            aria-label={t("player.seek")}
-          />
-          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
-        </div>
-        <span className="hidden w-10 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeRemaining")}>
-          -{formatTime(Math.max(0, duration - currentTime))}
-        </span>
-        <span className="hidden w-10 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.totalDuration")}>
-          {formatTime(duration)}
-        </span>
-        {!isSpotify ? (
-          <>
-            <button
-              type="button"
-              onClick={() => setVolume(volume > 0 ? 0 : 1)}
-              className="hidden h-10 w-10 items-center justify-center text-muted-foreground md:flex"
-              aria-label={
-                volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")
-              }
-            >
-              {volume > 0 ? (
-                <Volume2 className="h-5 w-5" />
-              ) : (
-                <VolumeX className="h-5 w-5" />
-              )}
-            </button>
-            <input
-              name="playbackVolumeDesktop"
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
-              className="hidden w-24 accent-primary lg:block"
-              aria-label={t("mediaPlayer.volume")}
-            />
-          </>
         ) : null}
       </div>
       <div className="flex h-11 min-w-0 max-w-full items-center gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain border-t border-border/70 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
