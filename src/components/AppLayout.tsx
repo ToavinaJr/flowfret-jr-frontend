@@ -41,7 +41,7 @@ const AppLayout = () => {
         <main
           id="app-main-content"
           tabIndex={-1}
-          className="min-h-0 w-full flex-1 overflow-x-hidden pb-44 sm:pb-36 md:pb-20"
+          className="min-h-0 w-full flex-1 overflow-x-hidden pb-44 sm:pb-36 md:pb-28 xl:pb-20"
         >
           <Suspense fallback={<RouteContentSkeleton />}>
             <Outlet />

@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 import type { Playlist } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
+import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
 
 interface PlaylistListProps {
   playlists: Playlist[];
@@ -47,6 +49,7 @@ export function PlaylistList({
     const nextName = editedName.trim();
     if (!nextName || nextName === playlist.name) {
       setEditingId(null);
+      toast.info(t("playlists.noChanges"));
       return;
     }
     setSaving(true);
@@ -75,14 +78,15 @@ export function PlaylistList({
           type="submit"
           disabled={saving || !name.trim()}
           aria-label={t("playlists.create")}
+          title={t("playlists.create")}
           className="grid min-h-11 min-w-11 place-items-center rounded-md bg-primary text-primary-foreground disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
         </button>
       </form>
-      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+      <label className="flex flex-col gap-1.5 text-xs font-medium text-muted-foreground">
         {t("playlists.sortLabel")}
-        <select value={sortMode} onChange={(event) => onSortModeChange(event.target.value as "updated" | "name")} className="min-h-9 min-w-0 flex-1 rounded-md border border-border bg-secondary px-2 text-foreground">
+        <select value={sortMode} onChange={(event) => onSortModeChange(event.target.value as "updated" | "name")} className="min-h-10 w-full min-w-0 rounded-md border border-border bg-secondary px-2 text-sm font-normal text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
           <option value="updated">{t("playlists.sortRecentlyUpdated")}</option>
           <option value="name">{t("playlists.sortAlphabetical")}</option>
         </select>
@@ -91,7 +95,7 @@ export function PlaylistList({
         {playlists.map((playlist) => (
           <div
             key={playlist.id}
-            className={`flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-secondary text-foreground" : "hover:bg-secondary"}`}
+            className={`group flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-secondary text-foreground" : "hover:bg-secondary"}`}
           >
             {editingId === playlist.id ? (
               <form onSubmit={(event) => void submitRename(event, playlist)} className="flex min-w-0 flex-1 items-center gap-1 px-2">
@@ -103,10 +107,10 @@ export function PlaylistList({
                   aria-label={t("playlists.renameLabel")}
                   className="min-h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 />
-                <button type="submit" disabled={saving || !editedName.trim()} aria-label={t("playlists.saveName")} className="grid h-9 w-8 shrink-0 place-items-center rounded-md text-primary hover:bg-background disabled:opacity-50">
+                <button type="submit" disabled={saving || !editedName.trim()} aria-label={t("playlists.saveName")} title={t("playlists.saveName")} className="grid h-9 w-8 shrink-0 place-items-center rounded-md text-primary hover:bg-background disabled:opacity-50">
                   <Check className="h-4 w-4" />
                 </button>
-                <button type="button" disabled={saving} onClick={() => setEditingId(null)} aria-label={t("playlists.cancelRename")} className="grid h-9 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-background disabled:opacity-50">
+                <button type="button" disabled={saving} onClick={() => setEditingId(null)} aria-label={t("playlists.cancelRename")} title={t("playlists.cancelRename")} className="grid h-9 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-background disabled:opacity-50">
                   <X className="h-4 w-4" />
                 </button>
               </form>
@@ -114,9 +118,10 @@ export function PlaylistList({
               <button
                 type="button"
                 onClick={() => onSelect(playlist)}
-                className="min-h-11 min-w-0 flex-1 truncate px-3 text-left text-sm font-medium"
+                aria-current={playlist.id === selectedId ? "true" : undefined}
+                className="min-h-11 min-w-0 flex-1 rounded-md px-3 text-left text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                {playlist.name}
+                <ScrollingTrackText text={playlist.name} scrollOnHover />
               </button>
             )}
             {editingId !== playlist.id ? (
@@ -124,6 +129,7 @@ export function PlaylistList({
                 type="button"
                 onClick={() => { setEditingId(playlist.id); setEditedName(playlist.name); }}
                 aria-label={t("playlists.renameNamed", { name: playlist.name })}
+                title={t("playlists.renameNamed", { name: playlist.name })}
                 className="grid min-h-11 min-w-10 place-items-center text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Pencil className="h-4 w-4" />
@@ -133,6 +139,7 @@ export function PlaylistList({
               type="button"
               onClick={() => void onDelete(playlist)}
               aria-label={t("playlists.deleteNamed", { name: playlist.name })}
+              title={t("playlists.deleteNamed", { name: playlist.name })}
               className="grid min-h-11 min-w-11 place-items-center text-muted-foreground hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />

@@ -35,7 +35,7 @@ export function QueueDialog({ queue, currentIndex, onPlay, onRemove, onMove, com
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button type="button" className={`${compact ? "flex h-9 w-9" : "hidden h-10 w-10 sm:flex"} shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary`} aria-label={t("mediaPlayer.openQueue")}>
+        <button type="button" className={`${compact ? "flex h-9 w-9" : "hidden h-10 w-10 sm:flex"} shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary`} aria-label={t("mediaPlayer.openQueue")} title={t("mediaPlayer.openQueue")}>
           <ListMusic className="h-4 w-4" />
         </button>
       </DialogTrigger>

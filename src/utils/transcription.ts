@@ -1,4 +1,22 @@
+import type { Lyrics } from "@/types/lyrics";
 import type { TranscriptionSegment, TranscriptionWord } from "@/types/transcription";
+
+export const TRANSCRIPTION_LYRICS_PROVIDER = "transcription";
+
+/** Presents Whisper segments as synced lyrics so every lyrics view renders them the same way. */
+export function transcriptionSegmentsToLyrics(segments: readonly TranscriptionSegment[]): Lyrics | null {
+  const lines = segments
+    .map((segment) => ({ startTimeMs: Math.round(segment.start * 1000), text: segment.text.trim() }))
+    .filter((line) => line.text.length > 0);
+  if (lines.length === 0) return null;
+  return {
+    provider: TRANSCRIPTION_LYRICS_PROVIDER,
+    synced: true,
+    instrumental: false,
+    plainLyrics: lines.map((line) => line.text).join("\n"),
+    lines,
+  };
+}
 
 export function findActiveSegment(segments: readonly TranscriptionSegment[], currentTime: number): number {
   let low = 0;

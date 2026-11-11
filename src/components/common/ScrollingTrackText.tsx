@@ -9,7 +9,7 @@ export function ScrollingTrackText({
   className?: string;
   scrollOnHover?: boolean;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const [overflows, setOverflows] = useState(false);
 
@@ -32,13 +32,13 @@ export function ScrollingTrackText({
   }, [text]);
 
   return (
-    <div
+    <span
       ref={containerRef}
-      className={`player-track-text min-w-0 overflow-x-auto overflow-y-hidden whitespace-nowrap ${className}`}
+      className={`player-track-text block min-w-0 overflow-x-auto overflow-y-hidden whitespace-nowrap ${className}`}
       title={text}
     >
-      <div
-        className={`${overflows ? "media-player-marquee flex w-max" : "min-w-0"}${scrollOnHover ? " card-title-marquee" : ""}`}
+      <span
+        className={`${overflows ? "media-player-marquee flex w-max" : "block min-w-0"}${scrollOnHover ? " card-title-marquee" : ""}`}
         style={overflows ? { animationDuration: `${Math.min(32, Math.max(8, text.length / 5))}s` } : undefined}
       >
         <span
@@ -52,7 +52,7 @@ export function ScrollingTrackText({
             {text}
           </span>
         ) : null}
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }

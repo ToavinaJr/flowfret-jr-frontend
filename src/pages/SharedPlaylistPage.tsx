@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
 import { fetchSharedPlaylist, fetchSharedPlaylistItems } from "@/services/playlistsApi";
 import { toPlaybackItem } from "@/components/features/playlists/playlist-playback";
+import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
 
 export default function SharedPlaylistPage() {
   const { playlistId } = useParams<{ playlistId: string }>();
@@ -51,7 +52,9 @@ export default function SharedPlaylistPage() {
   const cover = playlist.data.coverUrl ?? items.find((item) => item.track.imageUrl)?.track.imageUrl;
 
   return (
-    <main className="min-h-dvh bg-background px-4 py-8 text-foreground sm:px-8 sm:py-12">
+    // This page renders outside AppLayout, so it reserves room for the fixed player itself
+    // (player heights: ~181px mobile, ~141px tablet, ~97px desktop).
+    <main className="min-h-dvh bg-background px-4 pb-52 pt-8 text-foreground sm:px-8 sm:pb-44 sm:pt-12 xl:pb-32">
       <div className="mx-auto max-w-4xl">
         <header className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-end sm:p-8">
           <div className="grid aspect-square w-36 shrink-0 place-items-center overflow-hidden rounded-xl bg-secondary sm:w-48">
@@ -72,10 +75,10 @@ export default function SharedPlaylistPage() {
         <ol className="mt-5 space-y-2">
           {items.map(({ id, track }, index) => (
             <li key={id}>
-              <button type="button" onClick={() => void playback.play(toPlaybackItem(track, `/shared-playlist/${encodeURIComponent(playlistId ?? "")}`))} className="flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              <button type="button" onClick={() => void playback.play(toPlaybackItem(track, `/shared-playlist/${encodeURIComponent(playlistId ?? "")}`))} title={t("lyrics.playTrack", { title: track.title })} className="group flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                 <span className="w-6 shrink-0 text-center text-xs text-muted-foreground">{index + 1}</span>
                 <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-md bg-secondary">{track.imageUrl ? <img src={track.imageUrl} alt="" className="h-full w-full object-cover" /> : <Music2 className="h-4 w-4 text-muted-foreground" />}</div>
-                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{track.title}</span><span className="block truncate text-xs text-muted-foreground">{track.artists.map((artist) => artist.name).join(", ")}</span></span>
+                <span className="min-w-0 flex-1"><ScrollingTrackText text={track.title} scrollOnHover className="text-sm font-medium" /><ScrollingTrackText text={track.artists.map((artist) => artist.name).join(", ")} scrollOnHover className="text-xs text-muted-foreground" /></span>
               </button>
             </li>
           ))}

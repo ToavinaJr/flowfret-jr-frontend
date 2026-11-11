@@ -104,7 +104,7 @@ export default function AdminLayout() {
         <main
           id="admin-main-content"
           tabIndex={-1}
-          className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 pb-32 sm:px-6 sm:py-7 sm:pb-32 lg:px-8 lg:pb-32"
+          className="mx-auto w-full min-w-0 max-w-[100rem] px-4 py-5 pb-48 sm:px-6 sm:py-7 sm:pb-36 lg:px-8 lg:pb-36 xl:pb-32"
         >
           <Outlet />
         </main>

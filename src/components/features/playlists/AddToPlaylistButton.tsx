@@ -83,6 +83,7 @@ export function AddToPlaylistButton({ track, compact = false }: { track: MusicTr
           type="button"
           className={`${compact ? "h-9 w-9 justify-center border-0 px-0" : "h-11 gap-2 border border-border px-3"} inline-flex shrink-0 items-center rounded-md text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground`}
           aria-label={t("playlists.addNamed", { title: track.title })}
+          title={t("playlists.addToPlaylist")}
         >
           <ListPlus className="h-4 w-4" />
           {!compact ? <span className="hidden sm:inline">{t("playlists.playlist")}</span> : null}

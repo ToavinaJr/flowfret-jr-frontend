@@ -132,11 +132,17 @@ export default function PlaylistsPage() {
 
   async function removeItem(itemId: string) {
     if (!selected) return;
-    await removeTrackFromPlaylist(selected.id, itemId);
+    try {
+      await removeTrackFromPlaylist(selected.id, itemId);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("playlists.removeFailed"));
+      return;
+    }
     setItems((current) => current.filter((item) => item.id !== itemId));
     setSelected((current) =>
       current ? { ...current, version: current.version + 1 } : current,
     );
+    toast.success(t("playlists.trackRemoved"));
   }
 
   async function removeItems(itemIds: string[]) {
@@ -152,6 +158,9 @@ export default function PlaylistsPage() {
         const removedIds = new Set(itemIds.slice(0, removedCount));
         setItems((current) => current.filter((item) => !removedIds.has(item.id)));
         setSelected((current) => current ? { ...current, version: current.version + removedCount } : current);
+        if (removedCount === itemIds.length) {
+          toast.success(t("playlists.tracksRemoved", { count: removedCount }));
+        }
       }
     }
   }
@@ -188,6 +197,8 @@ export default function PlaylistsPage() {
       setPlaylists((current) =>
         current.map((item) => (item.id === updated.id ? updated : item)),
       );
+      // A stable id replaces the toast instead of stacking one per arrow click.
+      toast.success(t("playlists.reordered"), { id: "playlist-reordered" });
     } catch (error) {
       setItems(previous);
       toast.error(

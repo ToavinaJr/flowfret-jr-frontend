@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const DURATIONS = [5, 10, 15, 30, 45, 60];
 
-export function SleepTimerControl({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
+export function SleepTimerControl({ iconOnly = false, className = "" }: { iconOnly?: boolean; className?: string }) {
   const { t } = useTranslation();
   const { sleepTimer, setSleepTimer } = usePlayback();
   const value = sleepTimer?.kind === "track"
@@ -24,7 +24,7 @@ export function SleepTimerControl({ compact = false, className = "" }: { compact
       <SelectTrigger
         aria-label={t("mediaPlayer.sleepTimer")}
         title={t("mediaPlayer.sleepTimer")}
-        className={`h-9 shrink-0 gap-1 rounded-md border-0 px-2 shadow-none focus:ring-0 ${compact ? "w-[108px]" : "w-[140px]"} ${sleepTimer ? "bg-primary/15 text-primary hover:bg-primary/20" : "bg-transparent text-muted-foreground hover:bg-secondary"} ${className}`}
+        className={`h-9 shrink-0 gap-1 rounded-md border-0 px-2 shadow-none focus:ring-0 ${iconOnly ? "w-9 justify-center px-0 [&>span]:hidden [&>svg:last-child]:hidden" : "w-[140px]"} ${sleepTimer ? "bg-primary/15 text-primary hover:bg-primary/20" : "bg-transparent text-muted-foreground hover:bg-secondary"} ${className}`}
       >
         <Moon aria-hidden="true" className="h-4 w-4 shrink-0" />
         <SelectValue />

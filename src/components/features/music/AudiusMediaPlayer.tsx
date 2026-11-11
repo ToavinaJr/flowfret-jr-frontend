@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Download,
   Flag,
@@ -85,6 +86,16 @@ export function TranscriptionMediaPlayer({
   // heavier YouTube-extraction + Whisper transcription pipeline below —
   // LyricsPanel already renders both synced and unsynced lyrics correctly.
   const hasLyrics = Boolean(lyrics);
+  // Keep the floating lyrics window (PersistentLyrics) in sync with this card's transcription.
+  const queryClient = useQueryClient();
+  const transcriptionStatus = transcription?.status;
+  const transcriptionSegmentCount = transcription?.segments.length ?? 0;
+  useEffect(() => {
+    if (!transcriptionStatus) return;
+    void queryClient.invalidateQueries({
+      queryKey: ["transcription-for-track", track.provider, track.providerTrackId],
+    });
+  }, [queryClient, track.provider, track.providerTrackId, transcriptionStatus, transcriptionSegmentCount]);
   const activeIndex = useMemo(
     () =>
       findActiveSegment(

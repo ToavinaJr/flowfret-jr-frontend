@@ -1,4 +1,4 @@
-import { Repeat2, RotateCcw } from "lucide-react";
+import { Brackets, RotateCcw } from "lucide-react";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
@@ -35,7 +35,7 @@ export function PracticeLoopControl({ className = "" }: { className?: string }) 
     <section
       id={panelId}
       aria-label={t("mediaPlayer.practiceLoop")}
-      className="fixed bottom-[calc(var(--mobile-nav-offset)+6.75rem+0.5rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-4 shadow-xl sm:bottom-[calc(76px+0.5rem)] sm:left-auto sm:right-2 sm:w-[min(24rem,calc(100vw-1rem))] sm:p-4"
+      className="fixed bottom-[calc(var(--mobile-nav-offset)+12rem)] left-2 right-2 z-50 w-auto rounded-lg border border-border bg-card p-4 shadow-xl sm:bottom-[calc(var(--mobile-nav-offset)+9.5rem)] md:bottom-[9.5rem] xl:bottom-[6.5rem] sm:left-auto sm:right-2 sm:w-[min(24rem,calc(100vw-1rem))] sm:p-4"
     >
       <div className="mb-4 space-y-2">
         <div className="flex items-center justify-between gap-3">
@@ -96,14 +96,14 @@ export function PracticeLoopControl({ className = "" }: { className?: string }) 
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex h-10 w-10 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${open || practiceLoop.enabled ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
+        className={`flex size-9 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${open || practiceLoop.enabled ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
         aria-label={t("mediaPlayer.practiceLoopConfigure")}
         aria-expanded={open}
         aria-controls={panelId}
         aria-pressed={practiceLoop.enabled}
         title={t("mediaPlayer.practiceLoop")}
       >
-        <Repeat2 className="h-5 w-5" aria-hidden="true" />
+        <Brackets className="size-4" aria-hidden="true" />
       </button>
       {open ? panel : null}
     </div>

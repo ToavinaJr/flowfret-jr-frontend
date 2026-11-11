@@ -1,5 +1,7 @@
 import {
   Guitar,
+  Heart,
+  ListPlus,
   Mic2,
   Pause,
   Play,
@@ -34,6 +36,16 @@ import { AddToPlaylistButton } from "@/components/features/playlists/AddToPlayli
 import { QueueDialog } from "@/components/features/music/QueueDialog";
 
 type PanelName = "chords" | "lyrics" | "youtube-video";
+
+const ICON_BUTTON =
+  "flex size-9 shrink-0 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-30";
+const TRACK_CLASS = "flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+
+function toneClass(active: boolean): string {
+  return active
+    ? "bg-primary/15 text-primary"
+    : "text-muted-foreground hover:bg-secondary hover:text-foreground";
+}
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -129,20 +141,36 @@ export default function PersistentMediaPlayer() {
   }, [item?.provider]);
   if (!item) return null;
   const isSpotify = item.engine === "spotify";
-  const favoriteTrack: MusicTrack | null = item.provider && item.providerTrackId && item.externalUrl && item.streamUrl
+  const hasProviderTrack = Boolean(item.provider && item.providerTrackId);
+  const trackExternalUrl = hasProviderTrack
+    ? item.externalUrl ?? (item.provider === MUSIC_PROVIDER.YOUTUBE
+      ? `https://www.youtube.com/watch?v=${encodeURIComponent(item.providerTrackId ?? "")}`
+      : item.provider === MUSIC_PROVIDER.SPOTIFY
+        ? `https://open.spotify.com/track/${encodeURIComponent(item.providerTrackId ?? "")}`
+        : undefined)
+    : undefined;
+  const httpsExternalUrl = trackExternalUrl?.startsWith("https://") ? trackExternalUrl : undefined;
+  // YouTube replays by id and Spotify embeds use streamUrl === externalUrl, so the page URL is a valid stream reference for them.
+  const httpsStreamUrl = item.streamUrl?.startsWith("https://")
+    ? item.streamUrl
+    : item.provider === MUSIC_PROVIDER.YOUTUBE || item.provider === MUSIC_PROVIDER.SPOTIFY
+      ? httpsExternalUrl
+      : undefined;
+  const trackArtists = item.artists?.length ? item.artists : [{ id: "unknown", name: item.artist || item.subtitle }];
+  const favoriteTrack: MusicTrack | null = item.provider && item.providerTrackId && httpsExternalUrl && httpsStreamUrl
     ? {
         provider: item.provider,
         id: item.providerTrackId,
         providerTrackId: item.providerTrackId,
         audiusId: item.providerTrackId,
         title: item.title,
-        artists: item.artists?.length ? item.artists : [{ id: "unknown", name: item.artist || item.subtitle }],
+        artists: trackArtists,
         imageUrl: item.imageUrl ?? null,
-        audiusUrl: item.externalUrl,
-        externalUrl: item.externalUrl,
+        audiusUrl: httpsExternalUrl,
+        externalUrl: httpsExternalUrl,
         album: item.album ?? null,
         isrc: item.isrc ?? null,
-        streamUrl: item.streamUrl,
+        streamUrl: httpsStreamUrl,
         genre: item.genre ?? null,
         geniusUrl: null,
         geniusMatchScore: null,
@@ -155,15 +183,11 @@ export default function PersistentMediaPlayer() {
         provider: item.provider,
         providerTrackId: item.providerTrackId,
         title: item.title,
-        artists: item.artists?.length ? item.artists : [{ id: "unknown", name: item.artist || item.subtitle }],
+        artists: trackArtists,
         album: item.album ?? null,
         genre: item.genre ?? null,
         imageUrl: item.imageUrl ?? null,
-        externalUrl: item.externalUrl ?? (item.provider === MUSIC_PROVIDER.YOUTUBE
-          ? `https://www.youtube.com/watch?v=${encodeURIComponent(item.providerTrackId)}`
-          : item.provider === MUSIC_PROVIDER.SPOTIFY
-            ? `https://open.spotify.com/track/${encodeURIComponent(item.providerTrackId)}`
-            : item.src),
+        externalUrl: trackExternalUrl ?? item.src,
         durationMs: Math.max(0, Math.round((item.duration ?? 0) * 1000)),
         isrc: item.isrc ?? null,
       }
@@ -171,6 +195,8 @@ export default function PersistentMediaPlayer() {
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
   const hasYouTubeVideo = item.provider === MUSIC_PROVIDER.YOUTUBE && Boolean(item.providerTrackId?.trim());
   const isAdmin = location.pathname.startsWith("/admin");
+  // Standalone pages (shared playlist) render outside AppLayout: no sidebar, no bottom navigation.
+  const isStandalone = location.pathname.startsWith("/shared-playlist/");
 
   function togglePanel(panel: PanelName) {
     if (openPanels[panel] && minimizedPanels[panel]) {
@@ -210,7 +236,7 @@ export default function PersistentMediaPlayer() {
           }
         }}
         alt=""
-        className="block size-11 min-w-11 shrink-0 aspect-square rounded-md bg-secondary object-cover"
+        className="block size-10 shrink-0 aspect-square rounded-md bg-secondary object-cover shadow-sm sm:size-11 xl:size-14"
       />
       <div className="min-w-0 flex-1">
         <ScrollingTrackText
@@ -224,6 +250,20 @@ export default function PersistentMediaPlayer() {
       </div>
     </>
   );
+
+  const hasStudyTools = Boolean(
+    runtimeFeatures?.chordTranscription ||
+      hasLyrics ||
+      hasYouTubeVideo ||
+      runtimeFeatures?.equalizerTranscription,
+  );
+  const unavailable = t("mediaPlayer.trackActionUnavailable");
+  const favoriteControl = favoriteTrack
+    ? <FavoriteTrackButton track={favoriteTrack} className="!h-9 !w-9" />
+    : <button type="button" disabled className={`${ICON_BUTTON} ${toneClass(false)}`} aria-label={`${t("favorites.add")} (${unavailable})`} title={`${t("favorites.add")} (${unavailable})`}><Heart className="size-4" aria-hidden="true" /></button>;
+  const playlistControl = playlistTrack
+    ? <AddToPlaylistButton track={playlistTrack} compact />
+    : <button type="button" disabled className={`${ICON_BUTTON} ${toneClass(false)}`} aria-label={`${t("playlists.addToPlaylist")} (${unavailable})`} title={`${t("playlists.addToPlaylist")} (${unavailable})`}><ListPlus className="size-4" aria-hidden="true" /></button>;
 
   return (
     <>
@@ -278,276 +318,102 @@ export default function PersistentMediaPlayer() {
         </FloatingPanelWindow>
       ) : null}
       <section
-      aria-label={t("mediaPlayer.audioPlayer")}
-      className={`fixed z-40 border-t border-border bg-card ${isAdmin ? "bottom-0 left-0 right-0 md:left-64" : "bottom-[var(--mobile-nav-offset)] left-0 right-0 md:bottom-0 md:left-[var(--app-sidebar-width-md)] lg:left-[var(--app-sidebar-width-lg)]"}`}
-    >
-      <div className="mx-auto flex h-[68px] w-full min-w-0 max-w-5xl items-center gap-1.5 overflow-x-auto overflow-y-hidden px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:h-[76px] sm:gap-3 sm:px-5">
-        {item.destination ? (
-          <Link
-            to={item.destination}
-            className="flex min-w-0 flex-1 items-center gap-3 md:min-w-[11rem] md:max-w-xs"
-          >
-            {content}
-          </Link>
-        ) : (
-          <div className="flex min-w-0 flex-1 items-center gap-3 md:min-w-[11rem] md:max-w-xs">
-            {content}
+        aria-label={t("mediaPlayer.audioPlayer")}
+        className={`fixed z-40 border-t border-border bg-card/95 shadow-[0_-4px_16px_-8px_hsl(var(--foreground)/0.15)] backdrop-blur supports-[backdrop-filter]:bg-card/85 ${isStandalone ? "bottom-0 left-0 right-0" : isAdmin ? "bottom-0 left-0 right-0 md:left-64" : "bottom-[var(--mobile-nav-offset)] left-0 right-0 md:bottom-0 md:left-[var(--app-sidebar-width-md)] lg:left-[var(--app-sidebar-width-lg)]"}`}
+      >
+        {/*
+          Every control is visible at every width; only the arrangement changes.
+          - mobile:  track / progress / transport / [tools · output]
+          - tablet:  [track · transport] / progress / [tools · output]
+          - desktop: [track | transport · progress | tools · output]
+        */}
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-3 py-2 [grid-template-areas:'track_track'_'progress_progress'_'transport_transport'_'tools_output'] sm:px-5 sm:[grid-template-areas:'track_transport'_'progress_progress'_'tools_output'] xl:h-24 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)_minmax(14rem,1fr)] xl:grid-rows-2 xl:gap-x-6 xl:gap-y-0 xl:[grid-template-areas:'track_transport_tools'_'track_progress_output']">
+          <div className="flex min-w-0 items-center gap-1 [grid-area:track] xl:gap-2">
+            {item.destination ? (
+              <Link to={item.destination} className={TRACK_CLASS}>
+                {content}
+              </Link>
+            ) : (
+              <div className={TRACK_CLASS}>{content}</div>
+            )}
+            <div role="group" aria-label={t("mediaPlayer.groupTrack")} className="flex shrink-0 items-center gap-0.5">
+              {favoriteControl}
+              {playlistControl}
+            </div>
           </div>
-        )}
-        {!isSpotify ? (
-          <>
+
+          <div
+            role="group"
+            aria-label={t("mediaPlayer.groupTransport")}
+            className="flex items-center justify-center gap-3 [grid-area:transport] sm:justify-end sm:gap-1 xl:justify-center xl:gap-2"
+          >
+            <button type="button" disabled={queue.length < 2} onClick={() => setShuffle(!shuffle)} className={`${ICON_BUTTON} ${toneClass(shuffle)}`} aria-label={t("mediaPlayer.shuffle")} title={t("mediaPlayer.shuffle")} aria-pressed={shuffle}><Shuffle className="size-4" /></button>
+            <button type="button" disabled={queue.length < 2} onClick={() => void previous()} className={`${ICON_BUTTON} ${toneClass(false)}`} aria-label={t("mediaPlayer.previous")} title={t("mediaPlayer.previous")}><SkipBack className="size-4" /></button>
+            <button type="button" onClick={() => void toggle()} className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:hover:scale-100" aria-label={playState === "playing" ? t("player.pause") : t("player.play")} title={playState === "playing" ? t("player.pause") : t("player.play")}>{playState === "playing" ? <Pause className="size-5" /> : <Play className="ml-0.5 size-5" />}</button>
+            <button type="button" disabled={queue.length < 2} onClick={() => void next()} className={`${ICON_BUTTON} ${toneClass(false)}`} aria-label={t("mediaPlayer.next")} title={t("mediaPlayer.next")}><SkipForward className="size-4" /></button>
+            <RepeatControl />
+          </div>
+
+          <div className="flex min-w-0 items-center gap-2 [grid-area:progress]">
+            <span className="w-9 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground" aria-label={t("mediaPlayer.timeElapsed")}>{formatTime(currentTime)}</span>
+            <div className="relative min-w-0 flex-1">
+              <input name="playbackPosition" type="range" min={0} max={duration || 1} step={0.1} value={Math.min(currentTime, duration || 1)} onChange={(event) => seek(Number(event.target.value))} className="relative z-10 block w-full accent-primary" aria-label={t("player.seek")} title={t("player.seek")} />
+              <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
+            </div>
+            <span className="flex shrink-0 items-center gap-1.5 text-[11px] tabular-nums text-muted-foreground">
+              <span aria-label={t("mediaPlayer.timeRemaining")}>-{formatTime(Math.max(0, duration - currentTime))}</span>
+              <span aria-hidden="true" className="text-border">/</span>
+              <span aria-label={t("mediaPlayer.totalDuration")}>{formatTime(duration)}</span>
+            </span>
+            <PracticeLoopControl className="shrink-0" />
+          </div>
+
+          <div className="flex min-w-0 items-center gap-0.5 [grid-area:tools] xl:justify-end">
+            {hasStudyTools ? (
+              <>
+                <div role="group" aria-label={t("mediaPlayer.groupStudy")} className="flex shrink-0 items-center gap-0.5">
+                  {runtimeFeatures?.chordTranscription ? <button type="button" onClick={() => togglePanel("chords")} className={`${ICON_BUTTON} ${toneClass(openPanels.chords)}`} aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")} title={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")} aria-expanded={openPanels.chords} aria-controls="floating-media-window-chords"><Guitar className="size-4" /></button> : null}
+                  {hasLyrics ? <button type="button" onClick={() => togglePanel("lyrics")} className={`${ICON_BUTTON} ${toneClass(openPanels.lyrics)}`} aria-label={t(openPanels.lyrics ? "lyrics.close" : "lyrics.open")} title={t(openPanels.lyrics ? "lyrics.close" : "lyrics.open")} aria-expanded={openPanels.lyrics} aria-controls="floating-media-window-lyrics"><Mic2 className="size-4" /></button> : null}
+                  {hasYouTubeVideo ? <button type="button" onClick={openYouTubeVideo} className={`${ICON_BUTTON} ${toneClass(openPanels["youtube-video"])}`} aria-label={t("mediaPlayer.showYoutubeVideo")} title={t("mediaPlayer.showYoutubeVideo")} aria-expanded={openPanels["youtube-video"]} aria-controls="floating-media-window-youtube-video"><Video className="size-4" /></button> : null}
+                  {runtimeFeatures?.equalizerTranscription ? <VocalRemovalControl key={item.id} /> : null}
+                </div>
+                <span aria-hidden="true" className="mx-1 h-5 w-px shrink-0 bg-border" />
+              </>
+            ) : null}
+            <QueueDialog queue={queue} currentIndex={currentIndex} onPlay={(index) => { const selected = queue[index]; if (selected) void play(selected); }} onRemove={removeQueueItem} onMove={moveQueueItem} compact />
+          </div>
+
+          <div className="flex min-w-0 items-center justify-end gap-0.5 [grid-area:output]">
+            <SleepTimerControl iconOnly />
+            {!isSpotify ? (
+              <div role="group" aria-label={t("mediaPlayer.volume")} className="flex min-w-0 items-center gap-1">
+                <button type="button" onClick={() => setVolume(volume > 0 ? 0 : 1)} className={`${ICON_BUTTON} ${toneClass(false)}`} aria-label={volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")} title={volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")}>{volume > 0 ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}</button>
+                <input name="playbackVolume" type="range" min={0} max={1} step={0.05} value={volume} onChange={(event) => setVolume(Number(event.target.value))} className="hidden w-24 min-w-0 accent-primary sm:block xl:w-auto xl:flex-1" aria-label={t("mediaPlayer.volume")} title={t("mediaPlayer.volume")} />
+              </div>
+            ) : null}
+          </div>
+        </div>
+        {playState === "error" ? (
+          <div
+            className="flex items-center justify-between gap-3 border-t border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive sm:px-5"
+            role="alert"
+          >
+            <span>
+              {playbackError === "AUDIO_UNAVAILABLE"
+                ? t("player.audioError")
+                : playbackError === "PLAYBACK_BLOCKED"
+                  ? t("player.playbackBlocked")
+                  : t("player.providerError")}
+            </span>
             <button
               type="button"
-              onClick={() => setVolume(volume > 0 ? 0 : 1)}
-              className="hidden h-10 w-10 shrink-0 items-center justify-center text-muted-foreground md:flex"
-              aria-label={volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")}
+              onClick={() => void retry()}
+              className="shrink-0 rounded-md bg-destructive/15 px-2.5 py-1 font-medium hover:bg-destructive/25"
             >
-              {volume > 0 ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+              {t("player.retryPlayback")}
             </button>
-            <input
-              name="playbackVolumeDesktop"
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
-              className="hidden w-24 shrink-0 accent-primary lg:block"
-              aria-label={t("mediaPlayer.volume")}
-            />
-          </>
+          </div>
         ) : null}
-        <span className="hidden w-10 shrink-0 text-right text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeElapsed")}>
-          {formatTime(currentTime)}
-        </span>
-        <div className="relative hidden min-w-24 flex-1 sm:block">
-          <input
-            name="playbackPositionDesktop"
-            type="range"
-            min={0}
-            max={duration || 1}
-            step={0.1}
-            value={Math.min(currentTime, duration || 1)}
-            onChange={(event) => seek(Number(event.target.value))}
-            className="relative z-10 block w-full accent-primary"
-            aria-label={t("player.seek")}
-          />
-          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
-        </div>
-        <span className="hidden w-10 shrink-0 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeRemaining")}>
-          -{formatTime(Math.max(0, duration - currentTime))}
-        </span>
-        <span className="hidden w-10 shrink-0 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.totalDuration")}>
-          {formatTime(duration)}
-        </span>
-        <button
-          type="button"
-          disabled={queue.length < 2}
-          onClick={() => void previous()}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
-          aria-label={t("mediaPlayer.previous")}
-        >
-          <SkipBack className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => void toggle()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground sm:h-11 sm:w-11"
-          aria-label={
-            playState === "playing" ? t("player.pause") : t("player.play")
-          }
-        >
-          {playState === "playing" ? (
-            <Pause className="h-5 w-5" />
-          ) : (
-            <Play className="ml-0.5 h-5 w-5" />
-          )}
-        </button>
-        <button
-          type="button"
-          disabled={queue.length < 2}
-          onClick={() => void next()}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-30 sm:h-10 sm:w-10"
-          aria-label={t("mediaPlayer.next")}
-        >
-          <SkipForward className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          disabled={queue.length < 2}
-          onClick={() => setShuffle(!shuffle)}
-          className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 sm:flex sm:h-10 sm:w-10 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-          aria-label={t("mediaPlayer.shuffle")}
-          aria-pressed={shuffle}
-        >
-          <Shuffle className="h-4 w-4" />
-        </button>
-        <RepeatControl className="hidden sm:grid" />
-        <SleepTimerControl className="hidden sm:flex" />
-        {hasLyrics ? (
-          <button
-            type="button"
-            onClick={() => togglePanel("lyrics")}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.lyrics ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={t(openPanels.lyrics ? "lyrics.close" : "lyrics.open")}
-            aria-expanded={openPanels.lyrics}
-            aria-controls="floating-media-window-lyrics"
-          >
-            <Mic2 className="h-4 w-4" />
-          </button>
-        ) : null}
-        {playlistTrack ? <AddToPlaylistButton track={playlistTrack} compact /> : null}
-        <QueueDialog
-          queue={queue}
-          currentIndex={currentIndex}
-          onPlay={(index) => { const selected = queue[index]; if (selected) void play(selected); }}
-          onRemove={removeQueueItem}
-          onMove={moveQueueItem}
-        />
-        {runtimeFeatures?.chordTranscription ? (
-          <button
-            type="button"
-            onClick={() => togglePanel("chords")}
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${openPanels.chords ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={t(openPanels.chords ? "chordPlayer.close" : "chordPlayer.open")}
-            aria-expanded={openPanels.chords}
-            aria-controls="floating-media-window-chords"
-          >
-            <Guitar className="h-5 w-5" />
-          </button>
-        ) : null}
-        {hasYouTubeVideo ? (
-          <button
-            type="button"
-            onClick={openYouTubeVideo}
-            className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-md sm:flex ${openPanels["youtube-video"] ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-secondary"}`}
-            aria-label={t("mediaPlayer.showYoutubeVideo")}
-            aria-expanded={openPanels["youtube-video"]}
-            aria-controls="floating-media-window-youtube-video"
-          >
-            <Video className="h-4 w-4" />
-          </button>
-        ) : null}
-        <PracticeLoopControl className="hidden sm:flex" />
-        {runtimeFeatures?.equalizerTranscription ? (
-          <VocalRemovalControl key={item.id} />
-        ) : null}
-      </div>
-      <div className="flex h-11 min-w-0 max-w-full items-center gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain border-t border-border/70 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
-        {favoriteTrack ? <FavoriteTrackButton track={favoriteTrack} /> : null}
-        {hasYouTubeVideo ? (
-          <button
-            type="button"
-            onClick={openYouTubeVideo}
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${openPanels["youtube-video"] ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
-            aria-label={t("mediaPlayer.showYoutubeVideo")}
-            aria-expanded={openPanels["youtube-video"]}
-            aria-controls="floating-media-window-youtube-video"
-          >
-            <Video className="h-4 w-4" />
-          </button>
-        ) : null}
-        <QueueDialog
-          queue={queue}
-          currentIndex={currentIndex}
-          onPlay={(index) => { const selected = queue[index]; if (selected) void play(selected); }}
-          onRemove={removeQueueItem}
-          onMove={moveQueueItem}
-          compact
-        />
-        <button
-          type="button"
-          disabled={queue.length < 2}
-          onClick={() => setShuffle(!shuffle)}
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md disabled:opacity-30 ${shuffle ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}
-          aria-label={t("mediaPlayer.shuffle")}
-          aria-pressed={shuffle}
-        >
-          <Shuffle className="h-4 w-4" />
-        </button>
-        <RepeatControl />
-        <SleepTimerControl compact className="sm:hidden" />
-        <PracticeLoopControl className="sm:hidden" />
-      </div>
-      <div className="flex h-11 min-w-0 items-center gap-2 border-t border-border/70 px-3 sm:hidden">
-        <span className="w-8 shrink-0 text-[10px] tabular-nums text-muted-foreground" aria-label={t("mediaPlayer.timeElapsed", "Time elapsed")}>
-          {formatTime(currentTime)}
-        </span>
-        <div className="relative min-w-0 flex-1">
-          <input
-            name="playbackPositionMobile"
-            type="range"
-            min={0}
-            max={duration || 1}
-            step={0.1}
-            value={Math.min(currentTime, duration || 1)}
-            onChange={(event) => seek(Number(event.target.value))}
-            className="relative z-10 block w-full accent-primary"
-            aria-label={t("player.seek")}
-          />
-          <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
-        </div>
-        <span className="flex shrink-0 flex-col items-end text-[10px] leading-tight tabular-nums text-muted-foreground">
-          <span aria-label={t("mediaPlayer.timeRemaining", "Time remaining")}>
-            -{formatTime(Math.max(0, duration - currentTime))}
-          </span>
-          <span aria-label={t("mediaPlayer.totalDuration", "Total duration")}>
-            {formatTime(duration)}
-          </span>
-        </span>
-        {!isSpotify ? (
-          <>
-            <div role="group" aria-label={t("mediaPlayer.volume")} className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setVolume(volume > 0 ? 0 : 1)}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label={
-                  volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")
-                }
-              >
-                {volume > 0 ? (
-                  <Volume2 className="h-4 w-4" />
-                ) : (
-                  <VolumeX className="h-4 w-4" />
-                )}
-              </button>
-              <input
-                name="playbackVolumeMobile"
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={volume}
-                onChange={(event) => setVolume(Number(event.target.value))}
-                className="w-20 accent-primary min-[390px]:w-24"
-                aria-label={t("mediaPlayer.volume")}
-              />
-            </div>
-          </>
-        ) : null}
-      </div>
-      {playState === "error" ? (
-        <div
-          className="flex items-center justify-between gap-3 border-t border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive sm:px-5"
-          role="alert"
-        >
-          <span>
-            {playbackError === "AUDIO_UNAVAILABLE"
-              ? t("player.audioError")
-              : playbackError === "PLAYBACK_BLOCKED"
-                ? t("player.playbackBlocked")
-                : t("player.providerError")}
-          </span>
-          <button
-            type="button"
-            onClick={() => void retry()}
-            className="shrink-0 rounded-md bg-destructive/15 px-2.5 py-1 font-medium hover:bg-destructive/25"
-          >
-            {t("player.retryPlayback")}
-          </button>
-        </div>
-      ) : null}
       </section>
     </>
   );

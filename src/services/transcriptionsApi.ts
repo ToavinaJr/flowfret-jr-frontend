@@ -142,6 +142,12 @@ export function listTranscriptions(take = 20, skip = 0): Promise<TranscriptionPa
 export function createTranscription(input: { provider?: "AUDIUS" | "SPOTIFY" | "YOUTUBE"; trackId: string; audioUrl: string; title?: string; artist?: string; language?: string; model?: string }): Promise<TranscriptionResponse> {
   return request(BASE_URL, { method: "POST", headers: headers(true), body: JSON.stringify(input) });
 }
+/** Read-only: returns the transcription the user already has for a track, never starts one. */
+export async function findTranscriptionForTrack(provider: TranscriptionResponse["provider"], trackId: string): Promise<TranscriptionResponse | null> {
+  const params = new URLSearchParams({ provider, trackId });
+  const result = await request<{ transcription: TranscriptionResponse | null }>(`${BASE_URL}/lookup?${params.toString()}`, { headers: headers() });
+  return result.transcription;
+}
 export function getTranscription(id: string): Promise<TranscriptionResponse> { return request(`${BASE_URL}/${encodeURIComponent(id)}`, { headers: headers() }); }
 export function retryTranscription(id: string, audioUrl: string): Promise<TranscriptionResponse> {
   return request(`${BASE_URL}/${encodeURIComponent(id)}/retry`, { method: "POST", headers: headers(true), body: JSON.stringify({ audioUrl }) });

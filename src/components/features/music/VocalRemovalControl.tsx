@@ -24,8 +24,8 @@ export function VocalRemovalControl() {
     }}>
       <DialogTrigger asChild>
         <button type="button" aria-label={t("equalizer.open")} title={t("equalizer.title")}
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary ${percent > 0 ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}>
-          <SlidersHorizontal aria-hidden="true" className="h-5 w-5" />
+          className={`flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary ${percent > 0 ? "bg-primary/15 text-primary" : "text-muted-foreground"}`}>
+          <SlidersHorizontal aria-hidden="true" className="size-4" />
         </button>
       </DialogTrigger>
       <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto overscroll-contain rounded-xl motion-reduce:animate-none">
