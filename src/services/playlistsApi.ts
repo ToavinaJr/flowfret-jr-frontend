@@ -1,6 +1,6 @@
 import { graphqlRequest } from "./graphqlClient";
 import type { MusicTrack } from "@/types/music";
-import type { Playlist, PlaylistItem, PlaylistTrack, PlaylistVisibility } from "@/types/playlist";
+import type { Playlist, PlaylistItem, PlaylistTrack, PlaylistVisibility, SharedPlaylist, SharedPlaylistItem } from "@/types/playlist";
 
 const PLAYLIST_FIELDS = `
   id userId name description coverUrl visibility version createdAt updatedAt
@@ -20,9 +20,33 @@ export async function fetchPlaylists(): Promise<Playlist[]> {
 export async function fetchPlaylistItems(id: string, after?: string): Promise<PlaylistItem[]> {
   const data = await graphqlRequest<{ playlistItems: PlaylistItem[] }>({
     query: `query PlaylistItems($id: String!, $take: Int!, $after: String) { playlistItems(playlistId: $id, take: $take, after: $after) { ${ITEM_FIELDS} } }`,
-    variables: { id, take: 100, after },
+    variables: { id, take: 100, after: after ?? null },
   });
   return data.playlistItems;
+}
+
+export async function fetchSharedPlaylist(id: string): Promise<SharedPlaylist> {
+  const data = await graphqlRequest<{ publicPlaylist: SharedPlaylist | null }>({
+    query: `query PublicPlaylist($id: String!) { publicPlaylist(id: $id) { id name description coverUrl } }`,
+    variables: { id },
+  });
+  if (!data.publicPlaylist) throw new Error("Playlist not found");
+  return data.publicPlaylist;
+}
+
+export async function fetchSharedPlaylistItems(id: string): Promise<SharedPlaylistItem[]> {
+  const items: SharedPlaylistItem[] = [];
+  let after: string | null = null;
+  while (true) {
+    const response: { publicPlaylistItems: SharedPlaylistItem[] } = await graphqlRequest<{ publicPlaylistItems: SharedPlaylistItem[] }>({
+      query: `query PublicPlaylistItems($id: String!, $take: Int!, $after: String) { publicPlaylistItems(playlistId: $id, take: $take, after: $after) { id position track { id provider providerTrackId title artists { id name } album genre imageUrl externalUrl durationMs isrc } } }`,
+      variables: { id, take: 100, after: after ?? null },
+    });
+    items.push(...response.publicPlaylistItems);
+    if (response.publicPlaylistItems.length < 100) return items;
+    after = response.publicPlaylistItems[response.publicPlaylistItems.length - 1]?.id ?? null;
+    if (!after) return items;
+  }
 }
 
 export async function createPlaylist(name: string, details?: { description?: string | null; coverUrl?: string | null }): Promise<Playlist> {

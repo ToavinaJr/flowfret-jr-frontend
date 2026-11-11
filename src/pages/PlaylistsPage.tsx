@@ -114,6 +114,22 @@ export default function PlaylistsPage() {
     }
   }
 
+  async function updatePlaylistVisibility(visibility: "PRIVATE" | "PUBLIC") {
+    if (!selected) return;
+    try {
+      const updated = await updatePlaylist(selected.id, { visibility });
+      setPlaylists((current) => current.map((item) => item.id === updated.id ? updated : item));
+      setSelected(updated);
+      queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) =>
+        current.map((item) => item.id === updated.id ? updated : item),
+      );
+      toast.success(t(visibility === "PUBLIC" ? "playlists.madePublic" : "playlists.madePrivate"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("playlists.visibilityUpdateFailed"));
+      throw error;
+    }
+  }
+
   async function removeItem(itemId: string) {
     if (!selected) return;
     await removeTrackFromPlaylist(selected.id, itemId);
@@ -206,6 +222,7 @@ export default function PlaylistsPage() {
               onReorder={reorder}
               onDuplicate={duplicatePlaylist}
               onUpdateDescription={updatePlaylistDescription}
+              onUpdateVisibility={updatePlaylistVisibility}
             />
           ) : (
             <section className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">

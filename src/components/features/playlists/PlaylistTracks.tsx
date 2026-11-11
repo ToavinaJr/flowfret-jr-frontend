@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Check, Copy, Pencil, Play, Shuffle, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Copy, Link2, Pencil, Play, Share2, Shuffle, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePlayback } from "@/contexts/usePlayback";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
@@ -14,6 +14,7 @@ interface PlaylistTracksProps {
   onReorder: (items: PlaylistItem[]) => Promise<void>;
   onDuplicate: () => Promise<void>;
   onUpdateDescription: (description: string) => Promise<void>;
+  onUpdateVisibility: (visibility: "PRIVATE" | "PUBLIC") => Promise<void>;
 }
 
 export function PlaylistTracks({
@@ -24,6 +25,7 @@ export function PlaylistTracks({
   onReorder,
   onDuplicate,
   onUpdateDescription,
+  onUpdateVisibility,
 }: PlaylistTracksProps) {
   const { t } = useTranslation();
   const playback = usePlayback();
@@ -33,6 +35,7 @@ export function PlaylistTracks({
   const [editingDescription, setEditingDescription] = useState(false);
   const [description, setDescription] = useState(playlist.description ?? "");
   const [savingDescription, setSavingDescription] = useState(false);
+  const [savingVisibility, setSavingVisibility] = useState(false);
   useEffect(() => setSelectedIds([]), [playlist.id]);
   useEffect(() => {
     setDescription(playlist.description ?? "");
@@ -53,6 +56,26 @@ export function PlaylistTracks({
     const reordered = [...items];
     [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
     await onReorder(reordered);
+  }
+
+  async function setVisibility(visibility: "PRIVATE" | "PUBLIC") {
+    setSavingVisibility(true);
+    try {
+      await onUpdateVisibility(visibility);
+    } catch {
+      // The page reports the mutation error to the user.
+    } finally {
+      setSavingVisibility(false);
+    }
+  }
+
+  async function copyShareLink() {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/shared-playlist/${encodeURIComponent(playlist.id)}`);
+      toast.success(t("playlists.shareLinkCopied"));
+    } catch {
+      toast.error(t("playlists.shareLinkCopyFailed"));
+    }
   }
 
   function start(shuffle: boolean) {
@@ -104,6 +127,20 @@ export function PlaylistTracks({
         <button type="button" onClick={() => void onDuplicate()} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm">
           <Copy className="h-4 w-4" /> {t("playlists.duplicate")}
         </button>
+        {playlist.visibility === "PUBLIC" ? (
+          <>
+            <button type="button" onClick={() => void copyShareLink()} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm">
+              <Link2 className="h-4 w-4" /> {t("playlists.copyShareLink")}
+            </button>
+            <button type="button" disabled={savingVisibility} onClick={() => void setVisibility("PRIVATE")} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm disabled:opacity-50">
+              <Share2 className="h-4 w-4" /> {t("playlists.makePrivate")}
+            </button>
+          </>
+        ) : (
+          <button type="button" disabled={savingVisibility} onClick={() => void setVisibility("PUBLIC")} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm disabled:opacity-50">
+            <Share2 className="h-4 w-4" /> {t("playlists.makePublic")}
+          </button>
+        )}
         {selectedIds.length ? (
           <button type="button" disabled={bulkWorking} onClick={async () => { setBulkWorking(true); try { await onRemoveMany(selectedIds); setSelectedIds([]); } catch (error) { toast.error(error instanceof Error ? error.message : t("playlists.bulkRemoveFailed")); } finally { setBulkWorking(false); } }} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm text-destructive disabled:opacity-50">
             <Trash2 className="h-4 w-4" /> {t("playlists.removeSelected", { count: selectedIds.length })}

@@ -1,7 +1,7 @@
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import type { PlaylistTrack } from "@/types/playlist";
 
-export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
+export function toPlaybackItem(track: PlaylistTrack, destination = "/playlists"): PlaybackItem {
   const subtitle = track.artists.map((artist) => artist.name).join(", ");
   if (track.provider === "SPOTIFY") {
     return {
@@ -12,7 +12,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
       subtitle,
       imageUrl: track.imageUrl,
       duration: track.durationMs / 1000,
-      destination: "/playlists",
+      destination,
       provider: track.provider,
       artist: subtitle,
       album: track.album,
@@ -27,7 +27,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
       subtitle,
       imageUrl: track.imageUrl,
       duration: track.durationMs / 1000,
-      destination: "/playlists",
+      destination,
       provider: track.provider,
       artist: subtitle,
       album: track.album,
@@ -41,7 +41,7 @@ export function toPlaybackItem(track: PlaylistTrack): PlaybackItem {
     subtitle,
     imageUrl: track.imageUrl,
     duration: track.durationMs / 1000,
-    destination: "/playlists",
+    destination,
     provider: track.provider,
     artist: subtitle,
     album: track.album,

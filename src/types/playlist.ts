@@ -36,3 +36,16 @@ export interface PlaylistItem {
   position: number;
   track: PlaylistTrack;
 }
+
+export interface SharedPlaylist {
+  id: string;
+  name: string;
+  description: string | null;
+  coverUrl: string | null;
+}
+
+export interface SharedPlaylistItem {
+  id: string;
+  position: number;
+  track: PlaylistTrack;
+}

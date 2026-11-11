@@ -27,6 +27,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
+  if (location.pathname.startsWith("/shared-playlist/")) {
+    return <>{children}</>;
+  }
+
   if (location.pathname === "/") {
     return (
       <Suspense fallback={<AppShellSkeleton />}>
