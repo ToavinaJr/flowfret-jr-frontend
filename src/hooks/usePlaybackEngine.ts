@@ -267,7 +267,11 @@ export function usePlaybackEngine(
       setPlaybackError(null);
       setPlayState("loading");
       recordListen(active, loggedItemRef, () =>
+      Promise.all([
         queryClient.invalidateQueries({ queryKey: ["listening-history"] }),
+        queryClient.invalidateQueries({ queryKey: ["listening-stats"] }),
+        queryClient.invalidateQueries({ queryKey: ["music-recommendations"] }),
+      ]),
       );
       try {
         if (stemsActive.current && mixerRef.current) {

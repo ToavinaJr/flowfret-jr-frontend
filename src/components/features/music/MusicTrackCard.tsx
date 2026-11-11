@@ -11,6 +11,7 @@ import { TrackStudyButtons } from "./TrackStudyButtons";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
 import { FavoriteTrackButton } from "@/components/features/music/FavoriteTrackButton";
+import { ShareTrackButton } from "@/components/features/music/ShareTrackButton";
 
 interface MusicTrackCardProps {
   track: MusicTrack;
@@ -94,6 +95,7 @@ export function MusicTrackCard({
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:contents">
           <FavoriteTrackButton track={track} />
+          <ShareTrackButton track={track} />
           <MusicMediaPlayer
             track={track}
             playbackQueue={playbackQueue}

@@ -554,7 +554,16 @@ export default function ChatPage() {
                     ) : null}
                     {message.body ? (
                       <p className="whitespace-pre-wrap break-words">
-                        {message.body}
+                        {message.body.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
+                          if (!/^https?:\/\//i.test(part)) return part;
+                          const safeUrl = part.replace(/[),.!?]+$/, "");
+                          return (
+                            <span key={`${message.id}-link-${index}`}>
+                              <a href={safeUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{safeUrl}</a>
+                              {part.slice(safeUrl.length)}
+                            </span>
+                          );
+                        })}
                       </p>
                     ) : null}
                     {message.attachments.map((attachment) => (

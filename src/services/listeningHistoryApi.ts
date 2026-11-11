@@ -17,6 +17,20 @@ export async function fetchListeningHistory(take = 20, skip = 0): Promise<MusicT
   return data.myListeningHistory;
 }
 
+export interface ListeningStats {
+  totalPlays: number;
+  repeatedTracks: number;
+  repeatPlays: number;
+  daily: Array<{ date: string; listens: number }>;
+}
+
+export async function fetchMyListeningStats(): Promise<ListeningStats> {
+  const data = await graphqlRequest<{ myListeningStats: ListeningStats }>({
+    query: `query MyListeningStats { myListeningStats { totalPlays repeatedTracks repeatPlays daily { date listens } } }`,
+  });
+  return data.myListeningStats;
+}
+
 export async function recordTrackListen(item: PlaybackItem): Promise<void> {
   if (!getAccessToken()) return;
 

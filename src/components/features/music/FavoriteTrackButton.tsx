@@ -15,6 +15,7 @@ export function FavoriteTrackButton({ track, className = "" }: { track: MusicTra
     mutationFn: (favorite: boolean) => setTrackFavorite(track, favorite),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: FAVORITE_MUSIC_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ["music-recommendations"] });
     },
     onError: () => toast.error(t("favorites.updateFailed")),
   });

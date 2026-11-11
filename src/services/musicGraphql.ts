@@ -60,6 +60,29 @@ export const TRENDING_MUSIC_QUERY = `
   }
 `;
 
+export const MY_MUSIC_RECOMMENDATIONS_QUERY = `
+  query MyMusicRecommendations {
+    myMusicRecommendations {
+      provider
+      id
+      providerTrackId
+      audiusId
+      title
+      imageUrl
+      audiusUrl
+      externalUrl
+      album
+      isrc
+      streamUrl
+      genre
+      geniusUrl
+      geniusMatchScore
+      durationMs
+      artists { id name }
+    }
+  }
+`;
+
 const DEFAULT_SEARCH_LIMIT = 10;
 
 export async function searchMusic(
@@ -89,4 +112,11 @@ export async function fetchTrendingMusic(): Promise<MusicTrack[]> {
     query: TRENDING_MUSIC_QUERY,
   });
   return data.trendingMusic;
+}
+
+export async function fetchMyMusicRecommendations(): Promise<MusicTrack[]> {
+  const data = await graphqlRequest<{ myMusicRecommendations: MusicTrack[] }>({
+    query: MY_MUSIC_RECOMMENDATIONS_QUERY,
+  });
+  return data.myMusicRecommendations;
 }

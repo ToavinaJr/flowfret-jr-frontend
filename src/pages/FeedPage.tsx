@@ -9,6 +9,7 @@ import { FeedSkeleton } from "@/components/skeletons/FeedSkeleton";
 import type { FeedPost } from "@/types/feed";
 import { TrendingMusicRail } from "@/components/feed/TrendingMusicRail";
 import { DiscoverMembersPanel } from "@/components/feed/DiscoverMembersPanel";
+import { PersonalizedRecommendations } from "@/components/features/music/PersonalizedRecommendations";
 
 export { FeedCard } from "@/components/feed/FeedCard";
 export type { FeedCardProps } from "@/components/feed/FeedCard";
@@ -38,6 +39,7 @@ const FeedPage = () => {
           </form>
         </div>
         <TrendingMusicRail />
+        <PersonalizedRecommendations />
         {user && <PostComposer pending={createPost.isPending} onSubmit={async (content, images) => { await createPost.mutateAsync({ content, images }); }} />}
         {postsQuery.isLoading && <FeedSkeleton />}
         {postsQuery.error && <div className="mb-4 rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">{t("feed.loadError")}</div>}
