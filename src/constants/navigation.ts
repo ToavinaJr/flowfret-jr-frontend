@@ -17,6 +17,7 @@ import {
   Settings,
   CircleHelp,
   History,
+  Heart,
   Mail,
   Wrench,
   type LucideIcon,
@@ -59,6 +60,7 @@ export const NAV_SECTIONS: AppNavSection[] = [
     translationKey: "nav.sections.music",
     items: [
       { icon: Search, translationKey: "nav.music", path: "/music" },
+      { icon: Heart, translationKey: "nav.favorites", path: "/favorites" },
       { icon: ListMusic, translationKey: "nav.playlists", path: "/playlists" },
       {
         icon: FileText,

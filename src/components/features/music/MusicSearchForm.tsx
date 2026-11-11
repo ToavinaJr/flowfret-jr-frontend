@@ -8,12 +8,16 @@ interface MusicSearchFormProps {
   initialQuery?: string;
   loading: boolean;
   onSearch: (query: string) => void;
+  recentSearches?: string[];
+  onClearRecentSearches?: () => void;
 }
 
 export function MusicSearchForm({
   initialQuery = "",
   loading,
   onSearch,
+  recentSearches = [],
+  onClearRecentSearches,
 }: MusicSearchFormProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState(initialQuery);
@@ -67,6 +71,26 @@ export function MusicSearchForm({
           </Button>
         </div>
       </div>
+      {recentSearches.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2" aria-label={t("music.recentSearches")}>
+          <span className="text-xs text-muted-foreground">{t("music.recentSearches")}</span>
+          {recentSearches.map((recent) => (
+            <button
+              key={recent}
+              type="button"
+              onClick={() => { setQuery(recent); onSearch(recent); }}
+              className="min-h-8 rounded-full border border-border px-3 text-xs text-foreground hover:bg-secondary"
+            >
+              {recent}
+            </button>
+          ))}
+          {onClearRecentSearches ? (
+            <button type="button" onClick={onClearRecentSearches} className="min-h-8 px-2 text-xs text-muted-foreground underline">
+              {t("music.clearRecentSearches")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       {localError ? (
         <p className="text-sm text-destructive" role="alert">
           {localError}

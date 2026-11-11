@@ -10,6 +10,7 @@ import { usePlaybackEngine } from "@/hooks/usePlaybackEngine";
 import { usePlaybackMediaSession } from "@/hooks/usePlaybackMediaSession";
 import { usePlaybackPersistence } from "@/hooks/usePlaybackPersistence";
 import { usePlaybackQueue } from "@/hooks/usePlaybackQueue";
+import type { RepeatMode } from "@/services/playbackSession";
 import {
   PLAYBACK_LOGOUT_EVENT,
   readPlaybackSession,
@@ -31,13 +32,28 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [restoredSession] = useState(() => readPlaybackSession());
   const queue = usePlaybackQueue(restoredSession);
+  const [repeatMode, setRepeatMode] = useState<RepeatMode>(restoredSession?.repeatMode ?? "off");
+  const [sleepTimer, setSleepTimerState] = useState<{ kind: "track" } | { kind: "timer"; endsAt: number; minutes: number } | null>(null);
+  const sleepTimerTimeoutRef = useRef<number | null>(null);
+  const sleepTimerRef = useRef(sleepTimer);
+  sleepTimerRef.current = sleepTimer;
+  const clearSleepTimerRef = useRef<() => void>(() => undefined);
   const playNextRef = useRef<((item: PlaybackItem) => Promise<void>) | null>(
     null,
   );
+  const playCurrentRef = useRef<(() => Promise<void>) | null>(null);
   const handleEnded = useCallback(() => {
-    const item = queue.next();
+    if (sleepTimerRef.current?.kind === "track") {
+      clearSleepTimerRef.current();
+      return;
+    }
+    if (repeatMode === "one") {
+      void playCurrentRef.current?.();
+      return;
+    }
+    const item = queue.next(repeatMode);
     if (item) void playNextRef.current?.(item);
-  }, [queue]);
+  }, [queue, repeatMode]);
   const engine = usePlaybackEngine(handleEnded, {
     item: restoredSession?.item ?? null,
     currentTime: restoredSession?.currentTime ?? 0,
@@ -49,16 +65,53 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const resetShuffle = queue.setShuffle;
   const seekPlayback = engine.seek;
   playNextRef.current = engine.play;
+  playCurrentRef.current = async () => {
+    engine.seek(0);
+    await engine.play();
+  };
+
+  const clearSleepTimer = useCallback(() => {
+    if (sleepTimerTimeoutRef.current !== null) {
+      window.clearTimeout(sleepTimerTimeoutRef.current);
+      sleepTimerTimeoutRef.current = null;
+    }
+    sleepTimerRef.current = null;
+    setSleepTimerState(null);
+  }, []);
+  clearSleepTimerRef.current = clearSleepTimer;
+  const setSleepTimer = useCallback((minutes: number | "track" | null) => {
+    clearSleepTimer();
+    if (minutes === null) return;
+    if (minutes === "track") {
+      const timer = { kind: "track" as const };
+      sleepTimerRef.current = timer;
+      setSleepTimerState(timer);
+      return;
+    }
+    const endsAt = Date.now() + minutes * 60_000;
+    const timer = { kind: "timer" as const, endsAt, minutes };
+    sleepTimerRef.current = timer;
+    setSleepTimerState(timer);
+    sleepTimerTimeoutRef.current = window.setTimeout(() => {
+      engine.pause();
+      clearSleepTimer();
+    }, Math.max(0, endsAt - Date.now()));
+  }, [clearSleepTimer, engine.pause]);
 
   useEffect(() => {
     const clear = () => {
       clearPlaybackRef.current();
       clearQueue([]);
       resetShuffle(false);
+      clearSleepTimer();
     };
     window.addEventListener(PLAYBACK_LOGOUT_EVENT, clear);
     return () => window.removeEventListener(PLAYBACK_LOGOUT_EVENT, clear);
-  }, [clearQueue, resetShuffle]);
+  }, [clearQueue, resetShuffle, clearSleepTimer]);
+
+  useEffect(() => () => {
+    if (sleepTimerTimeoutRef.current !== null) window.clearTimeout(sleepTimerTimeoutRef.current);
+  }, []);
 
   const select = useCallback(
     (item: PlaybackItem) => {
@@ -92,9 +145,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [engine, queue],
   );
   const next = useCallback(async () => {
-    const item = queue.next();
+    const item = queue.next(repeatMode === "queue" ? "queue" : "off");
     if (item) await engine.play(item);
-  }, [engine, queue]);
+  }, [engine, queue, repeatMode]);
   const previous = useCallback(async () => {
     const item = queue.previous();
     if (item) await engine.play(item);
@@ -107,6 +160,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     currentTime: engine.currentTime,
     volume: engine.volume,
     shuffle: queue.shuffle,
+    repeatMode,
   });
   usePlaybackMediaSession({
     item: engine.item,
@@ -141,6 +195,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       queue: queue.queue,
       currentIndex: queue.currentIndex,
       shuffle: queue.shuffle,
+      repeatMode,
+      sleepTimer,
       select,
       play,
       pause: engine.pause,
@@ -150,6 +206,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       setVolume: engine.setVolume,
       setQueue,
       setShuffle: queue.setShuffle,
+      setRepeatMode,
+      setSleepTimer,
       next,
       previous,
       practiceLoop: engine.practiceLoop,
@@ -158,7 +216,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       setPracticeLoopEnabled: engine.setPracticeLoopEnabled,
       clearPracticeLoop: engine.clearPracticeLoop,
     }),
-    [engine, next, play, previous, queue, select, setQueue, toggle],
+    [engine, next, play, previous, queue, select, setQueue, toggle, repeatMode, sleepTimer, setSleepTimer],
   );
 
   return (

@@ -2,6 +2,7 @@ import { GRAPHQL_URL } from "@/services/backend";
 
 export interface RuntimeFeatures {
   chordTranscription: boolean;
+  equalizerTranscription: boolean;
 }
 
 const API_ORIGIN = new URL(GRAPHQL_URL).origin;
@@ -16,9 +17,14 @@ export async function fetchRuntimeFeatures(): Promise<RuntimeFeatures> {
     typeof features !== "object" ||
     features === null ||
     !("chordTranscription" in features) ||
-    typeof features.chordTranscription !== "boolean"
+    typeof features.chordTranscription !== "boolean" ||
+    !("equalizerTranscription" in features) ||
+    typeof features.equalizerTranscription !== "boolean"
   ) {
     throw new Error("Invalid application feature configuration.");
   }
-  return { chordTranscription: features.chordTranscription };
+  return {
+    chordTranscription: features.chordTranscription,
+    equalizerTranscription: features.equalizerTranscription,
+  };
 }

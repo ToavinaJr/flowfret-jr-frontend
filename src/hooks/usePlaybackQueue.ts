@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 import type { PlaybackItem } from "@/contexts/PlaybackContext";
+import type { RepeatMode } from "@/services/playbackSession";
 
 interface InitialPlaybackQueue {
   queue: PlaybackItem[];
   currentIndex: number;
   shuffle: boolean;
+  repeatMode?: RepeatMode;
 }
 
 export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
@@ -16,6 +18,11 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
   );
   const [shuffle, setShuffle] = useState(() => initial?.shuffle ?? false);
   const historyRef = useRef<number[]>([]);
+  const playedInShuffleCycleRef = useRef<number[]>(
+    initial?.queue?.length && initial.currentIndex >= 0
+      ? [initial.currentIndex]
+      : [],
+  );
 
   const setQueue = useCallback((items: PlaybackItem[], startIndex = 0) => {
     const safeIndex = items.length
@@ -24,6 +31,7 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
     setQueueState(items);
     setCurrentIndex(safeIndex);
     historyRef.current = [];
+    playedInShuffleCycleRef.current = safeIndex >= 0 ? [safeIndex] : [];
     return safeIndex >= 0 ? items[safeIndex] : null;
   }, []);
 
@@ -39,20 +47,28 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
       }
       setCurrentIndex(0);
       historyRef.current = [];
+      playedInShuffleCycleRef.current = [0];
       return [item];
     });
   }, []);
 
-  const next = useCallback(() => {
+  const next = useCallback((repeatMode: RepeatMode = "off") => {
     if (!queue.length) return null;
     let index: number;
     if (shuffle && queue.length > 1) {
-      const candidates = queue.map((_, value) => value).filter(
-        (value) => value !== currentIndex,
-      );
+      const candidates = queue
+        .map((_, value) => value)
+        .filter((value) => !playedInShuffleCycleRef.current.includes(value));
+      if (!candidates.length && repeatMode !== "queue") return null;
+      if (!candidates.length) {
+        playedInShuffleCycleRef.current = [currentIndex];
+        candidates.push(...queue.map((_, value) => value).filter((value) => value !== currentIndex));
+      }
       index = candidates[Math.floor(Math.random() * candidates.length)];
       if (currentIndex >= 0) historyRef.current.push(currentIndex);
+      playedInShuffleCycleRef.current.push(index);
     } else {
+      if (currentIndex >= queue.length - 1 && repeatMode !== "queue") return null;
       index = currentIndex < queue.length - 1 ? currentIndex + 1 : 0;
     }
     setCurrentIndex(index);

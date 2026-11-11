@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -6,11 +6,13 @@ import { PlaylistList } from "@/components/features/playlists/PlaylistList";
 import { PlaylistTracks } from "@/components/features/playlists/PlaylistTracks";
 import {
   createPlaylist,
+  addTrackToPlaylist,
   deletePlaylist,
   fetchPlaylistItems,
   fetchPlaylists,
   removeTrackFromPlaylist,
   reorderPlaylist,
+  updatePlaylist,
 } from "@/services/playlistsApi";
 import type { Playlist, PlaylistItem } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
@@ -23,10 +25,23 @@ export default function PlaylistsPage() {
   const [selected, setSelected] = useState<Playlist | null>(null);
   const [items, setItems] = useState<PlaylistItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortMode, setSortMode] = useState<"updated" | "name">("updated");
+  const sortedPlaylists = useMemo(() => [...playlists].sort((left, right) => sortMode === "name"
+    ? left.name.localeCompare(right.name)
+    : new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()), [playlists, sortMode]);
 
   const loadItems = useCallback(async (playlist: Playlist) => {
     setSelected(playlist);
-    setItems(await fetchPlaylistItems(playlist.id));
+    const loaded: PlaylistItem[] = [];
+    let after: string | undefined;
+    while (true) {
+      const page = await fetchPlaylistItems(playlist.id, after);
+      loaded.push(...page);
+      if (page.length < 100) break;
+      after = page[page.length - 1]?.id;
+      if (!after) break;
+    }
+    setItems(loaded);
   }, []);
 
   useEffect(() => {
@@ -68,6 +83,37 @@ export default function PlaylistsPage() {
     toast.success(t("playlists.deleted"));
   }
 
+  async function renamePlaylist(playlist: Playlist, name: string) {
+    try {
+      const updated = await updatePlaylist(playlist.id, { name });
+      setPlaylists((current) => current.map((item) => item.id === updated.id ? updated : item));
+      setSelected((current) => current?.id === updated.id ? updated : current);
+      queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) =>
+        current.map((item) => item.id === updated.id ? updated : item),
+      );
+      toast.success(t("playlists.renamed"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("playlists.renameFailed"));
+      throw error;
+    }
+  }
+
+  async function updatePlaylistDescription(description: string) {
+    if (!selected) return;
+    try {
+      const updated = await updatePlaylist(selected.id, { description: description || null });
+      setPlaylists((current) => current.map((item) => item.id === updated.id ? updated : item));
+      setSelected(updated);
+      queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) =>
+        current.map((item) => item.id === updated.id ? updated : item),
+      );
+      toast.success(t("playlists.descriptionUpdated"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("playlists.descriptionUpdateFailed"));
+      throw error;
+    }
+  }
+
   async function removeItem(itemId: string) {
     if (!selected) return;
     await removeTrackFromPlaylist(selected.id, itemId);
@@ -75,6 +121,41 @@ export default function PlaylistsPage() {
     setSelected((current) =>
       current ? { ...current, version: current.version + 1 } : current,
     );
+  }
+
+  async function removeItems(itemIds: string[]) {
+    if (!selected) return;
+    let removedCount = 0;
+    try {
+      for (const itemId of itemIds) {
+        await removeTrackFromPlaylist(selected.id, itemId);
+        removedCount += 1;
+      }
+    } finally {
+      if (removedCount > 0) {
+        const removedIds = new Set(itemIds.slice(0, removedCount));
+        setItems((current) => current.filter((item) => !removedIds.has(item.id)));
+        setSelected((current) => current ? { ...current, version: current.version + removedCount } : current);
+      }
+    }
+  }
+
+  async function duplicatePlaylist() {
+    if (!selected) return;
+    const source = selected;
+    let copy: Playlist | null = null;
+    try {
+      copy = await createPlaylist(t("playlists.copyName", { name: source.name }), { description: source.description, coverUrl: source.coverUrl });
+      for (const item of items) await addTrackToPlaylist(copy.id, item.track);
+      const updatedCopy = await updatePlaylist(copy.id, { visibility: "PRIVATE" });
+      setPlaylists((current) => [updatedCopy, ...current]);
+      queryClient.setQueryData<Playlist[]>(["my-playlists"], (current = []) => [updatedCopy, ...current]);
+      await loadItems(updatedCopy);
+      toast.success(t("playlists.duplicated"));
+    } catch (error) {
+      if (copy) await deletePlaylist(copy.id).catch(() => undefined);
+      toast.error(error instanceof Error ? error.message : t("playlists.duplicateFailed"));
+    }
   }
 
   async function reorder(reordered: PlaylistItem[]) {
@@ -107,18 +188,24 @@ export default function PlaylistsPage() {
       ) : (
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-[16rem_minmax(0,1fr)]">
           <PlaylistList
-            playlists={playlists}
+            playlists={sortedPlaylists}
             selectedId={selected?.id ?? null}
+            sortMode={sortMode}
+            onSortModeChange={setSortMode}
             onSelect={(playlist) => void loadItems(playlist)}
             onCreate={add}
             onDelete={removePlaylist}
+            onRename={renamePlaylist}
           />
           {selected ? (
             <PlaylistTracks
               playlist={selected}
               items={items}
               onRemove={removeItem}
+              onRemoveMany={removeItems}
               onReorder={reorder}
+              onDuplicate={duplicatePlaylist}
+              onUpdateDescription={updatePlaylistDescription}
             />
           ) : (
             <section className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">

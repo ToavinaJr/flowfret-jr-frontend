@@ -21,7 +21,7 @@ export function usePlaybackPersistence(session: PlaybackSession) {
 
   useEffect(() => {
     writePlaybackSession(sessionRef.current);
-  }, [session.item, session.currentIndex, session.queue, session.shuffle]);
+  }, [session.item, session.currentIndex, session.queue, session.shuffle, session.repeatMode]);
 
   return sessionRef;
 }

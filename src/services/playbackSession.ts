@@ -4,6 +4,8 @@ const SESSION_KEY = "fretflow.playback.session.v1";
 export const PLAYBACK_LOGOUT_EVENT = "fretflow:playback-logout";
 const MAX_QUEUE_LENGTH = 250;
 
+export type RepeatMode = "off" | "queue" | "one";
+
 export interface PlaybackSession {
   item: PlaybackItem | null;
   queue: PlaybackItem[];
@@ -11,6 +13,7 @@ export interface PlaybackSession {
   currentTime: number;
   volume: number;
   shuffle: boolean;
+  repeatMode: RepeatMode;
 }
 
 function isPlaybackItem(value: unknown): value is PlaybackItem {
@@ -67,6 +70,10 @@ export function readPlaybackSession(): PlaybackSession | undefined {
           ? Math.max(0, Math.min(1, value.volume))
           : 1,
       shuffle: value.shuffle === true,
+      repeatMode:
+        value.repeatMode === "queue" || value.repeatMode === "one"
+          ? value.repeatMode
+          : "off",
     };
   } catch {
     return undefined;

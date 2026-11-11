@@ -1,6 +1,6 @@
 import { graphqlRequest } from "./graphqlClient";
 import type { MusicTrack } from "@/types/music";
-import type { Playlist, PlaylistItem } from "@/types/playlist";
+import type { Playlist, PlaylistItem, PlaylistTrack, PlaylistVisibility } from "@/types/playlist";
 
 const PLAYLIST_FIELDS = `
   id userId name description coverUrl visibility version createdAt updatedAt
@@ -17,20 +17,28 @@ export async function fetchPlaylists(): Promise<Playlist[]> {
   return data.myPlaylists;
 }
 
-export async function fetchPlaylistItems(id: string): Promise<PlaylistItem[]> {
+export async function fetchPlaylistItems(id: string, after?: string): Promise<PlaylistItem[]> {
   const data = await graphqlRequest<{ playlistItems: PlaylistItem[] }>({
-    query: `query PlaylistItems($id: String!) { playlistItems(playlistId: $id) { ${ITEM_FIELDS} } }`,
-    variables: { id },
+    query: `query PlaylistItems($id: String!, $take: Int!, $after: String) { playlistItems(playlistId: $id, take: $take, after: $after) { ${ITEM_FIELDS} } }`,
+    variables: { id, take: 100, after },
   });
   return data.playlistItems;
 }
 
-export async function createPlaylist(name: string): Promise<Playlist> {
+export async function createPlaylist(name: string, details?: { description?: string | null; coverUrl?: string | null }): Promise<Playlist> {
   const data = await graphqlRequest<{ createPlaylist: Playlist }>({
     query: `mutation CreatePlaylist($data: CreatePlaylistInput!) { createPlaylist(data: $data) { ${PLAYLIST_FIELDS} } }`,
-    variables: { data: { name } },
+    variables: { data: { name, ...details } },
   });
   return data.createPlaylist;
+}
+
+export async function updatePlaylist(id: string, data: { name?: string; description?: string | null; coverUrl?: string | null; visibility?: PlaylistVisibility }): Promise<Playlist> {
+  const result = await graphqlRequest<{ updatePlaylist: Playlist }>({
+    query: `mutation UpdatePlaylist($id: String!, $data: UpdatePlaylistInput!) { updatePlaylist(id: $id, data: $data) { ${PLAYLIST_FIELDS} } }`,
+    variables: { id, data },
+  });
+  return result.updatePlaylist;
 }
 
 export async function deletePlaylist(id: string): Promise<void> {
@@ -42,7 +50,7 @@ export async function deletePlaylist(id: string): Promise<void> {
 
 export async function addTrackToPlaylist(
   playlistId: string,
-  track: MusicTrack,
+  track: MusicTrack | PlaylistTrack,
 ): Promise<PlaylistItem> {
   const data = await graphqlRequest<{ addTrackToPlaylist: PlaylistItem }>({
     query: `mutation AddTrack($data: AddTrackToPlaylistInput!) { addTrackToPlaylist(data: $data) { ${ITEM_FIELDS} } }`,

@@ -14,8 +14,10 @@ const MusicSearchPage = () => {
     error,
     hasSearched,
     displayingHistory,
+    recentSearches,
     search,
     loadMore,
+    clearRecentSearches,
   } = useMusicSearch();
 
   return (
@@ -23,7 +25,7 @@ const MusicSearchPage = () => {
       <h1 className={PAGE_TITLE}>{t("music.title")}</h1>
 
       <div className="space-y-6">
-        <MusicSearchForm loading={loading} onSearch={search} />
+        <MusicSearchForm loading={loading} onSearch={search} recentSearches={recentSearches} onClearRecentSearches={clearRecentSearches} />
         <MusicSearchResults
           loading={loading}
           error={error}

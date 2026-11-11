@@ -2,6 +2,7 @@ import { createContext } from "react";
 import type { ChordCue, PlaybackErrorCode, PlayState } from "@/types/song";
 import type { MusicProvider } from "@/constants/domain";
 import type { PracticeLoop } from "@/services/practiceLoop";
+import type { RepeatMode } from "@/services/playbackSession";
 
 export type StemPreparationPhase = "queue" | "download" | "separation" | "finalizing" | null;
 
@@ -53,6 +54,8 @@ export interface PlaybackContextValue {
   queue: PlaybackItem[];
   currentIndex: number;
   shuffle: boolean;
+  repeatMode: RepeatMode;
+  sleepTimer: { kind: "track" } | { kind: "timer"; endsAt: number; minutes: number } | null;
   select: (item: PlaybackItem) => void;
   play: (item?: PlaybackItem) => Promise<void>;
   pause: () => void;
@@ -62,6 +65,8 @@ export interface PlaybackContextValue {
   setVolume: (volume: number) => void;
   setQueue: (items: PlaybackItem[], startIndex?: number) => void;
   setShuffle: (enabled: boolean) => void;
+  setRepeatMode: (mode: RepeatMode) => void;
+  setSleepTimer: (minutes: number | "track" | null) => void;
   next: () => Promise<void>;
   previous: () => Promise<void>;
   practiceLoop: PracticeLoop;

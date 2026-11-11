@@ -4,6 +4,7 @@ import { searchMusic } from "@/services/musicGraphql";
 import type { MusicSearchResult } from "@/types/music";
 import { ApiClientError } from "@/types/api";
 import { fetchListeningHistory } from "@/services/listeningHistoryApi";
+import { clearMusicSearchHistory, readMusicSearchHistory, saveMusicSearch } from "@/services/musicSearchHistory";
 
 const DEFAULT_LIMIT = 10;
 
@@ -16,9 +17,11 @@ interface UseMusicSearchResult {
   error: string | null;
   hasSearched: boolean;
   displayingHistory: boolean;
+  recentSearches: string[];
   search: (nextQuery: string, limit?: number) => void;
   loadMore: () => void;
   reset: () => void;
+  clearRecentSearches: () => void;
 }
 
 export function useMusicSearch(): UseMusicSearchResult {
@@ -26,6 +29,7 @@ export function useMusicSearch(): UseMusicSearchResult {
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [hasSearched, setHasSearched] = useState(false);
+  const [recentSearches, setRecentSearches] = useState(readMusicSearchHistory);
   const historyQuery = useInfiniteQuery({
     queryKey: ["listening-history"],
     queryFn: ({ pageParam }) => fetchListeningHistory(DEFAULT_LIMIT, pageParam),
@@ -53,6 +57,12 @@ export function useMusicSearch(): UseMusicSearchResult {
     setLimit(nextLimit);
     setSubmittedQuery(trimmed);
     setHasSearched(true);
+    setRecentSearches(saveMusicSearch(trimmed));
+  }, []);
+
+  const clearRecentSearches = useCallback(() => {
+    clearMusicSearchHistory();
+    setRecentSearches([]);
   }, []);
 
   const reset = useCallback(() => {
@@ -113,8 +123,10 @@ export function useMusicSearch(): UseMusicSearchResult {
     error: errorMessage,
     hasSearched,
     displayingHistory: !hasSearched && Boolean(historyResults?.tracks.length),
+    recentSearches,
     search,
     loadMore: () => void (hasSearched ? musicQuery.fetchNextPage() : historyQuery.fetchNextPage()),
     reset,
+    clearRecentSearches,
   };
 }

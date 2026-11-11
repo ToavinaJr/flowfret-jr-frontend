@@ -25,6 +25,10 @@ import type { PracticeLoop } from "@/services/practiceLoop";
 import { OPEN_MEDIA_PANEL_EVENT, type MediaPanelRequest } from "@/components/features/music/media-panel-events";
 import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
 import { fetchRuntimeFeatures } from "@/services/runtimeFeaturesApi";
+import { RepeatControl } from "@/components/features/music/RepeatControl";
+import { SleepTimerControl } from "@/components/features/music/SleepTimerControl";
+import { FavoriteTrackButton } from "@/components/features/music/FavoriteTrackButton";
+import type { MusicTrack } from "@/types/music";
 
 type PanelName = "chords" | "lyrics" | "youtube-video";
 
@@ -118,6 +122,26 @@ export default function PersistentMediaPlayer() {
   }, [item?.provider]);
   if (!item) return null;
   const isSpotify = item.engine === "spotify";
+  const favoriteTrack: MusicTrack | null = item.provider && item.providerTrackId && item.externalUrl && item.streamUrl
+    ? {
+        provider: item.provider,
+        id: item.providerTrackId,
+        providerTrackId: item.providerTrackId,
+        audiusId: item.providerTrackId,
+        title: item.title,
+        artists: item.artists?.length ? item.artists : [{ id: "unknown", name: item.artist || item.subtitle }],
+        imageUrl: item.imageUrl ?? null,
+        audiusUrl: item.externalUrl,
+        externalUrl: item.externalUrl,
+        album: item.album ?? null,
+        isrc: item.isrc ?? null,
+        streamUrl: item.streamUrl,
+        genre: item.genre ?? null,
+        geniusUrl: null,
+        geniusMatchScore: null,
+        durationMs: Math.max(0, Math.round((item.duration ?? 0) * 1000)),
+      }
+    : null;
   const hasLyrics = Boolean(item.provider && item.artist?.trim());
   const hasYouTubeVideo = item.provider === MUSIC_PROVIDER.YOUTUBE && Boolean(item.providerTrackId?.trim());
   const isAdmin = location.pathname.startsWith("/admin");
@@ -150,9 +174,17 @@ export default function PersistentMediaPlayer() {
   const content = (
     <>
       <img
+        key={item.id}
         src={item.imageUrl || "/favicon.svg"}
+        onError={(event) => {
+          const image = event.currentTarget;
+          if (image.dataset.fallback !== "true") {
+            image.dataset.fallback = "true";
+            image.src = "/favicon.svg";
+          }
+        }}
         alt=""
-        className="h-10 w-10 shrink-0 rounded-md bg-secondary object-cover sm:h-11 sm:w-11"
+        className="block size-11 min-w-11 shrink-0 aspect-square rounded-md bg-secondary object-cover"
       />
       <div className="min-w-0 flex-1">
         <ScrollingTrackText
@@ -227,12 +259,12 @@ export default function PersistentMediaPlayer() {
         {item.destination ? (
           <Link
             to={item.destination}
-            className="flex min-w-0 flex-1 items-center gap-3 md:max-w-xs"
+            className="flex min-w-0 flex-1 items-center gap-3 md:min-w-[11rem] md:max-w-xs"
           >
             {content}
           </Link>
         ) : (
-          <div className="flex min-w-0 flex-1 items-center gap-3 md:max-w-xs">
+          <div className="flex min-w-0 flex-1 items-center gap-3 md:min-w-[11rem] md:max-w-xs">
             {content}
           </div>
         )}
@@ -278,6 +310,8 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
+        <RepeatControl className="hidden sm:grid" />
+        <SleepTimerControl className="hidden sm:flex" />
         {runtimeFeatures?.chordTranscription ? (
           <button
             type="button"
@@ -315,8 +349,10 @@ export default function PersistentMediaPlayer() {
           </button>
         ) : null}
         <PracticeLoopControl className="hidden sm:flex" />
-        <VocalRemovalControl key={item.id} />
-        <span className="hidden w-10 text-right text-xs text-muted-foreground sm:block">
+        {runtimeFeatures?.equalizerTranscription ? (
+          <VocalRemovalControl key={item.id} />
+        ) : null}
+        <span className="hidden w-10 text-right text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeElapsed")}>
           {formatTime(currentTime)}
         </span>
         <div className="relative hidden min-w-24 flex-1 sm:block">
@@ -333,7 +369,10 @@ export default function PersistentMediaPlayer() {
           />
           <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
         </div>
-        <span className="hidden w-10 text-xs text-muted-foreground sm:block">
+        <span className="hidden w-10 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.timeRemaining")}>
+          -{formatTime(Math.max(0, duration - currentTime))}
+        </span>
+        <span className="hidden w-10 text-xs tabular-nums text-muted-foreground sm:block" aria-label={t("mediaPlayer.totalDuration")}>
           {formatTime(duration)}
         </span>
         {!isSpotify ? (
@@ -366,7 +405,7 @@ export default function PersistentMediaPlayer() {
           </>
         ) : null}
       </div>
-      <div className="flex h-10 items-center gap-1.5 border-t border-border/70 px-2 sm:hidden">
+      <div className="flex h-11 min-w-0 max-w-full items-center gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain border-t border-border/70 px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:hidden">
         {hasYouTubeVideo ? (
           <button
             type="button"
@@ -379,6 +418,7 @@ export default function PersistentMediaPlayer() {
             <Video className="h-4 w-4" />
           </button>
         ) : null}
+        {favoriteTrack ? <FavoriteTrackButton track={favoriteTrack} /> : null}
         <button
           type="button"
           disabled={queue.length < 2}
@@ -389,7 +429,14 @@ export default function PersistentMediaPlayer() {
         >
           <Shuffle className="h-4 w-4" />
         </button>
+        <RepeatControl />
+        <SleepTimerControl compact className="sm:hidden" />
         <PracticeLoopControl className="sm:hidden" />
+      </div>
+      <div className="flex h-11 min-w-0 items-center gap-2 border-t border-border/70 px-3 sm:hidden">
+        <span className="w-8 shrink-0 text-[10px] tabular-nums text-muted-foreground" aria-label={t("mediaPlayer.timeElapsed", "Time elapsed")}>
+          {formatTime(currentTime)}
+        </span>
         <div className="relative min-w-0 flex-1">
           <input
             name="playbackPositionMobile"
@@ -404,33 +451,43 @@ export default function PersistentMediaPlayer() {
           />
           <LoopTimelineMarkers loop={practiceLoop} duration={duration} />
         </div>
+        <span className="flex shrink-0 flex-col items-end text-[10px] leading-tight tabular-nums text-muted-foreground">
+          <span aria-label={t("mediaPlayer.timeRemaining", "Time remaining")}>
+            -{formatTime(Math.max(0, duration - currentTime))}
+          </span>
+          <span aria-label={t("mediaPlayer.totalDuration", "Total duration")}>
+            {formatTime(duration)}
+          </span>
+        </span>
         {!isSpotify ? (
           <>
-            <button
-              type="button"
-              onClick={() => setVolume(volume > 0 ? 0 : 1)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground"
-              aria-label={
-                volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")
-              }
-            >
-              {volume > 0 ? (
-                <Volume2 className="h-4 w-4" />
-              ) : (
-                <VolumeX className="h-4 w-4" />
-              )}
-            </button>
-            <input
-              name="playbackVolumeMobile"
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
-              className="w-16 shrink-0 accent-primary min-[390px]:w-20"
-              aria-label={t("mediaPlayer.volume")}
-            />
+            <div role="group" aria-label={t("mediaPlayer.volume")} className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setVolume(volume > 0 ? 0 : 1)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label={
+                  volume > 0 ? t("mediaPlayer.mute") : t("mediaPlayer.unmute")
+                }
+              >
+                {volume > 0 ? (
+                  <Volume2 className="h-4 w-4" />
+                ) : (
+                  <VolumeX className="h-4 w-4" />
+                )}
+              </button>
+              <input
+                name="playbackVolumeMobile"
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={volume}
+                onChange={(event) => setVolume(Number(event.target.value))}
+                className="w-20 accent-primary min-[390px]:w-24"
+                aria-label={t("mediaPlayer.volume")}
+              />
+            </div>
           </>
         ) : null}
       </div>
