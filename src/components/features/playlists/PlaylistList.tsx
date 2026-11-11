@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
+import { useMemo, useState, type FormEvent } from "react";
+import { Check, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Playlist } from "@/types/playlist";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,13 @@ export function PlaylistList({
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedName, setEditedName] = useState("");
+  const [filter, setFilter] = useState("");
+  const visiblePlaylists = useMemo(() => {
+    const query = filter.trim().toLocaleLowerCase();
+    return query
+      ? playlists.filter((playlist) => playlist.name.toLocaleLowerCase().includes(query))
+      : playlists;
+  }, [filter, playlists]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -91,8 +98,19 @@ export function PlaylistList({
           <option value="name">{t("playlists.sortAlphabetical")}</option>
         </select>
       </label>
+      <label className="relative block">
+        <span className="sr-only">{t("playlists.filterName")}</span>
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <input
+          type="search"
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+          placeholder={t("playlists.filterName")}
+          className="min-h-10 w-full rounded-md border border-border bg-secondary pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        />
+      </label>
       <div className="space-y-1">
-        {playlists.map((playlist) => (
+        {visiblePlaylists.map((playlist) => (
           <div
             key={playlist.id}
             className={`group flex min-w-0 items-center rounded-md ${playlist.id === selectedId ? "bg-secondary text-foreground" : "hover:bg-secondary"}`}
@@ -149,6 +167,11 @@ export function PlaylistList({
         {!playlists.length && (
           <p className="p-3 text-sm text-muted-foreground">
             {t("playlists.empty")}
+          </p>
+        )}
+        {playlists.length > 0 && visiblePlaylists.length === 0 && (
+          <p className="p-3 text-sm text-muted-foreground" role="status">
+            {t("playlists.noFilterResults")}
           </p>
         )}
       </div>
