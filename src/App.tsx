@@ -29,6 +29,8 @@ const HistoirePage = lazy(() => import("@/pages/HistoirePage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
 const ParametresPage = lazy(() => import("@/pages/ParametresPage"));
 const MusicSearchPage = lazy(() => import("@/pages/MusicSearchPage"));
+const RecommendationsPage = lazy(() => import("@/pages/RecommendationsPage"));
+const StatsPage = lazy(() => import("@/pages/StatsPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const HelpPage = lazy(() => import("@/pages/HelpPage"));
 const FriendsPage = lazy(() => import("@/pages/FriendsPage"));
@@ -94,6 +96,8 @@ const App = () => {
                           </Route>
                           <Route path="/upload" element={<UploadPage />} />
                           <Route path="/music" element={<MusicSearchPage />} />
+                          <Route path="/recommendations" element={<RecommendationsPage />} />
+                          <Route path="/stats" element={<StatsPage />} />
                           <Route path="/favorites" element={<FavoritesPage />} />
                           <Route
                             path="/playlists"

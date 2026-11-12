@@ -28,6 +28,8 @@ describe("app navigation", () => {
     [
       "/",
       "/music",
+      "/recommendations",
+      "/stats",
       "/playlists",
       "/transcriptions",
       "/teaching",

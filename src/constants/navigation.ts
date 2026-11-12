@@ -18,6 +18,8 @@ import {
   CircleHelp,
   History,
   Heart,
+  Sparkles,
+  BarChart3,
   Mail,
   Wrench,
   type LucideIcon,
@@ -61,13 +63,11 @@ export const NAV_SECTIONS: AppNavSection[] = [
     items: [
       { icon: Search, translationKey: "nav.music", path: "/music" },
       { icon: Heart, translationKey: "nav.favorites", path: "/favorites" },
+      { icon: Sparkles, translationKey: "nav.recommendations", path: "/recommendations" },
       { icon: ListMusic, translationKey: "nav.playlists", path: "/playlists" },
-      {
-        icon: FileText,
-        translationKey: "nav.transcriptions",
-        path: "/transcriptions",
-      },
+      { icon: BarChart3, translationKey: "nav.stats", path: "/stats" },
       { icon: Upload, translationKey: "nav.upload", path: "/upload" },
+      { icon: FileText, translationKey: "nav.transcriptions", path: "/transcriptions",},
     ],
   },
   {
