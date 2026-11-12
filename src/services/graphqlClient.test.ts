@@ -32,6 +32,9 @@ describe("graphqlClient authentication retry", () => {
     await expect(graphqlRequest(request)).rejects.toBeInstanceOf(ApiClientError);
 
     expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
+      "Apollo-Require-Preflight": "true",
+    });
   });
 
   it("refreshes once and retries with the new access token", async () => {

@@ -43,7 +43,10 @@ export async function refreshAccessToken(): Promise<boolean> {
     try {
       const response = await fetchGraphQL(GRAPHQL_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Apollo-Require-Preflight": "true",
+        },
         credentials: "include",
         body: JSON.stringify({
           query: `mutation RefreshSession { refreshSession { accessToken } }`,
@@ -102,6 +105,10 @@ export async function graphqlRequest<TData>(
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        // Apollo Server's CSRF prevention requires an explicit preflight
+        // signal for cross-origin requests. This also keeps the contract
+        // stable when a proxy changes the request's content-type handling.
+        "Apollo-Require-Preflight": "true",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
