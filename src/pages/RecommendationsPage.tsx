@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { MusicTrackCard } from "@/components/features/music/MusicTrackCard";
+import { MusicRecommendationsSkeleton } from "@/components/features/music/MusicRecommendationsSkeleton";
 import { toMusicPlaybackItem } from "@/components/features/music/music-playback";
 import { fetchMyMusicRecommendations } from "@/services/musicGraphql";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
@@ -22,9 +23,7 @@ export default function RecommendationsPage() {
         {t("music.recommendationsPageDescription")}
       </p>
       {recommendations.isLoading ? (
-        <p role="status" className="py-8 text-center text-sm text-muted-foreground">
-          {t("music.recommendationsLoading")}
-        </p>
+        <MusicRecommendationsSkeleton layout="list" />
       ) : recommendations.isError ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center">
           <p role="alert" className="text-sm text-muted-foreground">{t("music.recommendationsError")}</p>

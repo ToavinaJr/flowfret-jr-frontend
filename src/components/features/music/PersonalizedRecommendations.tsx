@@ -6,6 +6,7 @@ import { usePlayback } from "@/contexts/usePlayback";
 import { toMusicPlaybackItem } from "@/components/features/music/music-playback";
 import { fetchMyMusicRecommendations } from "@/services/musicGraphql";
 import type { MusicTrack } from "@/types/music";
+import { MusicRecommendationsSkeleton } from "./MusicRecommendationsSkeleton";
 
 export function PersonalizedRecommendations() {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ export function PersonalizedRecommendations() {
         <p className="text-sm text-muted-foreground">{t("music.recommendationsDescription")}</p>
       </header>
       {query.isLoading ? (
-        <p role="status" className="text-sm text-muted-foreground">{t("music.recommendationsLoading")}</p>
+        <MusicRecommendationsSkeleton />
       ) : query.isError ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p role="status" className="text-sm text-muted-foreground">{t("music.recommendationsError")}</p>

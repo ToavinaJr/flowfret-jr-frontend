@@ -25,6 +25,7 @@ describe("playbackSession", () => {
       currentTime: 42,
       volume: 0.6,
       shuffle: true,
+      repeatMode: "off",
     };
 
     writePlaybackSession(session);
@@ -40,6 +41,7 @@ describe("playbackSession", () => {
       currentTime: 0,
       volume: 1,
       shuffle: false,
+      repeatMode: "off",
     });
 
     expect(readPlaybackSession()).toBeUndefined();
@@ -61,6 +63,7 @@ describe("playbackSession", () => {
       currentTime: 12,
       volume: 1,
       shuffle: false,
+      repeatMode: "off",
     });
 
     clearPlaybackSession();
