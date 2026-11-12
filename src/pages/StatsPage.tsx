@@ -4,6 +4,7 @@ import { Music2, Tags, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
+import { ListeningStatsSkeleton } from "@/components/skeletons/ListeningStatsSkeleton";
 import { fetchListeningHistory, fetchMyListeningStats } from "@/services/listeningHistoryApi";
 
 const HISTORY_SUMMARY_LIMIT = 50;
@@ -38,7 +39,7 @@ export default function StatsPage() {
             <p className="mt-1 text-sm text-muted-foreground">{t("music.listeningStatsScope")}</p>
           </header>
           {listeningStats.isLoading ? (
-            <p role="status" className="text-sm text-muted-foreground">{t("common.loading")}</p>
+            <ListeningStatsSkeleton />
           ) : listeningStats.isError ? (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p role="alert" className="text-sm text-muted-foreground">{t("music.listeningStatsError")}</p>
@@ -63,7 +64,12 @@ export default function StatsPage() {
             </>
           ) : null}
         </section>
-        {!historySummary.isLoading && !historySummary.isError && historySummary.data?.length ? (
+        {historySummary.isLoading ? (
+          <section className="rounded-xl border border-border bg-card p-4 sm:p-5" aria-label={t("music.historyStatsTitle")}>
+            <div className="mb-4"><h2 className="font-semibold">{t("music.historyStatsTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("music.historyStatsScope", { count: HISTORY_SUMMARY_LIMIT })}</p></div>
+            <ListeningStatsSkeleton showChart={false} />
+          </section>
+        ) : !historySummary.isError && historySummary.data?.length ? (
           <section aria-labelledby="listening-history-summary-title" className="rounded-xl border border-border bg-card p-4 sm:p-5">
             <div className="mb-4"><h2 id="listening-history-summary-title" className="font-semibold">{t("music.historyStatsTitle")}</h2><p className="mt-1 text-sm text-muted-foreground">{t("music.historyStatsScope", { count: HISTORY_SUMMARY_LIMIT })}</p></div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

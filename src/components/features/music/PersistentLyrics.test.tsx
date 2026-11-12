@@ -88,7 +88,7 @@ describe("PersistentLyrics", () => {
     );
     renderLyrics();
 
-    expect(await screen.findByText(/loading lyrics/i)).toBeInTheDocument();
+    expect(await screen.findByRole("status", { name: /loading lyrics/i })).toBeInTheDocument();
   });
 
   it("keeps 'lyrics unavailable' when there is no transcription either", async () => {

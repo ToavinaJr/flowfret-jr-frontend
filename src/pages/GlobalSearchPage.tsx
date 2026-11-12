@@ -13,6 +13,9 @@ import { MusicTrackCard } from "@/components/features/music/MusicTrackCard";
 import { toMusicPlaybackItem } from "@/components/features/music/music-playback";
 import type { SocialUser } from "@/services/profileApi";
 import { UserAvatar } from "@/components/common/UserAvatar";
+import { FeedSkeleton } from "@/components/skeletons/FeedSkeleton";
+import { PersonListSkeleton } from "@/components/skeletons/PersonListSkeleton";
+import { MusicSearchSkeleton } from "@/components/features/music/MusicSearchSkeleton";
 
 const MUSIC_PAGE_SIZE = 10;
 
@@ -31,13 +34,13 @@ export default function GlobalSearchPage() {
     <main className={`${PAGE_SHELL} space-y-5`}>
       <h1 className={PAGE_TITLE}>{t("feed.globalSearchResults")}: {query}</h1>
       {query.length < 2 ? <p className="text-muted-foreground">{t("feed.globalSearchTooShort")}</p> : <>
-        <SearchSection icon={<MessageSquareText className="h-4 w-4" />} title={t("feed.searchPosts")} loading={posts.isLoading} error={posts.isError} empty={!posts.isLoading && !posts.isError && !posts.data?.length}>
+        <SearchSection icon={<MessageSquareText className="h-4 w-4" />} title={t("feed.searchPosts")} loading={posts.isLoading} skeleton={<FeedSkeleton count={2} />} error={posts.isError} empty={!posts.isLoading && !posts.isError && !posts.data?.length}>
           {posts.data?.map((post) => <FeedCard key={post.id} post={post} onComment={comment} currentUserId={user?.id ?? ""} onToggleLike={toggleLike} onChanged={refresh} />)}
         </SearchSection>
-        <SearchSection icon={<Users className="h-4 w-4" />} title={t("feed.searchMembers")} loading={members.isLoading} error={members.isError} empty={!members.isLoading && !members.isError && !members.data?.length}>
+        <SearchSection icon={<Users className="h-4 w-4" />} title={t("feed.searchMembers")} loading={members.isLoading} skeleton={<PersonListSkeleton />} error={members.isError} empty={!members.isLoading && !members.isError && !members.data?.length}>
           <ul className="grid gap-2 sm:grid-cols-2">{members.data?.map((person: SocialUser) => <li key={person.id}><Link to={`/profile/${person.id}`} className="flex min-h-14 items-center gap-3 rounded-lg border border-border p-3 hover:bg-secondary"><UserAvatar src={person.avatarUrl} name={person.profile?.displayName || person.username} size="xs" /><span className="min-w-0"><span className="block truncate font-medium">{person.profile?.displayName || person.username}</span><span className="block truncate text-sm text-muted-foreground">@{person.username}</span></span></Link></li>)}</ul>
         </SearchSection>
-        <SearchSection icon={<Music2 className="h-4 w-4" />} title={t("feed.searchMusic")} loading={music.isLoading} error={music.isError} empty={!music.isLoading && !music.isError && tracks.length === 0}>
+        <SearchSection icon={<Music2 className="h-4 w-4" />} title={t("feed.searchMusic")} loading={music.isLoading} skeleton={<div role="status" aria-label={t("feed.globalSearchLoading")}><MusicSearchSkeleton /></div>} error={music.isError} empty={!music.isLoading && !music.isError && tracks.length === 0}>
           <ul className="space-y-3">{tracks.map((track, index) => <li key={`${track.provider}:${track.providerTrackId}`}><MusicTrackCard track={track} playbackQueue={musicQueue} queueIndex={index} /></li>)}</ul>
           {music.hasNextPage && <button type="button" disabled={music.isFetchingNextPage} onClick={() => void music.fetchNextPage()} className="min-h-11 w-full rounded-md border border-border bg-card text-sm font-medium disabled:opacity-50">{t(music.isFetchingNextPage ? "music.loadingMore" : "music.loadMore")}</button>}
         </SearchSection>
@@ -46,7 +49,7 @@ export default function GlobalSearchPage() {
   );
 }
 
-function SearchSection({ icon, title, loading, error, empty, children }: { icon: ReactNode; title: string; loading: boolean; error: boolean; empty: boolean; children: ReactNode }) {
+function SearchSection({ icon, title, loading, skeleton, error, empty, children }: { icon: ReactNode; title: string; loading: boolean; skeleton: ReactNode; error: boolean; empty: boolean; children: ReactNode }) {
   const { t } = useTranslation();
-  return <section className="rounded-lg border border-border bg-card p-3 sm:p-4" aria-label={title}><h2 className="mb-3 flex items-center gap-2 font-semibold">{icon}{title}</h2>{loading ? <p role="status" className="text-sm text-muted-foreground">{t("feed.globalSearchLoading")}</p> : error ? <p role="alert" className="text-sm text-destructive">{t("feed.globalSearchError")}</p> : empty ? <p className="text-sm text-muted-foreground">{t("feed.globalSearchEmpty")}</p> : <div className="space-y-3">{children}</div>}</section>;
+  return <section className="rounded-lg border border-border bg-card p-3 sm:p-4" aria-label={title}><h2 className="mb-3 flex items-center gap-2 font-semibold">{icon}{title}</h2>{loading ? skeleton : error ? <p role="alert" className="text-sm text-destructive">{t("feed.globalSearchError")}</p> : empty ? <p className="text-sm text-muted-foreground">{t("feed.globalSearchEmpty")}</p> : <div className="space-y-3">{children}</div>}</section>;
 }

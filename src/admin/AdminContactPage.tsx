@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AdminCardsSkeleton } from '@/components/skeletons/AdminCardsSkeleton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +49,7 @@ export default function AdminContactPage() {
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         {messages.isLoading ? (
-          <p role="status" className="p-6 text-sm text-muted-foreground">{t('admin.contact.loading')}</p>
+          <div className="p-4"><AdminCardsSkeleton /></div>
         ) : messages.isError ? (
           <p role="alert" className="p-6 text-sm text-destructive">{t('admin.contact.loadFailed')}</p>
         ) : !messages.data?.nodes.length ? (

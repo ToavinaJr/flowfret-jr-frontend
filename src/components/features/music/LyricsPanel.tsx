@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Lyrics, LyricsStatus } from "@/types/lyrics";
 import { findActiveLyricLine } from "@/utils/lyrics";
+import { TextLinesSkeleton } from "@/components/skeletons/TextLinesSkeleton";
 
 interface Props {
   lyrics: Lyrics | null;
@@ -63,7 +64,7 @@ export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
     </div>
   );
 
-  if (status === "loading" || status === "idle") return <PanelMessage text={t("lyrics.loading")} />;
+  if (status === "loading" || status === "idle") return <TextLinesSkeleton label={t("lyrics.loading")} />;
   if (status === "error") return <PanelMessage text={t("lyrics.error")} />;
   if (status === "not-found" || !lyrics) return <PanelMessage text={t("lyrics.unavailable")} />;
   if (lyrics.instrumental) return <PanelMessage text={t("lyrics.instrumental")} />;

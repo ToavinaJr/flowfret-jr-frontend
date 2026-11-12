@@ -141,7 +141,7 @@ export default function AdminOverviewPage() {
 
     <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border bg-card px-4 py-3 text-sm">
       <Database className="h-4 w-4 text-muted-foreground" /><span className="font-medium">{t("admin.overview.database")}</span>
-      {backend.isLoading ? <span className="text-muted-foreground">{t("admin.overview.checking")}</span> : backend.isError || !backend.data ? <span className="text-muted-foreground">{t("admin.overview.statusUnknown")}</span> : backend.data.databaseReachable ? <span className="text-emerald-600">{t("admin.overview.reachable")}</span> : <span className="text-destructive">{t("admin.overview.unreachable")}</span>}
+      {backend.isLoading ? <div role="status" aria-label={t("admin.overview.checking")}><Skeleton className="h-4 w-24" /></div> : backend.isError || !backend.data ? <span className="text-muted-foreground">{t("admin.overview.statusUnknown")}</span> : backend.data.databaseReachable ? <span className="text-emerald-600">{t("admin.overview.reachable")}</span> : <span className="text-destructive">{t("admin.overview.unreachable")}</span>}
       <span className="ml-auto text-xs text-muted-foreground">{backend.data?.serverTime ? t("admin.overview.serverTime", { time: formatDateTime(backend.data.serverTime) }) : ""}</span>
       {backend.isError && <button type="button" className="min-h-11 rounded-lg px-2 font-medium underline" onClick={() => void backend.refetch()}>{t("common.retry")}</button>}
     </div>

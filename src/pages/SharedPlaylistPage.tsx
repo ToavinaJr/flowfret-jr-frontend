@@ -6,6 +6,7 @@ import { usePlayback } from "@/contexts/usePlayback";
 import { fetchSharedPlaylist, fetchSharedPlaylistItems } from "@/services/playlistsApi";
 import { toPlaybackItem } from "@/components/features/playlists/playlist-playback";
 import { ScrollingTrackText } from "@/components/common/ScrollingTrackText";
+import { SharedPlaylistSkeleton } from "@/components/skeletons/SharedPlaylistSkeleton";
 
 export default function SharedPlaylistPage() {
   const { playlistId } = useParams<{ playlistId: string }>();
@@ -33,8 +34,8 @@ export default function SharedPlaylistPage() {
     if (queue[0]) void playback.play(queue[0]);
   }
 
-  if (playlist.isPending || tracks.isPending) {
-    return <main className="mx-auto grid min-h-dvh max-w-3xl place-items-center px-5 py-12 text-sm text-muted-foreground">{t("playlists.sharedLoading")}</main>;
+  if (playlist.isPending || (playlist.isSuccess && tracks.isPending)) {
+    return <main className="min-h-dvh bg-background px-4 pb-52 pt-8 sm:px-8 sm:pb-44 sm:pt-12 xl:pb-32"><SharedPlaylistSkeleton /></main>;
   }
 
   if (playlist.isError || tracks.isError || !playlist.data) {

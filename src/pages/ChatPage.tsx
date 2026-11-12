@@ -15,6 +15,7 @@ import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { EmojiPickerButton } from "@/components/chat/EmojiPickerButton";
 import { ChatFriendPicker } from "@/components/chat/ChatFriendPicker";
 import { PrivateChatImage } from "@/components/chat/PrivateChatImage";
+import { ConversationsSkeleton, MessagesSkeleton } from "@/components/skeletons/ChatSkeletons";
 import { FloatingPanelWindow } from "@/components/common/FloatingPanelWindow";
 import { UserAvatar } from "@/components/common/UserAvatar";
 import {
@@ -259,9 +260,7 @@ export default function ChatPage() {
           </div>
           <div className="flex-1 overflow-y-auto">
             {conversations.isLoading ? (
-              <p className="p-4 text-sm text-muted-foreground">
-                {t("common.loading")}
-              </p>
+              <ConversationsSkeleton />
             ) : null}
             {!conversations.isLoading && conversations.data?.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground">
@@ -530,9 +529,7 @@ export default function ChatPage() {
                   </button>
                 ) : null}
                 {messages.isLoading ? (
-                  <p className="text-sm text-muted-foreground">
-                    {t("common.loading")}
-                  </p>
+                  <MessagesSkeleton />
                 ) : null}
                 {messages.isError ? (
                   <button

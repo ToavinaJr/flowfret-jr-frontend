@@ -13,7 +13,8 @@ const renderPanel = (props: Partial<Parameters<typeof LyricsPanel>[0]> = {}) => 
 describe("LyricsPanel", () => {
   it("renders loading, unavailable and instrumental states", () => {
     const { rerender } = renderPanel({ status: "loading" });
-    expect(screen.getByText(/chargement|loading/i)).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: /chargement|loading/i })).toBeInTheDocument();
+    expect(screen.queryByText(/chargement|loading/i)).not.toBeInTheDocument();
     rerender(<I18nextProvider i18n={i18n}><LyricsPanel lyrics={null} status="not-found" currentTime={0} /></I18nextProvider>);
     expect(screen.getByText(/indisponibles|unavailable/i)).toBeInTheDocument();
     rerender(<I18nextProvider i18n={i18n}><LyricsPanel lyrics={{ provider: "lrclib", synced: false, instrumental: true, lines: [] }} status="success" currentTime={0} /></I18nextProvider>);

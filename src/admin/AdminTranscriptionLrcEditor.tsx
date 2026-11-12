@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { TextLinesSkeleton } from '@/components/skeletons/TextLinesSkeleton';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, X } from 'lucide-react';
@@ -51,7 +52,7 @@ export default function AdminTranscriptionLrcEditor({ transcription }: { transcr
               </div>
               <button type="button" aria-label={t('common.close')} onClick={() => setOpen(false)} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><X aria-hidden="true" className="h-4 w-4" /></button>
             </div>
-            {loading ? <p className="py-8 text-sm text-muted-foreground">{t('admin.resources.transcriptions.loadingLrc')}</p> : loadError ? <p role="alert" className="py-8 text-sm text-destructive">{t('admin.resources.transcriptions.loadLrcFailed')}</p> : (
+            {loading ? <TextLinesSkeleton label={t('admin.resources.transcriptions.loadingLrc')} /> : loadError ? <p role="alert" className="py-8 text-sm text-destructive">{t('admin.resources.transcriptions.loadLrcFailed')}</p> : (
               <>
                 <label htmlFor={`lrc-content-${transcription.id}`} className="sr-only">{t('admin.resources.transcriptions.lrcLabel')}</label>
                 <textarea id={`lrc-content-${transcription.id}`} value={content} onChange={(event) => { setContent(event.target.value); setSaved(false); setSaveError(false); }} maxLength={MAX_LRC_LENGTH} spellCheck={false} className="mt-5 min-h-72 w-full resize-y rounded-lg border border-border bg-background p-3 font-mono text-sm leading-6 text-foreground outline-none focus:ring-2 focus:ring-primary sm:min-h-96" />

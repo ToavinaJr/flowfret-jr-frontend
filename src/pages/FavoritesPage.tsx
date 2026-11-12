@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Heart, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { MusicTrackCard } from "@/components/features/music/MusicTrackCard";
+import { MusicSearchSkeleton } from "@/components/features/music/MusicSearchSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PAGE_SHELL, PAGE_TITLE } from "@/constants/navigation";
 import { FAVORITE_MUSIC_QUERY_KEY } from "@/components/features/music/FavoriteTrackButton";
 import { fetchFavoriteMusic } from "@/services/favoriteMusicApi";
@@ -33,7 +35,13 @@ export default function FavoritesPage() {
     <main className={PAGE_SHELL}>
       <h1 className={PAGE_TITLE}>{t("favorites.title")}</h1>
       {favorites.isLoading ? (
-        <p role="status" className="py-8 text-center text-sm text-muted-foreground">{t("favorites.loading")}</p>
+        <div role="status" aria-label={t("favorites.loading")} className="space-y-4">
+          <div aria-hidden="true" className="flex flex-col gap-3 sm:flex-row">
+            <Skeleton className="h-11 min-w-0 flex-1" />
+            <Skeleton className="h-11 w-full sm:w-56" />
+          </div>
+          <MusicSearchSkeleton />
+        </div>
       ) : favorites.isError ? (
         <div className="rounded-xl border border-border bg-card p-6 text-center">
           <p className="text-sm text-muted-foreground">{t("favorites.loadFailed")}</p>

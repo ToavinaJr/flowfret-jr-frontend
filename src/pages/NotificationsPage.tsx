@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import {
   useInfiniteQuery,
@@ -255,9 +256,14 @@ export default function NotificationsPage() {
           <PopupTitle icon={Bell}>{t("notifications.preferencesTitle")}</PopupTitle>
         </DialogHeader>
         {preferences.isLoading ? (
-          <p role="status" className="text-sm text-muted-foreground">
-            {t("notifications.preferencesLoading")}
-          </p>
+          <div role="status" aria-label={t("notifications.preferencesLoading")} className="space-y-4">
+            {types.map((type) => (
+              <div key={type} aria-hidden="true" className="flex items-center justify-between gap-4">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-6 w-11 shrink-0 rounded-full" />
+              </div>
+            ))}
+          </div>
         ) : preferences.isError ? (
           <p role="alert" className="text-sm text-destructive">
             {t("notifications.preferencesLoadError")}

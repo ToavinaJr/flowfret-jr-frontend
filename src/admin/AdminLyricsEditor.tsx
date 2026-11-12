@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { TextLinesSkeleton } from '@/components/skeletons/TextLinesSkeleton';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -110,7 +111,7 @@ export default function AdminLyricsEditor({ report }: { report: AdminLyricsRepor
                   </div>
                   <button type="button" aria-label={t('common.close')} onClick={() => setOpen(false)} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-md hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><X aria-hidden="true" className="h-4 w-4" /></button>
                 </div>
-                {loading ? <p className="py-8 text-sm text-muted-foreground">{t('admin.resources.lyricsReports.loadingLyrics')}</p> : loadError ? <p role="alert" className="py-8 text-sm text-destructive">{t('admin.resources.lyricsReports.loadLyricsFailed')}</p> : (
+                {loading ? <TextLinesSkeleton label={t('admin.resources.lyricsReports.loadingLyrics')} /> : loadError ? <p role="alert" className="py-8 text-sm text-destructive">{t('admin.resources.lyricsReports.loadLyricsFailed')}</p> : (
                   <>
                     <LyricsLinesEditor
                       lines={lines}
