@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { getChordRoot, transposeChordLabel } from "@/utils/chordTransposition";
+import { getChordRoot, transposeChordBySemitones, transposeChordLabel } from "@/utils/chordTransposition";
 
 describe("transposeChordLabel", () => {
+  it("transposes up and down while keeping quality and slash bass", () => {
+    expect(transposeChordBySemitones("Am7", 2)).toBe("Bm7");
+    expect(transposeChordBySemitones("C/E", -2)).toBe("Bb/D");
+    expect(transposeChordBySemitones("B", 1)).toBe("C");
+    expect(transposeChordBySemitones("F#sus4", 12)).toBe("F#sus4");
+    expect(transposeChordBySemitones("N", 2)).toBe("N");
+    expect(transposeChordBySemitones("C", NaN)).toBe("C");
+    expect(transposeChordBySemitones("C", 1.5)).toBe("C");
+  });
   it("transposes a chord shape down by the capo semitones", () => {
     expect(transposeChordLabel("C", 2)).toBe("Bb");
     expect(transposeChordLabel("Am7", 2)).toBe("Gm7");

@@ -8,19 +8,15 @@ import { getCueIndexAtTime } from "@/utils/songCues";
 import { useCapo } from "@/contexts/useCapo";
 import { CapoSelect } from "@/components/features/chords/CapoSelect";
 import { useTranslation } from "react-i18next";
-
-function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  return `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
-    .toString()
-    .padStart(2, "0")}`;
-}
+import { ChordTimeline } from "./ChordTimeline";
+import { ChordTransposeControl } from "@/components/features/chords/ChordTransposeControl";
 
 export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
   const { t } = useTranslation();
-  const { item, currentTime, select } = usePlayback();
+  const { item, currentTime, select, seek } = usePlayback();
   const { capo } = useCapo();
   const [previewChord, setPreviewChord] = useState<string | null>(null);
+  const [semitones, setSemitones] = useState(0);
   const playbackItem = useMemo<PlaybackItem>(
     () => ({
       id: `import:${song.uri}`,
@@ -38,23 +34,20 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
   const active = item?.id === playbackItem.id;
   const position = active ? currentTime : 0;
   const foundCueIndex = getCueIndexAtTime(song.meta.cues, position);
-  const activeCueIndex = foundCueIndex >= 0 ? foundCueIndex : 0;
-  const previousCue = song.meta.cues[activeCueIndex - 1];
+  const lastCueIndex = song.meta.cues.length - 1;
+  const activeCueIndex = foundCueIndex >= 0
+    ? foundCueIndex
+    : position >= (song.meta.cues[lastCueIndex]?.end ?? Infinity) ? lastCueIndex : 0;
   const activeCue = song.meta.cues[activeCueIndex];
-  const nextCue = song.meta.cues[activeCueIndex + 1];
-  const previous = getDisplayChordShape(previousCue?.chord, capo);
-  const current = getDisplayChordShape(activeCue?.chord, capo);
-  const next = getDisplayChordShape(nextCue?.chord, capo);
-  const displayed = previewChord
-    ? getDisplayChordShape(previewChord, capo)
-    : current;
+  const current = getDisplayChordShape(activeCue?.chord, capo, semitones);
+  const displayed = getDisplayChordShape(previewChord ?? undefined, capo, semitones);
   const chordSet = useMemo(
     () => [...new Set(song.meta.cues.map((cue) => cue.chord))]
       .map((chord) => ({
         source: chord,
-        label: getDisplayChordShape(chord, capo).label,
+        label: getDisplayChordShape(chord, capo, semitones).label,
       })),
-    [song.meta.cues, capo],
+    [song.meta.cues, capo, semitones],
   );
 
   useEffect(() => {
@@ -67,85 +60,63 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
       className="mt-6 grid min-h-[430px] overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(0,1fr)_19rem]"
       aria-label={t("player.chordsFor", { title: song.meta.title })}
     >
-      <div className="relative flex min-h-[390px] items-center justify-center overflow-hidden p-4 sm:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.09),transparent_62%)]" />
-        <div className="relative flex w-full items-center justify-center gap-0 sm:gap-4">
-          <div
-            key={`previous-${activeCueIndex}`}
-            className="hidden -translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-[transform,opacity,filter] duration-500 sm:block"
-            aria-hidden="true"
-          >
-            {previous.position ? (
-              <ChordDiagram
-                chord={previous.label}
-                position={previous.position}
-                scale={0.78}
-                dimmed
-              />
-            ) : null}
+      <div className="min-w-0">
+        {previewChord ? (
+          <div className="relative flex min-h-[250px] items-center justify-center overflow-hidden p-4 sm:min-h-[300px] sm:p-8">
+            <div
+              key={`preview-${previewChord}`}
+              className="z-10 animate-in fade-in zoom-in-95 duration-300"
+            >
+              {displayed.position ? (
+                <ChordDiagram
+                  chord={displayed.label}
+                  position={displayed.position}
+                  scale={1.25}
+                />
+              ) : (
+                <div className="grid h-72 w-48 place-items-center text-5xl font-bold text-primary">
+                  {displayed.label}
+                </div>
+              )}
+              <p className="mt-1 text-center font-musical text-xs text-muted-foreground">
+                {t("player.chordPreviewHint")}
+              </p>
+            </div>
           </div>
-          <div
-            key={`current-${previewChord ?? activeCueIndex}`}
-            className="z-10 animate-in fade-in zoom-in-95 duration-300"
-          >
-            {displayed.position ? (
-              <ChordDiagram
-                chord={displayed.label}
-                position={displayed.position}
-                scale={1.25}
-              />
-            ) : (
-              <div className="grid h-72 w-48 place-items-center text-5xl font-bold text-primary">
-                {displayed.label}
-              </div>
-            )}
-            <p className="mt-1 text-center font-musical text-xs text-muted-foreground">
-              {previewChord
-                ? t("player.chordPreviewHint")
-                : `${formatTime(activeCue.start)} – ${formatTime(activeCue.end)}`}
-            </p>
-          </div>
-          <div
-            key={`next-${activeCueIndex}`}
-            className="hidden translate-x-3 scale-75 opacity-20 blur-[0.4px] transition-[transform,opacity,filter] duration-500 sm:block"
-            aria-hidden="true"
-          >
-            {next.position ? (
-              <ChordDiagram
-                chord={next.label}
-                position={next.position}
-                scale={0.78}
-                dimmed
-              />
-            ) : null}
-          </div>
-        </div>
-        <div
-          className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5"
-          aria-hidden="true"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/25" />
-          <span className="h-1.5 w-5 rounded-full bg-primary" />
-          <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/25" />
-        </div>
+        ) : (
+          <ChordTimeline
+            cues={song.meta.cues}
+            activeIndex={activeCueIndex}
+            capo={capo}
+            semitones={semitones}
+            onSeek={active ? seek : undefined}
+          />
+        )}
       </div>
 
       <aside
         className="border-t border-border bg-background/45 p-3 lg:border-l lg:border-t-0"
         aria-label={t("player.detectedChords")}
       >
-        <div className="mb-3 rounded-lg border border-border/80 bg-card/70 px-4">
+        <div className="rounded-lg border border-border/80 bg-card/70 px-4">
           <CapoSelect namespace="chordPlayer" idPrefix="upload-chord-player" />
+          <ChordTransposeControl semitones={semitones} onChange={setSemitones} />
         </div>
+      </aside>
+
+      <section
+        className="border-t border-border bg-background/25 p-3 sm:p-4 lg:col-span-2"
+        aria-label={t("player.allChords")}
+      >
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <h2 className="text-xs font-medium text-muted-foreground">
             {t("player.allChords")}
           </h2>
-          <span className="font-musical text-xs text-muted-foreground">
+          <span className="font-musical text-xs tabular-nums text-muted-foreground">
             {chordSet.length}
           </span>
         </div>
-        <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1 lg:max-h-[370px] lg:grid-cols-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {chordSet.map(({ source, label }) => (
             <button
               key={source}
@@ -156,7 +127,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
                 )
               }
               aria-pressed={previewChord === source}
-              className={`rounded-lg border px-2 py-3 text-center transition-[color,background-color,border-color,box-shadow] ${previewChord === source ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
+              className={`min-h-12 rounded-lg border px-3 py-2 text-center transition-[color,background-color,border-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${previewChord === source ? "border-primary bg-primary text-primary-foreground shadow-sm" : label === current.label && !previewChord ? "border-primary/60 bg-primary/10 text-primary" : "border-border bg-secondary text-foreground hover:border-primary/50"}`}
             >
               <span className="block text-center font-musical text-base font-semibold">
                 {label}
@@ -164,7 +135,7 @@ export function ImportedSongPlayer({ song }: { song: ImportedSong }) {
             </button>
           ))}
         </div>
-      </aside>
+      </section>
     </section>
   );
 }

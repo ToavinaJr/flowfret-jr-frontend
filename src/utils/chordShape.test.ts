@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import { getDisplayChordShape } from "@/utils/chordShape";
 
 describe("getDisplayChordShape", () => {
+  it("combines song transposition and capo without applying either twice", () => {
+    expect(getDisplayChordShape("C", 0, 2).label).toBe("D");
+    expect(getDisplayChordShape("C", 2, 2).label).toBe("C");
+    expect(getDisplayChordShape("Am7", 2, -1).label).toBe("F#m7");
+  });
   it("returns the guitar fingering for a detected chord", () => {
     const chord = getDisplayChordShape("Am");
 

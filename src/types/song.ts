@@ -9,6 +9,9 @@ export interface SongMeta {
   title: string;
   duration: number;
   cues: ChordCue[];
+  analysisEngine?: string;
+  beats?: number[];
+  downbeats?: number[];
 }
 
 export interface ImportedSong {

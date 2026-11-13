@@ -604,18 +604,29 @@
     "timeline": "Chord timeline",
     "detectedChords": "Detected chords",
     "allChords": "All chords",
-    "chordPreviewHint": "Previewing selected chord · select it again to return to playback"
+    "chordPreviewHint": "Previewing selected chord · select it again to return to playback",
+    "transpose": "Transpose",
+    "transposeDown": "Down one semitone",
+    "transposeUp": "Up one semitone",
+    "resetTranspose": "Restore original key",
+    "semitones": "{{value}} semitones",
+    "transposeHint": "Transposes the displayed chords. Audio stays in its original key.",
+    "seekChord": "Play {{chord}} at {{time}}"
   },
   "upload": {
     "title": "Upload & Analyze",
     "analyzing": "Analyzing…",
     "analysisPhases": {
+      "neural": "Recognizing chords and beats with neural models…",
       "downloading": "Loading audio…",
       "decoding": "Decoding audio…",
       "classifying": "Detecting chords…",
       "complete": "Analysis complete"
     },
     "analysisComplete": "Audio analysis complete",
+    "neuralAnalysis": "Neural analysis · chords aligned to detected beats",
+    "localAnalysis": "Local analysis was used: the server’s neural engine was unavailable.",
+    "analysisLocation": "Neural analysis sends the file to your FlowFret server. If unavailable, analysis runs in your browser.",
     "invalidFile": "Please select an audio file (MP3, WAV…).",
     "tooLarge": "File too large (max 20MB).",
     "analysisFailed": "Analysis failed. Try another file.",

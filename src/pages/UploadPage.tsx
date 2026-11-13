@@ -53,6 +53,9 @@ const UploadPage = () => {
         title: result.title,
         duration: result.duration,
         cues: result.cues,
+        analysisEngine: result.engineVersion,
+        beats: result.beats,
+        downbeats: result.downbeats,
       };
       const song = { meta, uri };
       setImportedSongState(song);
@@ -130,6 +133,9 @@ const UploadPage = () => {
           onChange={onFileChange}
         />
       </label>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+        {t(importedSong?.meta.analysisEngine === "btc-beat-this-v1" ? "upload.neuralAnalysis" : importedSong ? "upload.localAnalysis" : "upload.analysisLocation")}
+      </p>
 
       {errorMessage && (
         <p className="mt-4 text-sm text-destructive" role="alert">
@@ -137,7 +143,7 @@ const UploadPage = () => {
         </p>
       )}
 
-      {importedSong ? <ImportedSongPlayer song={importedSong} /> : null}
+      {importedSong ? <ImportedSongPlayer key={importedSong.uri} song={importedSong} /> : null}
 
       {!importedSong ? (
         <div className="mt-6 rounded-lg border border-border bg-card p-3 sm:mt-8 sm:p-4">

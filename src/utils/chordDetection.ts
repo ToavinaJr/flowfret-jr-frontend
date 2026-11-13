@@ -9,16 +9,20 @@ import {
 } from "@/utils/chordDetectionMath";
 import type { ChordCue } from "@/types/song";
 import { debugError, debugLog } from "@/utils/debug";
+import { requestNeuralChordAnalysis } from "@/services/neuralChordAnalysis";
 
 export { classifyChordFromChroma } from "@/utils/chordDetectionMath";
 
 export type AnalysisPhase =
-  "downloading" | "decoding" | "classifying" | "complete";
+  "downloading" | "decoding" | "classifying" | "neural" | "complete";
 export type ProgressCallback = (ratio: number, phase: AnalysisPhase) => void;
 export interface AnalysisResult {
   title: string;
   duration: number;
   cues: ChordCue[];
+  engineVersion?: string;
+  beats?: number[];
+  downbeats?: number[];
 }
 
 export type AudioAnalysisFailurePhase =
@@ -40,12 +44,19 @@ export async function analyzeAudioFile(
   onProgress: ProgressCallback,
   signal?: AbortSignal,
 ): Promise<AnalysisResult> {
-  return analyzeAudioBlob(
+  const title = file.name.replace(/\.[^/.]+$/, "");
+  const neural = await requestNeuralChordAnalysis(file, () => onProgress(0, "neural"), signal);
+  if (neural) {
+    onProgress(1, "complete");
+    return { ...neural, title };
+  }
+  const local = await analyzeAudioBlob(
     file,
     file.name.replace(/\.[^/.]+$/, ""),
     onProgress,
     signal,
   );
+  return { ...local, engineVersion: "browser-chroma-v1" };
 }
 
 export async function analyzeAudioUrl(

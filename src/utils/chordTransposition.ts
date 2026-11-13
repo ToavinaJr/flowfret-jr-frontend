@@ -14,12 +14,17 @@ function transposeNote(note: string, semitones: number): string | undefined {
 /** Returns the chord shape that sounds as `label` with a capo at `capo`. */
 export function transposeChordLabel(label: string, capo: number): string {
   if (!Number.isInteger(capo) || capo < 0 || capo > 12) return label;
-  if (capo === 0) return label;
+  return transposeChordBySemitones(label, -capo);
+}
+
+/** Transposes the sounding chord, including an optional slash bass. */
+export function transposeChordBySemitones(label: string, semitones: number): string {
+  if (!Number.isInteger(semitones) || Math.abs(semitones) > 12 || semitones === 0) return label;
   const match = /^([A-G](?:#|b)?)(.*?)(?:\/([A-G](?:#|b)?))?$/.exec(label);
   if (!match) return label;
-  const root = transposeNote(match[1], -capo);
+  const root = transposeNote(match[1], semitones);
   if (!root) return label;
-  const bass = match[3] ? transposeNote(match[3], -capo) : undefined;
+  const bass = match[3] ? transposeNote(match[3], semitones) : undefined;
   if (match[3] && !bass) return label;
   return `${root}${match[2]}${bass ? `/${bass}` : ""}`;
 }

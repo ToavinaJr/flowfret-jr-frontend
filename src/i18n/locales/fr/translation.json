@@ -604,18 +604,29 @@
     "timeline": "Chronologie des accords",
     "detectedChords": "Accords détectés",
     "allChords": "Tous les accords",
-    "chordPreviewHint": "Aperçu de l’accord sélectionné · sélectionnez-le à nouveau pour revenir à la lecture"
+    "chordPreviewHint": "Aperçu de l’accord sélectionné · sélectionnez-le à nouveau pour revenir à la lecture",
+    "transpose": "Transposition",
+    "transposeDown": "Descendre d’un demi-ton",
+    "transposeUp": "Monter d’un demi-ton",
+    "resetTranspose": "Rétablir la tonalité d’origine",
+    "semitones": "{{value}} demi-tons",
+    "transposeHint": "Transpose les accords affichés. L’audio conserve sa tonalité d’origine.",
+    "seekChord": "Jouer {{chord}} à {{time}}"
   },
   "upload": {
     "title": "Importer et analyser",
     "analyzing": "Analyse en cours…",
     "analysisPhases": {
+      "neural": "Reconnaissance neuronale des accords et des temps…",
       "downloading": "Chargement de l’audio…",
       "decoding": "Décodage audio…",
       "classifying": "Détection des accords…",
       "complete": "Analyse terminée"
     },
     "analysisComplete": "Analyse audio terminée",
+    "neuralAnalysis": "Analyse neuronale · accords synchronisés sur les temps détectés",
+    "localAnalysis": "Analyse locale utilisée : le moteur neuronal du serveur n’était pas disponible.",
+    "analysisLocation": "L’analyse neuronale envoie le fichier à votre serveur FlowFret. Si elle est indisponible, l’analyse se fait dans le navigateur.",
     "invalidFile": "Sélectionnez un fichier audio (MP3, WAV…).",
     "tooLarge": "Fichier trop volumineux (20 Mo maximum).",
     "analysisFailed": "Échec de l’analyse. Essayez un autre fichier.",

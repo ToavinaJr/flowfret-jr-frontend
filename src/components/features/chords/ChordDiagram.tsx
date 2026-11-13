@@ -10,6 +10,7 @@ interface ChordDiagramProps {
   position?: ChordPosition;
   scale?: number;
   dimmed?: boolean;
+  interactive?: boolean;
   onStringPress?: (stringIndex: number, diagramFret: number) => void;
 }
 
@@ -18,6 +19,7 @@ export function ChordDiagram({
   position,
   scale = 1,
   dimmed = false,
+  interactive = true,
   onStringPress,
 }: ChordDiagramProps) {
   const { t } = useTranslation();
@@ -29,6 +31,9 @@ export function ChordDiagram({
   const width = 140 * scale;
   const height = 180 * scale;
   const offsetX = 24 * scale;
+  const edgeGutter = 16 * scale;
+  const svgWidth = width + offsetX + edgeGutter;
+  const svgHeight = height + 40 * scale;
   const r = 10 * scale;
   const barreH = 12 * scale;
   const barreRx = 6 * scale;
@@ -57,8 +62,9 @@ export function ChordDiagram({
     >
       <div className="text-chord text-sm text-muted-foreground mb-1">{chord}</div>
       <svg
-        width={width + offsetX + 10 * scale}
-        height={height + 40 * scale}
+        width={svgWidth}
+        height={svgHeight}
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="text-foreground"
         aria-label={t("chords.diagram", { chord })}
       >
@@ -167,7 +173,7 @@ export function ChordDiagram({
           );
         })}
 
-        {Array.from({ length: STRING_COUNT }, (_, si) => (
+        {interactive && Array.from({ length: STRING_COUNT }, (_, si) => (
           <rect
             key={`hit-${si}`}
             x={offsetX + si * stringSpacing - touchW / 2}
