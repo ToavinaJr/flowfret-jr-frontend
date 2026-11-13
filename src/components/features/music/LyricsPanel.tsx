@@ -1,5 +1,6 @@
 import { Minus, Plus } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLyricsAutoScroll } from "@/hooks/useLyricsAutoScroll";
 import { useTranslation } from "react-i18next";
 import type { Lyrics, LyricsStatus } from "@/types/lyrics";
 import { findActiveLyricLine } from "@/utils/lyrics";
@@ -32,17 +33,12 @@ function readFontSize(): number {
 export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
   const { t } = useTranslation();
   const [fontSize, setFontSize] = useState(readFontSize);
-  const activeRef = useRef<HTMLButtonElement | null>(null);
   const activeIndex = useMemo(
     () => findActiveLyricLine(lyrics?.lines ?? [], currentTime * 1000),
     [currentTime, lyrics?.lines],
   );
 
-  useEffect(() => {
-    if (activeIndex < 0) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    activeRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
-  }, [activeIndex]);
+  const { containerRef, activeRef } = useLyricsAutoScroll(activeIndex);
 
   useEffect(() => {
     try {
@@ -73,7 +69,7 @@ export function LyricsPanel({ lyrics, status, currentTime, onSeek }: Props) {
   return (
     <div className="flex h-full min-h-0 flex-col" aria-live="polite" aria-label={t("lyrics.title")}>
       {sizeControls}
-      <div className="min-h-0 flex-1 overflow-y-auto px-3 py-8">
+      <div ref={containerRef} className="max-h-80 min-h-0 flex-1 overflow-y-auto px-3 py-8">
       {lyrics.lines.map((line, index) => (
         <button
           key={`${line.startTimeMs}-${index}`}

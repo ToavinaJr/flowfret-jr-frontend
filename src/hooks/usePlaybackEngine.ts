@@ -121,6 +121,7 @@ export function usePlaybackEngine(
     setPlayState: setNativePlayState,
     setCurrentTime: updateCurrentTime,
     setDuration: setNativeDuration,
+    onEnded: handleYouTubeEnded,
   });
   const youtube = useYouTubeController({
     setPlayState: setNativePlayState,

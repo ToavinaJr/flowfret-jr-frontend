@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePlayback } from "@/contexts/usePlayback";
 import { useLyrics } from "@/hooks/useLyrics";
 import type { MusicTrack } from "@/types/music";
 import { LyricsPanel } from "./LyricsPanel";
+import { toMusicPlaybackItem } from "./music-playback";
 
 export function TrackLyrics({ track }: { track: MusicTrack }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { item, currentTime, seek } = usePlayback();
+  const { item, currentTime, seek, lastEndedItemId, playbackEndSequence } = usePlayback();
+  const playbackId = toMusicPlaybackItem(track).id;
+  useEffect(() => {
+    if (lastEndedItemId === playbackId) setOpen(false);
+  }, [lastEndedItemId, playbackEndSequence, playbackId]);
   const artist = track.artists[0]?.name ?? "";
-  const isActive = item?.provider === track.provider && item.id.endsWith(`:${track.id}`);
+  const isActive = item?.id === playbackId;
   const { lyrics, status } = useLyrics(
     {
       id: track.id,

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLyricsAutoScroll } from "@/hooks/useLyricsAutoScroll";
 import { useTranslation } from "react-i18next";
 import type { TranscriptionSegment } from "@/types/transcription";
 import { findActiveWord } from "@/utils/transcription";
@@ -12,16 +12,11 @@ interface Props {
 
 export function SynchronizedLyrics({ segments, activeIndex, onSeek, currentTime }: Props) {
   const { t } = useTranslation();
-  const activeRef = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => {
-    if (activeIndex < 0) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    activeRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
-  }, [activeIndex]);
+  const { containerRef, activeRef } = useLyricsAutoScroll(activeIndex);
 
   if (segments.length === 0) return <div className="flex h-40 items-center justify-center text-sm text-muted-foreground">{t("lyrics.empty")}</div>;
   return (
-    <div className="h-56 overflow-y-auto rounded-lg border border-border bg-background/60 px-3 py-20" aria-live="polite" aria-label={t("lyrics.synchronized")}>
+    <div ref={containerRef} className="h-56 overflow-y-auto rounded-lg border border-border bg-background/60 px-3 py-20" aria-live="polite" aria-label={t("lyrics.synchronized")}>
       {segments.map((segment, index) => {
         const isActiveLine = index === activeIndex;
         const activeWordIndex =

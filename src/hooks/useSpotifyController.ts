@@ -9,23 +9,29 @@ interface SpotifyControllerOptions {
   setPlayState: (state: PlayState) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
+  onEnded?: () => void;
 }
 
 export function useSpotifyController({
   setPlayState,
   setCurrentTime,
   setDuration,
+  onEnded,
 }: SpotifyControllerOptions) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const controllerRef = useRef<SpotifyEmbedController | null>(null);
   const pendingRef = useRef<Promise<SpotifyEmbedController> | null>(null);
   const uriRef = useRef<string | null>(null);
   const generationRef = useRef(0);
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
+  const endedRef = useRef(false);
 
   const getController = useCallback(
     async (uri: string) => {
       if (controllerRef.current) {
         if (uriRef.current !== uri) {
+          endedRef.current = false;
           controllerRef.current.loadEntity(uri);
           uriRef.current = uri;
         }
@@ -63,6 +69,15 @@ export function useSpotifyController({
                           ? "paused"
                           : "playing",
                     );
+                    const { position, duration, isPaused, isBuffering } = event.data;
+                    if (duration > 0 && position >= duration && isPaused && !isBuffering) {
+                      if (!endedRef.current) {
+                        endedRef.current = true;
+                        onEndedRef.current?.();
+                      }
+                    } else if (position < duration) {
+                      endedRef.current = false;
+                    }
                   });
                   resolve(controller);
                 },
@@ -84,6 +99,7 @@ export function useSpotifyController({
     controllerRef.current = null;
     pendingRef.current = null;
     uriRef.current = null;
+    endedRef.current = false;
   }, []);
 
   useEffect(() => reset, [reset]);
