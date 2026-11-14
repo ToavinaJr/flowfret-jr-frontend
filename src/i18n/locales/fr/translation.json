@@ -1264,6 +1264,24 @@
       "complete": "Analyse terminée"
     }
   },
+  "library": {
+    "title": "Ma bibliothèque",
+    "recentTitle": "Écoutés récemment",
+    "favoritesTitle": "Favoris",
+    "playlistsTitle": "Playlists",
+    "viewHistory": "Tout voir",
+    "viewFavorites": "Tous les favoris",
+    "viewPlaylists": "Toutes les playlists",
+    "loading": "Chargement…",
+    "historyFailed": "Impossible de charger l’historique d’écoute.",
+    "favoritesFailed": "Impossible de charger les favoris.",
+    "playlistsFailed": "Impossible de charger les playlists.",
+    "historyEmpty": "Les morceaux écoutés apparaîtront ici.",
+    "favoritesEmpty": "Ajoutez des morceaux avec le bouton cœur pour les retrouver ici.",
+    "playlistsEmpty": "Créez une playlist pour organiser vos morceaux.",
+    "private": "Privée",
+    "shared": "Partagée"
+  },
   "favorites": {
     "title": "Morceaux favoris",
     "loading": "Chargement des favoris…",

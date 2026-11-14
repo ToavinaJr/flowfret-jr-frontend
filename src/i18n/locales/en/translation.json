@@ -1266,6 +1266,24 @@
       "complete": "Analysis complete"
     }
   },
+  "library": {
+    "title": "My library",
+    "recentTitle": "Recently played",
+    "favoritesTitle": "Favorites",
+    "playlistsTitle": "Playlists",
+    "viewHistory": "View all",
+    "viewFavorites": "All favorites",
+    "viewPlaylists": "All playlists",
+    "loading": "Loading…",
+    "historyFailed": "Unable to load listening history.",
+    "favoritesFailed": "Unable to load favorites.",
+    "playlistsFailed": "Unable to load playlists.",
+    "historyEmpty": "Tracks you play will appear here.",
+    "favoritesEmpty": "Save tracks with the heart button to find them here.",
+    "playlistsEmpty": "Create a playlist to organize your tracks.",
+    "private": "Private",
+    "shared": "Shared"
+  },
   "favorites": {
     "title": "Favorite tracks",
     "loading": "Loading your favorites…",

@@ -17,7 +17,6 @@ import {
   Settings,
   CircleHelp,
   History,
-  Heart,
   Sparkles,
   BarChart3,
   Mail,
@@ -62,9 +61,8 @@ export const NAV_SECTIONS: AppNavSection[] = [
     translationKey: "nav.sections.music",
     items: [
       { icon: Search, translationKey: "nav.music", path: "/music" },
-      { icon: Heart, translationKey: "nav.favorites", path: "/favorites" },
+      { icon: ListMusic, translationKey: "nav.library", path: "/library", matchPaths: ["/favorites", "/playlists"] },
       { icon: Sparkles, translationKey: "nav.recommendations", path: "/recommendations" },
-      { icon: ListMusic, translationKey: "nav.playlists", path: "/playlists" },
       { icon: BarChart3, translationKey: "nav.stats", path: "/stats" },
       { icon: Upload, translationKey: "nav.upload", path: "/upload" },
       { icon: FileText, translationKey: "nav.transcriptions", path: "/transcriptions",},

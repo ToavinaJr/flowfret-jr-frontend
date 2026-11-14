@@ -40,6 +40,7 @@ const PostPage = lazy(() => import("@/pages/PostPage"));
 const ModerationPage = lazy(() => import("@/pages/ModerationPage"));
 const PlaylistsPage = lazy(() => import("@/pages/PlaylistsPage"));
 const FavoritesPage = lazy(() => import("@/pages/FavoritesPage"));
+const LibraryPage = lazy(() => import("@/pages/LibraryPage"));
 const SharedPlaylistPage = lazy(() => import("@/pages/SharedPlaylistPage"));
 const TranscriptionsPage = lazy(() => import("@/pages/TranscriptionsPage"));
 const TeachingPage = lazy(() => import("@/pages/TeachingPage"));
@@ -98,6 +99,7 @@ const App = () => {
                           <Route path="/music" element={<MusicSearchPage />} />
                           <Route path="/recommendations" element={<RecommendationsPage />} />
                           <Route path="/stats" element={<StatsPage />} />
+                          <Route path="/library" element={<LibraryPage />} />
                           <Route path="/favorites" element={<FavoritesPage />} />
                           <Route
                             path="/playlists"
