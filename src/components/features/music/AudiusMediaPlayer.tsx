@@ -61,7 +61,7 @@ export function TranscriptionMediaPlayer({
     if (lastEndedItemId === playbackItem.id) setLyricsOpen(false);
   }, [lastEndedItemId, playbackEndSequence, playbackItem.id]);
   function startPlayback() {
-    if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
+    if (playbackQueue.length > 0) setQueue(playbackQueue, queueIndex);
     void toggle(playbackItem);
   }
 

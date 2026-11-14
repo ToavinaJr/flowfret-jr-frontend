@@ -1085,6 +1085,7 @@
     "resultsSummary": "{{shown}} résultat(s) affiché(s) sur {{total}}",
     "loadMore": "Charger plus de morceaux",
     "loadingMore": "Chargement…",
+    "loadMoreFailed": "Impossible de charger les morceaux suivants. Réessayez.",
     "openYoutube": "Ouvrir sur YouTube",
     "openAudius": "Ouvrir sur Audius",
     "openGenius": "Voir sur Genius",

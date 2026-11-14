@@ -32,6 +32,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [restoredSession] = useState(() => readPlaybackSession());
   const queue = usePlaybackQueue(restoredSession);
+  const queueRef = useRef(queue);
+  queueRef.current = queue;
   const [repeatMode, setRepeatMode] = useState<RepeatMode>(restoredSession?.repeatMode ?? "off");
   const [sleepTimer, setSleepTimerState] = useState<{ kind: "track" } | { kind: "timer"; endsAt: number; minutes: number } | null>(null);
   const sleepTimerTimeoutRef = useRef<number | null>(null);
@@ -42,8 +44,54 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     null,
   );
   const playCurrentRef = useRef<(() => Promise<void>) | null>(null);
-  const queueContinuationRef = useRef<(() => Promise<PlaybackItem[]>) | null>(null);
+  const queueContinuationsRef = useRef(
+    new Map<string, () => Promise<PlaybackItem[]>>(),
+  );
   const continuationLoadingRef = useRef(false);
+  const queueGenerationRef = useRef(0);
+  const continueQueue = useCallback(async () => {
+    const activeQueue = queueRef.current;
+    const queueItem = activeQueue.queue[activeQueue.currentIndex];
+    const sourceKey = queueItem?.queueSourceKey;
+    const continuation = sourceKey
+      ? queueContinuationsRef.current.get(sourceKey)
+      : undefined;
+    if (!continuation || continuationLoadingRef.current) return false;
+
+    continuationLoadingRef.current = true;
+    const queueGeneration = queueGenerationRef.current;
+    try {
+      const page = await continuation();
+      if (queueGeneration !== queueGenerationRef.current) return false;
+
+      const latestQueue = queueRef.current;
+      const known = new Set(
+        latestQueue.queue.map((item) =>
+          item.provider && item.providerTrackId
+            ? `${item.provider}:${item.providerTrackId}`
+            : `${item.id}:${item.src}`,
+        ),
+      );
+      const added = page.filter((item) => {
+        const key = item.provider && item.providerTrackId
+          ? `${item.provider}:${item.providerTrackId}`
+          : `${item.id}:${item.src}`;
+        if (known.has(key)) return false;
+        known.add(key);
+        return true;
+      });
+      const nextItem = latestQueue.appendAndSelectNext(added, true);
+      if (!nextItem) return false;
+      await playNextRef.current?.(nextItem);
+      return true;
+    } catch {
+      // Keep the already queued tracks playable; a later manual Next retries
+      // the same cursor through the registered continuation.
+      return false;
+    } finally {
+      continuationLoadingRef.current = false;
+    }
+  }, [queueRef]);
   const handleEnded = useCallback(() => {
     if (sleepTimerRef.current?.kind === "track") {
       clearSleepTimerRef.current();
@@ -58,15 +106,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       void playNextRef.current?.(item);
       return;
     }
-    if (repeatMode !== "off" || continuationLoadingRef.current || !queueContinuationRef.current) return;
-    continuationLoadingRef.current = true;
-    void queueContinuationRef.current().then((items) => {
-      const nextItem = queue.appendAndSelectNext(items);
-      if (nextItem) return playNextRef.current?.(nextItem);
-    }).finally(() => {
-      continuationLoadingRef.current = false;
-    });
-  }, [queue, repeatMode]);
+    if (repeatMode !== "off") return;
+    void continueQueue();
+  }, [continueQueue, queue, repeatMode]);
   const engine = usePlaybackEngine(handleEnded, {
     item: restoredSession?.item ?? null,
     currentTime: restoredSession?.currentTime ?? 0,
@@ -113,6 +155,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const clear = () => {
+      queueGenerationRef.current += 1;
       clearPlaybackRef.current();
       clearQueue([]);
       resetShuffle(false);
@@ -152,6 +195,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   );
   const setQueue = useCallback(
     (items: PlaybackItem[], startIndex = 0) => {
+      queueGenerationRef.current += 1;
       const selected = queue.setQueue(items, startIndex);
       if (selected) engine.select(selected);
     },
@@ -161,13 +205,33 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     const selected = queue.appendAndSelectNext(items);
     if (selected) await engine.play(selected);
   }, [engine, queue]);
-  const setQueueContinuation = useCallback((continuation: (() => Promise<PlaybackItem[]>) | null) => {
-    queueContinuationRef.current = continuation;
-  }, []);
+  const setQueueContinuation = useCallback((sourceKey: string, continuation: (() => Promise<PlaybackItem[]>) | null) => {
+    if (continuation) {
+      queueContinuationsRef.current.delete(sourceKey);
+      queueContinuationsRef.current.set(sourceKey, continuation);
+      while (queueContinuationsRef.current.size > 8) {
+        const oldestKey = queueContinuationsRef.current.keys().next().value;
+        if (!oldestKey) break;
+        if (oldestKey === queueRef.current.queue[queueRef.current.currentIndex]?.queueSourceKey) {
+          const active = queueContinuationsRef.current.get(oldestKey);
+          queueContinuationsRef.current.delete(oldestKey);
+          if (active) queueContinuationsRef.current.set(oldestKey, active);
+          continue;
+        }
+        queueContinuationsRef.current.delete(oldestKey);
+      }
+    } else {
+      queueContinuationsRef.current.delete(sourceKey);
+    }
+  }, [queueRef]);
   const next = useCallback(async () => {
     const item = queue.next(repeatMode === "queue" ? "queue" : "off");
-    if (item) await engine.play(item);
-  }, [engine, queue, repeatMode]);
+    if (item) {
+      await engine.play(item);
+      return;
+    }
+    if (repeatMode !== "queue") await continueQueue();
+  }, [continueQueue, engine, queue, repeatMode]);
   const previous = useCallback(async () => {
     const item = queue.previous();
     if (item) await engine.play(item);

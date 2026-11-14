@@ -23,6 +23,7 @@ export interface PlaybackItem {
   trackActivity?: boolean;
   provider?: MusicProvider;
   providerTrackId?: string;
+  queueSourceKey?: string;
   artists?: PlaybackArtist[];
   externalUrl?: string;
   streamUrl?: string;
@@ -65,7 +66,7 @@ export interface PlaybackContextValue {
   setVolume: (volume: number) => void;
   setQueue: (items: PlaybackItem[], startIndex?: number) => void;
   appendQueueAndPlayNext: (items: PlaybackItem[]) => Promise<void>;
-  setQueueContinuation: (continuation: (() => Promise<PlaybackItem[]>) | null) => void;
+  setQueueContinuation: (sourceKey: string, continuation: (() => Promise<PlaybackItem[]>) | null) => void;
   removeQueueItem: (index: number) => void;
   moveQueueItem: (from: number, to: number) => void;
   setShuffle: (enabled: boolean) => void;

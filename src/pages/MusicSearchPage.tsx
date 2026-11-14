@@ -15,8 +15,10 @@ const MusicSearchPage = () => {
   const playback = usePlayback();
   const {
     results,
+    queueSourceKey,
     loading,
     loadingMore,
+    loadMoreFailed,
     hasMore,
     error,
     hasSearched,
@@ -28,19 +30,15 @@ const MusicSearchPage = () => {
   } = useMusicSearch();
 
   useEffect(() => {
-    if (!hasSearched || !hasMore) {
-      playback.setQueueContinuation(null);
-      return;
-    }
-    playback.setQueueContinuation(async () => {
+    if (!hasSearched || !hasMore || !queueSourceKey) return;
+    playback.setQueueContinuation(queueSourceKey, async () => {
       const nextTracks = await loadMore();
       const known = new Set((results?.tracks ?? []).map((track) => `${track.provider}:${track.providerTrackId}`));
       return nextTracks
         .filter((track) => !known.has(`${track.provider}:${track.providerTrackId}`))
-        .map(toMusicPlaybackItem);
+        .map((track) => toMusicPlaybackItem(track, queueSourceKey));
     });
-    return () => playback.setQueueContinuation(null);
-  }, [hasSearched, hasMore, loadMore, playback.setQueueContinuation, results]);
+  }, [hasSearched, hasMore, loadMore, playback.setQueueContinuation, queueSourceKey, results]);
 
   useEffect(() => {
     if (sharedQuery) search(sharedQuery);
@@ -59,7 +57,9 @@ const MusicSearchPage = () => {
           displayingHistory={displayingHistory}
           results={results}
           loadingMore={loadingMore}
+          loadMoreFailed={loadMoreFailed}
           hasMore={hasMore}
+          queueSourceKey={queueSourceKey}
           onLoadMore={loadMore}
         />
       </div>

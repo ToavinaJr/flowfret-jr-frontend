@@ -35,13 +35,18 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
     return safeIndex >= 0 ? items[safeIndex] : null;
   }, []);
 
-  const appendAndSelectNext = useCallback((items: PlaybackItem[]) => {
+  const appendAndSelectNext = useCallback((items: PlaybackItem[], respectShuffle = false) => {
     if (!items.length) return null;
-    const nextIndex = queue.length;
+    const selectedOffset = respectShuffle && shuffle
+      ? Math.floor(Math.random() * items.length)
+      : 0;
+    const nextIndex = queue.length + selectedOffset;
     setQueueState((current) => [...current, ...items]);
     setCurrentIndex(nextIndex);
-    return items[0];
-  }, [queue.length]);
+    if (currentIndex >= 0) historyRef.current.push(currentIndex);
+    playedInShuffleCycleRef.current.push(nextIndex);
+    return items[selectedOffset];
+  }, [currentIndex, queue.length, shuffle]);
 
   const syncSelection = useCallback((item: PlaybackItem) => {
     setQueueState((current) => {

@@ -22,7 +22,7 @@ export function RemoteMediaPlayer({
   const isPlaying = item?.id === playbackItem.id && playState === "playing";
 
   function toggleFromQueue() {
-    if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
+    if (playbackQueue.length > 0) setQueue(playbackQueue, queueIndex);
     void toggle(playbackItem);
   }
 

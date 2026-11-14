@@ -13,7 +13,9 @@ interface MusicSearchResultsProps {
   displayingHistory: boolean;
   results: MusicSearchResult | null;
   loadingMore: boolean;
+  loadMoreFailed?: boolean;
   hasMore: boolean;
+  queueSourceKey?: string;
   onLoadMore: () => void;
 }
 
@@ -24,12 +26,16 @@ export function MusicSearchResults({
   displayingHistory,
   results,
   loadingMore,
+  loadMoreFailed = false,
   hasMore,
+  queueSourceKey,
   onLoadMore,
 }: MusicSearchResultsProps) {
   const { t } = useTranslation();
   const tracks = results?.tracks ?? [];
-  const playbackQueue = tracks.map(toMusicPlaybackItem);
+  const playbackQueue = tracks.map((track) =>
+    toMusicPlaybackItem(track, queueSourceKey),
+  );
 
   if (loading) {
     return <MusicSearchSkeleton />;
@@ -69,6 +75,9 @@ export function MusicSearchResults({
           </li>
         ))}
       </ul>
+      {loadMoreFailed ? (
+        <p role="alert" className="text-sm text-destructive">{t("music.loadMoreFailed")}</p>
+      ) : null}
       {(hasSearched || displayingHistory) && hasMore ? (
         <button
           type="button"
@@ -76,7 +85,7 @@ export function MusicSearchResults({
           onClick={onLoadMore}
           className="min-h-11 w-full rounded-md border border-border bg-card text-sm font-medium disabled:opacity-50"
         >
-          {t(loadingMore ? "music.loadingMore" : "music.loadMore")}
+          {t(loadingMore ? "music.loadingMore" : loadMoreFailed ? "common.retry" : "music.loadMore")}
         </button>
       ) : null}
     </div>

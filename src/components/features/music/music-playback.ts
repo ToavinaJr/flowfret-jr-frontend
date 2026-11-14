@@ -2,7 +2,10 @@ import type { PlaybackItem } from "@/contexts/PlaybackContext";
 import { MUSIC_PROVIDER } from "@/constants/domain";
 import type { MusicTrack } from "@/types/music";
 
-export function toMusicPlaybackItem(track: MusicTrack): PlaybackItem {
+export function toMusicPlaybackItem(
+  track: MusicTrack,
+  queueSourceKey?: string,
+): PlaybackItem {
   const subtitle = track.artists.map((artist) => artist.name).join(", ");
   const common = {
     id: `${track.provider.toLowerCase()}:${track.providerTrackId}`,
@@ -13,6 +16,7 @@ export function toMusicPlaybackItem(track: MusicTrack): PlaybackItem {
     destination: "/music",
     provider: track.provider,
     providerTrackId: track.providerTrackId,
+    queueSourceKey,
     artists: track.artists,
     externalUrl: track.externalUrl,
     streamUrl: track.streamUrl,
