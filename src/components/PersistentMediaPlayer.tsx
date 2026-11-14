@@ -327,7 +327,7 @@ export default function PersistentMediaPlayer() {
           - tablet:  [track · transport] / progress / [tools · output]
           - desktop: [track | transport · progress | tools · output]
         */}
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-3 py-2 [grid-template-areas:'track_track'_'progress_progress'_'transport_transport'_'tools_output'] sm:px-5 sm:[grid-template-areas:'track_transport'_'progress_progress'_'tools_output'] xl:h-24 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)_minmax(14rem,1fr)] xl:grid-rows-2 xl:gap-x-6 xl:gap-y-0 xl:[grid-template-areas:'track_transport_tools'_'track_progress_output']">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-3 py-2 [grid-template-areas:'track_track'_'transport_transport'_'progress_progress'_'tools_output'] sm:px-5 sm:[grid-template-areas:'track_transport'_'progress_progress'_'tools_output'] xl:h-24 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)_minmax(14rem,1fr)] xl:grid-rows-2 xl:gap-x-6 xl:gap-y-0 xl:[grid-template-areas:'track_transport_tools'_'track_progress_output']">
           <div className="flex min-w-0 items-center gap-1 [grid-area:track] xl:gap-2">
             {item.destination ? (
               <Link to={item.destination} className={TRACK_CLASS}>

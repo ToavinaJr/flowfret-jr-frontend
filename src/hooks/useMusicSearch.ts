@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { searchMusic } from "@/services/musicGraphql";
 import type { MusicSearchResult } from "@/types/music";
+import type { MusicTrack } from "@/types/music";
 import { ApiClientError } from "@/types/api";
 import { fetchListeningHistory } from "@/services/listeningHistoryApi";
 import { clearMusicSearchHistory, readMusicSearchHistory, saveMusicSearch } from "@/services/musicSearchHistory";
@@ -19,7 +20,7 @@ interface UseMusicSearchResult {
   displayingHistory: boolean;
   recentSearches: string[];
   search: (nextQuery: string, limit?: number) => void;
-  loadMore: () => void;
+  loadMore: () => Promise<MusicTrack[]>;
   reset: () => void;
   clearRecentSearches: () => void;
 }
@@ -125,7 +126,12 @@ export function useMusicSearch(): UseMusicSearchResult {
     displayingHistory: !hasSearched && Boolean(historyResults?.tracks.length),
     recentSearches,
     search,
-    loadMore: () => void (hasSearched ? musicQuery.fetchNextPage() : historyQuery.fetchNextPage()),
+    loadMore: async () => {
+      if (!hasSearched || !musicQuery.hasNextPage || musicQuery.isFetchingNextPage) return [];
+      const page = await musicQuery.fetchNextPage();
+      const pages = page.data?.pages;
+      return pages?.[pages.length - 1]?.tracks ?? [];
+    },
     reset,
     clearRecentSearches,
   };

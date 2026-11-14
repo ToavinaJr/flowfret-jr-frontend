@@ -42,6 +42,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     null,
   );
   const playCurrentRef = useRef<(() => Promise<void>) | null>(null);
+  const queueContinuationRef = useRef<(() => Promise<PlaybackItem[]>) | null>(null);
+  const continuationLoadingRef = useRef(false);
   const handleEnded = useCallback(() => {
     if (sleepTimerRef.current?.kind === "track") {
       clearSleepTimerRef.current();
@@ -52,7 +54,18 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       return;
     }
     const item = queue.next(repeatMode);
-    if (item) void playNextRef.current?.(item);
+    if (item) {
+      void playNextRef.current?.(item);
+      return;
+    }
+    if (repeatMode !== "off" || continuationLoadingRef.current || !queueContinuationRef.current) return;
+    continuationLoadingRef.current = true;
+    void queueContinuationRef.current().then((items) => {
+      const nextItem = queue.appendAndSelectNext(items);
+      if (nextItem) return playNextRef.current?.(nextItem);
+    }).finally(() => {
+      continuationLoadingRef.current = false;
+    });
   }, [queue, repeatMode]);
   const engine = usePlaybackEngine(handleEnded, {
     item: restoredSession?.item ?? null,
@@ -144,6 +157,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     },
     [engine, queue],
   );
+  const appendQueueAndPlayNext = useCallback(async (items: PlaybackItem[]) => {
+    const selected = queue.appendAndSelectNext(items);
+    if (selected) await engine.play(selected);
+  }, [engine, queue]);
+  const setQueueContinuation = useCallback((continuation: (() => Promise<PlaybackItem[]>) | null) => {
+    queueContinuationRef.current = continuation;
+  }, []);
   const next = useCallback(async () => {
     const item = queue.next(repeatMode === "queue" ? "queue" : "off");
     if (item) await engine.play(item);
@@ -205,6 +225,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       seek: engine.seek,
       setVolume: engine.setVolume,
       setQueue,
+      appendQueueAndPlayNext,
+      setQueueContinuation,
       removeQueueItem: queue.removeItem,
       moveQueueItem: queue.moveItem,
       setShuffle: queue.setShuffle,
@@ -218,7 +240,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       setPracticeLoopEnabled: engine.setPracticeLoopEnabled,
       clearPracticeLoop: engine.clearPracticeLoop,
     }),
-    [engine, next, play, previous, queue, select, setQueue, toggle, repeatMode, sleepTimer, setSleepTimer],
+    [engine, next, play, previous, queue, select, setQueue, appendQueueAndPlayNext, setQueueContinuation, toggle, repeatMode, sleepTimer, setSleepTimer],
   );
 
   return (

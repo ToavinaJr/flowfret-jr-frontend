@@ -26,8 +26,6 @@ const mocks = vi.hoisted(() => {
         listeners.delete(listener);
       };
     },
-    // No LRCLIB match by default, so existing tests exercise the Whisper
-    // fallback path deterministically instead of racing a real network call.
     lyricsResult: { lyrics: null, status: "not-found" } as {
       lyrics: { synced: boolean; lines: { startTimeMs: number | null; text: string }[] } | null;
       status: string;
@@ -50,11 +48,7 @@ vi.mock("@/hooks/useTranscriptionEvents", () => ({
   },
 }));
 vi.mock("@/hooks/useLyrics", () => ({
-  // Mirrors the real hook's gating: nothing resolves before the caller
-  // passes `enabled: true` (i.e. before lyrics are actually opened), so
-  // tests can't accidentally observe an LRCLIB match before the UI does.
-  useLyrics: (_track: unknown, enabled: boolean) =>
-    enabled ? mocks.lyricsResult : { lyrics: null, status: "idle" },
+  useLyrics: () => mocks.lyricsResult,
 }));
 
 const track = {
@@ -96,8 +90,7 @@ describe("AudiusMediaPlayer transcription", () => {
     });
   });
 
-  it("starts audio and transcribes the selected Audius source", async () => {
-    mocks.prepare.mockReturnValue(new Promise(() => undefined));
+  it("starts audio without transcribing when lyrics are unavailable", async () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -114,12 +107,11 @@ describe("AudiusMediaPlayer transcription", () => {
     await waitFor(() =>
       expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
     );
-    expect(mocks.prepare).toHaveBeenCalledOnce();
-    expect(screen.getByLabelText("Transcription de Song")).toBeInTheDocument();
+    expect(mocks.prepare).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Afficher la transcription" })).not.toBeInTheDocument();
   });
 
   it("keeps audio playing when the browser tab loses focus", async () => {
-    mocks.prepare.mockReturnValue(new Promise(() => undefined));
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -149,11 +141,7 @@ describe("AudiusMediaPlayer transcription", () => {
     expect(HTMLMediaElement.prototype.pause).not.toHaveBeenCalled();
   });
 
-  it("waits for the transcription to complete before playing when lyrics are opened first", async () => {
-    mocks.prepare.mockImplementation(async () => {
-      mocks.setTranscription({ status: "PENDING", segments: [] });
-      return { transcriptionId: "t1", status: "PENDING", cached: false };
-    });
+  it("does not expose the lyrics control when the lookup has no match", async () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
@@ -166,19 +154,11 @@ describe("AudiusMediaPlayer transcription", () => {
         </I18nextProvider>
       </QueryClientProvider>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Afficher la transcription" }),
-    );
-    await waitFor(() => expect(mocks.prepare).toHaveBeenCalledOnce());
-    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
-
-    mocks.setTranscription({ status: "COMPLETED", segments: [] });
-    await waitFor(() =>
-      expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
-    );
+    expect(screen.queryByRole("button", { name: "Afficher la transcription" })).not.toBeInTheDocument();
+    expect(mocks.prepare).not.toHaveBeenCalled();
   });
 
-  it("plays immediately from a synced LRCLIB match without transcribing", async () => {
+  it("shows matched lyrics without transcribing", async () => {
     mocks.lyricsResult = {
       lyrics: { synced: true, lines: [{ startTimeMs: 0, text: "La la la" }] },
       status: "success",
@@ -195,12 +175,39 @@ describe("AudiusMediaPlayer transcription", () => {
         </I18nextProvider>
       </QueryClientProvider>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Afficher la transcription" }),
+    fireEvent.click(await screen.findByRole("button", { name: "Afficher la transcription" }));
+    expect(mocks.prepare).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Transcription de Song")).toBeInTheDocument();
+  });
+
+  it("starts playback from the lyrics synchronization button", async () => {
+    mocks.lyricsResult = {
+      lyrics: { synced: true, lines: [{ startTimeMs: 0, text: "La la la" }] },
+      status: "success",
+    };
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <PlaybackProvider>
+            <AudiusMediaPlayer track={track} />
+          </PlaybackProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
     );
+
+    const syncButton = await screen.findByRole("button", {
+      name: "Lancer la synchronisation des paroles",
+    });
+    expect(syncButton).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(syncButton);
+
     await waitFor(() =>
       expect(HTMLMediaElement.prototype.play).toHaveBeenCalled(),
     );
     expect(mocks.prepare).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Transcription de Song")).toBeInTheDocument();
   });
 });

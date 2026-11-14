@@ -35,6 +35,14 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
     return safeIndex >= 0 ? items[safeIndex] : null;
   }, []);
 
+  const appendAndSelectNext = useCallback((items: PlaybackItem[]) => {
+    if (!items.length) return null;
+    const nextIndex = queue.length;
+    setQueueState((current) => [...current, ...items]);
+    setCurrentIndex(nextIndex);
+    return items[0];
+  }, [queue.length]);
+
   const syncSelection = useCallback((item: PlaybackItem) => {
     setQueueState((current) => {
       const index = current.findIndex(
@@ -111,6 +119,7 @@ export function usePlaybackQueue(initial?: InitialPlaybackQueue) {
     shuffle,
     setShuffle,
     setQueue,
+    appendAndSelectNext,
     removeItem,
     moveItem,
     syncSelection,

@@ -9,7 +9,9 @@ export function findActiveLyricLine(lines: readonly LyricLine[], currentTimeMs: 
     const start = lines[middle].startTimeMs;
     if (start === null || start > currentTimeMs) high = middle - 1;
     else {
-      active = middle;
+      active = lines[middle].endTimeMs != null && currentTimeMs > lines[middle].endTimeMs
+        ? -1
+        : middle;
       low = middle + 1;
     }
   }

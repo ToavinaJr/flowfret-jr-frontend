@@ -64,6 +64,8 @@ export interface PlaybackContextValue {
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
   setQueue: (items: PlaybackItem[], startIndex?: number) => void;
+  appendQueueAndPlayNext: (items: PlaybackItem[]) => Promise<void>;
+  setQueueContinuation: (continuation: (() => Promise<PlaybackItem[]>) | null) => void;
   removeQueueItem: (index: number) => void;
   moveQueueItem: (from: number, to: number) => void;
   setShuffle: (enabled: boolean) => void;

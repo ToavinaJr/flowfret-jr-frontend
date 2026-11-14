@@ -10,6 +10,9 @@ import { LyricsLinesEditor } from "./LyricsLinesEditor";
 interface InlineLyricsEditorProps {
   track: LyricsTrack;
   initialLines: LyricLine[];
+  currentTime: number;
+  isPlaying: boolean;
+  onTogglePlayback: () => void;
 }
 
 /**
@@ -29,6 +32,9 @@ interface InlineLyricsEditorProps {
 export function InlineLyricsEditor({
   track,
   initialLines,
+  currentTime,
+  isPlaying,
+  onTogglePlayback,
 }: InlineLyricsEditorProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -128,6 +134,7 @@ export function InlineLyricsEditor({
                 <LyricsLinesEditor
                   lines={lines}
                   track={track}
+                      liveSync={{ currentTimeMs: currentTime * 1000, isPlaying, onTogglePlayback }}
                   onChange={(nextLines) => {
                     setLines(nextLines);
                     setSaved(false);

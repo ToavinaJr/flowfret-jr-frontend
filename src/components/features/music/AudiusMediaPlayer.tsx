@@ -1,33 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  Download,
-  Flag,
-  Loader2,
-  Mic2,
-  Pause,
-  Play,
-  RefreshCw,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Flag, Link2, Mic2, Pause, Play } from "lucide-react";
 import { usePlayback } from "@/contexts/usePlayback";
 import type { PlaybackItem } from "@/contexts/playback-context";
 import { useAuth } from "@/hooks/useAuth";
-import { useTranscriptionEvents } from "@/hooks/useTranscriptionEvents";
 import { useLyrics } from "@/hooks/useLyrics";
-import { downloadTranscriptionLrc } from "@/services/transcriptionsApi";
 import type { MusicTrack } from "@/types/music";
 import type { LyricsTrack } from "@/types/lyrics";
-import { findActiveSegment } from "@/utils/transcription";
-import { SynchronizedLyrics } from "./SynchronizedLyrics";
 import { LyricsPanel } from "./LyricsPanel";
 import { ReportLyricsDialog } from "./ReportLyricsDialog";
 import { InlineLyricsEditor } from "./InlineLyricsEditor";
 import { useTranslation } from "react-i18next";
-import {
-  TRANSCRIPTION_PHASE,
-  TRANSCRIPTION_STATUS,
-  USER_ROLE,
-} from "@/constants/domain";
+import { USER_ROLE } from "@/constants/domain";
 import { toMusicPlaybackItem } from "./music-playback";
 
 export function TranscriptionMediaPlayer({
@@ -46,30 +29,19 @@ export function TranscriptionMediaPlayer({
     item,
     playState,
     currentTime,
+    play,
+    pause,
     toggle,
     seek,
     setQueue,
     lastEndedItemId,
     playbackEndSequence,
   } = usePlayback();
-  const { transcription, error, prepare, retry } =
-    useTranscriptionEvents(track);
   const [lyricsOpen, setLyricsOpen] = useState(false);
-  const [preparing, setPreparing] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [awaitingLyricsDecision, setAwaitingLyricsDecision] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const playbackItem = toMusicPlaybackItem(track);
   const isActive = item?.id === playbackItem.id;
   const isPlaying = isActive && playState === "playing";
-  useEffect(() => {
-    if (lastEndedItemId === playbackItem.id) setLyricsOpen(false);
-  }, [lastEndedItemId, playbackEndSequence, playbackItem.id]);
-  // A pre-synced lyrics database (LRCLIB) is tried before the heavier
-  // YouTube-extraction + Whisper pipeline: most known tracks resolve
-  // instantly from it, with no audio download or transcription needed at
-  // all. Built the same way PersistentLyrics.tsx gates its own lookup -
-  // artist must be present, or the underlying query never starts.
   const lyricsTrack: LyricsTrack | null = track.artists[0]?.name
     ? {
         id: track.providerTrackId,
@@ -80,104 +52,17 @@ export function TranscriptionMediaPlayer({
         duration: track.durationMs ? track.durationMs / 1000 : undefined,
       }
     : null;
-  const { lyrics, status: lyricsStatus } = useLyrics(lyricsTrack, lyricsOpen);
-  // Any resolved lyrics result (LRCLIB synced, or unsynced plain text from
-  // Genius/Tononkira/the LLM web-search fallback) is preferred over the
-  // heavier YouTube-extraction + Whisper transcription pipeline below —
-  // LyricsPanel already renders both synced and unsynced lyrics correctly.
+  // Resolve lyrics before exposing the lyrics control. A missing result must
+  // never fall through to an audio download and Whisper transcription.
+  const { lyrics, status: lyricsStatus } = useLyrics(lyricsTrack);
   const hasLyrics = Boolean(lyrics);
-  // Keep the floating lyrics window (PersistentLyrics) in sync with this card's transcription.
-  const queryClient = useQueryClient();
-  const transcriptionStatus = transcription?.status;
-  const transcriptionSegmentCount = transcription?.segments.length ?? 0;
+  const isSyncing = Boolean(lyrics?.synced && isActive && isPlaying);
   useEffect(() => {
-    if (!transcriptionStatus) return;
-    void queryClient.invalidateQueries({
-      queryKey: ["transcription-for-track", track.provider, track.providerTrackId],
-    });
-  }, [queryClient, track.provider, track.providerTrackId, transcriptionStatus, transcriptionSegmentCount]);
-  const activeIndex = useMemo(
-    () =>
-      findActiveSegment(
-        transcription?.segments ?? [],
-        isActive ? currentTime : 0,
-      ),
-    [currentTime, isActive, transcription?.segments],
-  );
-  async function startPlayback() {
+    if (lastEndedItemId === playbackItem.id) setLyricsOpen(false);
+  }, [lastEndedItemId, playbackEndSequence, playbackItem.id]);
+  function startPlayback() {
     if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
     void toggle(playbackItem);
-    setLyricsOpen(true);
-    if (transcription || preparing) return;
-    setPreparing(true);
-    setActionError(null);
-    try {
-      await prepare();
-    } catch (cause) {
-      setActionError(
-        cause instanceof Error ? cause.message : t("lyrics.prepareFailed"),
-      );
-    } finally {
-      setPreparing(false);
-    }
-  }
-
-  // Opening lyrics first waits for the transcription instead of starting
-  // playback right away, so the song and its synchronized lyrics begin
-  // together rather than playback racing ahead of a not-yet-ready transcript.
-  const showLyricsThenPlay = useCallback(async () => {
-    setLyricsOpen(true);
-    if (transcription || preparing) return;
-    setPreparing(true);
-    setActionError(null);
-    try {
-      await prepare();
-    } catch (cause) {
-      setPreparing(false);
-      setActionError(
-        cause instanceof Error ? cause.message : t("lyrics.prepareFailed"),
-      );
-    }
-  }, [transcription, preparing, prepare, t]);
-
-  useEffect(() => {
-    if (!preparing || !transcription) return;
-    if (transcription.status === TRANSCRIPTION_STATUS.COMPLETED) {
-      setPreparing(false);
-      if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
-      void toggle(playbackItem);
-    } else if (transcription.status === TRANSCRIPTION_STATUS.FAILED) {
-      setPreparing(false);
-    }
-  }, [preparing, transcription, playbackItem, playbackQueue, queueIndex, setQueue, toggle]);
-
-  // Resolves the lyrics-first-click decision once the /api/lyrics lookup
-  // settles: any match (synced or not) plays immediately, no YouTube
-  // extraction or Whisper involved at all; only a genuine miss falls back
-  // to the existing wait-for-Whisper-transcription flow.
-  useEffect(() => {
-    if (!awaitingLyricsDecision || lyricsStatus === "loading") return;
-    setAwaitingLyricsDecision(false);
-    if (hasLyrics) {
-      if (playbackQueue.length > 1) setQueue(playbackQueue, queueIndex);
-      void toggle(playbackItem);
-      return;
-    }
-    void showLyricsThenPlay();
-  }, [awaitingLyricsDecision, lyricsStatus, hasLyrics, playbackItem, playbackQueue, queueIndex, setQueue, toggle, showLyricsThenPlay]);
-
-  async function retryTranscription() {
-    setPreparing(true);
-    setActionError(null);
-    try {
-      await retry();
-    } catch (cause) {
-      setActionError(
-        cause instanceof Error ? cause.message : t("lyrics.retryFailed"),
-      );
-    } finally {
-      setPreparing(false);
-    }
   }
 
   return (
@@ -197,31 +82,46 @@ export function TranscriptionMediaPlayer({
             <Play className="ml-0.5 h-[18px] w-[18px] fill-current" />
           )}
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (lyricsOpen) {
-              setLyricsOpen(false);
-              return;
-            }
-            setLyricsOpen(true);
-            if (hasLyrics || transcription || preparing) return;
-            setAwaitingLyricsDecision(true);
-          }}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary text-foreground"
-          aria-label={t(
-            lyricsOpen
-              ? "lyrics.hideTranscription"
-              : "lyrics.showTranscription",
-          )}
-          aria-expanded={lyricsOpen}
-        >
-          {preparing ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
+        {lyricsStatus === "success" && hasLyrics ? (
+          <button
+            type="button"
+            onClick={() => setLyricsOpen((open) => !open)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary text-foreground"
+            aria-label={t(
+              lyricsOpen
+                ? "lyrics.hideTranscription"
+                : "lyrics.showTranscription",
+            )}
+            aria-expanded={lyricsOpen}
+          >
             <Mic2 className="h-4 w-4" />
-          )}
-        </button>
+          </button>
+        ) : null}
+        {lyricsStatus === "success" && lyrics?.synced ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (isSyncing) {
+                pause();
+                return;
+              }
+              setLyricsOpen(true);
+              void play(playbackItem);
+            }}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-colors ${
+              isSyncing
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-secondary text-foreground"
+            }`}
+            aria-label={t(
+              isSyncing ? "lyrics.stopSync" : "lyrics.startSync",
+            )}
+            aria-pressed={isSyncing}
+            title={t(isSyncing ? "lyrics.stopSync" : "lyrics.startSync")}
+          >
+            <Link2 className="h-4 w-4" aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
 
       {lyricsOpen && hasLyrics ? (
@@ -239,6 +139,9 @@ export function TranscriptionMediaPlayer({
                   <InlineLyricsEditor
                     track={lyricsTrack}
                     initialLines={lyrics.lines}
+                    currentTime={currentTime}
+                    isPlaying={isPlaying}
+                    onTogglePlayback={() => void toggle(playbackItem)}
                   />
                 ) : null}
                 <button
@@ -272,90 +175,6 @@ export function TranscriptionMediaPlayer({
         </section>
       ) : null}
 
-      {lyricsOpen && !hasLyrics ? (
-        <section
-          className="order-last w-full basis-full pt-3"
-          aria-label={t("lyrics.transcriptionFor", { title: track.title })}
-        >
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <span>
-              {transcription?.status === TRANSCRIPTION_STATUS.COMPLETED
-                ? transcription.segments.length > 0
-                  ? t("lyrics.synchronized")
-                  : t("lyrics.unavailable")
-                : transcription?.processingPhase ===
-                    TRANSCRIPTION_PHASE.MODEL_LOADING
-                  ? t("lyrics.loadingModel")
-                  : transcription?.processingPhase ===
-                      TRANSCRIPTION_PHASE.MODEL_READY
-                    ? t("lyrics.modelReady")
-                    : transcription
-                      ? t("lyrics.progress", {
-                          progress: Math.round(transcription.progress),
-                        })
-                      : t("lyrics.preparing")}
-            </span>
-            <div className="flex gap-2">
-              {isAdmin && lyricsTrack ? (
-                <InlineLyricsEditor track={lyricsTrack} initialLines={[]} />
-              ) : null}
-              {transcription?.status === TRANSCRIPTION_STATUS.FAILED ? (
-                <button
-                  type="button"
-                  disabled={preparing}
-                  onClick={() => void retryTranscription()}
-                  className="inline-flex min-h-9 items-center gap-1 rounded-md bg-secondary px-3 disabled:opacity-50"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  {t("common.retry")}
-                </button>
-              ) : null}
-              {transcription?.lrcAvailable ? (
-                <button
-                  type="button"
-                  onClick={() =>
-                    void downloadTranscriptionLrc(
-                      transcription.transcriptionId,
-                    ).catch((cause) =>
-                      setActionError(
-                        cause instanceof Error
-                          ? cause.message
-                          : t("lyrics.downloadFailed"),
-                      ),
-                    )
-                  }
-                  className="inline-flex min-h-9 items-center gap-1 rounded-md bg-secondary px-3"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  {t("lyrics.downloadLrc")}
-                </button>
-              ) : null}
-            </div>
-          </div>
-          {error || actionError || transcription?.error ? (
-            <p
-              role="alert"
-              className="mb-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
-            >
-              {actionError ??
-                error ??
-                (transcription?.error?.code === "AUDIO_TOO_LONG"
-                  ? t("lyrics.audioTooLong")
-                  : transcription?.error?.code === "YOUTUBE_AUDIO_EXTRACTION_FAILED"
-                    ? t("lyrics.youtubeExtractionFailed")
-                    : transcription?.error?.code === "TRANSCRIPTION_PENDING_TIMEOUT"
-                      ? t("lyrics.pendingTimeout")
-                    : transcription?.error?.message)}
-            </p>
-          ) : null}
-          <SynchronizedLyrics
-            segments={transcription?.segments ?? []}
-            activeIndex={activeIndex}
-            onSeek={seek}
-            currentTime={isActive ? currentTime : undefined}
-          />
-        </section>
-      ) : null}
     </>
   );
 }
