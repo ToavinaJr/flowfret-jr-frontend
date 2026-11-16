@@ -1265,7 +1265,10 @@
     }
   },
   "library": {
+    "eyebrow": "Vos morceaux",
     "title": "Ma bibliothèque",
+    "intro": "Reprenez votre écoute récente, retrouvez vos favoris et ouvrez vos playlists.",
+    "resume": "Reprendre l’écoute",
     "recentTitle": "Écoutés récemment",
     "favoritesTitle": "Favoris",
     "playlistsTitle": "Playlists",

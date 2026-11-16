@@ -29,7 +29,7 @@ export default function FavoritesPage() {
         return 0;
       });
   }, [filter, sortMode, tracks]);
-  const queue = visibleTracks.map(toMusicPlaybackItem);
+  const queue = visibleTracks.map((track) => toMusicPlaybackItem(track));
 
   return (
     <main className={PAGE_SHELL}>

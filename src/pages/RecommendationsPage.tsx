@@ -14,7 +14,7 @@ export default function RecommendationsPage() {
     staleTime: 5 * 60_000,
   });
   const tracks = recommendations.data ?? [];
-  const playbackQueue = tracks.map(toMusicPlaybackItem);
+  const playbackQueue = tracks.map((track) => toMusicPlaybackItem(track));
 
   return (
     <main className={PAGE_SHELL}>

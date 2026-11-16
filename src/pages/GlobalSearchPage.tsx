@@ -28,7 +28,7 @@ export default function GlobalSearchPage() {
   const members = useQuery({ queryKey: ["global-search-members", query], queryFn: () => searchUsers(query), enabled: query.length >= 2, staleTime: 60_000 });
   const music = useInfiniteQuery({ queryKey: ["global-search-music", query], queryFn: ({ pageParam }) => searchMusic(query, MUSIC_PAGE_SIZE, pageParam), initialPageParam: undefined as string | undefined, getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined, enabled: query.length >= 2, staleTime: 60_000 });
   const tracks = music.data?.pages.flatMap((page) => page.tracks) ?? [];
-  const musicQueue = tracks.map(toMusicPlaybackItem);
+  const musicQueue = tracks.map((track) => toMusicPlaybackItem(track));
 
   return (
     <main className={`${PAGE_SHELL} space-y-5`}>

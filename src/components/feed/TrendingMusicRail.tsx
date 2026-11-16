@@ -14,7 +14,7 @@ export function TrendingMusicRail() {
     staleTime: 5 * 60_000,
   });
   const tracks = query.data ?? [];
-  const queue = tracks.map(toMusicPlaybackItem);
+  const queue = tracks.map((track) => toMusicPlaybackItem(track));
 
   return (
     <section className="mb-4 rounded-xl border border-border bg-card p-4" aria-labelledby="feed-trending-title">

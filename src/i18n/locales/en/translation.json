@@ -1267,7 +1267,10 @@
     }
   },
   "library": {
+    "eyebrow": "Your music",
     "title": "My library",
+    "intro": "Pick up your recent listening, find your favorites, and open your playlists.",
+    "resume": "Pick up listening",
     "recentTitle": "Recently played",
     "favoritesTitle": "Favorites",
     "playlistsTitle": "Playlists",

@@ -17,7 +17,7 @@ export function PersonalizedRecommendations() {
   });
   const tracks = query.data ?? [];
   const visibleTracks = tracks.slice(0, 5);
-  const playbackQueue = visibleTracks.map(toMusicPlaybackItem);
+  const playbackQueue = visibleTracks.map((track) => toMusicPlaybackItem(track));
 
   return (
     <section className="mb-4 rounded-xl border border-border bg-card p-4" aria-labelledby="music-recommendations-title">
