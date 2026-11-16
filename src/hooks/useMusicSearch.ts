@@ -112,7 +112,8 @@ export function useMusicSearch(): UseMusicSearchResult {
     if (!hasSearched) {
       if (!historyHasNextPage || historyIsFetchingNextPage) return [];
       const page = await fetchNextHistoryPage();
-      return page.data?.pages.at(-1) ?? [];
+      const historyPages = page.data?.pages;
+      return historyPages?.[historyPages.length - 1] ?? [];
     }
 
     if (!submittedQuery) return [];
@@ -121,7 +122,7 @@ export function useMusicSearch(): UseMusicSearchResult {
     const currentData = queryClient.getQueryData<
       InfiniteData<MusicSearchResult, string | undefined>
     >(queryKey);
-    const cursor = currentData?.pages.at(-1)?.nextCursor;
+    const cursor = currentData?.pages[currentData.pages.length - 1]?.nextCursor;
     if (!currentData || !cursor) return [];
 
     const requestKey = `${queryKeyId}:${cursor}`;
@@ -148,7 +149,7 @@ export function useMusicSearch(): UseMusicSearchResult {
         queryClient.setQueryData<
           InfiniteData<MusicSearchResult, string | undefined>
         >(queryKey, (latestData) => {
-          if (!latestData || latestData.pages.at(-1)?.nextCursor !== cursor) {
+          if (!latestData || latestData.pages[latestData.pages.length - 1]?.nextCursor !== cursor) {
             return latestData;
           }
           return {
