@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nextProvider } from "react-i18next";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n";
 import ChatPage from "./ChatPage";
@@ -84,16 +85,60 @@ describe("ChatPage", () => {
     });
   });
 
+  it("uses the conversation route as selection and updates it on navigation", async () => {
+    mocks.conversations.mockResolvedValue([
+      {
+        id: "chat-1",
+        type: "DIRECT",
+        name: null,
+        participants: [
+          { id: "p1", userId: "me", username: "me", nickname: null, role: "ADMIN", lastReadAt: null },
+          { id: "p2", userId: "friend", username: "Alice", nickname: null, role: "MEMBER", lastReadAt: null },
+        ],
+        unreadCount: 0,
+        updatedAt: new Date().toISOString(),
+        lastMessage: null,
+      },
+    ]);
+    const Location = () => <output data-testid="current-path">{useLocation().pathname}</output>;
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    render(
+      <MemoryRouter initialEntries={["/messages"]}>
+        <QueryClientProvider client={client}>
+          <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
+            <Routes>
+              <Route path="/messages/:conversationId?" element={<ChatPage />} />
+            </Routes>
+            <Location />
+          </I18nextProvider>
+        </QueryClientProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: /Alice/ }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("current-path")).toHaveTextContent("/messages/chat-1"),
+    );
+    await waitFor(() => expect(mocks.messages).toHaveBeenCalledWith("chat-1"));
+  });
+
   it("shows the empty state and offers accepted friends for a private chat", async () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
     render(
+      <MemoryRouter initialEntries={["/messages"]}>
       <QueryClientProvider client={client}>
         <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
-          <ChatPage />
+          <Routes>
+            <Route path="/messages/:conversationId?" element={<ChatPage />} />
+          </Routes>
         </I18nextProvider>
       </QueryClientProvider>,
+      </MemoryRouter>,
     );
 
     expect(
@@ -127,11 +172,15 @@ describe("ChatPage", () => {
       defaultOptions: { queries: { retry: false } },
     });
     render(
+      <MemoryRouter initialEntries={["/messages"]}>
       <QueryClientProvider client={client}>
         <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
-          <ChatPage />
+          <Routes>
+            <Route path="/messages/:conversationId?" element={<ChatPage />} />
+          </Routes>
         </I18nextProvider>
-      </QueryClientProvider>,
+      </QueryClientProvider>
+      </MemoryRouter>,
     );
 
     fireEvent.click(await screen.findByRole("button", { name: /Alice/ }));
@@ -163,11 +212,15 @@ describe("ChatPage", () => {
       defaultOptions: { queries: { retry: false } },
     });
     render(
+      <MemoryRouter initialEntries={["/messages"]}>
       <QueryClientProvider client={client}>
         <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
-          <ChatPage />
+          <Routes>
+            <Route path="/messages/:conversationId?" element={<ChatPage />} />
+          </Routes>
         </I18nextProvider>
-      </QueryClientProvider>,
+      </QueryClientProvider>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Nouvelle conversation" }));
@@ -209,11 +262,15 @@ describe("ChatPage", () => {
       defaultOptions: { queries: { retry: false } },
     });
     render(
+      <MemoryRouter initialEntries={["/messages"]}>
       <QueryClientProvider client={client}>
         <I18nextProvider i18n={i18n.cloneInstance({ lng: "fr" })}>
-          <ChatPage />
+          <Routes>
+            <Route path="/messages/:conversationId?" element={<ChatPage />} />
+          </Routes>
         </I18nextProvider>
-      </QueryClientProvider>,
+      </QueryClientProvider>
+      </MemoryRouter>,
     );
 
     fireEvent.click(await screen.findByRole("button", { name: /Jam/ }));

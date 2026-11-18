@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { FRIENDSHIP_STATUS } from "@/constants/domain";
 import { insertTextAtSelection } from "@/components/chat/insertText";
@@ -38,10 +38,15 @@ export const CHAT_NICKNAME_MAX_LENGTH = 50;
 
 export function useChatWorkspace() {
   const { conversationId } = useParams<{ conversationId?: string }>();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
   const client = useQueryClient();
-  const [selectedId, setSelectedId] = useState<string | undefined>(conversationId);
+  const selectedId = conversationId;
+  const setSelectedId = useCallback(
+    (id: string | undefined) => navigate(id ? `/messages/${id}` : "/messages"),
+    [navigate],
+  );
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [groupName, setGroupName] = useState("");
