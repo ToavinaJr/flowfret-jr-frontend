@@ -38,7 +38,7 @@ const MusicSearchPage = () => {
         .filter((track) => !known.has(`${track.provider}:${track.providerTrackId}`))
         .map((track) => toMusicPlaybackItem(track, queueSourceKey));
     });
-  }, [hasSearched, hasMore, loadMore, playback.setQueueContinuation, queueSourceKey, results]);
+  }, [hasSearched, hasMore, loadMore, playback, queueSourceKey, results]);
 
   useEffect(() => {
     if (sharedQuery) search(sharedQuery);

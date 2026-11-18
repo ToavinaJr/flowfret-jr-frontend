@@ -81,12 +81,11 @@ export function AddToPlaylistButton({ track, compact = false }: { track: MusicTr
       <DialogTrigger asChild>
         <button
           type="button"
-          className={`${compact ? "h-9 w-9 justify-center border-0 px-0" : "h-11 gap-2 border border-border px-3"} inline-flex shrink-0 items-center rounded-md text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground`}
+          className={`${compact ? "h-9 w-9 border-0 px-0" : "h-11 w-11 border border-border"} inline-flex shrink-0 items-center justify-center rounded-md text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground`}
           aria-label={t("playlists.addNamed", { title: track.title })}
           title={t("playlists.addToPlaylist")}
         >
           <ListPlus className="h-4 w-4" />
-          {!compact ? <span className="hidden sm:inline">{t("playlists.playlist")}</span> : null}
         </button>
       </DialogTrigger>
       <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md min-w-0 flex-col overflow-hidden p-4 sm:p-6">

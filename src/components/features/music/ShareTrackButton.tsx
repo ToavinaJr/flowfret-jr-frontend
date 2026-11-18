@@ -53,9 +53,8 @@ export function ShareTrackButton({ track }: { track: MusicTrack }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button type="button" className="inline-flex h-11 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label={t("music.shareTrackNamed", { title: track.title })} title={t("music.shareInChat")}>
+        <button type="button" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label={t("music.shareTrackNamed", { title: track.title })} title={t("music.shareInChat")}>
           <Share2 className="h-4 w-4" aria-hidden="true" />
-          <span className="hidden sm:inline">{t("music.share")}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-md overflow-y-auto">

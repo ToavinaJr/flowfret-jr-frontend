@@ -95,7 +95,6 @@ export function MusicTrackCard({
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:contents">
           <FavoriteTrackButton track={track} />
-          <ShareTrackButton track={track} />
           <MusicMediaPlayer
             track={track}
             playbackQueue={playbackQueue}
@@ -109,9 +108,8 @@ export function MusicTrackCard({
           {track.provider === MUSIC_PROVIDER.SPOTIFY ? (
             <TrackLyrics track={track} />
           ) : null}
-          <div className="order-2">
-            <AddToPlaylistButton track={track} />
-          </div>
+          <AddToPlaylistButton track={track} />
+          <ShareTrackButton track={track} />
         </div>
       </CardContent>
     </Card>
