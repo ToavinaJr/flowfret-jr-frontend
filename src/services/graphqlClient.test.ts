@@ -138,6 +138,7 @@ describe("graphqlClient authentication retry", () => {
     const lockRequest = vi.fn(
       async (_name: string, callback: () => Promise<boolean>) => callback(),
     );
+    const previousLocks = Object.getOwnPropertyDescriptor(navigator, "locks");
     Object.defineProperty(navigator, "locks", {
       configurable: true,
       value: { request: lockRequest },
@@ -148,13 +149,19 @@ describe("graphqlClient authentication retry", () => {
       }),
     );
 
-    await expect(refreshAccessToken()).resolves.toBe(true);
+    try {
+      await expect(refreshAccessToken()).resolves.toBe(true);
 
-    expect(lockRequest).toHaveBeenCalledWith(
-      "flowfret:auth-refresh",
-      expect.any(Function),
-    );
-    expect(getAccessToken()).toBe("fresh-token");
+      expect(lockRequest).toHaveBeenCalledWith(
+        "flowfret:auth-refresh",
+        expect.any(Function),
+      );
+      expect(getAccessToken()).toBe("fresh-token");
+    } finally {
+      if (previousLocks)
+        Object.defineProperty(navigator, "locks", previousLocks);
+      else Reflect.deleteProperty(navigator, "locks");
+    }
   });
 
   it("serializes refresh requests from separate tab clients", async () => {
