@@ -31,7 +31,7 @@ describe("MenuPage", () => {
   it("lists secondary destinations by section and omits bottom tabs", () => {
     renderPage();
 
-    ["Playlists", "Guitar lessons", "Friends", "Settings", "Help", "History", "Contact"].forEach(
+    ["Library", "Guitar lessons", "Friends", "Settings", "Help", "History", "Contact"].forEach(
       (name) => expect(screen.getByRole("link", { name })).toBeInTheDocument(),
     );
     expect(screen.queryByRole("link", { name: "Chords" })).toBeNull();

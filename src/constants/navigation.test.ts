@@ -21,15 +21,18 @@ describe("app navigation", () => {
   });
 
   it("keeps every previously reachable screen in the navigation", () => {
-    const reachable = new Set([
-      ...sidebarPaths,
-      ...MOBILE_TAB_ITEMS.map((item) => item.path),
-    ]);
+    const reachable = new Set(
+      [...NAV_SECTIONS.flatMap((section) => section.items), ...MOBILE_TAB_ITEMS].flatMap(
+        (item) => [item.path, ...(item.matchPaths ?? [])],
+      ),
+    );
     [
       "/",
       "/music",
       "/recommendations",
       "/stats",
+      "/library",
+      "/favorites",
       "/playlists",
       "/transcriptions",
       "/teaching",

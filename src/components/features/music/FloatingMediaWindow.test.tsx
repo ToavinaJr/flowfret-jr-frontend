@@ -56,7 +56,7 @@ describe("FloatingMediaWindow", () => {
     expect(saved).toMatchObject({ x: initialLeft + 40, y: initialTop - 25 });
   });
 
-  it("allows dragging a window beyond every viewport edge", () => {
+  it("keeps a dragged window within the viewport and desktop workspace", () => {
     renderWindow();
     const dialog = screen.getByRole("dialog", { name: "Chord window" });
     const header = screen.getByRole("heading", { name: "Chord window" }).parentElement!;
@@ -65,8 +65,14 @@ describe("FloatingMediaWindow", () => {
     fireEvent.pointerMove(dialog, { pointerId: 3, clientX: -400, clientY: -400 });
     fireEvent.pointerUp(dialog, { pointerId: 3 });
 
-    expect(Number.parseInt(dialog.style.left, 10)).toBeLessThan(0);
-    expect(Number.parseInt(dialog.style.top, 10)).toBeLessThan(0);
+    const left = Number.parseInt(dialog.style.left, 10);
+    const top = Number.parseInt(dialog.style.top, 10);
+    const width = Number.parseInt(dialog.style.width, 10);
+    const height = Number.parseInt(dialog.style.height, 10);
+    expect(left).toBeGreaterThanOrEqual(296);
+    expect(top).toBeGreaterThanOrEqual(8);
+    expect(left + width).toBeLessThanOrEqual(window.innerWidth - 8);
+    expect(top + height).toBeLessThanOrEqual(window.innerHeight - 8 - 88);
   });
 
   it("starts moving from non-interactive content inside the window", () => {
@@ -77,16 +83,16 @@ describe("FloatingMediaWindow", () => {
     const initialTop = Number.parseInt(dialog.style.top, 10);
 
     fireEvent.pointerDown(content, { pointerId: 4, clientX: 40, clientY: 40 });
-    fireEvent.pointerMove(dialog, { pointerId: 4, clientX: 55, clientY: 52 });
+    fireEvent.pointerMove(dialog, { pointerId: 4, clientX: 55, clientY: 28 });
     fireEvent.pointerUp(dialog, { pointerId: 4 });
 
-    expect(dialog).toHaveStyle({ left: `${initialLeft + 15}px`, top: `${initialTop + 12}px` });
+    expect(dialog).toHaveStyle({ left: `${initialLeft + 15}px`, top: `${initialTop - 12}px` });
   });
 
   it.each([
     { edge: "top", deltaX: 0, deltaY: 20, widthChange: 0, heightChange: -20, xChange: 0, yChange: 20 },
     { edge: "right", deltaX: 20, deltaY: 0, widthChange: 20, heightChange: 0, xChange: 0, yChange: 0 },
-    { edge: "bottom", deltaX: 0, deltaY: 20, widthChange: 0, heightChange: 20, xChange: 0, yChange: 0 },
+    { edge: "bottom", deltaX: 0, deltaY: -20, widthChange: 0, heightChange: -20, xChange: 0, yChange: 0 },
     { edge: "left", deltaX: 20, deltaY: 0, widthChange: -20, heightChange: 0, xChange: 20, yChange: 0 },
   ])("resizes from the $edge edge while keeping the opposite edge fixed", ({ edge, deltaX, deltaY, widthChange, heightChange, xChange, yChange }) => {
     renderWindow();
@@ -153,7 +159,7 @@ describe("FloatingMediaWindow", () => {
     expect(Number.parseInt(lyrics.style.left, 10) + Number.parseInt(lyrics.style.width, 10)).toBeLessThanOrEqual(1024);
   });
 
-  it("preserves saved window sizes even when they exceed the viewport", () => {
+  it("clamps saved window sizes to the available viewport", () => {
     localStorage.setItem("flowfret.media-window.chords.v1", JSON.stringify({ x: 900, y: 900, width: 600, height: 500 }));
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 320 });
     Object.defineProperty(window, "innerHeight", { configurable: true, value: 180 });
@@ -161,8 +167,8 @@ describe("FloatingMediaWindow", () => {
     renderWindow();
 
     const dialog = screen.getByRole("dialog", { name: "Chord window" });
-    expect(Number.parseInt(dialog.style.width, 10)).toBe(600);
-    expect(Number.parseInt(dialog.style.height, 10)).toBe(500);
+    expect(Number.parseInt(dialog.style.width, 10)).toBe(304);
+    expect(Number.parseInt(dialog.style.height, 10)).toBe(104);
     expect(Number.parseInt(dialog.style.left, 10)).toBe(8);
     expect(Number.parseInt(dialog.style.top, 10)).toBe(8);
   });
@@ -176,19 +182,22 @@ describe("FloatingMediaWindow", () => {
     expect(Number.parseInt(dialog.style.height, 10)).toBe(180);
   });
 
-  it("allows resizing beyond the viewport without a maximum size", () => {
+  it("clamps pointer resizing to the available viewport", () => {
     renderWindow();
     const dialog = screen.getByRole("dialog", { name: "Chord window" });
     const resizeButton = document.querySelector<HTMLButtonElement>('[data-resize-edge="corner"]')!;
-    const initialWidth = Number.parseInt(dialog.style.width, 10);
-    const initialHeight = Number.parseInt(dialog.style.height, 10);
-
     fireEvent.pointerDown(resizeButton, { pointerId: 6, clientX: 400, clientY: 500 });
     fireEvent.pointerMove(dialog, { pointerId: 6, clientX: 400 + window.innerWidth, clientY: 500 + window.innerHeight });
     fireEvent.pointerUp(dialog, { pointerId: 6 });
 
-    expect(Number.parseInt(dialog.style.width, 10)).toBe(initialWidth + window.innerWidth);
-    expect(Number.parseInt(dialog.style.height, 10)).toBe(initialHeight + window.innerHeight);
+    const left = Number.parseInt(dialog.style.left, 10);
+    const top = Number.parseInt(dialog.style.top, 10);
+    const width = Number.parseInt(dialog.style.width, 10);
+    const height = Number.parseInt(dialog.style.height, 10);
+    expect(width).toBeLessThanOrEqual(window.innerWidth - 16);
+    expect(height).toBeLessThanOrEqual(window.innerHeight - 16 - 88);
+    expect(left + width).toBeLessThanOrEqual(window.innerWidth - 8);
+    expect(top + height).toBeLessThanOrEqual(window.innerHeight - 8 - 88);
   });
 
   it("stacks both windows without overlap on a narrow viewport", () => {
