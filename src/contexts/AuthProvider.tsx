@@ -12,6 +12,7 @@ import type {
   RegisterInput,
   VerifyEmailInput,
 } from "@/types/auth";
+import { ApiClientError } from "@/types/api";
 import {
   loginUser,
   loginWithGoogleUser,
@@ -25,7 +26,11 @@ import {
   verifyEmailUser,
 } from "@/services/api";
 import { clearPlaybackSession } from "@/services/playbackSession";
-import { AUTH_SESSION_CLEARED_EVENT } from "@/services/authToken";
+import {
+  AUTH_SESSION_CLEARED_EVENT,
+  clearAuthSession,
+  getAccessToken,
+} from "@/services/authToken";
 import { AuthContext } from "./authContext";
 
 interface AuthProviderProps {
@@ -53,20 +58,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     let active = true;
-    void restoreSession()
-      .then((session) => {
-        if (!active) return;
-        setUser(session.user);
-        setStatus("authenticated");
-      })
-      .catch(() => {
-        if (!active) return;
-        clearPlaybackSession();
-        setUser(null);
-        setStatus("unauthenticated");
-      });
+    let retryAttempt = 0;
+    let retryTimer: number | null = null;
+
+    const attemptRestore = () => {
+      void restoreSession()
+        .then((session) => {
+          if (!active) return;
+          setUser(session.user);
+          setStatus("authenticated");
+        })
+        .catch((error: unknown) => {
+          if (!active) return;
+          if (isExplicitAuthenticationFailure(error)) {
+            if (getAccessToken()) clearAuthSession();
+            clearPlaybackSession();
+            setUser(null);
+            setStatus("unauthenticated");
+            return;
+          }
+
+          const delayMs = Math.min(1_000 * 2 ** retryAttempt, 30_000);
+          retryAttempt = Math.min(retryAttempt + 1, 5);
+          retryTimer = window.setTimeout(attemptRestore, delayMs);
+        });
+    };
+
+    attemptRestore();
     return () => {
       active = false;
+      if (retryTimer !== null) window.clearTimeout(retryTimer);
     };
   }, []);
 
@@ -153,4 +174,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+function isExplicitAuthenticationFailure(error: unknown): boolean {
+  return (
+    error instanceof ApiClientError &&
+    (error.status === 401 ||
+      error.graphQLErrors.some(
+        (item) => item.extensions?.code === "UNAUTHENTICATED",
+      ))
+  );
 }

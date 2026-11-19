@@ -18,6 +18,10 @@ interface GraphQLRequestOptions {
 
 let refreshPromise: Promise<boolean> | null = null;
 const GRAPHQL_TIMEOUT_MS = 15_000;
+const AUTH_REFRESH_LOCK = "flowfret:auth-refresh";
+const AUTH_REFRESH_LOCK_KEY = "flowfret:auth-refresh-lock";
+const AUTH_REFRESH_LOCK_TTL_MS = 30_000;
+type AuthRefreshLock = { owner?: string; expiresAt?: number };
 
 async function fetchGraphQL(
   input: RequestInfo | URL,
@@ -39,7 +43,7 @@ function isAuthenticationError(message: string): boolean {
 /** Refresh the access token using the HttpOnly session cookie. Shared by GraphQL and REST clients. */
 export async function refreshAccessToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise;
-  refreshPromise = (async () => {
+  refreshPromise = withAuthRefreshLock(async () => {
     try {
       const response = await fetchGraphQL(GRAPHQL_URL, {
         method: "POST",
@@ -52,23 +56,108 @@ export async function refreshAccessToken(): Promise<boolean> {
           query: `mutation RefreshSession { refreshSession { accessToken } }`,
         }),
       });
+      if (response.status === 401) {
+        clearAuthSession();
+        return false;
+      }
+      if (!response.ok) return false;
+
       const body = (await response.json()) as GraphQLResponse<{
         refreshSession: { accessToken: string };
       }>;
       const session = body.data?.refreshSession;
-      if (!response.ok || body.errors?.length || !session) {
+      if (body.errors?.some(isExplicitAuthenticationRejection)) {
         clearAuthSession();
         return false;
       }
+      if (body.errors?.length || !session) return false;
       setAccessToken(session.accessToken);
       return true;
     } catch {
       return false;
     }
-  })().finally(() => {
+  }).catch(() => false).finally(() => {
     refreshPromise = null;
   });
   return refreshPromise;
+}
+
+function isExplicitAuthenticationRejection(
+  error: NonNullable<GraphQLResponse<never>["errors"]>[number],
+): boolean {
+  return error.extensions?.code === "UNAUTHENTICATED";
+}
+
+async function withAuthRefreshLock<T>(operation: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== "undefined" && navigator.locks?.request) {
+    return navigator.locks.request(AUTH_REFRESH_LOCK, operation);
+  }
+
+  return withLocalStorageRefreshLock(operation);
+}
+
+async function withLocalStorageRefreshLock<T>(
+  operation: () => Promise<T>,
+): Promise<T> {
+  if (typeof window === "undefined") return operation();
+
+  let storage: Storage;
+  try {
+    storage = window.localStorage;
+  } catch {
+    return operation();
+  }
+
+  const owner = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const deadline = Date.now() + GRAPHQL_TIMEOUT_MS + 5_000;
+  while (Date.now() < deadline) {
+    let current: AuthRefreshLock | null = null;
+    try {
+      const value = storage.getItem(AUTH_REFRESH_LOCK_KEY);
+      current = value ? (JSON.parse(value) as AuthRefreshLock) : null;
+    } catch {
+      current = null;
+    }
+
+    if (!current?.owner || (current.expiresAt ?? 0) <= Date.now()) {
+      let claimed = false;
+      try {
+        storage.setItem(
+          AUTH_REFRESH_LOCK_KEY,
+          JSON.stringify({
+            owner,
+            expiresAt: Date.now() + AUTH_REFRESH_LOCK_TTL_MS,
+          }),
+        );
+        const storedClaim = JSON.parse(
+          storage.getItem(AUTH_REFRESH_LOCK_KEY) ?? "null",
+        ) as AuthRefreshLock | null;
+        claimed = storedClaim?.owner === owner;
+      } catch {
+        return operation();
+      }
+      if (claimed) {
+        try {
+          return await operation();
+        } finally {
+          try {
+            const latest = JSON.parse(
+              storage.getItem(AUTH_REFRESH_LOCK_KEY) ?? "null",
+            ) as AuthRefreshLock | null;
+            if (latest?.owner === owner)
+              storage.removeItem(AUTH_REFRESH_LOCK_KEY);
+          } catch {
+            // The operation already completed; an unavailable storage cleanup
+            // must not turn its result into a failed refresh.
+          }
+        }
+      }
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
+
+  throw new Error("Timed out waiting for the cross-tab refresh lock");
 }
 
 function toSafeApiError(
