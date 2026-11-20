@@ -1,4 +1,4 @@
-import { readdir, mkdir, rm, writeFile } from 'node:fs/promises';
+import { readdir, readFile, mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import ts from 'typescript';
 import { parse } from 'graphql';
@@ -11,7 +11,7 @@ const operationNames = new Set<string>();
 const errors: string[] = [];
 
 for (const filePath of sourceFiles) {
-  const sourceText = await Bun.file(filePath).text();
+  const sourceText = await readFile(filePath, 'utf8');
   const sourceFile = ts.createSourceFile(
     filePath,
     sourceText,
