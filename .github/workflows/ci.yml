@@ -18,6 +18,8 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun audit --audit-level=high
       - run: bun run validate
+      - name: Check generated GraphQL types are committed
+        run: git diff --exit-code -- src/generated/graphql.ts
       - name: Install Playwright Chromium
         run: bunx playwright install --with-deps chromium
       - name: Run browser end-to-end tests

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "bun run graphql:codegen && vite build && bun run check:bundle-budget",
+    "build": "vite build && bun run check:bundle-budget",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "typecheck": "bun run graphql:codegen && tsc -b",
@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "graphql:sync-schema": "node scripts/sync-graphql-schema.mjs",
     "graphql:codegen": "bun scripts/extract-graphql-documents.ts && bun node_modules/@graphql-codegen/cli/cjs/bin.js --config codegen.yml",
     "check:bundle-budget": "node scripts/check-bundle-budget.mjs",
     "validate": "bun run typecheck && bun run lint && bun run test && bun run build"
