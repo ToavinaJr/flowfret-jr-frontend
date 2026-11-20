@@ -10,6 +10,7 @@ import type {
   AuthUser,
   LoginInput,
   RegisterInput,
+  RegisterPendingResult,
   VerifyEmailInput,
 } from "@/types/auth";
 import { ApiClientError } from "@/types/api";
@@ -104,11 +105,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const register = useCallback(
-    async (data: RegisterInput) => {
-      const session = await registerUser(data);
-      setUser(session.user);
-      setStatus("authenticated");
-    },
+    (data: RegisterInput): Promise<RegisterPendingResult> => registerUser(data),
     [],
   );
 

@@ -201,14 +201,20 @@ export function useAuthGateFlow() {
     }
     assertPasswords(state.password, state.confirmPassword, t);
     if (!acceptedTerms) throw new LocalAuthError(t("auth.errors.acceptTerms"));
-    await auth.register({
+    const pending = await auth.register({
       email: state.email,
       password: state.password,
       username: state.username,
     });
     form.resetForm();
     setAcceptedTerms(false);
-    toast.success(t("auth.toasts.accountCreated"));
+    setVerificationToken(pending.verificationToken);
+    setPendingEmail(pending.email);
+    setMode("verify");
+    navigate(`/verify-email?token=${encodeURIComponent(pending.verificationToken)}`);
+    toast.success(t("auth.toasts.otpSent"), {
+      description: t("auth.toasts.verificationSentDescription"),
+    });
   }
 
   async function handleResendOtp() {
@@ -225,7 +231,7 @@ export function useAuthGateFlow() {
       setVerificationToken(pending.verificationToken);
       setPendingEmail(pending.email);
       toast.success(t("auth.toasts.newOtpSent"), {
-        description: pending.message,
+        description: t("auth.toasts.verificationSentDescription"),
       });
     } catch (cause) {
       setError(

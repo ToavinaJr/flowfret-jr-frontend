@@ -1,7 +1,7 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiClientError } from "@/types/api";
-import { restoreSession } from "@/services/api";
+import { registerUser, restoreSession } from "@/services/api";
 import { clearPlaybackSession } from "@/services/playbackSession";
 import { AuthContext } from "./authContext";
 import { AuthProvider } from "./AuthProvider";
@@ -28,6 +28,31 @@ function renderAuthStatus() {
     <AuthProvider>
       <AuthContext.Consumer>
         {(value) => <span>{value?.status ?? "missing"}</span>}
+      </AuthContext.Consumer>
+    </AuthProvider>,
+  );
+}
+
+function renderRegistrationAction() {
+  return render(
+    <AuthProvider>
+      <AuthContext.Consumer>
+        {(value) => (
+          <>
+            <span>{value?.status ?? "missing"}</span>
+            <button
+              onClick={() =>
+                void value?.register({
+                  email: "player@example.test",
+                  username: "player",
+                  password: "password-123",
+                })
+              }
+            >
+              register
+            </button>
+          </>
+        )}
       </AuthContext.Consumer>
     </AuthProvider>,
   );
@@ -86,5 +111,30 @@ describe("AuthProvider session restoration", () => {
 
     expect(screen.getByText("unauthenticated")).toBeInTheDocument();
     expect(clearPlaybackSession).toHaveBeenCalledOnce();
+  });
+
+  it("keeps a new account unauthenticated until its email is verified", async () => {
+    vi.mocked(restoreSession).mockRejectedValue(
+      new ApiClientError("Unauthorized", 401),
+    );
+    vi.mocked(registerUser).mockResolvedValue({
+      email: "player@example.test",
+      verificationToken: "verification-token",
+      expiresAt: new Date().toISOString(),
+      message: "Verification required",
+    });
+
+    renderRegistrationAction();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "register" }));
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByText("unauthenticated")).toBeInTheDocument();
   });
 });

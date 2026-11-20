@@ -1,0 +1,11 @@
+schema: ../backend/schema.graphql
+documents: .graphql-documents/**/*.graphql
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - typescript-operations
+    config:
+      avoidOptionals: true
+      immutableTypes: true
+      maybeValue: T | null
+      preResolveTypes: true

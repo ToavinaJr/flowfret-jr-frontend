@@ -842,6 +842,7 @@
       "accountCreated": "Account created. Welcome to FlowFret!",
       "accountVerified": "Account verified. Welcome!",
       "otpSent": "OTP code sent",
+      "verificationSentDescription": "Check your email for the four-digit verification code.",
       "newOtpSent": "New code sent"
     },
     "terms": {

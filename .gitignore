@@ -31,3 +31,4 @@ dist-ssr
 .env.production
 !.env.example
 .env.development
+.graphql-documents/

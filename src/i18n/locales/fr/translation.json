@@ -842,6 +842,7 @@
       "accountCreated": "Compte créé. Bienvenue sur FlowFret !",
       "accountVerified": "Compte vérifié. Bienvenue !",
       "otpSent": "Code OTP envoyé",
+      "verificationSentDescription": "Vérifiez votre e-mail pour le code de vérification à quatre chiffres.",
       "newOtpSent": "Nouveau code envoyé"
     },
     "terms": {
