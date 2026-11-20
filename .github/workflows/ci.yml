@@ -18,3 +18,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun audit --audit-level=high
       - run: bun run validate
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+      - name: Run browser end-to-end tests
+        run: bun run test:e2e
