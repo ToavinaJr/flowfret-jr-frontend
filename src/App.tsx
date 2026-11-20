@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { PlaybackProvider } from "@/contexts/PlaybackContext";
 import { CapoProvider } from "@/contexts/CapoContext";
+import { NotationProvider } from "@/contexts/NotationContext";
 import { AppShellSkeleton } from "@/components/skeletons/AppShellSkeleton";
 import AppLayout from "@/components/AppLayout";
 import ToolsLayout from "@/components/ToolsLayout";
@@ -24,6 +25,7 @@ const UploadPage = lazy(() => import("@/pages/UploadPage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const MetronomePage = lazy(() => import("@/pages/MetronomePage"));
 const ScalesPage = lazy(() => import("@/pages/ScalesPage"));
+const QuizPage = lazy(() => import("@/pages/QuizPage"));
 const MenuPage = lazy(() => import("@/pages/MenuPage"));
 const HistoirePage = lazy(() => import("@/pages/HistoirePage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
@@ -76,6 +78,7 @@ const App = () => {
             <BrowserRouter>
               <ScrollToTop />
               <CapoProvider>
+                <NotationProvider>
                 <PlaybackProvider>
                   <AuthGate>
                     <Suspense fallback={<AppShellSkeleton />}>
@@ -95,6 +98,7 @@ const App = () => {
                               element={<MetronomePage />}
                             />
                           </Route>
+                          <Route path="/quiz" element={<QuizPage />} />
                           <Route path="/upload" element={<UploadPage />} />
                           <Route path="/music" element={<MusicSearchPage />} />
                           <Route path="/recommendations" element={<RecommendationsPage />} />
@@ -191,6 +195,7 @@ const App = () => {
                     <PersistentMediaPlayer />
                   </Suspense>
                 </PlaybackProvider>
+                </NotationProvider>
               </CapoProvider>
             </BrowserRouter>
           </AuthProvider>

@@ -21,6 +21,7 @@ import {
   BarChart3,
   Mail,
   Wrench,
+  Trophy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -74,6 +75,7 @@ export const NAV_SECTIONS: AppNavSection[] = [
     items: [
       { icon: GraduationCap, translationKey: "nav.courses", path: "/teaching" },
       ...TOOL_NAV_ITEMS,
+      { icon: Trophy, translationKey: "nav.quiz", path: "/quiz" },
     ],
   },
   {

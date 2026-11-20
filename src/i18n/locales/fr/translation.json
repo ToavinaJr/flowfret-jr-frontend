@@ -35,7 +35,8 @@
     "friends": "Amis",
     "notifications": "Notifications",
     "messages": "Messages",
-    "profile": "Profil"
+    "profile": "Profil",
+    "quiz": "Quiz"
   },
   "settings": {
     "title": "Paramètres",
@@ -48,11 +49,86 @@
     "system": "Système",
     "english": "English",
     "french": "Français",
+    "notation": "Notation des notes",
+    "notationDescription": "Choisissez comment les notes et les accords sont affichés dans les quiz.",
+    "notationStyles": {
+      "letters": "Lettres ({{example}})",
+      "solfege": "Solfège ({{example}})"
+    },
     "logout": "Se déconnecter",
     "logoutConfirmationTitle": "Se déconnecter de FlowFret ?",
     "logoutConfirmationDescription": "Votre session actuelle sera fermée sur cet appareil.",
     "logoutConfirm": "Se déconnecter",
     "logoutCancel": "Rester connecté"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "subtitle": "Entraînez-vous sur les accords : reconnaître, transposer et placer vos doigts sur le manche.",
+    "options": "Réponses possibles",
+    "validate": "Valider",
+    "next": "Question suivante",
+    "seeResult": "Voir le résultat",
+    "progress": "Question {{current}} sur {{total}}",
+    "progressLabel": "Progression du quiz",
+    "score": "Score : {{correct}}",
+    "setup": {
+      "kinds": "Types de questions",
+      "difficulty": "Difficulté",
+      "basic": "Débutant",
+      "basicHint": "Notes et accords majeurs/mineurs",
+      "advanced": "Avancé",
+      "advancedHint": "7e, sus, dim, aug…",
+      "best": "Record : {{correct}}/{{total}}",
+      "noKind": "Sélectionnez au moins un type de question.",
+      "start": "Commencer le quiz"
+    },
+    "kinds": {
+      "identify": {
+        "title": "Reconnaître l'accord",
+        "description": "Un diagramme s'affiche, trouvez le nom de l'accord."
+      },
+      "transpose": {
+        "title": "Transposer",
+        "description": "Trouvez la note ou l'accord obtenu après un décalage en demi-tons."
+      },
+      "place": {
+        "title": "Placer les doigts",
+        "description": "Construisez l'accord demandé sur le manche."
+      }
+    },
+    "prompt": {
+      "identify": "Quel est cet accord ?",
+      "place": "Placez vos doigts pour l'accord de {{name}}",
+      "transposeUp_one": "Quelle est la transposée de {{name}} de {{count}} demi-ton vers le haut ?",
+      "transposeUp_other": "Quelle est la transposée de {{name}} de {{count}} demi-tons vers le haut ?",
+      "transposeDown_one": "Quelle est la transposée de {{name}} de {{count}} demi-ton vers le bas ?",
+      "transposeDown_other": "Quelle est la transposée de {{name}} de {{count}} demi-tons vers le bas ?"
+    },
+    "fretboard": {
+      "label": "Manche de guitare",
+      "hint": "Touchez une case pour poser un doigt, la ligne 0 pour une corde à vide. Une corde sans repère est étouffée. Jouez au moins 3 cordes.",
+      "cell": "Corde {{string}} ({{note}}), case {{fret}}",
+      "cellOpen": "Corde {{string}} ({{note}}), à vide",
+      "clear": "Effacer",
+      "minStrings": "Jouez au moins 3 cordes pour valider."
+    },
+    "feedback": {
+      "correct": "Bonne réponse !",
+      "wrong": "Ce n'est pas la bonne réponse.",
+      "answerWas": "La bonne réponse était : {{answer}}",
+      "example": "Voici un exemple de doigté pour {{name}} :"
+    },
+    "result": {
+      "title": "Quiz terminé",
+      "score": "{{correct}} / {{total}}",
+      "percent": "{{percent}} % de bonnes réponses",
+      "record": "Nouveau record !",
+      "details": "Détail des questions",
+      "itemCorrect": "Question {{number}} : correcte",
+      "itemWrong": "Question {{number}} : incorrecte",
+      "replay": "Rejouer",
+      "changeSettings": "Modifier les réglages"
+    }
   },
   "equalizer": {
     "simulated": "Mode expérimental : modèles simulés. Des voix peuvent rester et certains instruments peuvent être atténués.",

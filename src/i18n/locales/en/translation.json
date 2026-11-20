@@ -35,7 +35,8 @@
     "friends": "Friends",
     "notifications": "Notifications",
     "messages": "Messages",
-    "profile": "Profile"
+    "profile": "Profile",
+    "quiz": "Quiz"
   },
   "settings": {
     "title": "Settings",
@@ -48,11 +49,86 @@
     "system": "System",
     "english": "English",
     "french": "Français",
+    "notation": "Note names",
+    "notationDescription": "Choose how notes and chords are displayed in quizzes.",
+    "notationStyles": {
+      "letters": "Letters ({{example}})",
+      "solfege": "Solfège ({{example}})"
+    },
     "logout": "Log out",
     "logoutConfirmationTitle": "Log out of FlowFret?",
     "logoutConfirmationDescription": "Your current session will be closed on this device.",
     "logoutConfirm": "Log out",
     "logoutCancel": "Stay signed in"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "subtitle": "Practise chords: recognise them, transpose them and place your fingers on the fretboard.",
+    "options": "Possible answers",
+    "validate": "Check",
+    "next": "Next question",
+    "seeResult": "See results",
+    "progress": "Question {{current}} of {{total}}",
+    "progressLabel": "Quiz progress",
+    "score": "Score: {{correct}}",
+    "setup": {
+      "kinds": "Question types",
+      "difficulty": "Difficulty",
+      "basic": "Beginner",
+      "basicHint": "Notes and major/minor chords",
+      "advanced": "Advanced",
+      "advancedHint": "7th, sus, dim, aug…",
+      "best": "Best: {{correct}}/{{total}}",
+      "noKind": "Select at least one question type.",
+      "start": "Start quiz"
+    },
+    "kinds": {
+      "identify": {
+        "title": "Recognise the chord",
+        "description": "A diagram is shown, find the chord name."
+      },
+      "transpose": {
+        "title": "Transpose",
+        "description": "Find the note or chord after shifting by semitones."
+      },
+      "place": {
+        "title": "Place your fingers",
+        "description": "Build the requested chord on the fretboard."
+      }
+    },
+    "prompt": {
+      "identify": "Which chord is this?",
+      "place": "Place your fingers for the {{name}} chord",
+      "transposeUp_one": "What is {{name}} transposed up by {{count}} semitone?",
+      "transposeUp_other": "What is {{name}} transposed up by {{count}} semitones?",
+      "transposeDown_one": "What is {{name}} transposed down by {{count}} semitone?",
+      "transposeDown_other": "What is {{name}} transposed down by {{count}} semitones?"
+    },
+    "fretboard": {
+      "label": "Guitar fretboard",
+      "hint": "Tap a cell to place a finger, the 0 row for an open string. A string without a marker is muted. Play at least 3 strings.",
+      "cell": "String {{string}} ({{note}}), fret {{fret}}",
+      "cellOpen": "String {{string}} ({{note}}), open",
+      "clear": "Clear",
+      "minStrings": "Play at least 3 strings to check."
+    },
+    "feedback": {
+      "correct": "Correct!",
+      "wrong": "That's not the right answer.",
+      "answerWas": "The correct answer was: {{answer}}",
+      "example": "Here is an example fingering for {{name}}:"
+    },
+    "result": {
+      "title": "Quiz complete",
+      "score": "{{correct}} / {{total}}",
+      "percent": "{{percent}}% correct",
+      "record": "New personal best!",
+      "details": "Question breakdown",
+      "itemCorrect": "Question {{number}}: correct",
+      "itemWrong": "Question {{number}}: incorrect",
+      "replay": "Play again",
+      "changeSettings": "Change settings"
+    }
   },
   "equalizer": {
     "simulated": "Experimental mode: simulated models. Vocals may remain and some instruments may be reduced.",
