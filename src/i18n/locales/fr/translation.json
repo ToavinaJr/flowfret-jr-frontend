@@ -1047,6 +1047,8 @@
     "search": "Rechercher",
     "searching": "Recherche",
     "queryRequired": "Saisissez un titre ou un artiste.",
+    "recentSearches": "Recherches récentes",
+    "clearRecentSearches": "Effacer l’historique",
     "emptyBeforeSearch": "Lancez une recherche pour afficher des morceaux.",
     "listeningHistory": "Votre historique d’écoute",
     "recommendationsTitle": "Suggestions pour vous",
@@ -1571,8 +1573,6 @@
       "periodPlays": "Écoutes sur la période"
     },
     "search": "Rechercher",
-    "recentSearches": "Recherches récentes",
-    "clearRecentSearches": "Effacer l’historique",
     "searchPlaceholder": "Rechercher dans cette section…",
     "total": "{{count}} élément(s)",
     "loadFailed": "Impossible de charger ces données.",

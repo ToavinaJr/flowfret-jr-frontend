@@ -112,7 +112,7 @@ test("overview fits narrow screens and section cards have no numeric badges", as
     await expect.poll(() => chart.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   }
   const sectionCards = page.locator("div.mt-8").filter({ has: page.getByRole("heading", { name: /management workflow/i }) }).locator("ul a[href^='/admin/']");
-  await expect(sectionCards).toHaveCount(7);
+  await expect(sectionCards).toHaveCount(8);
   await expect(sectionCards.locator("span.rounded-full")).toHaveCount(0);
   const dayCount = page.getByRole("link", { name: /open 1 members for/i });
   await expect(dayCount).toHaveText("1");

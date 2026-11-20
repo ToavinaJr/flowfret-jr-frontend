@@ -371,7 +371,7 @@
     },
     "openPreferences": "Open notification settings",
     "closePreferences": "Close notification settings",
-    "preferencesLoading": "Loading notification settingsâ€¦",
+    "preferencesLoading": "Loading notification settings…",
     "preferencesLoadError": "Unable to load notification settings.",
     "preferenceUpdated": "Preference updated.",
     "preferenceError": "Unable to update this preference.",
