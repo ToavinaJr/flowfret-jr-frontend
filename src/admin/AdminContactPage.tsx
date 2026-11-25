@@ -61,15 +61,20 @@ export default function AdminContactPage() {
                 <ContactMessageCard key={message.id} message={message} locale={i18n.language} onStatusChange={(nextStatus) => update.mutate({ id: message.id, nextStatus })} pending={update.isPending} />
               ))}
             </div>
-            <div className="hidden overflow-x-auto lg:block">
-              <table className="w-full table-fixed text-left text-sm">
-                <thead className="bg-secondary/60 text-xs text-muted-foreground">
+            <div
+              role="region"
+              aria-label={t('admin.contact.title')}
+              tabIndex={0}
+              className="hidden max-w-full overflow-x-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary lg:block"
+            >
+              <table className="w-full min-w-[1040px] table-fixed text-left text-sm">
+                <thead className="border-b border-border bg-secondary/60 text-xs font-semibold tracking-wide text-foreground">
                   <tr>
-                    <th scope="col" className="w-48 px-4 py-3">{t('admin.contact.sender')}</th>
-                    <th scope="col" className="w-56 px-4 py-3">{t('admin.contact.subject')}</th>
-                    <th scope="col" className="px-4 py-3">{t('admin.contact.message')}</th>
-                    <th scope="col" className="w-44 px-4 py-3">{t('admin.contact.received')}</th>
-                    <th scope="col" className="w-44 px-4 py-3">{t('admin.contact.status.label')}</th>
+                    <th scope="col" className="w-48 px-4 py-3.5">{t('admin.contact.sender')}</th>
+                    <th scope="col" className="w-48 px-4 py-3.5">{t('admin.contact.subject')}</th>
+                    <th scope="col" className="px-4 py-3.5">{t('admin.contact.message')}</th>
+                    <th scope="col" className="w-40 px-4 py-3.5">{t('admin.contact.received')}</th>
+                    <th scope="col" className="w-40 px-4 py-3.5">{t('admin.contact.status.label')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">

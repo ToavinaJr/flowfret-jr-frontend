@@ -364,15 +364,20 @@ export default function AdminListPage<T extends { id: string }>({
           </div>
         ) : null}
 
-        <div className="w-full overflow-x-auto">
+        <div
+          role="region"
+          aria-labelledby={`admin-${section}-title`}
+          tabIndex={0}
+          className="w-full overflow-x-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
           <table className="w-full min-w-[760px] table-fixed border-collapse text-left text-sm">
-            <thead className="text-xs text-muted-foreground">
+            <thead className="border-b border-border bg-secondary/60 text-xs font-semibold tracking-wide text-foreground">
               <tr>
                 {columns.map((column) => (
                   <th
                     key={column.key}
                     scope="col"
-                    className={`px-4 py-3 font-medium ${column.className ?? ""}`}
+                    className={`px-4 py-3.5 ${column.className ?? ""}`}
                   >
                     {t(column.labelKey)}
                   </th>
