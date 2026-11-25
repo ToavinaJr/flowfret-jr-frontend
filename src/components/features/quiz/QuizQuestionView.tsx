@@ -24,6 +24,7 @@ interface QuizQuestionViewProps {
   notation: NotationStyle;
   feedback: QuizFeedback | null;
   isLast: boolean;
+  isSubmitting: boolean;
   onSubmit: (answer: QuizAnswer) => void;
   onNext: () => void;
 }
@@ -38,7 +39,7 @@ function optionName(question: LearnerQuestion, ref: ChordRef, notation: Notation
     : chordName(ref, notation);
 }
 
-export function QuizQuestionView({ question, notation, feedback, isLast, onSubmit, onNext }: QuizQuestionViewProps) {
+export function QuizQuestionView({ question, notation, feedback, isLast, isSubmitting, onSubmit, onNext }: QuizQuestionViewProps) {
   const { t } = useTranslation();
   const [frets, setFrets] = useState<readonly number[]>(EMPTY_BOARD);
   const answered = feedback !== null;
@@ -71,7 +72,7 @@ export function QuizQuestionView({ question, notation, feedback, isLast, onSubmi
               <li key={`${option.key}|${option.suffix}`}>
                 <button
                   type="button"
-                  disabled={answered}
+                  disabled={answered || isSubmitting}
                   onClick={() => onSubmit({ kind: "choice", index })}
                   className={`flex min-h-12 w-full items-center justify-between gap-2 rounded-lg border px-4 py-2 text-left text-base transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-default ${tone}`}
                 >
@@ -86,16 +87,16 @@ export function QuizQuestionView({ question, notation, feedback, isLast, onSubmi
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">{t("quiz.fretboard.hint")}</p>
-          <FretboardInput value={frets} notation={notation} disabled={answered} onChange={setFrets} />
+          <FretboardInput value={frets} notation={notation} disabled={answered || isSubmitting} onChange={setFrets} />
           {!answered && (
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button type="button" variant="secondary" className="min-h-11" onClick={() => setFrets(EMPTY_BOARD)}>
+              <Button type="button" variant="secondary" className="min-h-11" disabled={isSubmitting} onClick={() => setFrets(EMPTY_BOARD)}>
                 {t("quiz.fretboard.clear")}
               </Button>
               <Button
                 type="button"
                 className="min-h-11"
-                disabled={soundingStringCount(frets) < MIN_STRINGS_TO_SUBMIT}
+                disabled={isSubmitting || soundingStringCount(frets) < MIN_STRINGS_TO_SUBMIT}
                 onClick={() => onSubmit({ kind: "frets", frets: [...frets] })}
               >
                 {t("quiz.validate")}

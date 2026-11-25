@@ -75,6 +75,8 @@
     "title": "Quiz",
     "loading": "Chargement des quiz…",
     "error": "Une erreur est survenue. Veuillez réessayer.",
+    "startError": "Impossible de démarrer ce quiz. Veuillez réessayer.",
+    "progressError": "Impossible de charger votre progression de quiz.",
     "empty": "Aucun quiz n'est disponible pour le moment.",
     "questionCount": "{{count}} questions",
     "progressSummary": "Meilleur : {{best}} % · Dernier : {{recent}} %",

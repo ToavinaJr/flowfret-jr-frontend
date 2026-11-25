@@ -75,6 +75,8 @@
     "title": "Quiz",
     "loading": "Loading quizzes…",
     "error": "Something went wrong. Please try again.",
+    "startError": "Could not start this quiz. Please try again.",
+    "progressError": "Your quiz progress could not be loaded.",
     "empty": "No quizzes are available yet.",
     "questionCount": "{{count}} questions",
     "progressSummary": "Best: {{best}}% · Latest: {{recent}}%",

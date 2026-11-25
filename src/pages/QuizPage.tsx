@@ -39,26 +39,35 @@ const QuizPage = () => {
       {attempt ? (
         <QuizRun key={attempt.id} attempt={attempt} onLeave={leaveAttempt} />
       ) : (
-        <QuizCatalog quizzes={quizzes.data ?? []} progress={progress.data ?? []} loading={quizzes.isLoading || active.isLoading} error={Boolean(quizzes.error || active.error)} onStart={(id) => start.mutate(id)} starting={start.isPending} />
+        <>
+          {start.error && <p role="alert" className="mb-4 text-sm text-destructive">{t('quiz.startError')}</p>}
+          <QuizCatalog quizzes={quizzes.data ?? []} progress={progress.data ?? []} loading={quizzes.isLoading || active.isLoading} error={Boolean(quizzes.error || active.error)} progressError={Boolean(progress.error)} onStart={(id) => start.mutate(id)} starting={start.isPending} />
+        </>
       )}
     </main>
   );
 };
 
-function QuizCatalog({ quizzes, progress, loading, error, onStart, starting }: { quizzes: QuizCard[]; progress: QuizProgress[]; loading: boolean; error: boolean; onStart: (id: string) => void; starting: boolean }) {
+function QuizCatalog({ quizzes, progress, loading, error, progressError, onStart, starting }: { quizzes: QuizCard[]; progress: QuizProgress[]; loading: boolean; error: boolean; progressError: boolean; onStart: (id: string) => void; starting: boolean }) {
   const { t } = useTranslation();
   if (loading) return <p role="status">{t('quiz.loading')}</p>;
   if (error) return <p role="alert">{t('quiz.error')}</p>;
-  if (!quizzes.length) return <p className="rounded-xl border p-5 text-muted-foreground">{t('quiz.empty')}</p>;
-  return <ul className="grid gap-4 md:grid-cols-2">{quizzes.map((quiz) => (
-    <li key={quiz.id} className="rounded-xl border bg-card p-5">
-      <h2 className="text-lg font-semibold">{quiz.title}</h2>
-      {quiz.description && <p className="mt-1 text-sm text-muted-foreground">{quiz.description}</p>}
-      <p className="mt-3 text-xs text-muted-foreground">{t('quiz.questionCount', { count: quiz._count.questions })}</p>
-      {progress.find((item) => item.quizId === quiz.id) && <p className="mt-1 text-xs text-muted-foreground">{t('quiz.progressSummary', { best: progress.find((item) => item.quizId === quiz.id)?.bestPercentage, recent: progress.find((item) => item.quizId === quiz.id)?.recentPercentage })}</p>}
-      <Button className="mt-4" disabled={starting} onClick={() => onStart(quiz.id)}>{t('quiz.setup.start')}</Button>
-    </li>
-  ))}</ul>;
+  return (
+    <>
+      {progressError && <p role="status" className="mb-4 text-sm text-muted-foreground">{t('quiz.progressError')}</p>}
+      {!quizzes.length ? <p className="rounded-xl border p-5 text-muted-foreground">{t('quiz.empty')}</p> : (
+        <ul className="grid gap-4 md:grid-cols-2">{quizzes.map((quiz) => (
+          <li key={quiz.id} className="rounded-xl border bg-card p-5">
+            <h2 className="text-lg font-semibold">{quiz.title}</h2>
+            {quiz.description && <p className="mt-1 text-sm text-muted-foreground">{quiz.description}</p>}
+            <p className="mt-3 text-xs text-muted-foreground">{t('quiz.questionCount', { count: quiz._count.questions })}</p>
+            {progress.find((item) => item.quizId === quiz.id) && <p className="mt-1 text-xs text-muted-foreground">{t('quiz.progressSummary', { best: progress.find((item) => item.quizId === quiz.id)?.bestPercentage, recent: progress.find((item) => item.quizId === quiz.id)?.recentPercentage })}</p>}
+            <Button className="mt-4" disabled={starting} onClick={() => onStart(quiz.id)}>{t('quiz.setup.start')}</Button>
+          </li>
+        ))}</ul>
+      )}
+    </>
+  );
 }
 
 function QuizRun({ attempt, onLeave }: { attempt: QuizAttempt; onLeave: () => void }) {
@@ -93,7 +102,7 @@ function QuizRun({ attempt, onLeave }: { attempt: QuizAttempt; onLeave: () => vo
     <div role="progressbar" aria-valuemin={0} aria-valuemax={attempt.totalQuestions} aria-valuenow={answeredCount} aria-label={t('quiz.progressLabel')} className="h-1.5 overflow-hidden rounded-full bg-muted">
       <div className="h-full bg-primary transition-all" style={{ width: `${(answeredCount / attempt.totalQuestions) * 100}%` }} />
     </div>
-    <QuizQuestionView question={question} notation={notation} feedback={feedback} isLast={!response?.nextQuestion} onSubmit={(answer) => submit.mutate({ questionId: question.id, answer })} onNext={() => {
+    <QuizQuestionView question={question} notation={notation} feedback={feedback} isLast={!response?.nextQuestion} isSubmitting={submit.isPending} onSubmit={(answer) => submit.mutate({ questionId: question.id, answer })} onNext={() => {
       if (response?.result) setResult(response.result);
       else if (response?.nextQuestion) setQuestion(response.nextQuestion);
       setResponse(null);
