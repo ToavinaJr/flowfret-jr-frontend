@@ -36,7 +36,8 @@
     "notifications": "Notifications",
     "messages": "Messages",
     "profile": "Profil",
-    "quiz": "Quiz"
+    "quiz": "Quiz",
+    "leaderboard": "Classement"
   },
   "settings": {
     "title": "Paramètres",
@@ -61,8 +62,23 @@
     "logoutConfirm": "Se déconnecter",
     "logoutCancel": "Rester connecté"
   },
+  "leaderboard": {
+    "title": "Classement",
+    "periods": { "ALL_TIME": "Général", "WEEK": "Cette semaine", "DAY": "Aujourd'hui" },
+    "points": "{{count}} points",
+    "completed": "{{count}} quiz terminés",
+    "empty": "Aucun quiz terminé sur cette période.",
+    "error": "Impossible de charger le classement. Veuillez réessayer.",
+    "loading": "Chargement du classement…"
+  },
   "quiz": {
     "title": "Quiz",
+    "loading": "Chargement des quiz…",
+    "error": "Une erreur est survenue. Veuillez réessayer.",
+    "empty": "Aucun quiz n'est disponible pour le moment.",
+    "questionCount": "{{count}} questions",
+    "progressSummary": "Meilleur : {{best}} % · Dernier : {{recent}} %",
+    "submitting": "Vérification de votre réponse…",
     "subtitle": "Entraînez-vous sur les accords : reconnaître, transposer et placer vos doigts sur le manche.",
     "options": "Réponses possibles",
     "validate": "Valider",
@@ -127,6 +143,7 @@
       "itemCorrect": "Question {{number}} : correcte",
       "itemWrong": "Question {{number}} : incorrecte",
       "replay": "Rejouer",
+      "back": "Retour aux quiz",
       "changeSettings": "Modifier les réglages"
     }
   },
@@ -1520,10 +1537,37 @@
       "content": "Contenus",
       "media": "Médias",
       "music": "Musique",
+      "quizzes": "Quiz",
       "audit": "Journal d’audit",
       "contact": "Messages de contact",
       "teachers": "Enseignants",
       "data": "Données plateforme"
+    },
+    "adminQuizzes": {
+      "title": "Gérer les quiz",
+      "description": "Créez et publiez des quiz de guitare pour les membres.",
+      "loading": "Chargement des quiz…",
+      "loadError": "Impossible de charger les quiz.",
+      "saveError": "Impossible d'enregistrer le quiz. Vérifiez les questions et réponses.",
+      "invalidQuestions": "Les questions doivent être un tableau JSON de définitions valides.",
+      "create": "Créer un quiz",
+      "questions": "Questions",
+      "questionNumber": "Question {{number}}",
+      "questionKind": "Type de question",
+      "questionDefinition": "Définition de la question {{number}}",
+      "moveUp": "Déplacer la question vers le haut",
+      "moveDown": "Déplacer la question vers le bas",
+      "removeQuestion": "Supprimer la question",
+      "add": { "IDENTIFY": "Ajouter reconnaissance d'accord", "TRANSPOSE": "Ajouter transposition", "PLACE": "Ajouter placement sur le manche" },
+      "edit": "Modifier",
+      "existing": "Quiz existants",
+      "name": "Titre",
+      "summary": "Description",
+      "status": "Statut",
+      "statusOptions": { "DRAFT": "Brouillon", "PUBLISHED": "Publié", "ARCHIVED": "Archivé" },
+      "questionsHelp": "Questions ordonnées (JSON). Chaque élément contient kind et definition.",
+      "save": "Enregistrer le quiz",
+      "cancel": "Annuler"
     },
     "contact": {
       "title": "Messages de contact",

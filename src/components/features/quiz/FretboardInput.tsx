@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { BOARD_FRETS, MUTED } from "@/utils/quizEngine";
+import { QUIZ_BOARD_FRETS as BOARD_FRETS, QUIZ_MUTED as MUTED } from "@/services/quizzesApi";
 import { formatNoteName, type NotationStyle } from "@/utils/noteNaming";
 
 const STRING_LETTERS = ["E", "A", "D", "G", "B", "E"] as const;

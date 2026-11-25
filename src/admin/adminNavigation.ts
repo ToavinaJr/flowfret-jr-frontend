@@ -1,5 +1,6 @@
 import {
   Activity,
+  BookOpenCheck,
   Database,
   FileText,
   LayoutDashboard,
@@ -46,6 +47,11 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: Activity,
   },
   {
+    path: "/admin/quizzes",
+    translationKey: "admin.nav.quizzes",
+    icon: BookOpenCheck,
+  },
+  {
     path: "/admin/audit",
     translationKey: "admin.nav.audit",
     icon: ScrollText,
@@ -86,7 +92,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   {
     id: "catalog",
     translationKey: "admin.navSections.catalog",
-    paths: ["/admin/media", "/admin/music"],
+    paths: ["/admin/media", "/admin/music", "/admin/quizzes"],
   },
   {
     id: "system",

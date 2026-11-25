@@ -5,23 +5,22 @@ import { useTranslation } from "react-i18next";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
 import { FretboardInput } from "@/components/features/quiz/FretboardInput";
 import { Button } from "@/components/ui/button";
-import type { QuizFeedback } from "@/hooks/useQuizSession";
+import { QUIZ_MUTED as MUTED, QUIZ_STRING_COUNT as STRING_COUNT, soundingStringCount, type QuizAnswer, type LearnerQuestion, type ChordRef } from "@/services/quizzesApi";
 import { formatChordLabel } from "@/utils/chords";
 import { formatChordName, formatNoteName, type NotationStyle } from "@/utils/noteNaming";
-import {
-  MUTED,
-  STRING_COUNT,
-  soundingStringCount,
-  type ChordRef,
-  type QuizAnswer,
-  type QuizQuestion,
-} from "@/utils/quizEngine";
+
+interface QuizFeedback {
+  correct: boolean;
+  answer: QuizAnswer;
+  correctOption?: { key: string; suffix: string };
+  example?: { frets: number[]; fingers: number[]; baseFret: number; barres: number[] };
+}
 
 const MIN_STRINGS_TO_SUBMIT = 3;
 const EMPTY_BOARD: readonly number[] = Array.from({ length: STRING_COUNT }, () => MUTED);
 
 interface QuizQuestionViewProps {
-  question: QuizQuestion;
+  question: LearnerQuestion;
   notation: NotationStyle;
   feedback: QuizFeedback | null;
   isLast: boolean;
@@ -33,7 +32,7 @@ function chordName(ref: ChordRef, notation: NotationStyle): string {
   return formatChordName(formatChordLabel(ref.key, ref.suffix), notation);
 }
 
-function optionName(question: QuizQuestion, ref: ChordRef, notation: NotationStyle): string {
+function optionName(question: LearnerQuestion, ref: ChordRef, notation: NotationStyle): string {
   return question.kind === "transpose" && question.subject === "note"
     ? formatNoteName(ref.key, notation)
     : chordName(ref, notation);
@@ -59,7 +58,7 @@ export function QuizQuestionView({ question, notation, feedback, isLast, onSubmi
       {question.kind !== "place" ? (
         <ul className="grid gap-2 sm:grid-cols-2" aria-label={t("quiz.options")}>
           {question.options.map((option, index) => {
-            const isAnswer = index === question.answerIndex;
+            const isAnswer = feedback?.correctOption?.key === option.key && feedback.correctOption.suffix === option.suffix;
             const chosen = feedback?.answer.kind === "choice" && feedback.answer.index === index;
             const tone = !answered
               ? "border-border bg-card hover:border-primary/60"
@@ -131,7 +130,7 @@ function FeedbackPanel({
   feedback,
   notation,
 }: {
-  question: QuizQuestion;
+  question: LearnerQuestion;
   feedback: QuizFeedback;
   notation: NotationStyle;
 }) {
@@ -143,17 +142,17 @@ function FeedbackPanel({
       }`}
     >
       <p className="font-medium text-foreground">{t(feedback.correct ? "quiz.feedback.correct" : "quiz.feedback.wrong")}</p>
-      {!feedback.correct && question.kind !== "place" && (
+      {!feedback.correct && question.kind !== "place" && feedback.correctOption && (
         <p className="mt-1 text-muted-foreground">
-          {t("quiz.feedback.answerWas", { answer: optionName(question, question.options[question.answerIndex], notation) })}
+          {t("quiz.feedback.answerWas", { answer: optionName(question, feedback.correctOption, notation) })}
         </p>
       )}
-      {!feedback.correct && question.kind === "place" && (
+      {!feedback.correct && question.kind === "place" && feedback.example && (
         <div className="mt-2 flex flex-col items-center gap-1">
           <p className="text-muted-foreground">
             {t("quiz.feedback.example", { name: chordName(question.chord, notation) })}
           </p>
-          <ChordDiagram chord={chordName(question.chord, notation)} position={question.example} scale={0.8} />
+          <ChordDiagram chord={chordName(question.chord, notation)} position={feedback.example} scale={0.8} />
         </div>
       )}
     </div>
@@ -161,7 +160,7 @@ function FeedbackPanel({
 }
 
 function promptText(
-  question: QuizQuestion,
+  question: LearnerQuestion,
   notation: NotationStyle,
   t: TFunction,
 ): string {

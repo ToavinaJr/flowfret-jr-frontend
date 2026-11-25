@@ -36,7 +36,8 @@
     "notifications": "Notifications",
     "messages": "Messages",
     "profile": "Profile",
-    "quiz": "Quiz"
+    "quiz": "Quiz",
+    "leaderboard": "Leaderboard"
   },
   "settings": {
     "title": "Settings",
@@ -61,8 +62,23 @@
     "logoutConfirm": "Log out",
     "logoutCancel": "Stay signed in"
   },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "periods": { "ALL_TIME": "Overall", "WEEK": "This week", "DAY": "Today" },
+    "points": "{{count}} points",
+    "completed": "{{count}} quizzes completed",
+    "empty": "No completed quizzes in this period yet.",
+    "error": "Could not load the leaderboard. Please try again.",
+    "loading": "Loading leaderboard…"
+  },
   "quiz": {
     "title": "Quiz",
+    "loading": "Loading quizzes…",
+    "error": "Something went wrong. Please try again.",
+    "empty": "No quizzes are available yet.",
+    "questionCount": "{{count}} questions",
+    "progressSummary": "Best: {{best}}% · Latest: {{recent}}%",
+    "submitting": "Checking your answer…",
     "subtitle": "Practise chords: recognise them, transpose them and place your fingers on the fretboard.",
     "options": "Possible answers",
     "validate": "Check",
@@ -127,6 +143,7 @@
       "itemCorrect": "Question {{number}}: correct",
       "itemWrong": "Question {{number}}: incorrect",
       "replay": "Play again",
+      "back": "Back to quizzes",
       "changeSettings": "Change settings"
     }
   },
@@ -1520,10 +1537,37 @@
       "content": "Content",
       "media": "Media",
       "music": "Music",
+      "quizzes": "Quizzes",
       "audit": "Audit log",
       "contact": "Contact messages",
       "teachers": "Teachers",
       "data": "Platform data"
+    },
+    "adminQuizzes": {
+      "title": "Manage quizzes",
+      "description": "Author and publish guitar quizzes for members.",
+      "loading": "Loading quizzes…",
+      "loadError": "Quizzes could not be loaded.",
+      "saveError": "Quiz could not be saved. Check every question and answer.",
+      "invalidQuestions": "Questions must be a JSON array of validated question definitions.",
+      "questions": "Questions",
+      "questionNumber": "Question {{number}}",
+      "questionKind": "Question type",
+      "questionDefinition": "Definition for question {{number}}",
+      "moveUp": "Move question up",
+      "moveDown": "Move question down",
+      "removeQuestion": "Remove question",
+      "add": { "IDENTIFY": "Add chord recognition", "TRANSPOSE": "Add transposition", "PLACE": "Add fretboard placement" },
+      "create": "Create quiz",
+      "edit": "Edit",
+      "existing": "Existing quizzes",
+      "name": "Title",
+      "summary": "Description",
+      "status": "Status",
+      "statusOptions": { "DRAFT": "Draft", "PUBLISHED": "Published", "ARCHIVED": "Archived" },
+      "questionsHelp": "Ordered questions (JSON). Each item has kind and definition.",
+      "save": "Save quiz",
+      "cancel": "Cancel"
     },
     "contact": {
       "title": "Contact messages",

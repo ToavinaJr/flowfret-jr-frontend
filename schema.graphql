@@ -323,6 +323,19 @@ type AdminPostReportConnection {
   totalCount: Int!
 }
 
+input AdminQuizInput {
+  description: String
+  id: String
+  questions: [AdminQuizQuestionInput!]!
+  status: QuizStatus
+  title: String!
+}
+
+input AdminQuizQuestionInput {
+  definition: JSON!
+  kind: QuizQuestionKind!
+}
+
 input AdminSetUserRoleInput {
   reason: String!
   role: UserRole!
@@ -801,6 +814,7 @@ type Mutation {
   adminModeratePostReport(input: AdminModerateReportInput!): ReportStatus!
   adminRestoreManagedEntity(input: AdminManagedEntityMutationInput!): JSON!
   adminRevokeUserSessions(input: AdminUserActionInput!): AdminUserSecurityResult!
+  adminSaveQuiz(input: AdminQuizInput!): JSON!
   adminSetUserRole(input: AdminSetUserRoleInput!): AdminUserSecurityResult!
   adminSetUserStatus(input: AdminSetUserStatusInput!): AdminUserSecurityResult!
   adminUpdateManagedEntity(input: AdminManagedEntityMutationInput!): JSON!
@@ -867,6 +881,8 @@ type Mutation {
   setNotificationPreference(enabled: Boolean!, type: NotificationType!): NotificationPreferenceModel!
   setPlaylistCollaborator(data: SetPlaylistCollaboratorInput!): PlaylistCollaboratorModel!
   setTrackFavorite(favorite: Boolean!, track: RecordTrackListenInput!): Boolean!
+  startQuizAttempt(quizId: String!): JSON!
+  submitQuizAnswer(answer: JSON!, attemptId: String!, questionId: String!): JSON!
   unlikePost(postId: String!): PostLikeModel!
   updateComment(data: UpdateCommentInput!, id: String!): CommentModel!
   updateMe(data: UpdateMeInput!): UserModel!
@@ -1105,6 +1121,7 @@ type Query {
   adminPlaylists(input: AdminMusicInput): AdminPlaylistConnection!
   adminPostReports(input: AdminContentInput): AdminPostReportConnection!
   adminPosts(input: AdminContentInput): AdminPostConnection!
+  adminQuizzes: JSON!
   adminTranscriptions(input: AdminMediaInput): AdminTranscriptionConnection!
   adminUploads(input: AdminMediaInput): AdminUploadConnection!
   adminUser(id: String!): AdminUser
@@ -1115,6 +1132,7 @@ type Query {
   commentsByPost(postId: String!, skip: Int! = 0, take: Int! = 20): [CommentModel!]!
   conversationMessages(before: String, conversationId: String!, take: Int! = 30): [ChatMessageView!]!
   dbHealth: String!
+  myActiveQuizAttempt: JSON
   myAuditLogs(take: Int! = 50): [AuditLogModel!]!
   myConversations: [ChatConversationView!]!
   myEnrolledTeachingCourses: [TeachingCourseModel!]!
@@ -1128,6 +1146,7 @@ type Query {
   myNotifications(after: String, take: Int! = 50): [NotificationModel!]!
   myPlaylistInvitations: [PlaylistInvitationModel!]!
   myPlaylists(after: String, take: Int! = 20): [PlaylistModel!]!
+  myQuizProgress: JSON!
   mySessions: [AuthSessionModel!]!
   myTeachingCourseEnrollments: [TeachingEnrollmentModel!]!
   myTeachingCourses: [TeachingCourseModel!]!
@@ -1149,7 +1168,9 @@ type Query {
   profiles: [ProfileModel!]!
   publicPlaylist(id: String!): PublicPlaylistModel
   publicPlaylistItems(after: String, playlistId: String!, take: Int! = 50): [PublicPlaylistItemModel!]!
+  publishedQuizzes: JSON!
   publishedTeachingCourses(after: String, take: Int): [TeachingCourseModel!]!
+  quizLeaderboard(period: String!, take: Float): JSON!
   searchMusic(cursor: String, limit: Int = 10, query: String!): MusicSearchResult!
   searchUsers(query: String!, take: Int! = 20): [UserModel!]!
   sharedPlaylists(after: String, take: Int! = 20): [PlaylistModel!]!
@@ -1163,6 +1184,18 @@ type Query {
   uploads: [UploadModel!]!
   user(id: String!): UserModel
   users: [UserModel!]!
+}
+
+enum QuizQuestionKind {
+  IDENTIFY
+  PLACE
+  TRANSPOSE
+}
+
+enum QuizStatus {
+  ARCHIVED
+  DRAFT
+  PUBLISHED
 }
 
 input RecordTrackListenInput {

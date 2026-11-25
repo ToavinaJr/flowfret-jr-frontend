@@ -76,6 +76,7 @@ export const NAV_SECTIONS: AppNavSection[] = [
       { icon: GraduationCap, translationKey: "nav.courses", path: "/teaching" },
       ...TOOL_NAV_ITEMS,
       { icon: Trophy, translationKey: "nav.quiz", path: "/quiz" },
+      { icon: Trophy, translationKey: "nav.leaderboard", path: "/leaderboard" },
     ],
   },
   {

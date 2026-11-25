@@ -26,6 +26,7 @@ const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const MetronomePage = lazy(() => import("@/pages/MetronomePage"));
 const ScalesPage = lazy(() => import("@/pages/ScalesPage"));
 const QuizPage = lazy(() => import("@/pages/QuizPage"));
+const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage"));
 const MenuPage = lazy(() => import("@/pages/MenuPage"));
 const HistoirePage = lazy(() => import("@/pages/HistoirePage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
@@ -54,6 +55,7 @@ const AdminUserDetailPage = lazy(() => import("@/admin/AdminUserDetailPage"));
 const AdminContentPage = lazy(() => import("@/admin/AdminContentPage"));
 const AdminMediaPage = lazy(() => import("@/admin/AdminMediaPage"));
 const AdminMusicPage = lazy(() => import("@/admin/AdminMusicPage"));
+const AdminQuizzesPage = lazy(() => import("@/admin/AdminQuizzesPage"));
 const AdminAuditPage = lazy(() => import("@/admin/AdminAuditPage"));
 const AdminContactPage = lazy(() => import("@/admin/AdminContactPage"));
 const AdminTeachersPage = lazy(() => import("@/admin/AdminTeachersPage"));
@@ -99,6 +101,7 @@ const App = () => {
                             />
                           </Route>
                           <Route path="/quiz" element={<QuizPage />} />
+                          <Route path="/leaderboard" element={<LeaderboardPage />} />
                           <Route path="/upload" element={<UploadPage />} />
                           <Route path="/music" element={<MusicSearchPage />} />
                           <Route path="/recommendations" element={<RecommendationsPage />} />
@@ -165,6 +168,7 @@ const App = () => {
                             />
                             <Route path="media" element={<AdminMediaPage />} />
                             <Route path="music" element={<AdminMusicPage />} />
+                            <Route path="quizzes" element={<AdminQuizzesPage />} />
                             <Route path="audit" element={<AdminAuditPage />} />
                             <Route path="contact" element={<AdminContactPage />} />
                             <Route
