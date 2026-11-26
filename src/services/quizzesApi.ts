@@ -10,8 +10,12 @@ export interface ChordPosition { frets: number[]; fingers: number[]; baseFret: n
 export type LearnerQuestion =
   | { id: string; kind: 'identify'; position: ChordPosition; options: ChordRef[] }
   | { id: string; kind: 'transpose'; subject: 'note' | 'chord'; source: ChordRef; semitones: number; options: ChordRef[] }
-  | { id: string; kind: 'place'; chord: ChordRef };
-export type QuizAnswer = { kind: 'choice'; index: number } | { kind: 'frets'; frets: number[] };
+  | { id: string; kind: 'place'; chord: ChordRef }
+  | { id: string; kind: 'barre'; chord: ChordRef };
+/** One finger laid flat across strings `from`..`to` (0 = low E) on `fret`. */
+export interface QuizBarre { fret: number; from: number; to: number }
+export type QuizAnswer = { kind: 'choice'; index: number } | { kind: 'frets'; frets: number[]; barre?: QuizBarre | null };
+export type QuizAnswerIssue = 'NOTES' | 'BARRE' | 'FINGERS';
 export interface QuizAttempt {
   id: string; status: string; quizTitle: string; currentPosition: number;
   correctCount: number; totalQuestions: number; question: LearnerQuestion | null;
@@ -19,7 +23,7 @@ export interface QuizAttempt {
 export interface QuizCard { id: string; title: string; description: string | null; _count: { questions: number } }
 export interface QuizProgress { quizId: string; bestPercentage: number; bestScore: number; totalQuestions: number; recentPercentage: number; recentScore: number; completedAt: string | null; attempts: number }
 export interface QuizAnswerResult {
-  feedback: { correct: boolean; correctOption?: ChordRef; example?: ChordPosition };
+  feedback: { correct: boolean; issue?: QuizAnswerIssue; correctOption?: ChordRef; example?: ChordPosition };
   nextQuestion: LearnerQuestion | null;
   result: { correctCount: number; totalQuestions: number; percentage: number } | null;
 }

@@ -5,19 +5,20 @@ import { useTranslation } from "react-i18next";
 import { ChordDiagram } from "@/components/features/chords/ChordDiagram";
 import { FretboardInput } from "@/components/features/quiz/FretboardInput";
 import { Button } from "@/components/ui/button";
-import { QUIZ_MUTED as MUTED, QUIZ_STRING_COUNT as STRING_COUNT, soundingStringCount, type QuizAnswer, type LearnerQuestion, type ChordRef } from "@/services/quizzesApi";
+import { soundingStringCount, type QuizAnswer, type QuizAnswerIssue, type LearnerQuestion, type ChordRef } from "@/services/quizzesApi";
 import { formatChordLabel } from "@/utils/chords";
+import { EMPTY_FRETBOARD, type FretboardState } from "@/utils/fretboardModel";
 import { formatChordName, formatNoteName, type NotationStyle } from "@/utils/noteNaming";
 
 interface QuizFeedback {
   correct: boolean;
   answer: QuizAnswer;
+  issue?: QuizAnswerIssue;
   correctOption?: { key: string; suffix: string };
   example?: { frets: number[]; fingers: number[]; baseFret: number; barres: number[] };
 }
 
 const MIN_STRINGS_TO_SUBMIT = 3;
-const EMPTY_BOARD: readonly number[] = Array.from({ length: STRING_COUNT }, () => MUTED);
 
 interface QuizQuestionViewProps {
   question: LearnerQuestion;
@@ -41,7 +42,7 @@ function optionName(question: LearnerQuestion, ref: ChordRef, notation: Notation
 
 export function QuizQuestionView({ question, notation, feedback, isLast, isSubmitting, onSubmit, onNext }: QuizQuestionViewProps) {
   const { t } = useTranslation();
-  const [frets, setFrets] = useState<readonly number[]>(EMPTY_BOARD);
+  const [board, setBoard] = useState<FretboardState>(EMPTY_FRETBOARD);
   const answered = feedback !== null;
 
   return (
@@ -56,7 +57,7 @@ export function QuizQuestionView({ question, notation, feedback, isLast, isSubmi
         </div>
       )}
 
-      {question.kind !== "place" ? (
+      {question.kind === "identify" || question.kind === "transpose" ? (
         <ul className="grid gap-2 sm:grid-cols-2" aria-label={t("quiz.options")}>
           {question.options.map((option, index) => {
             const isAnswer = feedback?.correctOption?.key === option.key && feedback.correctOption.suffix === option.suffix;
@@ -86,22 +87,22 @@ export function QuizQuestionView({ question, notation, feedback, isLast, isSubmi
         </ul>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">{t("quiz.fretboard.hint")}</p>
-          <FretboardInput value={frets} notation={notation} disabled={answered || isSubmitting} onChange={setFrets} />
+          <p className="text-sm text-muted-foreground">{t(question.kind === "barre" ? "quiz.fretboard.hintBarre" : "quiz.fretboard.hint")}</p>
+          <FretboardInput value={board} notation={notation} allowBarre disabled={answered || isSubmitting} onChange={setBoard} />
           {!answered && (
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button type="button" variant="secondary" className="min-h-11" disabled={isSubmitting} onClick={() => setFrets(EMPTY_BOARD)}>
+              <Button type="button" variant="secondary" className="min-h-11" disabled={isSubmitting} onClick={() => setBoard(EMPTY_FRETBOARD)}>
                 {t("quiz.fretboard.clear")}
               </Button>
               <Button
                 type="button"
                 className="min-h-11"
-                disabled={isSubmitting || soundingStringCount(frets) < MIN_STRINGS_TO_SUBMIT}
-                onClick={() => onSubmit({ kind: "frets", frets: [...frets] })}
+                disabled={isSubmitting || soundingStringCount(board.frets) < MIN_STRINGS_TO_SUBMIT}
+                onClick={() => onSubmit({ kind: "frets", frets: [...board.frets], barre: board.barre })}
               >
                 {t("quiz.validate")}
               </Button>
-              {soundingStringCount(frets) < MIN_STRINGS_TO_SUBMIT && (
+              {soundingStringCount(board.frets) < MIN_STRINGS_TO_SUBMIT && (
                 <p className="w-full text-center text-xs text-muted-foreground">{t("quiz.fretboard.minStrings")}</p>
               )}
             </div>
@@ -136,6 +137,7 @@ function FeedbackPanel({
   notation: NotationStyle;
 }) {
   const { t } = useTranslation();
+  const hasBoard = question.kind === "place" || question.kind === "barre";
   return (
     <div
       className={`rounded-lg border p-3 text-sm ${
@@ -143,12 +145,15 @@ function FeedbackPanel({
       }`}
     >
       <p className="font-medium text-foreground">{t(feedback.correct ? "quiz.feedback.correct" : "quiz.feedback.wrong")}</p>
-      {!feedback.correct && question.kind !== "place" && feedback.correctOption && (
+      {!feedback.correct && feedback.issue && (
+        <p className="mt-1 text-muted-foreground">{t(`quiz.feedback.issue.${feedback.issue}`)}</p>
+      )}
+      {!feedback.correct && !hasBoard && feedback.correctOption && (
         <p className="mt-1 text-muted-foreground">
           {t("quiz.feedback.answerWas", { answer: optionName(question, feedback.correctOption, notation) })}
         </p>
       )}
-      {!feedback.correct && question.kind === "place" && feedback.example && (
+      {!feedback.correct && hasBoard && feedback.example && (
         <div className="mt-2 flex flex-col items-center gap-1">
           <p className="text-muted-foreground">
             {t("quiz.feedback.example", { name: chordName(question.chord, notation) })}
@@ -167,6 +172,7 @@ function promptText(
 ): string {
   if (question.kind === "identify") return t("quiz.prompt.identify");
   if (question.kind === "place") return t("quiz.prompt.place", { name: chordName(question.chord, notation) });
+  if (question.kind === "barre") return t("quiz.prompt.barre", { name: chordName(question.chord, notation) });
   const name = optionName(question, question.source, notation);
   const count = Math.abs(question.semitones);
   return t(question.semitones > 0 ? "quiz.prompt.transposeUp" : "quiz.prompt.transposeDown", { name, count });

@@ -112,9 +112,14 @@
       "place": {
         "title": "Place your fingers",
         "description": "Build the requested chord on the fretboard."
+      },
+      "barre": {
+        "title": "Barre chord",
+        "description": "Play the chord with one finger laid flat across several strings."
       }
     },
     "prompt": {
+      "barre": "Play the {{name}} chord as a barre chord",
       "identify": "Which chord is this?",
       "place": "Place your fingers for the {{name}} chord",
       "transposeUp_one": "What is {{name}} transposed up by {{count}} semitone?",
@@ -123,6 +128,10 @@
       "transposeDown_other": "What is {{name}} transposed down by {{count}} semitones?"
     },
     "fretboard": {
+      "hintBarre": "Use the Barre tool: tap the first, then the last string of the barre on the same fret. Then place your other fingers. Play at least 3 strings.",
+      "barreTool": "Barre",
+      "barreHint": "Tap the first string of the barre on a fret.",
+      "barrePending": "String {{string}}, fret {{fret}}: now tap the last string of the barre on the same fret.",
       "label": "Guitar fretboard",
       "hint": "Tap a cell to place a finger, the 0 row for an open string. A string without a marker is muted. Play at least 3 strings.",
       "cell": "String {{string}} ({{note}}), fret {{fret}}",
@@ -131,6 +140,11 @@
       "minStrings": "Play at least 3 strings to check."
     },
     "feedback": {
+      "issue": {
+        "NOTES": "The notes do not make up the right chord.",
+        "BARRE": "The notes are right, but a valid barre is missing: lay your index finger flat on the lowest fret across consecutive strings.",
+        "FINGERS": "This shape needs more than 4 fingers: try a longer barre."
+      },
       "correct": "Correct!",
       "wrong": "That's not the right answer.",
       "answerWas": "The correct answer was: {{answer}}",
@@ -1559,7 +1573,7 @@
       "moveUp": "Move question up",
       "moveDown": "Move question down",
       "removeQuestion": "Remove question",
-      "add": { "IDENTIFY": "Add chord recognition", "TRANSPOSE": "Add transposition", "PLACE": "Add fretboard placement" },
+      "add": { "IDENTIFY": "Add chord recognition", "TRANSPOSE": "Add transposition", "PLACE": "Add fretboard placement", "BARRE": "Add barre chord" },
       "create": "Create quiz",
       "edit": "Edit",
       "existing": "Existing quizzes",

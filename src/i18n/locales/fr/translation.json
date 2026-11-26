@@ -112,9 +112,14 @@
       "place": {
         "title": "Placer les doigts",
         "description": "Construisez l'accord demandé sur le manche."
+      },
+      "barre": {
+        "title": "Accord barré",
+        "description": "Jouez l'accord avec une barre posée à plat sur plusieurs cordes."
       }
     },
     "prompt": {
+      "barre": "Jouez l'accord de {{name}} en barré",
       "identify": "Quel est cet accord ?",
       "place": "Placez vos doigts pour l'accord de {{name}}",
       "transposeUp_one": "Quelle est la transposée de {{name}} de {{count}} demi-ton vers le haut ?",
@@ -123,6 +128,10 @@
       "transposeDown_other": "Quelle est la transposée de {{name}} de {{count}} demi-tons vers le bas ?"
     },
     "fretboard": {
+      "hintBarre": "Utilisez l'outil Barre : touchez la première puis la dernière corde de la barre sur la même case. Placez ensuite les autres doigts. Jouez au moins 3 cordes.",
+      "barreTool": "Barre",
+      "barreHint": "Touchez la première corde de la barre sur une case.",
+      "barrePending": "Corde {{string}}, case {{fret}} : touchez maintenant la dernière corde de la barre sur la même case.",
       "label": "Manche de guitare",
       "hint": "Touchez une case pour poser un doigt, la ligne 0 pour une corde à vide. Une corde sans repère est étouffée. Jouez au moins 3 cordes.",
       "cell": "Corde {{string}} ({{note}}), case {{fret}}",
@@ -131,6 +140,11 @@
       "minStrings": "Jouez au moins 3 cordes pour valider."
     },
     "feedback": {
+      "issue": {
+        "NOTES": "Les notes ne forment pas le bon accord.",
+        "BARRE": "Les notes sont bonnes, mais il manque une barre valide : posez l'index à plat sur la case la plus basse, sur des cordes consécutives.",
+        "FINGERS": "Cette forme demande plus de 4 doigts : essayez une barre plus longue."
+      },
       "correct": "Bonne réponse !",
       "wrong": "Ce n'est pas la bonne réponse.",
       "answerWas": "La bonne réponse était : {{answer}}",
@@ -1560,7 +1574,7 @@
       "moveUp": "Déplacer la question vers le haut",
       "moveDown": "Déplacer la question vers le bas",
       "removeQuestion": "Supprimer la question",
-      "add": { "IDENTIFY": "Ajouter reconnaissance d'accord", "TRANSPOSE": "Ajouter transposition", "PLACE": "Ajouter placement sur le manche" },
+      "add": { "IDENTIFY": "Ajouter reconnaissance d'accord", "TRANSPOSE": "Ajouter transposition", "PLACE": "Ajouter placement sur le manche", "BARRE": "Ajouter accord barré" },
       "edit": "Modifier",
       "existing": "Quiz existants",
       "name": "Titre",

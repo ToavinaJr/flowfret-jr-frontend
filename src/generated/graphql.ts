@@ -325,6 +325,7 @@ export type ProfileVisibility =
   | 'PUBLIC';
 
 export type QuizQuestionKind =
+  | 'BARRE'
   | 'IDENTIFY'
   | 'PLACE'
   | 'TRANSPOSE';

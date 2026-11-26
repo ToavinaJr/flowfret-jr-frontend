@@ -53,6 +53,49 @@ describe('QuizPage', () => {
     expect(screen.getByText('1 / 1')).toBeInTheDocument();
   });
 
+  it('lets the learner lay a barre, sends it to the server and explains a rejected barre', async () => {
+    const barreAttempt: api.QuizAttempt = {
+      ...attempt,
+      question: { id: 'question-barre', kind: 'barre', chord: { key: 'F', suffix: 'major' } },
+    };
+    vi.mocked(api.fetchActiveQuizAttempt).mockResolvedValue(barreAttempt);
+    vi.mocked(api.submitQuizAnswer).mockResolvedValue({
+      feedback: {
+        correct: false,
+        issue: 'FINGERS',
+        example: { frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], baseFret: 1, barres: [1] },
+      },
+      nextQuestion: null,
+      result: { correctCount: 0, totalQuestions: 1, percentage: 0 },
+    });
+    renderPage();
+
+    expect(await screen.findByRole('heading', { name: 'Play the F chord as a barre chord' })).toBeInTheDocument();
+    const barreTool = screen.getByRole('button', { name: 'Barre' });
+    expect(barreTool).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(barreTool);
+    expect(barreTool).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: 'String 6 (E), fret 1' }));
+    expect(screen.getByText('String 6, fret 1: now tap the last string of the barre on the same fret.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'String 1 (E), fret 1' }));
+    expect(screen.getByRole('button', { name: 'String 3 (G), fret 1' })).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(barreTool);
+    fireEvent.click(screen.getByRole('button', { name: 'String 5 (A), fret 3' }));
+    fireEvent.click(screen.getByRole('button', { name: 'String 4 (D), fret 3' }));
+    fireEvent.click(screen.getByRole('button', { name: 'String 3 (G), fret 2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+
+    expect(await screen.findByText('This shape needs more than 4 fingers: try a longer barre.')).toBeInTheDocument();
+    expect(screen.getByText('Here is an example fingering for F:')).toBeInTheDocument();
+    expect(api.submitQuizAnswer).toHaveBeenCalledWith('attempt-1', 'question-barre', {
+      kind: 'frets',
+      frets: [1, 3, 3, 2, 1, 1],
+      barre: { fret: 1, from: 0, to: 5 },
+    });
+  });
+
   it('resumes an active account attempt returned by the backend', async () => {
     vi.mocked(api.fetchActiveQuizAttempt).mockResolvedValue(attempt);
     renderPage();

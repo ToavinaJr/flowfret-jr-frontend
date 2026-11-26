@@ -1187,6 +1187,7 @@ type Query {
 }
 
 enum QuizQuestionKind {
+  BARRE
   IDENTIFY
   PLACE
   TRANSPOSE

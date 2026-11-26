@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { graphqlRequest } from '@/services/graphqlClient';
 
-type QuestionKind = 'IDENTIFY' | 'TRANSPOSE' | 'PLACE';
+type QuestionKind = 'IDENTIFY' | 'TRANSPOSE' | 'PLACE' | 'BARRE';
 type QuestionDraft = { kind: QuestionKind; definition: unknown };
 type AdminQuiz = { id: string; title: string; description: string | null; status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'; questions: { kind: string; definition: unknown }[] };
 
@@ -12,6 +12,10 @@ function defaultQuestion(kind: QuestionKind): QuestionDraft {
   const position = { frets: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], baseFret: 1, barres: [] };
   if (kind === 'IDENTIFY') return { kind, definition: { kind: 'identify', position, options: [{ key: 'C', suffix: 'major' }, { key: 'D', suffix: 'minor' }], answerIndex: 0 } };
   if (kind === 'TRANSPOSE') return { kind, definition: { kind: 'transpose', subject: 'chord', source: { key: 'D', suffix: 'major' }, semitones: 2, options: [{ key: 'E', suffix: 'major' }, { key: 'F', suffix: 'major' }], answerIndex: 0 } };
+  if (kind === 'BARRE') {
+    const barre = { frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], baseFret: 1, barres: [1] };
+    return { kind, definition: { kind: 'barre', chord: { key: 'F', suffix: 'major' }, rule: { required: [5, 9, 0], allowed: [5, 9, 0] }, example: barre } };
+  }
   return { kind, definition: { kind: 'place', chord: { key: 'C', suffix: 'major' }, rule: { required: [0, 4, 7], allowed: [0, 4, 7] }, example: position } };
 }
 
@@ -67,7 +71,7 @@ export default function AdminQuizzesPage() {
               <span className="mr-auto text-sm font-medium">{t('admin.adminQuizzes.questionNumber', { number: index + 1 })}</span>
               <label className="sr-only" htmlFor={`quiz-question-kind-${index}`}>{t('admin.adminQuizzes.questionKind')}</label>
               <select id={`quiz-question-kind-${index}`} value={question.kind} onChange={(event) => setQuestions((current) => current.map((item, row) => row === index ? defaultQuestion(event.target.value as QuestionKind) : item))} className="min-h-10 rounded-md border bg-background px-2 text-sm">
-                <option value="IDENTIFY">{t('quiz.kinds.identify.title')}</option><option value="TRANSPOSE">{t('quiz.kinds.transpose.title')}</option><option value="PLACE">{t('quiz.kinds.place.title')}</option>
+                <option value="IDENTIFY">{t('quiz.kinds.identify.title')}</option><option value="TRANSPOSE">{t('quiz.kinds.transpose.title')}</option><option value="PLACE">{t('quiz.kinds.place.title')}</option><option value="BARRE">{t('quiz.kinds.barre.title')}</option>
               </select>
               <Button type="button" variant="secondary" disabled={index === 0} aria-label={t('admin.adminQuizzes.moveUp')} onClick={() => move(index, -1)}>↑</Button>
               <Button type="button" variant="secondary" disabled={index === questions.length - 1} aria-label={t('admin.adminQuizzes.moveDown')} onClick={() => move(index, 1)}>↓</Button>
@@ -75,7 +79,7 @@ export default function AdminQuizzesPage() {
             </div>
             <textarea aria-label={t('admin.adminQuizzes.questionDefinition', { number: index + 1 })} value={JSON.stringify(question.definition, null, 2)} onChange={(event) => setQuestions((current) => current.map((item, row) => row === index ? { ...item, definition: event.target.value } : item))} rows={9} spellCheck={false} className="w-full rounded-md border bg-background p-3 font-mono text-xs" />
           </div>)}
-          <div className="flex flex-wrap gap-2">{(['IDENTIFY', 'TRANSPOSE', 'PLACE'] as const).map((kind) => <Button key={kind} type="button" variant="secondary" onClick={() => setQuestions((current) => [...current, defaultQuestion(kind)])}>{t(`admin.adminQuizzes.add.${kind}`)}</Button>)}</div>
+          <div className="flex flex-wrap gap-2">{(['IDENTIFY', 'TRANSPOSE', 'PLACE', 'BARRE'] as const).map((kind) => <Button key={kind} type="button" variant="secondary" onClick={() => setQuestions((current) => [...current, defaultQuestion(kind)])}>{t(`admin.adminQuizzes.add.${kind}`)}</Button>)}</div>
         </div>
         {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
         {save.error && <p role="alert" className="text-sm text-destructive">{t('admin.adminQuizzes.saveError')}</p>}
