@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { graphqlRequest } from '@/services/graphqlClient';
+import { ApiClientError } from '@/types/api';
 
 type QuestionKind = 'IDENTIFY' | 'TRANSPOSE' | 'PLACE' | 'BARRE';
 type QuestionDraft = { kind: QuestionKind; definition: unknown };
@@ -36,6 +37,7 @@ export default function AdminQuizzesPage() {
     void client.invalidateQueries({ queryKey: ['admin-quizzes'] });
     setSelectedId(null); setTitle(''); setDescription(''); setStatus('DRAFT'); setQuestions([]); setFormError('');
   } });
+  const saveErrorCode = save.error instanceof ApiClientError ? save.error.graphQLErrors[0]?.extensions?.code : undefined;
 
   function edit(quiz: AdminQuiz) {
     setSelectedId(quiz.id); setTitle(quiz.title); setDescription(quiz.description ?? ''); setStatus(quiz.status);
@@ -82,7 +84,7 @@ export default function AdminQuizzesPage() {
           <div className="flex flex-wrap gap-2">{(['IDENTIFY', 'TRANSPOSE', 'PLACE', 'BARRE'] as const).map((kind) => <Button key={kind} type="button" variant="secondary" onClick={() => setQuestions((current) => [...current, defaultQuestion(kind)])}>{t(`admin.adminQuizzes.add.${kind}`)}</Button>)}</div>
         </div>
         {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-        {save.error && <p role="alert" className="text-sm text-destructive">{t('admin.adminQuizzes.saveError')}</p>}
+        {save.error && <p role="alert" className="text-sm text-destructive">{saveErrorCode ? t(`admin.adminQuizzes.errors.${saveErrorCode}`, { defaultValue: t('admin.adminQuizzes.saveError') }) : t('admin.adminQuizzes.saveError')}</p>}
         <div className="flex gap-2"><Button type="submit" disabled={save.isPending}>{t('admin.adminQuizzes.save')}</Button>{selectedId && <Button type="button" variant="secondary" onClick={() => setSelectedId(null)}>{t('admin.adminQuizzes.cancel')}</Button>}</div>
       </form>
     </section>

@@ -1566,6 +1566,17 @@
       "loadError": "Impossible de charger les quiz.",
       "saveError": "Impossible d'enregistrer le quiz. Vérifiez les questions et réponses.",
       "invalidQuestions": "Les questions doivent être un tableau JSON de définitions valides.",
+      "errors": {
+        "QUIZ_INPUT_INVALID": "Le titre du quiz est manquant ou invalide.",
+        "QUIZ_TITLE_INVALID": "Le titre doit contenir entre 1 et 160 caractères.",
+        "QUIZ_DESCRIPTION_INVALID": "La description ne doit pas dépasser 2000 caractères.",
+        "QUIZ_STATUS_INVALID": "Le statut sélectionné est invalide.",
+        "QUIZ_QUESTIONS_INVALID": "La liste de questions est invalide ou dépasse 50 questions.",
+        "QUIZ_QUESTION_KIND_MISMATCH": "Le type d'une question ne correspond pas à sa définition.",
+        "QUIZ_QUESTION_INVALID": "La définition JSON d'une question est invalide. Vérifiez son contenu.",
+        "QUIZ_PUBLISH_REQUIRES_QUESTIONS": "Un quiz publié doit contenir au moins une question. Ajoutez des questions ou repassez-le en brouillon.",
+        "QUIZ_NOT_FOUND": "Ce quiz n'existe plus. Rechargez la liste."
+      },
       "create": "Créer un quiz",
       "questions": "Questions",
       "questionNumber": "Question {{number}}",

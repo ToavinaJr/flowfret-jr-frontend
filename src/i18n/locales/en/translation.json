@@ -1566,6 +1566,17 @@
       "loadError": "Quizzes could not be loaded.",
       "saveError": "Quiz could not be saved. Check every question and answer.",
       "invalidQuestions": "Questions must be a JSON array of validated question definitions.",
+      "errors": {
+        "QUIZ_INPUT_INVALID": "The quiz title is missing or invalid.",
+        "QUIZ_TITLE_INVALID": "The title must be between 1 and 160 characters.",
+        "QUIZ_DESCRIPTION_INVALID": "The description must be 2000 characters or fewer.",
+        "QUIZ_STATUS_INVALID": "The selected status is invalid.",
+        "QUIZ_QUESTIONS_INVALID": "The question list is invalid or exceeds 50 questions.",
+        "QUIZ_QUESTION_KIND_MISMATCH": "A question's type does not match its definition.",
+        "QUIZ_QUESTION_INVALID": "A question's JSON definition is invalid. Check its content.",
+        "QUIZ_PUBLISH_REQUIRES_QUESTIONS": "A published quiz needs at least one question. Add questions or switch it back to draft.",
+        "QUIZ_NOT_FOUND": "This quiz no longer exists. Reload the list."
+      },
       "questions": "Questions",
       "questionNumber": "Question {{number}}",
       "questionKind": "Question type",
