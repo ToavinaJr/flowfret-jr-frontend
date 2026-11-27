@@ -95,7 +95,7 @@ export function FretboardInput({ value, notation, disabled = false, allowBarre =
                     fret,
                   })}
                   onClick={() => press(string, fret)}
-                  className="group flex min-h-11 items-center justify-center border-x border-border/60 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed"
+                  className="group flex aspect-[5/8] min-h-11 items-center justify-center border-x border-border/60 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed"
                 >
                   {barred && value.barre ? (
                     <span

@@ -281,28 +281,30 @@ function ChordPreview({
         <span className="text-base font-medium">{title}</span>
         <span className="text-xs text-muted-foreground">{position}</span>
       </figcaption>
-      <svg className="mx-auto mt-6 h-auto w-full max-w-sm text-foreground" viewBox="0 0 220 190" role="img" aria-label={label}>
+      {/* Same string/fret proportions as ChordDiagram.tsx (fret height ≈ 1.6× string spacing) so
+          every neck in the app reads as the same instrument. */}
+      <svg className="mx-auto mt-6 h-auto w-full max-w-sm text-foreground" viewBox="0 0 220 290" role="img" aria-label={label}>
         <g fill="none" stroke="currentColor" strokeOpacity="0.42" strokeWidth="1.5">
-          {[24, 58, 92, 126, 160, 194].map((x) => <line key={`string-${x}`} x1={x} y1="36" x2={x} y2="156" />)}
-          {[36, 66, 96, 126, 156].map((y) => <line key={`fret-${y}`} x1="24" y1={y} x2="194" y2={y} />)}
+          {[24, 58, 92, 126, 160, 194].map((x) => <line key={`string-${x}`} x1={x} y1="36" x2={x} y2="252" />)}
+          {[36, 90, 144, 198, 252].map((y) => <line key={`fret-${y}`} x1="24" y1={y} x2="194" y2={y} />)}
         </g>
         <line x1="24" y1="36" x2="194" y2="36" stroke="currentColor" strokeWidth="5" />
         <g fill="hsl(var(--primary))">
-          <circle cx="58" cy="141" r="8" />
-          <circle cx="92" cy="111" r="8" />
-          <circle cx="160" cy="81" r="8" />
+          <circle cx="58" cy="171" r="8" />
+          <circle cx="92" cy="117" r="8" />
+          <circle cx="160" cy="63" r="8" />
         </g>
         <g fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="126" cy="18" r="6" />
           <circle cx="194" cy="18" r="6" />
         </g>
         <g fill="currentColor" fontFamily="Geist Mono, monospace" fontSize="12" textAnchor="middle">
-          <text x="24" y="180">x</text>
-          <text x="58" y="180">3</text>
-          <text x="92" y="180">2</text>
-          <text x="126" y="180">0</text>
-          <text x="160" y="180">1</text>
-          <text x="194" y="180">0</text>
+          <text x="24" y="276">x</text>
+          <text x="58" y="276">3</text>
+          <text x="92" y="276">2</text>
+          <text x="126" y="276">0</text>
+          <text x="160" y="276">1</text>
+          <text x="194" y="276">0</text>
         </g>
       </svg>
       <p className="mt-3 font-musical text-xs text-muted-foreground">{fingering}</p>
